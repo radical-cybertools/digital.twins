@@ -148,12 +148,18 @@ class PubSubBackend(ABC):
 
     async def _await_running(self, what: str):
         """Callers which arrive before `connect()` finished are made to
-        wait rather than to lose their message."""
+        wait rather than to lose their message.
+
+        The re-check afterwards matters: a client closed while somebody
+        was waiting here must produce the ordinary closed-client error,
+        not an attribute error somewhere in a half-dismantled backend.
+        """
 
         if not self.is_running.is_set():
             logger.warning("requesting %s before connecting to broker. Waiting",
                            what)
             await self.is_running.wait()
+            self._check_open()
 
     def _start_receiving(self):
         """Arm the supervised receive loop.  Called at the end of connect."""
