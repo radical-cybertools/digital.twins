@@ -17,6 +17,7 @@ from fastapi import FastAPI, HTTPException  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
 from digitaltwin.components import UtilityTask  # noqa: E402
+from digitaltwin.runtime import DTRuntime  # noqa: E402
 from digitaltwin.service.plugin import PluginDT  # noqa: E402
 from digitaltwin.service.session import DTSession, TwinInstance  # noqa: E402
 from digitaltwin.service.wire import (  # noqa: E402
@@ -275,6 +276,13 @@ class _Plain(UtilityTask):
     pass
 
 
+class _FakeStream:
+    """Just enough stream client for a `DTRuntime` that never streams."""
+
+    namespace = "twin"
+    on_error = None
+
+
 def _twin_with(flow):
     twin = TwinInstance("t1")
     twin.runtime = type("R", (), {"flow": flow})()
@@ -399,6 +407,145 @@ async def test_close_shuts_down_a_built_engine():
 
     assert flow.is_shut_down
     assert session._engines == {}
+
+
+# ---------------------------------------------------------------------------
+# the 'exsitu' engine (M2)
+# ---------------------------------------------------------------------------
+
+def _dual(**endpoints: str) -> dict:
+    return {"engines": {name: {"endpoint_name": endpoint}
+                        for name, endpoint in endpoints.items()}}
+
+
+async def test_an_unconfigured_engine_aliases_task():
+    """Adding `'exsitu'` must stay a config-only change: without one, a
+    learner twin runs both halves on the twin's own engine."""
+
+    session = DTSession("s1", _dual(task="ep1"))
+    built = _slow_build(session, 0)
+
+    assert await session.engine("exsitu") is await session.engine("task")
+    assert len(built) == 1
+    assert sorted(session._engines) == ["task"]
+
+
+async def test_a_slow_exsitu_build_does_not_hold_up_task():
+    """Per-name build tasks and locks: a remote backend taking minutes
+    must not serialize ahead of the engine a sibling twin needs."""
+
+    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
+    delays = {"task": 0.0, "exsitu": 5.0}
+
+    async def build(name):
+        await asyncio.sleep(delays[name])
+        return _FakeFlow()
+
+    session._create_engine = build
+
+    slow = asyncio.create_task(session.engine("exsitu"))
+    await asyncio.sleep(0.05)
+
+    assert await asyncio.wait_for(session.engine("task"), 1.0)
+
+    slow.cancel()
+
+
+async def test_a_learner_gets_the_exsitu_engine():
+    """Dual-engine injection, by subclass check -- there is no
+    user-facing engine selector in v1."""
+
+    learn = pytest.importorskip("digitaltwin.learn")
+
+    class _Learner(learn.StreamingLearnerInvestigator):
+        def __init__(self, flow, learn_flow=None):
+            self.flow, self.learn_flow = flow, learn_flow
+
+    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
+    exsitu = session._engines["exsitu"] = _FakeFlow()
+
+    twin = _twin_with(_FakeFlow())
+    component = session._instantiate(Package(_Learner), twin)
+
+    assert component.learn_flow is exsitu
+    assert component.flow is twin.runtime.flow
+    assert twin.engines == {"task", "exsitu"}
+
+
+async def test_a_plain_component_never_sees_a_second_engine():
+    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
+    session._engines["exsitu"] = _FakeFlow()
+
+    twin = _twin_with(_FakeFlow())
+    session._instantiate(Package(_Plain), twin)
+
+    assert twin.engines == {"task"}
+
+
+# ---------------------------------------------------------------------------
+# R8: a lost endpoint is visible, not silent
+# ---------------------------------------------------------------------------
+
+def _running_twin(session, twin_id, *engines: str):
+    twin = session.twins[twin_id] = TwinInstance(twin_id)
+    twin.engines.update(engines)
+    twin.runtime = DTRuntime(_FakeFlow(), _FakeStream())
+    twin.runtime.start()
+
+    return twin
+
+
+async def test_a_lost_endpoint_fails_only_the_twins_that_used_it():
+    session = DTSession("s1")
+    session._endpoints = {"task": "ep1", "exsitu": "hpc1"}
+
+    learner = _running_twin(session, "learner", "exsitu")
+    plain = _running_twin(session, "plain")
+
+    assert session.endpoints_lost({"hpc1"}) == ("learner",)
+
+    assert learner.state == "failed"
+    assert learner.last_error == "engine endpoint lost: hpc1"
+
+    # a session-shared engine the twin never bound to is not its problem
+    assert plain.state == "running"
+    assert plain.last_error is None
+
+
+async def test_a_surviving_topology_change_fails_nothing():
+    session = DTSession("s1")
+    session._endpoints = {"task": "ep1"}
+    twin = _running_twin(session, "t1")
+
+    assert session.endpoints_lost({"someone-else"}) == ()
+    assert twin.state == "running"
+
+
+async def test_the_plugin_routes_lost_participants_to_its_sessions(plugin):
+    session = plugin._sessions["s1"] = DTSession("s1")
+    session._endpoints = {"task": "ep1"}
+    twin = _running_twin(session, "t1")
+
+    await plugin.on_topology_change({
+        "ep1": {"liveness": "lost"},
+        "ep2": {"liveness": "present"},
+    })
+
+    assert twin.state == "failed"
+    assert twin.last_error == "engine endpoint lost: ep1"
+
+
+async def test_a_suspect_participant_is_not_a_loss(plugin):
+    """A transient blip reaches `suspect` at most and must never fail a
+    twin -- the broker's grace timer decides."""
+
+    session = plugin._sessions["s1"] = DTSession("s1")
+    session._endpoints = {"task": "ep1"}
+    twin = _running_twin(session, "t1")
+
+    await plugin.on_topology_change({"ep1": {"liveness": "suspect"}})
+
+    assert twin.state == "running"
 
 
 # ---------------------------------------------------------------------------
