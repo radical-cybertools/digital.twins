@@ -36,6 +36,14 @@ A subclass provides its learner tasks and its inference task::
 
             self.inference_task = ...
 
+A criterion task takes no dependency from ROSE's streaming loop, so
+whatever it scores has to travel *with* it -- the usual pattern is a
+dict mirroring the learner's state, captured by value.  Mind the cost:
+that mirror is re-cloudpickled with the criterion on every window and
+retains every state key ever registered, so a model approaching the
+~2 MiB return budget crosses the wire twice per window.  Keep bulk
+artifacts out of learner state and stage them instead.
+
 This module needs ROSE (`pip install .[learn]`); nothing else in the
 package imports it.
 """
@@ -192,11 +200,20 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         """Wind the learner down before the runtime cancels the main loop.
 
         `learner.stop()` unblocks the window collector, so the loop leaves
-        its `async for` and ROSE's generator runs its own cleanup (it
-        cancels the source pumps it owns).  A bare cancellation would
-        abandon that generator mid-window instead.  Bounded: a learner
-        parked in a remote training task is cancelled with everything
-        else, a moment later.
+        its `async for` at a *window boundary* and ROSE's generator runs
+        its own cleanup.  Cancellation alone would mostly work -- the
+        consumer is usually suspended in `__anext__`, so the generator's
+        `finally` does run -- but three things only this buys:
+
+        - it does not kill an in-flight `await train_task` on a *shared*
+          engine, which a cancellation mid-window would;
+        - ROSE catches `Exception`, not `CancelledError`, so a cancelled
+          loop records `stop_reason='stream_exhausted'` to its trackers;
+        - it does not rely on async-generator GC finalization, which is
+          not something to lean on after days of running.
+
+        Bounded: a learner parked in a remote training task is cancelled
+        with everything else, a moment later.
         """
 
         if not self._started:
@@ -216,7 +233,14 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         so learner tasks belong on the cloudpickle path -- registered with
         `as_executable=False` they travel as function tasks, and the
         backend's Python-version guard covers the rest.
+
+        Only when there *is* a separate ex-situ engine: a learner running
+        both halves on one engine is the local case, where a shell
+        command with local paths is a perfectly good task.
         """
+
+        if self.learn_flow is self.flow:
+            return
 
         local = [
             name

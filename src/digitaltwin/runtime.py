@@ -715,17 +715,24 @@ class DTRuntime:
     async def _quiesce(self, timeout: float):
         """Let components wind down their own machinery before cancellation.
 
-        One shared budget for all of them: whoever ignores it is cancelled
-        like everything else a moment later.
+        One shared budget, spent *concurrently*: two learners waiting five
+        seconds each must not add up to ten.  Whoever ignores the budget
+        is cancelled like everything else a moment later.
         """
+
+        async def wind_down(component: _TwinComponent):
+            try:
+                await component._on_stop()
+            except Exception as exc:
+                self._record_error(exc)
+
+        hooks = [wind_down(ant.component) for ant in self._annotated()]
+        if not hooks:
+            return
 
         try:
             async with asyncio.timeout(timeout):
-                for ant in self._annotated():
-                    try:
-                        await ant.component._on_stop()
-                    except Exception as exc:
-                        self._record_error(exc)
+                await asyncio.gather(*hooks)
 
         except TimeoutError:
             logger.warning("component teardown exceeded %ss", timeout)
@@ -1262,7 +1269,7 @@ class DTRuntime:
             assert ant.inference_task is not None
 
             logger.debug(f"Run {type(ant.component).__name__} inference task")
-            answer = await ant.inference_task(in_data, **ant.model_kwargs)
+            answer = await self._infer(ant, in_data, ant.model_kwargs)
             if answer is None:
                 return
             assert isinstance(answer, TypedData)
@@ -1306,7 +1313,7 @@ class DTRuntime:
                 self._to_asyncio_task(self._call_await, cb, in_data)
 
             await i_select.has_published_model.wait()
-            answer = await i_select.inference_task(in_data, **model_kwargs)
+            answer = await self._infer(i_select, in_data, model_kwargs)
 
             for cb in i_select.subscriptions[RuntimeAPI.ON_FILTERED_OUTPUT]:
                 self._to_asyncio_task(self._call_await, cb, answer)
@@ -1327,6 +1334,35 @@ class DTRuntime:
             self._put_to_dtype_queue(answer)
 
         return answer
+
+    async def _infer(
+        self, ant: _AnnotatedComponent, in_data: TypedData, model_kwargs: dict
+    ):
+        """Run an investigator's inference task with its published model.
+
+        A published model is just kwargs, so publishing a key the
+        inference task does not accept fails as a `TypeError` deep inside
+        a call the user never wrote -- and for a learner that publishes
+        whatever its training task returned, that is an easy mistake to
+        make.  Name it instead.
+
+        Only the *call* is rewritten: a `TypeError` raised inside the task
+        body has its own frame in the traceback and is left alone.
+        """
+
+        try:
+            return await ant.inference_task(in_data, **model_kwargs)
+
+        except TypeError as exc:
+            traceback = exc.__traceback__
+            if traceback is None or traceback.tb_next is not None:
+                raise
+
+            raise TypeError(
+                f"published model keys do not match the inference task"
+                f" signature of {type(ant.component).__name__}: published"
+                f" {sorted(model_kwargs)} -- {exc}"
+            ) from exc
 
     ## flow.block
     async def _dtype_consumer(self, input_data: TypedData) -> None:

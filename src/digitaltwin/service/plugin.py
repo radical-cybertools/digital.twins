@@ -274,8 +274,11 @@ class PluginDT(Plugin):
         show up as inference calls that simply never return.  So this maps
         the lost participants onto the sessions' engine endpoints and
         turns the affected twins into `failed` + a reason in `twin_list`.
-        Twins on surviving engines are untouched, and the client's
-        recovery is the ordinary one: close and recreate.
+        Twins on surviving engines are untouched.  Recovery is the
+        client's, and it is the *session* that has to go: engines are
+        session-shared and one of them is dead, so a twin created
+        afterwards would inherit it.  `unregister_session`, then build
+        the session and its twins again.
         """
 
         await super().on_topology_change(participants)
@@ -288,11 +291,18 @@ class PluginDT(Plugin):
         if not lost:
             return
 
-        for sid, session in self._sessions.items():
+        for sid, session in list(self._sessions.items()):
             if not isinstance(session, DTSession):
                 continue
 
-            failed = session.endpoints_lost(lost)
+            # one session's bookkeeping must not cost the others their
+            # notification -- this is the only announcement they get
+            try:
+                failed = session.endpoints_lost(lost)
+            except Exception:
+                log.exception("[dt] session %s: endpoint loss handling", sid)
+                continue
+
             if failed:
                 log.warning(
                     "[dt] session %s: endpoint(s) %s lost -- twins failed: %s",

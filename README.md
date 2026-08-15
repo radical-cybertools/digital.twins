@@ -27,6 +27,10 @@ Not yet implemented:
 1. `pip install .[test,service,learn]`
 2. `pytest` (or `tox` for all supported interpreters)
 
+The `learn` extra currently needs ROSE from **PR #98** (commit
+`64330d9`) -- `StreamingActiveLearner` is not in a release yet, so
+`pip install <rose-checkout>` at that commit until it merges.
+
 The unit tests start their own stream broker on a random port; no setup.
 The integration tests under `test/integration` bring up a real ORBIT
 broker and two rhapsody endpoints and skip themselves when they cannot.
@@ -181,8 +185,15 @@ engine at construction, so a twin whose endpoint went away is stranded
 and v1 cannot heal it.  It is at least not silent: the plugin watches
 the ORBIT topology and marks every twin that bound an engine on a lost
 endpoint `failed`, with `engine endpoint lost: <endpoint>` in
-`twin_list`.  Twins on surviving engines keep running.  Recovery is the
-client's: close the twins and create them again.
+`twin_list`.  Twins on surviving engines keep running.
+
+Recovery means **closing the session**, not just the twins: engines are
+session-shared, so a twin created afterwards would inherit the dead one.
+The session remembers the loss and refuses to hand that engine out
+again, so a `twin_create` after it fails immediately with `engine
+'<name>' endpoint was lost; recreate the session` rather than coming up
+`ready` and stalling.  `unregister_session`, then build the session and
+its twins again.
 
 ### Binding policy for the service (R7)
 

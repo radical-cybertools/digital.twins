@@ -198,3 +198,14 @@ def test_a_lost_endpoint_fails_only_the_twins_that_used_it(
     answer = dt.get_inference(plain, TypedData(SENSOR_DTYPE, 5),
                               INFERENCE_DTYPE, timeout=INFER_TIMEOUT)
     assert answer.data == 12
+
+    # The loss is announced once, but the dead engine is still cached in
+    # the session.  A twin created now must not inherit it and come up
+    # `ready` only to stall: the session is what has to be recreated.
+    doomed = str(uuid.uuid4())
+    with pytest.raises(RuntimeError, match="recreate the session"):
+        dt.create_twin(doomed)
+
+    entry = dt.twin(doomed)
+    assert entry["state"] == "failed"
+    assert "endpoint was lost" in entry["last_error"]

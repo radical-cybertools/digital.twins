@@ -234,20 +234,24 @@ async def test_a_missing_inference_task_is_a_clear_error(flow,
 # the remote-executability guard
 # ---------------------------------------------------------------------------
 
-async def test_executable_learner_tasks_warn(flow, stream_clients, caplog):
+class Shelling(LinearLearner):
+    """A learner left on ROSE's executable default."""
+
+    def __init__(self, flow, learn_flow=None):
+        super().__init__(flow, learn_flow)
+
+        @self.learner.training_task
+        async def training(window, *args, task_description={"shell": True}):
+            return "/bin/true"
+
+
+async def test_executable_learner_tasks_warn(flow, engines, stream_clients,
+                                             caplog):
     """ROSE's default is a shell command with local paths, which cannot
     reach a remote 'exsitu' endpoint."""
 
-    class Shelling(LinearLearner):
-        def __init__(self, flow, learn_flow=None):
-            super().__init__(flow, learn_flow)
-
-            @self.learner.training_task
-            async def training(window, *args, task_description={"shell": True}):
-                return "/bin/true"
-
     runtime = DTRuntime(flow, await stream_clients("twin-shell"))
-    runtime.add_investigator(Shelling(flow), X, Y)
+    runtime.add_investigator(Shelling(flow, await engines()), X, Y)
 
     with caplog.at_level(logging.WARNING):
         runtime.start()
@@ -257,3 +261,76 @@ async def test_executable_learner_tasks_warn(flow, stream_clients, caplog):
     assert "training" in caplog.text
 
     await runtime.stop()
+
+
+async def test_a_purely_local_learner_does_not_warn(flow, stream_clients,
+                                                    caplog):
+    """One engine for both halves is the local case, where a shell
+    command with local paths is a perfectly good task."""
+
+    runtime = DTRuntime(flow, await stream_clients("twin-local"))
+    runtime.add_investigator(Shelling(flow), X, Y)
+
+    with caplog.at_level(logging.WARNING):
+        runtime.start()
+        await asyncio.sleep(0.2)
+
+    assert "as executable task(s)" not in caplog.text
+
+    await runtime.stop()
+
+
+# ---------------------------------------------------------------------------
+# a published model the inference task cannot take
+# ---------------------------------------------------------------------------
+
+async def test_a_model_the_inference_task_rejects_is_named(flow,
+                                                           stream_clients):
+    """A learner publishes whatever its training task returned, so a key
+    the inference task does not accept is an easy mistake -- and it must
+    not surface as a bare `TypeError` from a call the user never wrote."""
+
+    class Mismatched(LinearLearner):
+        def published_model(self, state):
+            return {"nonesuch": 1}, {}
+
+    runtime = DTRuntime(flow, await stream_clients("twin-mismatch"))
+    runtime.add_task(Counter(flow), TRUTHY, X, is_persistent=True)
+    runtime.add_investigator(Mismatched(flow), X, Y)
+    runtime.start()
+
+    try:
+        for _ in range(120):
+            await asyncio.sleep(0.25)
+            if runtime.state is RuntimeState.FAILED:
+                break
+
+        assert runtime.state is RuntimeState.FAILED
+        assert "published model keys do not match" in runtime.last_error
+        assert "nonesuch" in runtime.last_error
+
+    finally:
+        await runtime.stop()
+
+
+async def test_the_task_bodys_own_TypeError_is_left_alone(flow,
+                                                          stream_clients):
+    class Exploding(LinearLearner):
+        def __init__(self, flow, learn_flow=None):
+            super().__init__(flow, learn_flow)
+
+            async def infer(in_data, slope=0.0):
+                raise TypeError("the body's own complaint")
+
+            self.inference_task = infer
+
+    runtime = DTRuntime(flow, await stream_clients("twin-boom"))
+    runtime.add_investigator(Exploding(flow), X, Y)
+    runtime.start()
+
+    try:
+        with pytest.raises(TypeError, match="the body's own complaint"):
+            await runtime.get_inference(TypedData(X, 1.0), Y)
+
+    finally:
+        await runtime.stop()

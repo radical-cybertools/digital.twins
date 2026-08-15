@@ -40,9 +40,8 @@ logger = logging.getLogger(__name__)
 # where the `dt` plugin is hosted ('broker', or an endpoint name)
 DT_HOST = os.environ.get("DT_SERVICE_HOST", "broker")
 
-# the two endpoints.  Unset: ORBIT picks one advertising rhapsody -- and
-# an unconfigured 'exsitu' engine simply aliases 'task', so this demo
-# also runs against a single endpoint.
+# the two endpoints.  `DT_TASK_ENDPOINT` unset: ORBIT picks one
+# advertising rhapsody.
 TASK_ENDPOINT = os.environ.get("DT_TASK_ENDPOINT") or None
 EXSITU_ENDPOINT = os.environ.get("DT_EXSITU_ENDPOINT") or None
 
@@ -53,9 +52,17 @@ EXSITU_ENDPOINT = os.environ.get("DT_EXSITU_ENDPOINT") or None
 ENGINES = {
     "engines": {
         "task": {"endpoint_name": TASK_ENDPOINT, "backends": ["concurrent"]},
-        "exsitu": {"endpoint_name": EXSITU_ENDPOINT, "backends": ["concurrent"]},
     }
 }
+
+# Without `DT_EXSITU_ENDPOINT` the key is left out entirely rather than
+# configured with a `None` endpoint: that takes the documented alias path
+# ('exsitu' resolves to 'task') instead of quietly building a second
+# backend against whichever endpoint ORBIT happens to pick.
+if EXSITU_ENDPOINT:
+    ENGINES["engines"]["exsitu"] = {
+        "endpoint_name": EXSITU_ENDPOINT, "backends": ["concurrent"]
+    }
 
 RUN_TIME = 40.0
 PROBE = 4.0

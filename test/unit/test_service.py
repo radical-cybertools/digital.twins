@@ -512,6 +512,40 @@ async def test_a_lost_endpoint_fails_only_the_twins_that_used_it():
     assert plain.last_error is None
 
 
+async def test_a_lost_endpoint_is_never_handed_out_again():
+    """R8 is announced once, but the dead engine stays cached: a twin
+    created afterwards must fail fast instead of binding it and
+    stalling."""
+
+    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
+    _slow_build(session, 0)
+
+    task_flow = await session.engine("task")
+    await session.engine("exsitu")
+    session._endpoints = {"task": "ep1", "exsitu": "hpc1"}
+
+    session.endpoints_lost({"hpc1"})
+
+    with pytest.raises(RuntimeError, match="recreate the session"):
+        await session.engine("exsitu")
+
+    # the surviving engine is still handed out
+    assert await session.engine("task") is task_flow
+
+
+async def test_a_loss_before_the_build_is_remembered_too():
+    """The engine need not have been built for its endpoint to be
+    known: the configuration named it."""
+
+    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
+    _slow_build(session, 0)
+
+    session.endpoints_lost({"hpc1"})
+
+    with pytest.raises(RuntimeError, match="recreate the session"):
+        await session.engine("exsitu")
+
+
 async def test_a_surviving_topology_change_fails_nothing():
     session = DTSession("s1")
     session._endpoints = {"task": "ep1"}

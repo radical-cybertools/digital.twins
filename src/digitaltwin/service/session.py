@@ -26,13 +26,18 @@ from ..runtime import DTRuntime, RuntimeState
 from ..streaming import PubSubClient, connect_stream_client
 from .wire import Package, check_versions, decode, encode
 
+log = logging.getLogger("radical.orbit")
+
 try:
     from ..learn import StreamingLearnerInvestigator
 
-except ImportError:  # the 'learn' extra (ROSE) is optional
+except ImportError as _exc:  # the 'learn' extra (ROSE) is optional
+    # logged, not swallowed: without this, a service built *with* the
+    # extra but with a broken ROSE looks identical to one built without
+    # it -- the learner twins just quietly get one engine
+    log.info("[dt] ex-situ learning unavailable (%s); install the 'learn'"
+             " extra to host StreamingLearnerInvestigator twins", _exc)
     StreamingLearnerInvestigator = None
-
-log = logging.getLogger("radical.orbit")
 
 # every twin component runs on 'task'; only a StreamingLearnerInvestigator
 # also gets 'exsitu', and only when the session configured one
@@ -224,6 +229,9 @@ class DTSession(PluginSession):
         # name: a slow 'exsitu' init must not hold up a 'task' build.
         self._engine_tasks: dict[str, asyncio.Task] = {}
         self._engine_locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
+        # endpoints this session's engines ran on and that ORBIT declared
+        # lost; nothing here is ever cleared (see `endpoints_lost`)
+        self._lost: set[str] = set()
 
     # -- twin lifecycle -----------------------------------------------------
 
@@ -426,6 +434,11 @@ class DTSession(PluginSession):
 
     # -- engines ------------------------------------------------------------
 
+    def _engine_config(self, name: str) -> dict:
+        """The configuration block for engine `name` (possibly empty)."""
+
+        return (self.config.get("engines") or {}).get(name) or {}
+
     def configured(self, name: str) -> bool:
         """Is engine `name` configured for this session?
 
@@ -434,7 +447,19 @@ class DTSession(PluginSession):
         change and a single-endpoint deployment keeps working unchanged.
         """
 
-        return bool((self.config.get("engines") or {}).get(name))
+        return bool(self._engine_config(name))
+
+    def _engine_endpoint(self, name: str) -> Optional[str]:
+        """The endpoint engine `name` runs on.
+
+        The one the backend settled on once it has been built, the
+        configured one before that (`None` when neither: an auto-selecting
+        engine that has not resolved yet).
+        """
+
+        return self._endpoints.get(name) or self._engine_config(name).get(
+            "endpoint_name"
+        )
 
     async def engine(self, name: str = TASK_ENGINE) -> WorkflowEngine:
         """The session-shared engine `name`, created on first use.
@@ -447,10 +472,24 @@ class DTSession(PluginSession):
         through must not take the build down with it and strand a live
         `OrbitExecutionBackend` that nothing holds a reference to.  A
         build that lands after the session closed disposes of itself.
+
+        Raises:
+            RuntimeError: if this engine's endpoint has been lost (R8).
         """
 
         if not self.configured(name):
             name = TASK_ENGINE
+
+        # R8 arrives exactly once, but its consequences do not expire: the
+        # dead engine stays cached here, so without this a twin created
+        # *after* the loss would bind it, reach `ready`, and stall in
+        # silence -- the very failure mode R8 detection exists to remove.
+        endpoint = self._engine_endpoint(name)
+        if endpoint in self._lost:
+            raise RuntimeError(
+                f"engine {name!r} endpoint was lost ({endpoint});"
+                f" recreate the session"
+            )
 
         # per-name lock: a 150 s 'exsitu' backend init must not serialize
         # ahead of a 'task' build that another twin is waiting on
@@ -496,7 +535,7 @@ class DTSession(PluginSession):
                         self.sid, name, exc)
 
     async def _create_engine(self, name: str) -> WorkflowEngine:
-        cfg = (self.config.get("engines") or {}).get(name) or {}
+        cfg = self._engine_config(name)
 
         log.info(
             "[dt] session %s building engine %r on endpoint %s",
@@ -527,14 +566,26 @@ class DTSession(PluginSession):
         components bind their engine at construction, so a stranded twin
         cannot be healed -- but a silent stall on a days-long twin is not
         acceptable either, so it becomes a `failed` state with a reason in
-        `twin_list`.  Recovery is the client's: recreate the twins.
+        `twin_list`.  Recovery is the client's, and it is the *session*
+        that has to go: its engines are shared and one of them is dead.
+        Close the session (`unregister_session`) and build it again.
+
+        The loss is also remembered, because the broker announces it only
+        once -- see `engine`.
         """
 
+        names = set(self._endpoints) | set(self.config.get("engines") or {})
         gone = {
             name: endpoint
-            for name, endpoint in self._endpoints.items()
-            if endpoint in lost
+            for name in names
+            if (endpoint := self._engine_endpoint(name)) in lost
         }
+        if not gone:
+            return ()
+
+        self._lost.update(gone.values())
+        log.warning("[dt] session %s lost endpoint(s) %s -- it must be"
+                    " recreated", self.sid, ", ".join(sorted(gone.values())))
 
         failed = []
         for twin in self.twins.values():
