@@ -15,18 +15,21 @@ Main set of features implemented:
 - Split
 - Join
 - Shared SIM / subtasks running on agent, accessible by all investigators
+- Ex-situ learning (ROSE streaming learner on a second engine)
+
+Not yet implemented:
 - Barrier working on remote
 - Split working on remote
 - Join working on remote
 
 ## Running the unit tests:
 
-1. `pip install .[test,service]`
+1. `pip install .[test,service,learn]`
 2. `pytest` (or `tox` for all supported interpreters)
 
 The unit tests start their own stream broker on a random port; no setup.
 The integration tests under `test/integration` bring up a real ORBIT
-broker and rhapsody endpoint and skip themselves when they cannot.
+broker and two rhapsody endpoints and skip themselves when they cannot.
 
 ## Running the demos:
 
@@ -132,11 +135,54 @@ Three contract notes:
   JSON-safe or `bytes`** -- ORBIT's rhapsody plugin JSON-encodes results
   and stringifies anything else.  Return plain values from
   `@flow.function_task` bodies and wrap them in `TypedData` in the
-  component.
+  component.  (Fixed upstream in radical.orbit `devel` after this was
+  written: rich results now round-trip by cloudpickle marker.  Keep to
+  plain values until the release you deploy against contains it.)
 - Persistent components run inline on the service's event loop.  Their
   bodies must be thin async glue publishing through
   `runtime.stream`, never `@flow.function_task`s (the service warns when
   it sees one).
+
+### Ex-situ learning: the second engine
+
+A `StreamingLearnerInvestigator` (`digitaltwin.learn`, needs the `learn`
+extra) embeds a ROSE `StreamingActiveLearner` in a model investigator:
+the twin's input stream both feeds the learner and is served by the
+inference task, and each window of samples retrains the model the
+inference task runs with.
+
+That class is the *only* thing that selects an engine in v1 -- there is
+no `engine=` argument.  The service recognises it by subclass check and
+hands it two engines: its learner tasks run on `'exsitu'`, its inference
+stays on `'task'`.
+
+```python
+dt = rt.get_plugin('broker', 'dt', config={'engines': {
+    'task':   {'endpoint_name': 'dt_task_ep',   'backends': ['concurrent']},
+    'exsitu': {'endpoint_name': 'dt_exsitu_ep', 'backends': ['concurrent']},
+}})
+```
+
+`'exsitu'` is optional: left out, it aliases `'task'` and one endpoint
+serves both.  Both engines are session-shared and built once, in the
+background phase of `twin_create`.
+
+Register the learner's training / active-learning / criterion tasks with
+`as_executable=False`.  ROSE's default makes them shell commands, and a
+command line with local paths does not survive an endpoint that shares
+no filesystem with the service; `as_executable=False` sends them as
+cloudpickled function tasks instead (the component warns if it finds
+executable ones).  `test/10-learner/` is a complete worked example.
+
+### When an endpoint disappears (R8)
+
+`OrbitExecutionBackend` does not reconnect and components bind their
+engine at construction, so a twin whose endpoint went away is stranded
+and v1 cannot heal it.  It is at least not silent: the plugin watches
+the ORBIT topology and marks every twin that bound an engine on a lost
+endpoint `failed`, with `engine endpoint lost: <endpoint>` in
+`twin_list`.  Twins on surviving engines keep running.  Recovery is the
+client's: close the twins and create them again.
 
 ### Binding policy for the service (R7)
 
