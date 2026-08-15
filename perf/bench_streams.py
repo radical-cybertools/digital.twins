@@ -43,32 +43,41 @@ SETTLE_TIMEOUT = 30.0
 DELIVER_TIMEOUT = 10.0
 
 
+QUIET_WAIT = 0.25
+
+
 async def settle(client, queue, message) -> None:
-    """Publish until something comes back.
+    """Publish until something comes back, then wait for quiet.
 
     Neither backend acknowledges a subscription -- ZMQ's SUBSCRIBE and
     ORBIT's `subscribe` frame are both fire-and-forget -- so the only
     honest barrier is a message that made the round trip.
+
+    Draining until the queue *stays* empty matters as much as the barrier
+    itself: a `queue.empty()` check would leave any barrier message still
+    in flight to arrive during the measurement, where it would pair with
+    the wrong publish and shift every latency after it.
     """
 
     deadline = time.perf_counter() + SETTLE_TIMEOUT
 
-    while perf_left(deadline):
+    while time.perf_counter() < deadline:
         await client.publish(SAMPLE, message)
         try:
-            await asyncio.wait_for(queue.get(), 0.25)
+            await asyncio.wait_for(queue.get(), QUIET_WAIT)
             break
         except TimeoutError:
             continue
     else:
         raise TimeoutError(f"no message came back within {SETTLE_TIMEOUT}s")
 
-    while not queue.empty():  # drop whatever the barrier left behind
-        queue.get_nowait()
+    while time.perf_counter() < deadline:
+        try:
+            await asyncio.wait_for(queue.get(), QUIET_WAIT)
+        except TimeoutError:  # nothing left in flight
+            return
 
-
-def perf_left(deadline: float) -> bool:
-    return time.perf_counter() < deadline
+    raise TimeoutError(f"the stream never went quiet within {SETTLE_TIMEOUT}s")
 
 
 async def measure(client, label: str, n_meas: int, n_burst: int,

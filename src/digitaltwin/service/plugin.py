@@ -36,7 +36,12 @@ from radical.orbit.errors import http_exception
 from radical.orbit.plugin_base import Plugin
 from starlette.requests import Request
 
-from ..config import BACKEND_ORBIT, embedded_stream_addresses, stream_backend
+from ..config import (
+    BACKEND_ORBIT,
+    BACKEND_ZMQ,
+    embedded_stream_addresses,
+    stream_backend,
+)
 from ..streaming import (
     CLIENT_CONNECT_TIMEOUT,
     PubSubClient,
@@ -342,7 +347,11 @@ class PluginDT(Plugin):
 
         pub_addr, sub_addr = await self.stream_addresses()
 
-        return await connect_stream_client(namespace, pub_addr, sub_addr, timeout)
+        # named explicitly: the choice was resolved once at construction,
+        # and re-reading the environment per twin could contradict it
+        return await connect_stream_client(
+            namespace, pub_addr, sub_addr, timeout, backend=BACKEND_ZMQ
+        )
 
     def stream_summary(self) -> dict:
         """The data plane's entry in `admin/sessions`."""

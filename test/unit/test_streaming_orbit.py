@@ -481,6 +481,32 @@ async def test_a_runtime_which_cannot_register_is_not_left_behind(
     assert backend._task is None
 
 
+@pytest.mark.parametrize("verb", ["publish", "subscribe"])
+async def test_a_waiter_parked_before_connect_is_woken_by_close(verb):
+    """A caller which arrives before `connect()` parks until the backend
+    is running.  If the connect is abandoned instead, that waiter must
+    get the ordinary closed-client error -- not wait for a connection
+    that will never come.
+    """
+
+    backend = OrbitPubSubBackend()
+    topic = "dt/twin-a/dtypes/sensor"
+
+    call = {
+        "publish": lambda: backend.publish(topic, "parked"),
+        "subscribe": lambda: backend.subscribe(topic, lambda m: None),
+    }[verb]
+
+    parked = asyncio.create_task(call())
+    await asyncio.sleep(0.05)
+    assert not parked.done(), "the caller should be waiting for connect"
+
+    await backend.close()
+
+    with pytest.raises(RuntimeError, match="closed"):
+        await asyncio.wait_for(parked, 5)
+
+
 async def test_participant_names_are_unique():
     """Two participants may not register under one name."""
 

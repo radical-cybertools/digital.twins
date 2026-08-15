@@ -161,6 +161,21 @@ class PubSubBackend(ABC):
             await self.is_running.wait()
             self._check_open()
 
+    def _stop_running(self):
+        """Mark the backend disconnected, waking anyone parked in
+        `_await_running` on the way.
+
+        A waiter is otherwise stranded: it parked on a connect that has
+        now been abandoned, and a plain `clear()` would leave it waiting
+        for one that will never arrive.  `set()` resolves the waiters'
+        futures immediately and the `clear()` right after does not
+        un-resolve them, so they wake into `_check_open` and get the
+        ordinary closed-client error.
+        """
+
+        self.is_running.set()
+        self.is_running.clear()
+
     def _start_receiving(self):
         """Arm the supervised receive loop.  Called at the end of connect."""
 
@@ -571,7 +586,7 @@ class ZMQ_PS_Client(PubSubBackend):
 
             # all sockets are closed, so this returns immediately
             self._ctx.term()
-            self.is_running.clear()
+            self._stop_running()
 
     async def _run(self):
         """Receive loop.  A single bad payload or a raising callback must

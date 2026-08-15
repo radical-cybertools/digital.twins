@@ -44,11 +44,11 @@ Loopback, one host, bare-int payloads (2026-08-15):
 
 | data plane                  | p50     | p99     | burst          |
 |-----------------------------|---------|---------|----------------|
-| zmq, embedded broker        | 0.84 ms | 1.14 ms | 20 400 msg/s   |
-| orbit eventing              | 1.94 ms | 2.47 ms |  5 300 msg/s   |
+| zmq, embedded broker        | 0.98 ms | 1.32 ms | 20 200 msg/s   |
+| orbit eventing              | 2.09 ms | 2.60 ms |  4 300 msg/s   |
 
-With 64 KiB payloads (`--payload 65536`): 1.04 ms / 3.04 ms p50, and
-6 800 vs 1 100 msg/s in burst.
+With 64 KiB payloads (`--payload 65536`): 1.18 ms / 3.56 ms p50, and
+6 500 vs 1 150 msg/s in burst.
 
 So the ORBIT data plane costs roughly **1 ms per stream hop** and about a
 quarter of the burst throughput, in exchange for the security property of

@@ -38,11 +38,22 @@ How it maps
 
 Semantics
 ---------
-At-most-once with per-subscriber bounded drop-oldest queues, broker-side
-and again on the hop into the host loop.  That is the DT conflation
-contract, so nothing above adds a second one.  Losses are observable as
-gaps in the broker-assigned `seq`; the `replay` plugin would give late
-joiners history and is deliberately not integrated in v1.
+At-most-once with bounded queues at every hop, which is the DT conflation
+contract -- so nothing above adds a second one.  There are *three* such
+queues on the path, and only two of them drop the oldest:
+
+1. the broker's per-subscriber out-queue (drop-oldest),
+2. the receiving runtime's `CallbackDispatcher` (drop-*newest*: a full
+   queue refuses the arriving frame).  It is ORBIT's, not ours, and its
+   losses are counted in `runtime._cb.dropped` -- logged here at close
+   when nonzero, because otherwise they would only ever be a warning in
+   somebody else's log,
+3. the inbox this module puts between that dispatcher thread and the
+   host loop (drop-oldest).
+
+Losses are observable as gaps in the broker-assigned `seq`; the `replay`
+plugin would give late joiners history and is deliberately not integrated
+in v1.
 """
 
 import asyncio
@@ -192,14 +203,33 @@ class OrbitPubSubBackend(PubSubBackend):
                     self._unregister(runtime, topic)
                 self.topics.clear()
 
+                self._report_losses(runtime)
+
                 if runtime is not None and self._owns_runtime:
                     # blocking: closes the socket and joins three threads
                     await asyncio.to_thread(runtime.stop)
 
             finally:
-                self.is_running.clear()
+                self._stop_running()
                 self._inbox = None
                 self._loop = None
+
+    def _report_losses(self, runtime: Optional[EndpointRuntime]) -> None:
+        """Account for both queues that dropped on the way in.
+
+        The dispatcher's counter is ORBIT's and drops the *newest* frame;
+        ours is the inbox and drops the oldest.  Neither is an error --
+        the data plane is specified to conflate -- but a twin that lost
+        samples should not have to be inferred from `seq` gaps.
+        """
+
+        cb_dropped = getattr(getattr(runtime, "_cb", None), "dropped", 0) or 0
+
+        if self.dropped or cb_dropped:
+            logger.warning(
+                "%s dropped %d message(s) at the inbox and %d at the ORBIT"
+                " callback queue", self.name, self.dropped, cb_dropped,
+            )
 
     # -- pubsub -------------------------------------------------------------
 
@@ -265,6 +295,11 @@ class OrbitPubSubBackend(PubSubBackend):
 
         Read off the runtime when there is one: a deployment may tune it,
         and the module default would then be wrong in either direction.
+
+        `_frame_cap` is private, and reaching into it is the wart here --
+        `EndpointRuntime` should expose it (upstream follow-up).  Until it
+        does, the `getattr` fallback keeps this correct against a runtime
+        that does not have the attribute at all.
         """
 
         cap = getattr(self._runtime, "_frame_cap", None)
