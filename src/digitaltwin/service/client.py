@@ -68,8 +68,14 @@ class DTClient(PluginClient):
         `config` carries the engine configuration and applies at create
         time only::
 
-            {"engines": {"task": {"endpoint_name": "ep1",
-                                  "backends": ["concurrent"]}}}
+            {"engines": {"task":   {"endpoint_name": "ep1",
+                                    "backends": ["concurrent"]},
+                         "exsitu": {"endpoint_name": "hpc1",
+                                    "backends": ["concurrent"]}}}
+
+        `'task'` runs the twins' components; `'exsitu'` runs the learner
+        tasks of a `StreamingLearnerInvestigator` and aliases `'task'`
+        when it is not configured.
 
         Sessions are always persistent (the service forces it), so a
         `lifetime` / `ttl` argument is accepted and ignored.

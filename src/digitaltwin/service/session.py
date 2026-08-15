@@ -1,9 +1,11 @@
 """Service-side session and twin instances.
 
 A `DTSession` belongs to one client and hosts many independent twins.
-It owns the session-shared execution engines (M1: exactly one, `'task'`);
-each `TwinInstance` owns a `DTRuntime` plus its own namespaced stream
-client.  Twin teardown never disturbs its siblings or the engines.
+It owns the session-shared execution engines, keyed by name: `'task'`
+(twin components, typically a co-located endpoint) and `'exsitu'` (ROSE
+learners, typically remote HPC hardware).  Each `TwinInstance` owns a
+`DTRuntime` plus its own namespaced stream client.  Twin teardown never
+disturbs its siblings or the engines.
 """
 
 import asyncio
@@ -11,6 +13,7 @@ import contextlib
 import logging
 import time
 
+from collections import defaultdict
 from typing import Any, Optional
 
 from fastapi import HTTPException
@@ -19,14 +22,22 @@ from radical.orbit.plugin_session_base import PluginSession
 from rhapsody.backends.execution.orbit import OrbitExecutionBackend  # type: ignore
 
 from ..components import DataType, TypedData
-from ..runtime import DTRuntime
+from ..runtime import DTRuntime, RuntimeState
 from ..streaming import PubSubClient, connect_stream_client
 from .wire import Package, check_versions, decode, encode
 
+try:
+    from ..learn import StreamingLearnerInvestigator
+
+except ImportError:  # the 'learn' extra (ROSE) is optional
+    StreamingLearnerInvestigator = None
+
 log = logging.getLogger("radical.orbit")
 
-# the one engine M1 knows about; M2 adds 'exsitu' as a config addition
+# every twin component runs on 'task'; only a StreamingLearnerInvestigator
+# also gets 'exsitu', and only when the session configured one
 TASK_ENGINE = "task"
+EXSITU_ENGINE = "exsitu"
 
 # co-located-demo default -- 'dragon_v3' (the rhapsody default) would
 # break every demo on a laptop
@@ -48,6 +59,9 @@ STATE_INITIALIZING = "initializing"
 STATE_FAILED = "failed"
 STATE_CLOSED = "closed"
 
+# a twin in one of these has nothing left to lose to an endpoint failure
+TERMINAL_STATES = (STATE_FAILED, STATE_CLOSED, str(RuntimeState.STOPPED))
+
 # exactly one of these per twin_call
 VERBS = (
     "add_task",
@@ -58,6 +72,20 @@ VERBS = (
     "describe",
     "get_inference",
 )
+
+
+def _is_learner(cls: Any) -> bool:
+    """Does this shipped class want the ex-situ engine as well?
+
+    False whenever ROSE is not installed on the service -- such a class
+    could not have been unpickled here in the first place.
+    """
+
+    return (
+        StreamingLearnerInvestigator is not None
+        and isinstance(cls, type)
+        and issubclass(cls, StreamingLearnerInvestigator)
+    )
 
 
 def _retrieve_exception(task: asyncio.Task) -> None:
@@ -86,6 +114,11 @@ class TwinInstance:
 
         self.runtime: Optional[DTRuntime] = None
         self.stream: Optional[PubSubClient] = None
+
+        # which session engines this twin's components actually bound to.
+        # Engines are session-shared, so losing one endpoint must fail the
+        # twins that use it and leave the others alone (R8).
+        self.engines: set[str] = {TASK_ENGINE}
 
         self._state = STATE_INITIALIZING
         self._last_error: Optional[str] = None
@@ -126,6 +159,13 @@ class TwinInstance:
         self._last_error = (
             error if isinstance(error, str) else f"{type(error).__name__}: {error}"
         )
+
+        # from `ready` on the runtime's state machine is the truth, so a
+        # failure the *service* saw has to be recorded there too or the
+        # twin keeps reporting `running` (see `state`)
+        if self.runtime is not None:
+            self.runtime.fail(self._last_error)
+
         log.error("[dt] twin %s failed: %s", self.twin_id, self._last_error)
 
     def track(self, task: asyncio.Task) -> asyncio.Task:
@@ -177,10 +217,13 @@ class DTSession(PluginSession):
 
         self.twins: dict[str, TwinInstance] = {}
         self._engines: dict[str, WorkflowEngine] = {}
+        # engine name -> the endpoint it resolved to; the R8 lookup
+        self._endpoints: dict[str, str] = {}
         # in-flight builds, owned by the session rather than by whichever
-        # twin asked first (see `engine`)
+        # twin asked first (see `engine`).  Both dicts are keyed by engine
+        # name: a slow 'exsitu' init must not hold up a 'task' build.
         self._engine_tasks: dict[str, asyncio.Task] = {}
-        self._engine_lock = asyncio.Lock()
+        self._engine_locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
     # -- twin lifecycle -----------------------------------------------------
 
@@ -383,11 +426,21 @@ class DTSession(PluginSession):
 
     # -- engines ------------------------------------------------------------
 
+    def configured(self, name: str) -> bool:
+        """Is engine `name` configured for this session?
+
+        An unconfigured engine other than `'task'` is not built: it
+        aliases `'task'` instead, so adding `'exsitu'` stays a config-only
+        change and a single-endpoint deployment keeps working unchanged.
+        """
+
+        return bool((self.config.get("engines") or {}).get(name))
+
     async def engine(self, name: str = TASK_ENGINE) -> WorkflowEngine:
         """The session-shared engine `name`, created on first use.
 
-        One engine per name per session, never per twin.  M1 only ever
-        asks for `'task'`.
+        One engine per name per session, never per twin.  An unconfigured
+        name falls back to `'task'` (see `configured`).
 
         The build is a *session-owned* task that callers only ever
         `shield`-await: a twin whose initialization is cancelled halfway
@@ -396,7 +449,12 @@ class DTSession(PluginSession):
         build that lands after the session closed disposes of itself.
         """
 
-        async with self._engine_lock:
+        if not self.configured(name):
+            name = TASK_ENGINE
+
+        # per-name lock: a 150 s 'exsitu' backend init must not serialize
+        # ahead of a 'task' build that another twin is waiting on
+        async with self._engine_locks[name]:
             flow = self._engines.get(name)
             if flow is not None:
                 return flow
@@ -454,7 +512,40 @@ class DTSession(PluginSession):
             batch_window=0,  # per-call latency beats batching for in-situ
         )
 
+        # the endpoint the backend *settled on* (it auto-selects when the
+        # config named none) -- what a topology change is matched against
+        self._endpoints[name] = (
+            getattr(backend, "_endpoint_name", None) or cfg.get("endpoint_name")
+        )
+
         return await WorkflowEngine.create(backend=backend)
+
+    def endpoints_lost(self, lost: set[str]) -> tuple[str, ...]:
+        """Fail every twin bound to an engine on a lost endpoint (R8).
+
+        Detection only: `OrbitExecutionBackend` does not reconnect and
+        components bind their engine at construction, so a stranded twin
+        cannot be healed -- but a silent stall on a days-long twin is not
+        acceptable either, so it becomes a `failed` state with a reason in
+        `twin_list`.  Recovery is the client's: recreate the twins.
+        """
+
+        gone = {
+            name: endpoint
+            for name, endpoint in self._endpoints.items()
+            if endpoint in lost
+        }
+
+        failed = []
+        for twin in self.twins.values():
+            if twin.state in TERMINAL_STATES:
+                continue
+            for name in sorted(twin.engines & set(gone)):
+                twin.fail(f"engine endpoint lost: {gone[name]}")
+                failed.append(twin.twin_id)
+                break
+
+        return tuple(failed)
 
     @property
     def broker_url(self) -> Optional[str]:
@@ -517,7 +608,16 @@ class DTSession(PluginSession):
                 raise RuntimeError("session is not attached to a dt plugin")
 
             async with asyncio.timeout(TWIN_INIT_TIMEOUT):
-                flow = await self.engine(TASK_ENGINE)
+                # A configured 'exsitu' engine is built here as well, and
+                # concurrently: a learner twin must not pay a two-minute
+                # backend init inside `add_investigator`, which is a short
+                # verb like every other one.
+                names = [TASK_ENGINE]
+                if self.configured(EXSITU_ENGINE):
+                    names.append(EXSITU_ENGINE)
+
+                flow, *_ = await asyncio.gather(*map(self.engine, names))
+
                 pub_addr, sub_addr = await self._plugin.stream_addresses()
                 stream = await connect_stream_client(
                     twin.twin_id, pub_addr, sub_addr, STREAM_CONNECT_TIMEOUT
@@ -557,7 +657,13 @@ class DTSession(PluginSession):
     def _instantiate(
         self, package: Any, twin: TwinInstance, is_persistent: bool = False
     ) -> Any:
-        """Build a component from a shipped class, injecting the engine.
+        """Build a component from a shipped class, injecting the engine(s).
+
+        Dual-engine injection lives here: a `StreamingLearnerInvestigator`
+        additionally receives the `'exsitu'` engine as `learn_flow`, so its
+        learner tasks run on remote hardware while its inference stays on
+        `'task'`.  The class *is* the marker -- there is no user-facing
+        engine selector in v1.
 
         Also the home of the persistent-component guard: a persistent
         `main_loop` runs inline on the host loop, so any `function_task`
@@ -574,6 +680,15 @@ class DTSession(PluginSession):
             )
 
         flow = twin.runtime.flow
+        extra = {}
+
+        if _is_learner(package.cls):
+            learn_flow = self._engines.get(EXSITU_ENGINE)
+            # no 'exsitu' engine configured: one engine serves both roles
+            extra["learn_flow"] = learn_flow or flow
+            if learn_flow is not None:
+                twin.engines.add(EXSITU_ENGINE)
+
         registered = 0
         original = flow.function_task
 
@@ -584,7 +699,7 @@ class DTSession(PluginSession):
 
         flow.function_task = counting
         try:
-            component = package.instantiate(flow)
+            component = package.instantiate(flow, **extra)
         finally:
             flow.function_task = original
 
