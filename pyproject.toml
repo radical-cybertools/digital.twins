@@ -20,6 +20,15 @@ dependencies = [
 service = [
     "radical.orbit>=0.3",
 ]
+# ex-situ learning (`digitaltwin.learn`).  A separate extra rather than
+# part of `service`: the learner runs perfectly well against a local
+# engine with no ORBIT in sight, and a service host that only serves
+# in-situ twins should not have to carry ROSE and its dependencies.
+# NOTE: `StreamingActiveLearner` lives on ROSE PR #98 (commit 64330d9)
+# and is not in any release yet -- install that branch until it merges.
+learn = [
+    "ROSE>=0.3",
+]
 test = [
     "pytest>=8",
     "pytest-asyncio>=0.24",

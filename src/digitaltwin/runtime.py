@@ -690,6 +690,8 @@ class DTRuntime:
             logger.error("twin teardown failed: %s", exc, exc_info=exc)
 
     async def _teardown(self, timeout: float):
+        await self._quiesce(timeout)
+
         tasks, self.running_tasks = self.running_tasks, set()
         for task in tasks:
             task.cancel()
@@ -709,6 +711,32 @@ class DTRuntime:
             logger.warning("stream client did not close within %ss", timeout)
         except Exception as exc:
             self._record_error(exc)
+
+    async def _quiesce(self, timeout: float):
+        """Let components wind down their own machinery before cancellation.
+
+        One shared budget for all of them: whoever ignores it is cancelled
+        like everything else a moment later.
+        """
+
+        try:
+            async with asyncio.timeout(timeout):
+                for ant in self._annotated():
+                    try:
+                        await ant.component._on_stop()
+                    except Exception as exc:
+                        self._record_error(exc)
+
+        except TimeoutError:
+            logger.warning("component teardown exceeded %ss", timeout)
+
+    def _annotated(self):
+        """Every component in the graph, child investigators included."""
+
+        for ants in list(self.components.values()):
+            for ant in ants:
+                yield ant
+                yield from ant.investigators.values()
 
     def _to_asyncio_task(self, func, *args, **kwargs) -> Optional[asyncio.Task]:
         """Schedule a coroutine as an :class:`asyncio.Task` and track its
@@ -749,7 +777,18 @@ class DTRuntime:
         if exc is not None:
             self._record_error(exc)
 
-    def _record_error(self, exc: BaseException):
+    def fail(self, error: str):
+        """Route an out-of-band failure into the twin state.
+
+        Component failures arrive through the done-callbacks; this is the
+        door for the ones only the host can see -- a lost engine endpoint
+        (R8) strands every component bound to that engine, but nothing
+        inside the runtime notices.
+        """
+
+        self._record_error(error)
+
+    def _record_error(self, exc: BaseException | str):
         """Route a failure into the twin state, and stop the twin.
 
         A component failure is a twin failure: the other components have
@@ -770,8 +809,12 @@ class DTRuntime:
         half-dead component -- which is logged and dropped.
         """
 
-        error = f"{type(exc).__name__}: {exc}"
-        logger.error("twin component failed: %s", error, exc_info=exc)
+        error = exc if isinstance(exc, str) else f"{type(exc).__name__}: {exc}"
+        logger.error(
+            "twin component failed: %s",
+            error,
+            exc_info=exc if isinstance(exc, BaseException) else None,
+        )
 
         if self.state is RuntimeState.FAILED:
             # the cause is already recorded, and its teardown is running
