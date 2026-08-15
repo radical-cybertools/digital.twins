@@ -91,7 +91,8 @@ def test_admin_sessions_reports_policy_and_broker(plugin, client):
     assert entry["engines"] == []
 
     # nothing needed the stream broker yet, so none was started
-    assert listing["stream_broker"] == {"addresses": None, "alive": False}
+    assert listing["stream_broker"] == {
+        "backend": "zmq", "addresses": None, "alive": False}
 
 
 # ---------------------------------------------------------------------------

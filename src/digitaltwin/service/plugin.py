@@ -11,11 +11,17 @@ endpoint hosting works the same way.  The plugin owns
 - the wire: one graph verb per `twin_call`, cloudpickle-base64 payloads
   with a version stamp, and `twin_list` as the only observation path.
 
-**Binding policy (risk R7)**: the stream broker binds loopback by
-default.  Its payloads are cloudpickled, so anyone who can reach its
-ports executes code in every subscriber.  A non-loopback bind needs an
-explicit `DT_STREAM_PUB_ADDR` / `DT_STREAM_SUB_ADDR` configuration *and*
-a firewalled/private network.
+**Data plane (risk R7)**: `DT_STREAM_BACKEND` picks the transport.
+
+- `orbit` puts the twins' streams inside the same token-authenticated
+  WebSocket star as the control plane, and the embedded ZMQ broker is
+  then never started -- no DT-owned ports exist at all.  This is what
+  closes R7, and it is what a production deployment selects.
+- `zmq` (the default) runs the embedded stream broker, and *binds
+  loopback*.  Its payloads are cloudpickled, so anyone who can reach its
+  ports executes code in every subscriber.  A non-loopback bind needs an
+  explicit `DT_STREAM_PUB_ADDR` / `DT_STREAM_SUB_ADDR` configuration
+  *and* a firewalled/private network.
 """
 
 import asyncio
@@ -30,8 +36,13 @@ from radical.orbit.errors import http_exception
 from radical.orbit.plugin_base import Plugin
 from starlette.requests import Request
 
-from ..config import embedded_stream_addresses
-from ..streaming import ZMQ_BrokerProcess
+from ..config import BACKEND_ORBIT, embedded_stream_addresses, stream_backend
+from ..streaming import (
+    CLIENT_CONNECT_TIMEOUT,
+    PubSubClient,
+    ZMQ_BrokerProcess,
+    connect_stream_client,
+)
 from .client import DTClient
 from .session import VERBS, DTSession
 
@@ -82,8 +93,13 @@ class PluginDT(Plugin):
 
         self.broker_url: Optional[str] = os.environ.get(ENV_BROKER_URL) or None
 
+        # which transport carries the twins' streams.  Resolved once, at
+        # plugin construction: a deployment decision, not a per-twin one.
+        self.stream_backend: str = stream_backend()
+
         # the embedded DT stream broker, shared plugin-wide and started on
-        # first need (see `stream_addresses`)
+        # first need (see `stream_addresses`).  Never started at all under
+        # the 'orbit' backend -- that is the point of it.
         self._stream_broker: Optional[ZMQ_BrokerProcess] = None
         self._stream_addrs: Optional[tuple[str, str]] = None
         self._stream_lock = asyncio.Lock()
@@ -254,13 +270,7 @@ class PluginDT(Plugin):
                 entry["sid"] = sid
             sessions.append(entry)
 
-        return {
-            "sessions": sessions,
-            "stream_broker": {
-                "addresses": self._stream_addrs,
-                "alive": bool(self._stream_broker and self._stream_broker.is_alive()),
-            },
-        }
+        return {"sessions": sessions, "stream_broker": self.stream_summary()}
 
     # -- observability ------------------------------------------------------
 
@@ -308,6 +318,45 @@ class PluginDT(Plugin):
                     "[dt] session %s: endpoint(s) %s lost -- twins failed: %s",
                     sid, ", ".join(sorted(lost)), ", ".join(failed),
                 )
+
+    # -- the data plane -----------------------------------------------------
+
+    async def connect_stream(
+        self, namespace: str, timeout: Optional[float] = CLIENT_CONNECT_TIMEOUT
+    ) -> PubSubClient:
+        """A connected, namespaced stream client on the selected backend.
+
+        The single place where the plugin's transport choice is applied.
+        The `orbit` branch never touches `stream_addresses`, which is what
+        keeps the embedded ZMQ broker from being started in a deployment
+        that asked for the token-authenticated data plane.
+        """
+
+        if self.stream_backend == BACKEND_ORBIT:
+            return await connect_stream_client(
+                namespace,
+                timeout=timeout,
+                backend=BACKEND_ORBIT,
+                broker_url=self.broker_url,
+            )
+
+        pub_addr, sub_addr = await self.stream_addresses()
+
+        return await connect_stream_client(namespace, pub_addr, sub_addr, timeout)
+
+    def stream_summary(self) -> dict:
+        """The data plane's entry in `admin/sessions`."""
+
+        if self.stream_backend == BACKEND_ORBIT:
+            # no addresses and nothing to supervise: the streams ride the
+            # ORBIT connection the control plane already has
+            return {"backend": BACKEND_ORBIT}
+
+        return {
+            "backend": self.stream_backend,
+            "addresses": self._stream_addrs,
+            "alive": bool(self._stream_broker and self._stream_broker.is_alive()),
+        }
 
     # -- embedded stream broker --------------------------------------------
 

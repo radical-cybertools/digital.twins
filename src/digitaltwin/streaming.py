@@ -40,7 +40,13 @@ import zmq.asyncio
 from zmq.utils.monitor import recv_monitor_message
 
 from .components import DataType, TypedData
-from .config import RANDOM_PUB_ADDR, RANDOM_SUB_ADDR, stream_addresses
+from .config import (
+    BACKEND_ORBIT,
+    RANDOM_PUB_ADDR,
+    RANDOM_SUB_ADDR,
+    stream_addresses,
+    stream_backend,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -96,11 +102,16 @@ CLIENT_CONNECT_TIMEOUT = 30.0
 
 
 class PubSubBackend(ABC):
-    """Abstract base class for publish/subscribe backends.
+    """The transport seam: everything above this is transport-agnostic.
 
-    Subclasses must implement the asynchronous ``connect`` method and the
-    core publish/subscribe operations.
+    A backend delivers to per-topic subscriber callbacks from a single
+    receive loop it owns.  That loop, the subscriber registry and the
+    closed/running state are the same in every backend, so they live
+    here; a subclass supplies `connect`, `publish`, `subscribe`,
+    `unsubscribe`, `close` and a `_run()` body.
     """
+
+    label = "generic"
 
     # names this backend in a PubSubConfig: what has to reopen the
     # endpoint.  Every backend declares its own.
@@ -117,11 +128,76 @@ class PubSubBackend(ABC):
         # the failure mode this exists to prevent.
         self.on_error: Optional[Callable[[BaseException], None]] = None
 
+        # topic -> subscriber callbacks.  Delivery is filtered by exact
+        # topic lookup, whatever the transport matched on the wire.
+        self.topics: dict[str, list[Callable]] = {}
+
+        self._task: Optional[asyncio.Task] = None
+        self._closed = False
+        self.is_running = asyncio.Event()
+
     def _report_error(self, exc: BaseException):
         logger.error("stream backend failed: %s", exc, exc_info=exc)
 
         if self.on_error is not None:
             self.on_error(exc)
+
+    def _check_open(self):
+        if self._closed:
+            raise RuntimeError("stream client is closed")
+
+    async def _await_running(self, what: str):
+        """Callers which arrive before `connect()` finished are made to
+        wait rather than to lose their message."""
+
+        if not self.is_running.is_set():
+            logger.warning("requesting %s before connecting to broker. Waiting",
+                           what)
+            await self.is_running.wait()
+
+    def _start_receiving(self):
+        """Arm the supervised receive loop.  Called at the end of connect."""
+
+        self._task = asyncio.create_task(self._run())
+        self._task.add_done_callback(self._run_done)
+
+    async def _dispatch(self, topic: str, message):
+        """Hand one decoded message to the topic's subscribers.
+
+        One failing subscriber must not starve its siblings
+        (`CancelledError` is not an `Exception`: close() still wins).
+        """
+
+        for task in self.topics.get(topic, []):
+            try:
+                await task(message)
+            except Exception:
+                logger.exception("subscriber failed on topic %r", topic)
+
+    async def _cancel_receiving(self):
+        """Cancel and await the receive loop.  Part of every close()."""
+
+        task, self._task = self._task, None
+        if task is not None:
+            task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await task
+
+    def _run_done(self, task: asyncio.Task):
+        """The receive loop only ends on close().  Any other exit means the
+        twin stopped receiving -- report it instead of stalling silently."""
+
+        if self._closed or task.cancelled():
+            return
+
+        exc = task.exception() or RuntimeError("stream receive loop exited")
+        self._report_error(exc)
+
+    async def _run(self):
+        """Receive loop: decode frames and `_dispatch` them.  Runs until
+        cancelled by close()."""
+
+        raise NotImplementedError
 
     @abstractmethod
     async def connect(self, *args: Any, **kwargs: Any) -> None:
@@ -356,18 +432,10 @@ class ZMQ_PS_Client(PubSubBackend):
             self._ctx.socket(zmq.SUB) if sub_addr is not None else None
         )
 
-        # subscribe: store the callback for the topic
-        # publish: send a message to each of the callbacks.
-
-        self.topics: dict[str, list[Callable]] = {}
-
         # topics whose payload the transport must hand over untouched:
         # something above the seam owns their wire format (see the codecs)
         self.raw_topics: set[str] = set()
 
-        self._task: Optional[asyncio.Task] = None
-        self._closed = False
-        self.is_running = asyncio.Event()
 
     def get_config(self) -> dict:
         return {"pub_addr": self.pub_addr, "sub_addr": self.sub_addr}
@@ -425,8 +493,7 @@ class ZMQ_PS_Client(PubSubBackend):
             raise
 
         if self.sub_soc is not None:
-            self._task = asyncio.create_task(self._run())
-            self._task.add_done_callback(self._run_done)
+            self._start_receiving()
 
         self.is_running.set()
 
@@ -440,9 +507,7 @@ class ZMQ_PS_Client(PubSubBackend):
         if self.pub_soc is None:
             raise ValueError("Publishing endpoint not connected")
 
-        if not self.is_running.is_set():
-            logger.warning("Requesting publish before connecting to broker. Waiting")
-            await self.is_running.wait()
+        await self._await_running("publish")
 
         topic_b = topic.encode("utf-8")
         message_b = message if raw else cloudpickle.dumps(message)
@@ -458,9 +523,7 @@ class ZMQ_PS_Client(PubSubBackend):
         if self.sub_soc is None:
             raise ValueError("Subscribe endpoint not connected")
 
-        if not self.is_running.is_set():
-            logger.warning("Requesting subscribe before connecting to broker. Waiting")
-            await self.is_running.wait()
+        await self._await_running("subscribe")
 
         self.sub_soc.setsockopt(zmq.SUBSCRIBE, topic.encode("utf-8"))
 
@@ -487,12 +550,8 @@ class ZMQ_PS_Client(PubSubBackend):
             return
         self._closed = True
 
-        task, self._task = self._task, None
         try:
-            if task is not None:
-                task.cancel()
-                with contextlib.suppress(asyncio.CancelledError):
-                    await task
+            await self._cancel_receiving()
         finally:
             # the guard above makes close() a one-shot, so the sockets and
             # the context have to go even if the await was cancelled
@@ -507,10 +566,6 @@ class ZMQ_PS_Client(PubSubBackend):
             # all sockets are closed, so this returns immediately
             self._ctx.term()
             self.is_running.clear()
-
-    def _check_open(self):
-        if self._closed:
-            raise RuntimeError("stream client is closed")
 
     async def _run(self):
         """Receive loop.  A single bad payload or a raising callback must
@@ -529,23 +584,7 @@ class ZMQ_PS_Client(PubSubBackend):
                 logger.exception("dropping malformed message: %r", frames[:1])
                 continue
 
-            for task in self.topics.get(item, []):
-                # one failing subscriber must not starve its siblings
-                # (CancelledError is not an Exception: close() still wins)
-                try:
-                    await task(data)
-                except Exception:
-                    logger.exception("subscriber failed on topic %r", item)
-
-    def _run_done(self, task: asyncio.Task):
-        """The receive loop only ends on close().  Any other exit means the
-        twin stopped receiving -- report it instead of stalling silently."""
-
-        if self._closed or task.cancelled():
-            return
-
-        exc = task.exception() or RuntimeError("stream receive loop exited")
-        self._report_error(exc)
+            await self._dispatch(item, data)
 
 
 # The pubsub client abstracts away the specifics of the pub / sub
@@ -608,6 +647,7 @@ class PubSubClient:
             pub_addr=self._backend.pub_addr,
             sub_addr=self._backend.sub_addr,
             kind=self._backend.kind,
+            broker_url=getattr(self._backend, "broker_url", None),
         )
 
     def topic(self, dtype: DataType) -> str:
@@ -770,12 +810,17 @@ class PubSubConfig:
     `kind` names the backend which has to open the endpoint; a backend
     declares its own (`PubSubBackend.kind`).  It stays a plain string so a
     further backend needs no change here.
+
+    The address fields belong to the `zmq` kind; `broker_url` to the
+    `orbit` kind (`None` uses ORBIT's own resolution, and the auth token
+    is deliberately not part of the config -- it is resolved locally).
     """
 
     namespace: Optional[str] = None
     pub_addr: Optional[str] = None
     sub_addr: Optional[str] = None
     kind: str = ZMQ_PS_Client.kind
+    broker_url: Optional[str] = None
 
     @classmethod
     def resolve(
@@ -800,13 +845,22 @@ class PubSubConfig:
         broker leaks neither sockets nor a context.
         """
 
-        if self.kind != ZMQ_PS_Client.kind:
+        if self.kind == BACKEND_ORBIT:
+            # imported here: `radical.orbit` is the optional 'service'
+            # extra, and a plain ZMQ install must not need it
+            from .streaming_orbit import OrbitPubSubBackend
+
+            backend = OrbitPubSubBackend(self.broker_url)
+
+        elif self.kind == ZMQ_PS_Client.kind:
+            backend = ZMQ_PS_Client(self.pub_addr, self.sub_addr)
+
+        else:
             raise ValueError(
                 f"cannot open a {self.kind!r} stream endpoint here:"
                 f" no backend of that kind is available"
             )
 
-        backend = ZMQ_PS_Client(self.pub_addr, self.sub_addr)
         await backend.connect(timeout)
 
         return backend
@@ -871,11 +925,26 @@ async def connect_stream_client(
     pub_addr: Optional[str] = None,
     sub_addr: Optional[str] = None,
     timeout: Optional[float] = CLIENT_CONNECT_TIMEOUT,
+    *,
+    backend: Optional[str] = None,
+    broker_url: Optional[str] = None,
 ) -> PubSubClient:
     """Build and connect a namespaced stream client from configuration.
 
-    The connect is bounded by `timeout` -- see `ZMQ_PS_Client.connect`.
+    `backend` selects the transport (`zmq` / `orbit`); unset, it comes
+    from `DT_STREAM_BACKEND` (see `config.stream_backend`).  The address
+    arguments belong to the ZMQ backend and `broker_url` to the ORBIT one
+    -- each is ignored by the other, and both default to their own
+    resolution.
+
+    The connect is bounded by `timeout` in either case.
     """
 
-    cfg = PubSubConfig.resolve(namespace, pub_addr, sub_addr)
+    name = stream_backend(backend)
+
+    if name == BACKEND_ORBIT:
+        cfg = PubSubConfig(namespace, kind=BACKEND_ORBIT, broker_url=broker_url)
+    else:
+        cfg = PubSubConfig.resolve(namespace, pub_addr, sub_addr)
+
     return await cfg.connect(timeout)
