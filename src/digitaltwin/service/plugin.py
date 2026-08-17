@@ -64,16 +64,18 @@ ROUTE_ADMIN_SESSIONS = "admin/sessions"
 ROUTE_UI = "ui"
 ROUTE_UI_ASSET = "ui/{asset}"
 
-# The dashboard.  The plugin serves it so that a browser can reach a live
-# broker *same-origin* -- the gateway's CORS allow-list and the
-# `SameSite=Strict` auth cookie rule out every other origin.  An
-# allow-list, not a directory walk: `{asset}` is a client-supplied path
-# segment.
+# The dashboard.  `dt_explorer.js` is the ORBIT Explorer's UI module (see
+# `ui_module`); `index.html` is the standalone host, which the plugin
+# serves so that a browser can reach a live broker *same-origin* -- the
+# gateway's CORS allow-list and the `SameSite=Strict` auth cookie rule out
+# every other origin.  An allow-list, not a directory walk: `{asset}` is a
+# client-supplied path segment.
 UI_DIR = Path(__file__).parent / "ui"
 UI_ASSETS = {
     "index.html": "text/html; charset=utf-8",
     "dt_dash.js": "application/javascript",
     "dt_sample.js": "application/javascript",
+    "dt_explorer.js": "application/javascript",
 }
 
 # how often the supervisor checks that the stream broker is still alive
@@ -109,6 +111,14 @@ class PluginDT(Plugin):
         "title": "Digital Twins",
         "description": "Host long-running digital twins (in-situ inference).",
     }
+
+    # The Explorer's per-plugin JS module, served by the gateway at
+    # `/plugins/dt.js`.  Honoured for broker-hosted plugins only
+    # (`BrokerPluginHost.get_ui_modules` is its single reader), which is
+    # this plugin's default deployment; endpoint-hosted, the Explorer falls
+    # back on `ui_config` above and the dashboard is reached at
+    # `{namespace}/ui` instead.
+    ui_module = str(UI_DIR / "dt_explorer.js")
 
     def __init__(self, app: FastAPI, instance_name: str = "dt"):
         super().__init__(app, instance_name)

@@ -240,7 +240,7 @@ the twins' simulation tasks appear as tiles.  The lanes are roles, not
 hosts: a single-endpoint deployment still gets both, and the ex-situ one
 is labelled `aliases task`.
 
-Two ways to open it, in increasing order of what they need:
+Three ways to open it, in increasing order of what they need:
 
 ```sh
 # 1 - offline: replay the recording bundled in the repo, no stack at all
@@ -248,6 +248,10 @@ xdg-open src/digitaltwin/service/ui/index.html
 
 # 2 - live, served by the broker itself (the only way live works -- see below)
 xdg-open https://<broker>/broker/dt/ui
+
+# 3 - live, inside the ORBIT Explorer: open https://<broker>/ and pick the
+#     'Digital Twins' plugin.  The plugin ships the page as its `ui_module`;
+#     nothing to install
 ```
 
 **Live mode has to be same-origin with the broker.** The gateway's CORS
@@ -277,6 +281,14 @@ model itself -- and a per-session `endpoints` map naming the hardware
 behind each engine role.  The create / destroy / state-change verbs on
 the arcs are *inferred* from the delta between two polls: in v1 nothing
 on the wire announces them.
+
+The Explorer integration is broker-hosted only.  ORBIT reads `ui_module`
+in `BrokerPluginHost.get_ui_modules()` and nowhere else, so an
+endpoint-hosted `dt` plugin gets the declarative `ui_config` tile and no
+dashboard page; `{namespace}/ui` still serves it directly.  The gateway
+also caches a plugin's JS for the life of the broker process, so editing
+`dt_explorer.js` needs a restart -- `{namespace}/ui/dt_dash.js`, which
+the plugin serves itself, does not.
 
 ### When an endpoint disappears (R8)
 

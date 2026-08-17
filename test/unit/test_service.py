@@ -709,7 +709,8 @@ def test_the_ui_route_serves_the_standalone_page(client):
     assert "dt_dash.js" in resp.text
 
 
-@pytest.mark.parametrize("asset", ["dt_dash.js", "dt_sample.js"])
+@pytest.mark.parametrize("asset", ["dt_dash.js", "dt_sample.js",
+                                   "dt_explorer.js"])
 def test_the_ui_assets_are_served_as_javascript(client, asset):
     resp = client.get(f"/dt/ui/{asset}")
 
@@ -723,3 +724,17 @@ def test_an_unlisted_ui_asset_is_404(client, asset):
     client."""
 
     assert client.get(f"/dt/ui/{asset}").status_code == 404
+
+
+def test_the_explorer_module_is_the_one_the_plugin_declares():
+    """ORBIT reads `ui_module` off the class and serves its content at
+    `/plugins/dt.js` -- so the path has to exist in the installed
+    package."""
+
+    from pathlib import Path
+
+    module = Path(PluginDT.ui_module)
+
+    assert module.is_file()
+    assert module.name in UI_ASSETS
+    assert "window.DTDash.mount" in module.read_text()
