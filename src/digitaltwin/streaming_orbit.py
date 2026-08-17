@@ -233,8 +233,13 @@ class OrbitPubSubBackend(PubSubBackend):
 
     # -- pubsub -------------------------------------------------------------
 
-    async def publish(self, topic, message):
-        """Emit one event frame carrying the cloudpickled message.
+    async def publish(self, topic, message, raw=False, **backend_params):
+        """Emit one event frame carrying the message.
+
+        `raw` means the payload is already bytes whose format something
+        above the seam owns (an external channel and its codec): it goes
+        on the wire untouched.  Twin-internal traffic is cloudpickled
+        here.
 
         Oversized payloads raise: ORBIT drops a frame over the cap with a
         log line and no exception, and a data plane that silently swallows
@@ -244,7 +249,7 @@ class OrbitPubSubBackend(PubSubBackend):
         self._check_open()
         await self._await_running("publish")
 
-        payload = cloudpickle.dumps(message)
+        payload = bytes(message) if raw else cloudpickle.dumps(message)
         cap = self.payload_cap()
 
         if len(payload) > cap:
@@ -257,11 +262,18 @@ class OrbitPubSubBackend(PubSubBackend):
         self._runtime.send_notification(STREAM_PLUGIN, topic,
                                         {PAYLOAD_KEY: payload})
 
-    async def subscribe(self, topic, callback: Callable, **backend_params):
-        """Register `callback` for `topic`, subscribing on first use."""
+    async def subscribe(self, topic, callback: Callable, raw=False, **backend_params):
+        """Register `callback` for `topic`, subscribing on first use.
+
+        With `raw`, the topic's payloads reach their subscribers as the
+        bytes that arrived: an external channel decodes them itself.
+        """
 
         self._check_open()
         await self._await_running("subscribe")
+
+        if raw:
+            self.raw_topics.add(topic)
 
         callbacks = self.topics.setdefault(topic, [])
         callbacks.append(callback)
@@ -364,7 +376,12 @@ class OrbitPubSubBackend(PubSubBackend):
             topic, data = await self._inbox.get()
 
             try:
-                message = cloudpickle.loads(data[PAYLOAD_KEY])
+                payload = data[PAYLOAD_KEY]
+                message = (
+                    payload
+                    if topic in self.raw_topics
+                    else cloudpickle.loads(payload)
+                )
             except Exception:
                 logger.exception("dropping malformed message on topic %r", topic)
                 continue

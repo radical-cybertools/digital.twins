@@ -132,6 +132,10 @@ class PubSubBackend(ABC):
         # topic lookup, whatever the transport matched on the wire.
         self.topics: dict[str, list[Callable]] = {}
 
+        # topics whose payload the transport hands over untouched:
+        # something above the seam owns their wire format (see the codecs)
+        self.raw_topics: set[str] = set()
+
         self._task: Optional[asyncio.Task] = None
         self._closed = False
         self.is_running = asyncio.Event()
@@ -452,10 +456,6 @@ class ZMQ_PS_Client(PubSubBackend):
         self.sub_soc: Optional[zmq.asyncio.Socket] = (
             self._ctx.socket(zmq.SUB) if sub_addr is not None else None
         )
-
-        # topics whose payload the transport must hand over untouched:
-        # something above the seam owns their wire format (see the codecs)
-        self.raw_topics: set[str] = set()
 
 
     def get_config(self) -> dict:
