@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital Twin Service — dashboard</title>
+<!--
+  The standalone host for dt_dash.js.
+
+  Open this file directly (file://) or from any static server: the bundled
+  sample recording, dt_sample.js, plays on load and loops.  Drop another
+  recording onto the canvas, or use `load…`, to replay that one instead.
+-->
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #050518;
+    color: #e0e6f0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 Roboto, sans-serif;
+    font-size: 13px;
+  }
+  #dash {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 10px;
+  }
+  #boot {
+    padding: 24px;
+    color: #e8a040;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+</style>
+</head>
+<body>
+<div id="dash"><div id="boot">dt_dash.js did not load — is it next to this page?</div></div>
+
+<!-- Classic scripts, deliberately: they load from file:// as well, which is
+     what lets the bundled recording self-demo without any server. -->
+<script src="dt_dash.js"></script>
+<script src="dt_sample.js"></script>
+<script>
+(() => {
+  const host = document.getElementById('dash');
+  if (!window.DTDash) return;
+  host.innerHTML = '';
+
+  DTDash.mount(host, { sample: window.DT_SAMPLE || null });
+})();
+</script>
+</body>
+</html>
