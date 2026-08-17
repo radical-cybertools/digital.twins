@@ -134,6 +134,12 @@ class TwinInstance:
         # explicitly or a closing twin would leave a caller hanging
         self._inflight: set[asyncio.Task] = set()
 
+        # verb -> how many of them this twin has served.  The only record
+        # that a client ever called: the verbs are synchronous and leave
+        # nothing else behind, so without this an observer cannot tell a
+        # twin being driven from one merely sitting in `running`.
+        self.calls: dict[str, int] = {}
+
     @property
     def state(self) -> str:
         return self._state if self.runtime is None else str(self.runtime.state)
@@ -160,6 +166,13 @@ class TwinInstance:
             "age": round(time.time() - self.created, 3),
             "config": self.config,
             "metrics": {} if self.runtime is None else self.runtime.metrics(),
+            "calls": dict(self.calls),
+            # The uids this twin most recently submitted (`TASK_UID_RING`).
+            # A `task_status` notification carries a uid and an endpoint and
+            # nothing else, so this is what lets an observer say which twin a
+            # task belongs to; bounded, newest last, and a uid that has aged
+            # out is unattributed rather than wrong.
+            "tasks": [] if self.runtime is None else self.runtime.task_uids(),
         }
 
     def ready(self, runtime: DTRuntime, stream: PubSubClient) -> None:
@@ -332,6 +345,11 @@ class DTSession(PluginSession):
                 status_code=409,
                 detail=f"twin {twin_id}: {verb}: {type(exc).__name__}: {exc}",
             ) from exc
+
+        # counted on the way out, so what it records is a round trip a
+        # client really completed -- a call that failed or is still in
+        # flight has not been answered and is not one
+        twin.calls[verb] = twin.calls.get(verb, 0) + 1
 
         return {**self._twin_state(twin), **(extra or {})}
 

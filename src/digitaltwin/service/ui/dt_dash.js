@@ -67,13 +67,17 @@
  *
  *  Frames are ordered by `t`.  A replay hands the model exactly the frames
  *  a live session would have handed it, in the same order, which is why
- *  there is one model and not two.  `test/unit/test_ui_recording.py`
- *  checks the bundled sample against this schema, so the two stay in sync.
+ *  there is one model and not two.  A *recording* holds each payload minus
+ *  the fields nothing here reads -- a task's return value, a stream
+ *  message's cloudpickled body -- because on a long capture those are most
+ *  of the bytes; `captureFrame` below is the one place that decides it.
+ *  `test/unit/test_ui_recording.py` checks the bundled sample against this
+ *  schema, so the two stay in sync.
  * ========================================================================*/
 
 (() => {
 
-  const VERSION = '0.1.0';
+  const VERSION = '0.5.0';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -96,6 +100,10 @@
     cyan:         '#40c8e8',
     amber:        '#e8a040',
     green:        '#5acd83',
+    // the deck's AsyncFlow level colour (docs/dtaas-architecture.svg): a
+    // task result comes back *through* the engine, so it is drawn in the
+    // engine's own colour and not in the stream green it used to share
+    violet:       '#a78bfa',
     red:          '#e8556a',
     grey:         '#5a6478',
     cyan_dim:     '#15384a',
@@ -145,6 +153,13 @@
   const MARKER_TTL    = 2.6;    // state-transition marker lifetime
   const PULSE_TTL     = 0.7;    // stream pulse ring lifetime
   const GLOW          = 0.5;    // on-landing halo
+  const PULSE_FLIGHT  = 0.5;    // sensor sample / task result hop
+  const CALL_ARCS_MAX = 3;      // client-call arcs drawn per poll per verb
+  const GONE_LINGER   = 9.0;    // a closed twin's card stays this long
+  const GONE_FADE     = 3.6;    // ... fading out over the last of it
+  const OWNERS_MAX    = 4000;   // uid -> twin entries kept from the polls
+  const OWNER_WAIT    = 2.2;    // ... and how long a task waits for its own
+  const CARD_ANCHOR   = 0.67;   // where down a card its arcs meet it
   const SPARK_MAX     = 24;     // sparkline points kept per metric
   const TASK_MAX      = 400;    // tile slots per endpoint lane
   const TASK_TTL      = 300;    // drop a task nothing has mentioned since
@@ -162,13 +177,23 @@
       stream:    null,      // the stream_broker summary, verbatim
       sessions:  [],        // [{sid, owner, age, engines, twins, _rect}]
       twins:     new Map(), // twin_id -> twin
-      endpoints: { task: null, exsitu: null, alias: true },
+      endpoints: { task: [], exsitu: [], alias: true },
+      roles:     new Map(), // endpoint -> Set('task'|'exsitu'), all sessions
       tasks:     new Map(), // uid -> {uid, lane, state, t0, tEnd, slot}
+      // task uid -> twin_id, straight off the twins' own `tasks` lists: the
+      // service records what it submitted, so this is the whole of the
+      // dashboard's task attribution -- nothing here guesses any more
+      owners:    new Map(),
       counts:    { task: zeroCount(), exsitu: zeroCount() },
       flights:   [],
       markers:   [],
       snapshots: 0,
       events:    0,
+      reported:  null,      // model time of the last state listing
+      probe:     null,      // {t, twin} of the last get_inference served
+      // '<twin>|<dtype>' -> {twin, dtype, t, count}: every stream
+      // publisher we have seen, which is what the sensors lane draws
+      publishers: new Map(),
     };
   }
 
@@ -193,6 +218,10 @@
     const sessions = Array.isArray(snap.sessions) ? snap.sessions : [];
     const seen = new Set();
 
+    // when this listing arrived: every poll reports every session's twins,
+    // so one timestamp covers all of them (see the tick in the client lane)
+    w.reported = w.t;
+
     w.sessions = sessions.map(s => ({
       sid:      s.sid || '?',
       owner:    s.owner || null,
@@ -200,18 +229,33 @@
       lifetime: s.lifetime || null,
       active:   s.active !== false,
       engines:  Array.isArray(s.engines) ? s.engines : [],
+      // the engine-role -> endpoint map; `laneOf` reads it per session
+      endpoints: s.endpoints || {},
       twins:    (s.twins || []).map(t => t.twin_id),
     }));
 
-    // Engine endpoints.  The lanes are *roles*: a deployment where one
-    // endpoint serves both still gets two lanes -- the ex-situ one then
-    // says it aliases the task one, which is the truth on the wire.
-    let task = null, exsitu = null, sawExsitu = false;
+    // Engine endpoints.  The lanes are *roles*, and which endpoint serves
+    // which role is a per-session answer: a lane therefore names every
+    // endpoint any session put in that role, and `roles` is the reverse map
+    // `laneOf` falls back on when a task's owner is not known yet.  A
+    // deployment that configured no ex-situ engine still gets two lanes --
+    // the ex-situ one then says it aliases the task one, which is the truth
+    // on the wire.
+    const task = [], exsitu = [];
+    let sawExsitu = false;
+    w.roles = new Map();
+
     for (const s of sessions) {
       const eps = s.endpoints || {};
-      task   = task   || eps.task   || null;
-      exsitu = exsitu || eps.exsitu || null;
-      if (eps.exsitu) sawExsitu = true;
+      for (const role of ['task', 'exsitu']) {
+        const name = eps[role];
+        if (!name) continue;
+        if (role === 'exsitu') sawExsitu = true;
+        const into = role === 'task' ? task : exsitu;
+        if (!into.includes(name)) into.push(name);
+        if (!w.roles.has(name)) w.roles.set(name, new Set());
+        w.roles.get(name).add(role);
+      }
     }
     w.endpoints = { task, exsitu, alias: sessions.length > 0 && !sawExsitu };
 
@@ -224,10 +268,13 @@
       }
     }
 
+    // the poll may be exactly the one a task's arcs were waiting for
+    armTasks(w);
+
     for (const [id, tw] of w.twins) {
       if (seen.has(id) || tw.gone !== null) continue;
       tw.gone = w.t;
-      flight(w, 'destroy', id);
+      flight(w, 'destroy', { twin: id });
       marker(w, id, 'closed', C.grey);
     }
   }
@@ -246,13 +293,17 @@
       // A twin that was already there when we attached is not a `create`
       // we witnessed: only the ones appearing in a *later* poll get an arc.
       if (w.snapshots > 1) {
-        flight(w, 'create', id);
+        flight(w, 'create', { twin: id });
         marker(w, id, 'create', C.cyan);
       }
     } else if (tw.state !== t.state) {
       tw.prev   = tw.state;
       tw.tState = w.t;
       marker(w, id, t.state, STATE_TEXT[t.state] || C.text_dim);
+      // The state going back the other way.  Same inferred fidelity as
+      // the create / destroy arcs: what the client actually receives is a
+      // `twin_list` response, and this is the transition inside it.
+      flight(w, 'report', { twin: id, label: t.state });
     }
 
     tw.sid        = s.sid;
@@ -261,6 +312,26 @@
     tw.age        = num(t.age);
     tw.gone       = null;
     applyMetrics(tw, t.metrics);
+    applyCalls(w, tw, t.calls);
+    applyTasks(w, id, t.tasks);
+  }
+
+  // The twin's own record of what it submitted (`TASK_UID_RING` in the
+  // service).  Kept cumulatively here, because the service's ring only has
+  // to cover a poll period while this map has to outlive the task: an event
+  // arriving before the poll that explains it draws from the broker's edge
+  // and snaps to the card on the next frame, which is the whole of the join.
+  function applyTasks(w, id, uids) {
+    if (!Array.isArray(uids)) return;
+
+    for (const uid of uids) {
+      if (typeof uid === 'string') w.owners.set(uid, id);
+    }
+
+    // bounded, and insertion-ordered, so the oldest uid goes first
+    while (w.owners.size > OWNERS_MAX) {
+      w.owners.delete(w.owners.keys().next().value);
+    }
   }
 
   // A twin's `metrics` entry is the service's filtered, read-only view of
@@ -288,6 +359,42 @@
     }
   }
 
+  // The service counts each verb it answered per twin.  The difference
+  // between two polls is a number of completed round trips: a request that
+  // reached the twin and an answer that went back.  That is all a client
+  // call leaves behind -- the verbs are synchronous and nothing is pushed
+  // -- so this is the only honest source for the two client-ward arcs.
+  function applyCalls(w, tw, calls) {
+    if (!calls || typeof calls !== 'object') return;
+
+    const before = tw.calls || {};
+
+    for (const [verb, count] of Object.entries(calls)) {
+      const delta = count - (before[verb] || 0);
+      // the first poll of an already-busy twin is a total, not a burst
+      if (delta <= 0 || !tw.calls) continue;
+
+      for (let i = 0; i < Math.min(delta, CALL_ARCS_MAX); i++) {
+        flight(w, 'call', { twin: tw.id, label: verb });
+        // only `get_inference` carries an answer worth drawing; the rest
+        // return a state a client does not wait on
+        if (verb === 'get_inference') {
+          // after the request, not with it: one round trip, drawn as one
+          flight(w, 'answer', { twin: tw.id, delay: FLIGHT * 0.6 });
+          // and the beat in which the twin was serving a probe.  A twin
+          // answers `get_inference` by running its investigator's inference
+          // task, which is a *task-engine* task -- the ex-situ engine only
+          // ever gets training windows.  Which tile that was cannot be
+          // known (a `task_status` carries no verb), so
+          // the task lane says only when, and says it dimly.
+          w.probe = { t: w.t, twin: tw.id };
+        }
+      }
+    }
+
+    tw.calls = calls;
+  }
+
   // ---- events: rhapsody task status, and DT stream pulses -----------------
 
   function applyEvent(w, ev) {
@@ -307,14 +414,32 @@
     }
   }
 
-  // Which role lane an endpoint belongs to.  Roles, not hosts: under an
-  // aliased deployment both roles report the same endpoint and everything
-  // lands on `task` -- and the ex-situ lane says exactly that.
-  function laneOf(w, endpoint) {
-    if (endpoint && w.endpoints.exsitu && endpoint === w.endpoints.exsitu) {
-      return 'exsitu';
+  // Which role lane an endpoint belongs to, for *this* task.  Roles, not
+  // hosts: one endpoint can be the task engine of one session and the
+  // ex-situ engine of another, so the owning twin's session decides it, and
+  // only when the owner is unknown does the aggregate have to answer.
+  //
+  // An endpoint no session of ours declared is not ours: the gateway fans
+  // every rhapsody event to every SSE client, so those belong to another
+  // deployment and `null` keeps them off both lanes.  Under an aliased
+  // deployment both roles name the same endpoint and everything lands on
+  // `task`, which is what the ex-situ lane's own label says.
+  function laneOf(w, endpoint, twinId) {
+    if (!endpoint) return null;
+
+    const tw = twinId && w.twins.get(twinId);
+    const own = tw && w.sessions.find(s => s.sid === tw.sid);
+
+    if (own) {
+      const eps = own.endpoints || {};
+      if (eps.exsitu === endpoint) return 'exsitu';
+      if (eps.task === endpoint) return 'task';
     }
-    return 'task';
+
+    const roles = w.roles.get(endpoint);
+    if (!roles) return null;
+
+    return roles.has('task') ? 'task' : 'exsitu';
   }
 
   function applyTask(w, endpoint, t) {
@@ -325,12 +450,16 @@
     let task = w.tasks.get(uid);
 
     if (!task) {
-      const lane = laneOf(w, endpoint);
+      const lane = laneOf(w, endpoint, w.owners.get(uid));
+      if (!lane) return;                 // an endpoint no session of ours has
       task = { uid, lane, state, t0: w.t, seen: w.t, tEnd: null,
-               slot: nextSlot(w, lane) };
+               slot: nextSlot(w, lane),
+               // when its arcs left, and when the returning one is due:
+               // both wait for the poll that says whose task this is
+               armed: null, due: null };
       w.tasks.set(uid, task);
-      flight(w, 'spawn', null, task);
       w.counts[lane].running++;
+      armTasks(w);
     }
 
     // every mention refreshes it, repeated states included: a task is
@@ -346,6 +475,33 @@
         c.running = Math.max(0, c.running - 1);
         if (state === 'FAILED') c.failed++;
         else if (state !== 'CANCELED') c.done++;
+        // the compute coming back: a real observed transition, and the
+        // only half of the round trip that was missing
+        task.due = w.t;
+        armTasks(w);
+      }
+    }
+  }
+
+  // A task's arcs wait for the poll that says whose it is.  The notification
+  // beats that poll by up to a full period -- the task is submitted, ORBIT
+  // reports it running within milliseconds, and `admin/sessions` is only
+  // sampled at 1 Hz -- so an arc drawn on arrival would leave the broker's
+  // edge for want of a join that is about to land.  It waits, and after
+  // `OWNER_WAIT` it goes anyway, from the edge, claiming nothing.
+  function armTasks(w) {
+    for (const t of w.tasks.values()) {
+      const known = w.owners.has(t.uid);
+
+      if (t.armed === null && (known || w.t - t.t0 > OWNER_WAIT)) {
+        t.armed = w.t;
+        flight(w, 'spawn', { task: t });
+      }
+
+      if (t.due !== null && t.armed !== null
+          && (known || w.t - t.due > OWNER_WAIT)) {
+        t.due = null;
+        flight(w, 'result', { task: t, dur: PULSE_FLIGHT });
       }
     }
   }
@@ -368,15 +524,44 @@
     const parts = String(topic).split('/');
     if (parts.length < 4 || parts[0] !== 'dt') return;
 
-    const tw = w.twins.get(parts[1]);
-    if (tw) tw.pulse = { t: w.t, label: parts[3].replace(/\0+$/, '') };
+    const id = parts[1];
+    const dtype = parts[3].replace(/\0+$/, '');
+    const tw = w.twins.get(id);
+    if (!tw) return;
+
+    tw.pulse = { t: w.t, label: dtype };
+
+    // one publisher per (twin, dtype).  A twin's own persistent
+    // components are the only things that publish, so this *is* the set
+    // of sensors -- observed, never declared.
+    const key = `${id}|${dtype}`;
+    let pub = w.publishers.get(key);
+    if (!pub) {
+      pub = { key, twin: id, dtype, count: 0, t: w.t };
+      w.publishers.set(key, pub);
+    }
+    pub.count++;
+    pub.t = w.t;
+
+    // the message travelling from the publisher to its twin
+    flight(w, 'sample', { twin: id, from: pub.key, dur: PULSE_FLIGHT });
   }
 
   // ---- inferred verbs: arcs and markers -----------------------------------
 
-  function flight(w, kind, twinId, task) {
-    w.flights.push({ kind, twinId, task, t0: w.t });
-    if (w.flights.length > 200) w.flights.shift();
+  // One arc.  `delay` starts it later than now, which is how a request
+  // and its answer read as one round trip instead of two things crossing.
+  function flight(w, kind, opts = {}) {
+    w.flights.push({
+      kind,
+      twinId: opts.twin || null,
+      task:   opts.task || null,
+      label:  opts.label || null,
+      from:   opts.from || null,
+      dur:    opts.dur || FLIGHT,
+      t0:     w.t + (opts.delay || 0),
+    });
+    if (w.flights.length > 400) w.flights.shift();
   }
 
   function marker(w, twinId, label, color) {
@@ -385,12 +570,14 @@
   }
 
   function expire(w) {
-    w.flights = w.flights.filter(f => w.t - f.t0 < FLIGHT + 0.1);
+    armTasks(w);
+
+    w.flights = w.flights.filter(f => w.t - f.t0 < f.dur + 0.1);
     w.markers = w.markers.filter(m => w.t - m.t0 < MARKER_TTL);
 
     for (const [uid, t] of w.tasks) {
       if (t.tEnd !== null) {
-        if (w.t - t.tEnd > FADE) w.tasks.delete(uid);
+        if (w.t - t.tEnd > FADE && t.due === null) w.tasks.delete(uid);
         continue;
       }
       // A terminal event lost in an SSE reconnect gap would otherwise
@@ -404,8 +591,15 @@
         w.tasks.delete(uid);
       }
     }
+    // A twin that left `twin_list` lingers: its card is the only record of
+    // what it was doing, and a twin that closes at the end of a run used to
+    // take that away within two seconds -- long before anyone watching had
+    // read it.  The card holds its final state pill, fades over the last of
+    // the grace period, and yields its grid slot to live twins meanwhile
+    // (see `drawBrokerLane`).  Its tasks stay its own while it is up: it
+    // really did submit them, and the card is what says so.
     for (const [id, tw] of w.twins) {
-      if (tw.gone !== null && w.t - tw.gone > FLIGHT + FADE) w.twins.delete(id);
+      if (tw.gone !== null && w.t - tw.gone > GONE_LINGER) w.twins.delete(id);
     }
   }
 
@@ -440,20 +634,59 @@
     };
   }
 
-  // One frame of a recording.  Kept verbatim, with one exception: a DT
-  // stream event's payload is a cloudpickled blob that only its
-  // subscribers can read, is the largest thing on the feed, and is not
-  // what draws the pulse -- the topic is.  So the topic travels and the
-  // payload does not.
-  function captureFrame(t, frame) {
+  // One frame of a recording: the envelope, and of the payload only what
+  // something here reads.  On a long capture that is most of the bytes,
+  // and every dropped field is one nothing could have drawn:
+  //
+  //   - a DT stream event's payload is a cloudpickled blob only its
+  //     subscribers can read, and its `endpoint` is the plugin host's own
+  //     participant name.  The *topic* is what draws the pulse (it names
+  //     the twin and the dtype), so the topic travels and those two do not.
+  //   - a task status carries the task's own return value and exit code;
+  //     the tiles are drawn from `uid` and `state` alone.
+  //   - a twin's `config` and a session's `idle` are reported by the
+  //     service and read by nothing on this canvas.
+  //   - a twin's `tasks` is a *ring*: every poll repeats the uids the last
+  //     one carried, and the model only ever adds them to a map that
+  //     already has them.  A recording therefore keeps each uid once, on
+  //     the first poll that showed it -- `seen` is what remembers, and it
+  //     turns the biggest field on the wire into one line per task.
+  function captureFrame(t, frame, seen) {
     let data = frame.data;
 
-    if (frame.kind === 'event' && data && data.plugin === 'dt_stream') {
-      data = { endpoint: data.endpoint, plugin: data.plugin,
-               topic: data.topic, data: {} };
+    if (frame.kind === 'snapshot' && data) {
+      data = { ...data,
+               sessions: (data.sessions || []).map(s => captureSession(s, seen)) };
+    } else if (frame.kind === 'event' && data) {
+      if (data.plugin === 'dt_stream') {
+        data = { plugin: data.plugin, topic: data.topic, data: {} };
+      } else if (data.topic === 'task_status' && data.data) {
+        data = { ...data, data: { uid: data.data.uid,
+                                  state: data.data.state } };
+      } else if (data.topic === 'task_status_batch' && data.data) {
+        data = { ...data, data: { tasks: (data.data.tasks || []).map(
+          task => ({ uid: task.uid, state: task.state })) } };
+      }
     }
 
     return { t: round(t, 3), kind: frame.kind, data };
+  }
+
+  function captureSession(session, seen) {
+    const { idle, twins, ...rest } = session;
+    void idle;
+
+    return { ...rest, twins: (twins || []).map(twin => {
+      const { config, ...kept } = twin;
+      void config;
+
+      if (Array.isArray(kept.tasks) && seen) {
+        kept.tasks = kept.tasks.filter(uid => !seen.has(uid));
+        for (const uid of kept.tasks) seen.add(uid);
+      }
+
+      return kept;
+    }) };
   }
 
   // The live stack: a 1 Hz `admin/sessions` poll plus the gateway's SSE
@@ -595,13 +828,17 @@
     let status  = { text: 'no data', ok: false };
     let hover   = null;        // {x, y} in canvas coordinates
     let capture = null;        // {t0, iso, broker, frames} while recording
+    // what the last frame drew, for `frame()`: the layout and every arc the
+    // renderer resolved, so a test (or a console) sees the real geometry
+    const probe = { t: 0, L: null, arcs: [] };
     let W = 0, H = 0, dpr = 1;
 
     const sink = frame => {
       ingest(world, frame);
       if (!capture) return;
 
-      capture.frames.push(captureFrame(world.t - capture.t0, frame));
+      capture.frames.push(captureFrame(world.t - capture.t0, frame,
+                                       capture.seen));
 
       // Bounded, and it has to be: under the orbit data plane every
       // stream message is an event on this feed, so an unattended `rec`
@@ -760,6 +997,7 @@
       capture = {
         t0: world.t, iso: new Date().toISOString(),
         broker: (source && source.broker) || '', frames: [],
+        seen: new Set(),      // task uids already written (see `captureFrame`)
       };
       $rec.classList.add('dtd-active');
       $rec.innerHTML = '&#9632; stop rec';
@@ -841,7 +1079,8 @@
         }
       }
 
-      render(ctx, W, H, world, { status, hover });
+      probe.arcs = [];
+      render(ctx, W, H, world, { status, hover, probe });
       raf = requestAnimationFrame(frame);
     }
 
@@ -863,6 +1102,7 @@
 
     return {
       world: () => world,
+      frame: () => probe,
       play,
       connect,
       setStatus,
@@ -875,22 +1115,28 @@
   // =========================================================================
 
   function render(ctx, W, H, w, ui) {
-    const L = layout(W, H);
+    const L = layout(W, H, w.sessions.length);
+
+    // the probe carries this frame's geometry back out to `frame()`: a test
+    // then reads the arcs the renderer resolved, on the code path a browser
+    // runs, instead of re-deriving them and being wrong in its own way
+    if (ui.probe) { ui.probe.L = L; ui.probe.t = w.t; }
 
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, W, H);
 
     drawHeader(ctx, L, w, ui);
     drawClientLane(ctx, L, w);
+    drawSensorLane(ctx, L, w);
     drawBrokerLane(ctx, L, w);
     drawHpcLanes(ctx, L, w);
-    drawFlights(ctx, L, w);
+    drawFlights(ctx, L, w, ui);
     drawTooltip(ctx, L, w, ui);
   }
 
   // ---- layout: everything derived from the container's size --------------
 
-  function layout(W, H) {
+  function layout(W, H, sessions) {
     const S  = Math.max(0.7, Math.min(1.35, W / 1280));
     const M  = Math.round(13 * S);
     const G  = Math.round(11 * S);
@@ -904,9 +1150,20 @@
     const hw = Math.max(Math.round(230 * S), Math.round(inner * 0.33));
     const bw = inner - cw - hw;
 
-    const client = { x: M,                     y: top, w: cw, h: height };
-    const broker = { x: M + cw + G,            y: top, w: bw, h: height };
-    const hpc    = { x: M + cw + G + bw + G,   y: top, w: hw, h: height };
+    // The left column carries two frames: the client, sized to its
+    // sessions rather than to the column, and the sensors underneath it.
+    // header + one card per session + a line for the arc caption
+    const clientH = Math.max(
+      Math.round(96 * S),
+      Math.min(Math.round(height * 0.52),
+               Math.round(46 * S)
+               + Math.max(1, sessions) * Math.round(68 * S)));
+
+    const client  = { x: M, y: top, w: cw, h: clientH };
+    const sensors = { x: M, y: top + clientH + G, w: cw,
+                      h: height - clientH - G };
+    const broker  = { x: M + cw + G,          y: top, w: bw, h: height };
+    const hpc     = { x: M + cw + G + bw + G, y: top, w: hw, h: height };
 
     // the HPC super-frame holds the two endpoint role lanes, stacked
     const head = Math.round(26 * S);
@@ -915,7 +1172,7 @@
                    w: hpc.w - Math.round(16 * S), h: subH };
     const exsitu = { x: task.x, y: task.y + subH + G, w: task.w, h: subH };
 
-    return { S, M, G, hd, W, H, client, broker, hpc, task, exsitu };
+    return { S, M, G, hd, W, H, client, sensors, broker, hpc, task, exsitu };
   }
 
   // ---- primitives (the reference's idioms) -------------------------------
@@ -1052,14 +1309,32 @@
     }
     if (w.stream && w.backend === 'zmq' && w.stream.addresses
         && w.stream.alive === false) {
-      pill(ctx, x, cy - 7 * S, 'stream broker down', C.red, S);
+      x += pill(ctx, x, cy - 7 * S, 'stream broker down', C.red, S) + 6 * S;
     }
+
+    // Which build is drawing this.  A browser holds a file:// script in its
+    // cache well past the edit that changed it, and the copy the broker
+    // serves is only as new as the last `pip install .` -- a stale dashboard
+    // beside a fresh recording otherwise looks exactly like a bug in the
+    // dashboard.  If this is not the version in the source tree, that is
+    // the first thing to fix.
+    ctx.fillStyle = C.text_dim;
+    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    ctx.fillText(`v${VERSION}`, x, cy);
+
+    // Live twins, not cards: a closed twin's card lingers as a memento
+    // (see `expire`) and counting it here would contradict the client lane,
+    // which reports what the last `twin_list` actually held.
+    let live = 0;
+    for (const tw of w.twins.values()) if (tw.gone === null) live++;
 
     ctx.textAlign = 'right';
     ctx.font = `400 ${Math.round(10.5 * S)}px ${FONT_MONO}`;
     ctx.fillStyle = ui.status.ok ? C.text_dim : C.amber;
     ctx.fillText(clip(ctx,
-      `${ui.status.text}   |   ${w.twins.size} twins · ${w.tasks.size} tasks`
+      `${ui.status.text}   |   ${live} twins · ${w.tasks.size} tasks`
       + `   |   t = ${w.t.toFixed(1)} s`, L.W * 0.55),
       L.W - L.M, cy);
   }
@@ -1115,7 +1390,142 @@
         ctx.fillText(clip(ctx, `engines ${s.engines.join(', ')}`, maxW),
                      px, box.y + 46 * S);
       }
+
+      drawReportTick(ctx, box, w, S);
     });
+
+    // Label the dashed arcs and the ticks, once, where they land.  They
+    // are not a channel of their own: the client learns a twin's state by
+    // polling `twin_list`, and that is all these two marks stand for.
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT}`;
+    ctx.fillStyle = C.text_dim;
+    ctx.globalAlpha = 0.75;
+    ctx.fillText(clip(ctx, '┆ twin_list state reports', r.w - 2 * pad),
+                 r.x + pad, r.y + r.h - 6 * S);
+    ctx.globalAlpha = 1;
+  }
+
+  // The steady-state counterpart of the dashed arcs: a tick on the right
+  // edge of each session card, brightening once per poll.  A transition is
+  // an event and gets an arc; *being told the state at all* is continuous,
+  // and this is what it looks like.
+  function drawReportTick(ctx, box, w, S) {
+    if (w.reported === null) return;
+
+    const age = w.t - w.reported;
+    const k = Math.max(0, 1 - age / (POLL_INTERVAL * 0.9));
+    const h = Math.round(9 * S);
+    const x = box.x + box.w - Math.round(3.5 * S);
+    const y = box.y + box.h / 2 - h / 2;
+
+    ctx.save();
+    ctx.globalAlpha = 0.22 + 0.68 * k;
+    ctx.fillStyle = C.cyan;
+    rr(ctx, x, y, Math.max(2, Math.round(2 * S)), h, 1);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // ---- SENSORS lane: the twins' own publishers, as observed ------------
+  //
+  // Every entry here was seen on the data plane: a `dt_stream` topic names
+  // the twin and the dtype, and only a twin's persistent components ever
+  // publish.  Nothing is declared and nothing is guessed.
+  //
+  // The lane sits outside the broker frame because that is where a reader
+  // looks for where data comes *from* -- but in v1 these components run
+  // inside the plugin host, on its event loop, which the sub-label says.
+  function drawSensorLane(ctx, L, w) {
+    const S = L.S, r = L.sensors;
+    if (r.h < 46 * S) return;
+
+    panel(ctx, r, C.frame_border, 'sensors', C.frame_label, S);
+
+    const pubs = [...w.publishers.values()]
+      .sort((a, b) => a.key < b.key ? -1 : 1);
+
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'top';
+    ctx.font = `400 ${Math.round(8 * S)}px ${FONT}`;
+    ctx.fillStyle = C.text_dim;
+    ctx.fillText(clip(ctx, 'in the plugin host', r.w * 0.6),
+                 r.x + r.w - 9 * S, r.y + 12 * S);
+
+    if (!pubs.length) {
+      placeholder(ctx, r, 'no stream traffic seen', S);
+      return;
+    }
+
+    const head = Math.round(26 * S);
+    const pad  = Math.round(8 * S);
+    const rowH = Math.round(20 * S);
+    const rows = Math.max(1, Math.floor((r.h - head - pad) / rowH));
+
+    // A narrow lane (the Explorer's) collapses to one row of dtype tiles:
+    // which twin publishes what is worth less than the lane staying legible.
+    const collapse = rows < 2 || r.h < 74 * S;
+
+    if (collapse) {
+      const tile = Math.max(6, Math.round(10 * S));
+      const gap  = Math.max(2, Math.round(4 * S));
+      pubs.forEach((pub, i) => {
+        const x = r.x + pad + i * (tile + gap);
+        if (x + tile > r.x + r.w - pad) return;
+        pub._rect = { x, y: r.y + head, w: tile, h: tile };
+        drawSensorTile(ctx, pub._rect, pub, w, S);
+      });
+      return;
+    }
+
+    pubs.forEach((pub, i) => {
+      if (i >= rows) return;
+      const y = r.y + head + i * rowH;
+      const box = { x: r.x + pad, y, w: r.w - 2 * pad, h: rowH - 4 * S };
+      pub._rect = box;
+
+      drawSensorTile(ctx, { x: box.x, y: box.y + 2 * S,
+                            w: Math.round(9 * S), h: Math.round(9 * S) },
+                     pub, w, S);
+
+      const tx = box.x + Math.round(15 * S);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = C.text_label;
+      ctx.font = `600 ${Math.round(9.5 * S)}px ${FONT}`;
+      ctx.fillText(clip(ctx, pub.dtype, box.w * 0.5), tx, box.y + 1 * S);
+
+      ctx.textAlign = 'right';
+      ctx.fillStyle = C.text_dim;
+      ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
+      ctx.fillText(`${short(pub.twin)} ${pub.count}`, box.x + box.w,
+                   box.y + 1 * S);
+    });
+
+    if (pubs.length > rows) {
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = C.text_dim;
+      ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
+      ctx.fillText(`+${pubs.length - rows} more`, r.x + r.w - pad,
+                   r.y + r.h - 5 * S);
+    }
+  }
+
+  function drawSensorTile(ctx, box, pub, w, S) {
+    const k = Math.max(0, 1 - (w.t - pub.t) / (PULSE_TTL * 1.4));
+
+    ctx.save();
+    if (k > 0) {
+      ctx.shadowBlur = 10 * k * S;
+      ctx.shadowColor = C.green;
+    }
+    ctx.globalAlpha = 0.35 + 0.65 * k;
+    ctx.fillStyle = C.green;
+    rr(ctx, box.x, box.y, box.w, box.h, 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   function placeholder(ctx, r, text, S) {
@@ -1132,7 +1542,11 @@
     const S = L.S, r = L.broker;
     panel(ctx, r, C.cyan_dim, 'broker · dt plugin', C.frame_label, S);
 
-    const twins = [...w.twins.values()].sort((a, b) => a.born - b.born);
+    // Birth order, except that a twin which has gone yields its slot: its
+    // card is a memento, and a live twin pushed behind `+N more` by one is
+    // a worse trade than a memento moving.
+    const twins = [...w.twins.values()].sort((a, b) =>
+      (a.gone === null ? 0 : 1) - (b.gone === null ? 0 : 1) || a.born - b.born);
     if (!twins.length) {
       placeholder(ctx, r, 'no twins', S);
       return;
@@ -1154,10 +1568,11 @@
     const cardH = Math.min(Math.round(150 * S),
       Math.floor((r.h - head - pad - (rows - 1) * gap) / rows));
 
-    // centre the grid in whatever is left of the lane
-    const gridH = rows * cardH + (rows - 1) * gap;
-    const top = r.y + head
-      + Math.max(0, Math.floor((r.h - head - pad - gridH) / 2));
+    // The grid starts at the top of the lane and grows downward, so a card
+    // stays where it was when the next twin arrives; centring moved every
+    // card -- and every arc anchored on one -- each time the count changed.
+    // What is left over stays empty, below.
+    const top = r.y + head;
 
     const shown = Math.min(twins.length, cols * rows);
     for (let i = 0; i < shown; i++) {
@@ -1185,9 +1600,14 @@
     const state = tw.state || 'initializing';
     const closing = tw.gone !== null;
 
+    // A card that has gone stays up for the whole grace period at a dimmed
+    // but readable strength, then fades over the last of it; what it keeps
+    // is the last thing the service said about the twin.
     let alpha = 1;
-    if (closing) alpha = Math.max(0, 1 - (w.t - tw.gone) / (FLIGHT + FADE));
-    else if (w.t - tw.fresh < 0.4) alpha = (w.t - tw.fresh) / 0.4;
+    if (closing) {
+      const left = GONE_LINGER - (w.t - tw.gone);
+      alpha = 0.7 * Math.max(0, Math.min(1, left / GONE_FADE));
+    } else if (w.t - tw.fresh < 0.4) alpha = (w.t - tw.fresh) / 0.4;
     ctx.globalAlpha = alpha;
 
     // `initializing` pulses: the twin is busy with something slow (engine
@@ -1257,6 +1677,19 @@
       if (y + h > box.y + box.h - 4 * S) break;
       drawMetric(ctx, px, y, maxW, h, name, m, tw.spark.get(name) || [], S);
       y += h + 4 * S;
+    }
+
+    // A card that has gone says so for as long as it is up: the `closed`
+    // marker below outlives its own TTL by a beat only, and the state pill
+    // still reads whatever the twin was doing when it left the listing.
+    if (closing) {
+      ctx.fillStyle = C.grey;
+      ctx.font = `600 ${Math.round(8.5 * S)}px ${FONT}`;
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('▸ closed', box.x + box.w - 8 * S, box.y + box.h - 6 * S);
+      ctx.globalAlpha = 1;
+      return;
     }
 
     // the newest inferred verb / transition, bottom-right of the card
@@ -1410,11 +1843,14 @@
     panel(ctx, L.hpc, C.frame_border, 'hpc resources', C.frame_label, S,
           C.panel_deep);
 
-    drawEndpointLane(ctx, L.task, 'task endpoint', w.endpoints.task, 'task',
+    // every endpoint any session put in that role, because the role is a
+    // per-session answer and two sessions need not agree
+    drawEndpointLane(ctx, L.task, 'task endpoint',
+                     w.endpoints.task.join(', '), 'task',
                      w, S, C.cyan_dim, null);
-    drawEndpointLane(ctx, L.exsitu, 'exsitu endpoint', w.endpoints.exsitu,
-                     'exsitu', w, S, C.amber_dim,
-                     w.endpoints.alias ? 'aliases task' : null);
+    drawEndpointLane(ctx, L.exsitu, 'exsitu endpoint',
+                     w.endpoints.exsitu.join(', '), 'exsitu', w, S,
+                     C.amber_dim, w.endpoints.alias ? 'aliases task' : null);
   }
 
   // Tile geometry, shared by the renderer and the spawn arcs so a task
@@ -1454,9 +1890,30 @@
 
     for (const t of w.tasks.values()) {
       if (t.lane !== lane) continue;
-      if (w.t - t.t0 < FLIGHT) continue;      // still in the air
+      // still in the air, or still waiting for the poll that owns it
+      if (t.armed === null || w.t - t.armed < FLIGHT) continue;
       const p = tilePos(r, g, t.slot);
       drawTaskTile(ctx, p.x, p.y, g.tile, t, w, S);
+    }
+
+    // The beat in which a client's `get_inference` was being served.  It is
+    // served *here*: a twin answers a probe by running its investigator's
+    // inference task on the task engine, and the ex-situ engine only ever
+    // receives training windows.  Which of the tiles above it was cannot be
+    // known -- a `task_status` carries no verb -- so this marks the when and
+    // nothing else, dim like the other inferred marks, and only on the lane
+    // that could have run it.
+    if (lane === 'task' && w.probe) {
+      const age = w.t - w.probe.t;
+      const span = FLIGHT * 1.6;
+      if (age >= 0 && age < span) {
+        ctx.save();
+        ctx.globalAlpha = 0.28 + 0.42 * Math.max(0, 1 - age / span);
+        const pw = pillWidth(ctx, 'inference', S);
+        pill(ctx, r.x + r.w - pw - 9 * S, r.y + r.h - 20 * S,
+             'inference', C.amber, S);
+        ctx.restore();
+      }
     }
 
     const c = w.counts[lane];
@@ -1471,7 +1928,7 @@
 
   function drawTaskTile(ctx, x, y, size, t, w, S) {
     const color = TASK_COLOR[t.state] || C.cyan;
-    const age = w.t - t.t0 - FLIGHT;
+    const age = w.t - (t.armed === null ? t.t0 : t.armed) - FLIGHT;
 
     let alpha = 1;
     if (t.tEnd !== null) alpha = Math.max(0, 1 - (w.t - t.tEnd) / FADE);
@@ -1500,25 +1957,53 @@
 
   // ---- flights: the inferred verbs, and spawned tasks -------------------
 
-  function drawFlights(ctx, L, w) {
+  function drawFlights(ctx, L, w, ui) {
     const S = L.S;
 
     for (const f of w.flights) {
-      const k = (w.t - f.t0) / FLIGHT;
+      const k = (w.t - f.t0) / f.dur;
       if (k < 0 || k > 1) continue;
 
       const seg = flightPath(L, w, f);
       if (!seg) continue;
 
+      if (ui && ui.probe) {
+        ui.probe.arcs.push({
+          kind: f.kind, label: f.label, twin: f.twinId,
+          uid:  f.task ? f.task.uid : null,
+          lane: f.task ? f.task.lane : null,
+          owner: f.task ? (w.owners.get(f.task.uid) || null) : null,
+          x0: seg.x0, y0: seg.y0, x1: seg.x1, y1: seg.y1,
+          color: seg.color, k,
+        });
+      }
+
       const e = 1 - Math.pow(1 - k, 3);
       const mx = (seg.x0 + seg.x1) / 2;
-      const my = (seg.y0 + seg.y1) / 2 - 34 * S;
+      // The lift, which is what makes a centre anchor legible: a fixed one
+      // left a long arc lying flat across the cards between its ends, and an
+      // arc that starts *inside* a card has to climb out of it to be read as
+      // leaving it at all.  Proportional to the span, so the short client
+      // hops stay gentle and the long ones to the endpoint lanes clear the
+      // grid instead of crossing it.
+      const span = Math.hypot(seg.x1 - seg.x0, seg.y1 - seg.y0);
+      const lift = Math.min(96 * S, (20 + 0.20 * span) * S);
+      const midY = (seg.y0 + seg.y1) / 2;
+      // Bowed away from whichever side has the room.  The card grid sits at
+      // the top of its lane, so for most arcs that is downward, into the
+      // empty part of the lane: a curve with no room above flattens into a
+      // line that runs through the cards between its ends, which is the one
+      // thing a centre anchor cannot afford.
+      const my = !seg.onCard && midY - lift > L.hd + 10 * S
+        ? midY - lift : midY + lift;
+      const dim = seg.dim || 1;
 
       // the trail
       ctx.save();
-      ctx.globalAlpha = 0.22 * (1 - k);
+      ctx.globalAlpha = 0.22 * dim * (1 - k);
       ctx.strokeStyle = seg.color;
       ctx.lineWidth = 1;
+      if (seg.dash) ctx.setLineDash([3 * S, 3 * S]);
       ctx.beginPath();
       ctx.moveTo(seg.x0, seg.y0);
       ctx.quadraticCurveTo(mx, my, seg.x1, seg.y1);
@@ -1532,13 +2017,13 @@
       const size = seg.size * (0.65 + 0.35 * e);
 
       ctx.save();
-      ctx.globalAlpha = 0.95;
+      ctx.globalAlpha = 0.95 * dim;
       ctx.fillStyle = seg.color;
       rr(ctx, x - size / 2, y - size / 2, size, size, 2);
       ctx.fill();
 
       if (seg.label && k < 0.7) {
-        ctx.globalAlpha = 0.85 * (1 - k / 0.7);
+        ctx.globalAlpha = 0.85 * dim * (1 - k / 0.7);
         ctx.fillStyle = seg.color;
         ctx.font = `600 ${Math.round(8.5 * S)}px ${FONT}`;
         ctx.textAlign = 'center';
@@ -1549,20 +2034,80 @@
     }
   }
 
+  // The card a task's arc leaves from: the twin that submitted it, which the
+  // service recorded at submission and the poll carried here (`applyTasks`).
+  // No candidates, no heuristics -- either the uid is in the map or nothing
+  // is claimed, and what is left then is a slice of the broker lane's right
+  // edge.  A twin that has failed or closed *does* keep its arcs: it really
+  // did submit them, and its card is still on the canvas to say so.
+  //
+  // Always inside the broker lane, never the client's: a task is submitted
+  // by the plugin on a twin's behalf, and an arc leaving the session
+  // sub-lane would say the client submitted it, which never happens.
+  //
+  // Resolved per frame, so an event that arrived before the poll explaining
+  // it starts at the edge and snaps to the card as soon as the map lands --
+  // one frame of honesty rather than a queue of held-back arcs.
+  function originRect(L, w, uid) {
+    const id = uid && w.owners.get(uid);
+    const tw = id && w.twins.get(id);
+
+    if (tw && tw._rect) return { rect: tw._rect, card: true };
+
+    return { card: false,
+             rect: { x: L.broker.x + L.broker.w - 1,
+                     y: L.broker.y + L.broker.h * 0.4,
+                     w: 1, h: L.broker.h * 0.1 } };
+  }
+
+  // Where an arc meets a twin card: on its centre line, low down -- inside
+  // the card, so it belongs to exactly one of them (an edge is shared with
+  // whatever sits next to it), and close enough to the bottom that the curve
+  // is out from under the card almost at once.  Everything that touches a
+  // card meets it here.
+  function cardAnchor(r) {
+    return { x: r.x + r.w / 2, y: r.y + CARD_ANCHOR * r.h };
+  }
+
   function flightPath(L, w, f) {
     const S = L.S;
 
-    // a spawned simulation task: broker -> the endpoint lane's own slot
-    if (f.kind === 'spawn' && f.task) {
+    // a spawned simulation task: its origin -> the endpoint lane's own slot
+    // and, on completion, the same hop back
+    if ((f.kind === 'spawn' || f.kind === 'result') && f.task) {
       const r = f.task.lane === 'exsitu' ? L.exsitu : L.task;
       const g = laneGeom(r, S);
       const p = tilePos(r, g, f.task.slot);
+      const home = originRect(L, w, f.task.uid);
+      const color = f.task.lane === 'exsitu' ? C.amber : C.cyan;
+
+      const at = { x: p.x + g.tile / 2, y: p.y + g.tile / 2 };
+      // an unattributed task leaves the broker lane's edge instead: that rect
+      // is a sliver, and `onCard` says the bow has no card to clear
+      const to = cardAnchor(home.rect);
+
+      if (f.kind === 'result') {
+        return { x0: at.x, y0: at.y, x1: to.x, y1: to.y,
+                 size: g.tile * 0.9,
+                 color: f.task.state === 'FAILED' ? C.red : C.violet,
+                 label: null, dim: 0.7, onCard: home.card };
+      }
+      return { x0: to.x, y0: to.y, x1: at.x, y1: at.y,
+               size: g.tile * 1.1, color, label: null, onCard: home.card };
+    }
+
+    // a stream message: the publisher's tile -> the twin that published it
+    if (f.kind === 'sample') {
+      const pub = f.from && w.publishers.get(f.from);
+      const tw = w.twins.get(f.twinId);
+      if (!pub || !pub._rect || !tw || !tw._rect) return null;
+
+      const into = cardAnchor(tw._rect);
+
       return {
-        x0: L.broker.x + L.broker.w, y0: L.broker.y + L.broker.h * 0.45,
-        x1: p.x + g.tile / 2,        y1: p.y + g.tile / 2,
-        size: g.tile * 1.1,
-        color: f.task.lane === 'exsitu' ? C.amber : C.cyan,
-        label: null,
+        x0: pub._rect.x + pub._rect.w, y0: pub._rect.y + pub._rect.h / 2,
+        x1: into.x, y1: into.y, onCard: true,
+        size: Math.round(6 * S), color: C.green, label: null, dim: 0.85,
       };
     }
 
@@ -1574,15 +2119,44 @@
       || { x: L.broker.x + 20 * S, y: L.broker.y + 34 * S, w: 40 * S, h: 40 * S };
 
     const a = { x: from.x + from.w, y: from.y + from.h / 2 };
-    const b = { x: to.x, y: to.y + to.h / 2 };
+    const b = cardAnchor(to);
+    const onCard = !!(tw && tw._rect);
     const size = Math.round(11 * S);
 
     if (f.kind === 'create') {
       return { x0: a.x, y0: a.y, x1: b.x, y1: b.y, size,
-               color: C.cyan, label: 'create' };
+               color: C.cyan, label: 'create', onCard };
     }
+
+    // A client call and the answer to it, one completed round trip.  The
+    // inference round trip is the one a client is actually waiting on, so
+    // both halves of it are amber -- the request colour, told apart from
+    // the green a stream pulses in and the violet a task result returns in.
+    if (f.kind === 'call') {
+      const inference = f.label === 'get_inference';
+      return { x0: a.x, y0: a.y, x1: b.x, y1: b.y,
+               size: Math.round(inference ? 9 * S : 8 * S),
+               color: inference ? C.amber : C.cyan, onCard,
+               label: f.label, dim: inference ? 1 : 0.8 };
+    }
+    if (f.kind === 'answer') {
+      return { x0: b.x, y0: b.y, x1: a.x, y1: a.y,
+               size: Math.round(8 * S), color: C.amber, onCard,
+               label: null, dim: 0.9 };
+    }
+
+    // a state report going back client-ward: dashed and dim, because
+    // unlike a verb it is not a call anyone made -- it is what the next
+    // `twin_list` poll would have carried
+    if (f.kind === 'report') {
+      return { x0: b.x, y0: b.y, x1: a.x, y1: a.y,
+               size: Math.round(7 * S), onCard,
+               color: STATE_TEXT[f.label] || C.text_dim,
+               label: f.label, dash: true, dim: 0.7 };
+    }
+
     return { x0: b.x, y0: b.y, x1: a.x, y1: a.y, size,
-             color: C.grey, label: 'destroy' };
+             color: C.grey, label: 'destroy', onCard };
   }
 
   // ---- hover tooltip: the full twin id, metrics and last error ----------

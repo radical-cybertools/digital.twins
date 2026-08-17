@@ -10,7 +10,8 @@ in-situ flow via a system of queues.
 
 import asyncio
 import logging
-from collections import defaultdict
+from collections import defaultdict, deque
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import cast
 
@@ -45,6 +46,84 @@ logger = logging.getLogger(__name__)
 
 # bounded wait for in-flight tasks to settle on stop()
 STOP_TIMEOUT = 10.0
+
+# How many recently submitted task uids a twin remembers.  This is an
+# observation surface, not a ledger: `twin_list` carries it so an observer
+# can say which twin a `task_status` notification belongs to, and one poll
+# period's worth of submissions is all that is needed for that.  A uid the
+# ring has dropped is simply unattributed.  asyncflow's uid counter is
+# process-global and only `reset_uid_counter()` rewinds it (at backend
+# shutdown), so within one host a uid never names two different twins.
+TASK_UID_RING = 24
+
+# The twin whose work the current asyncio task is doing.  asyncio copies the
+# context into every task it creates, and asyncflow registers a component
+# from a task of its own, so a runtime that stamps this once owns every uid
+# assigned underneath it -- including the ones a user component submits from
+# inside its own coroutine, which the runtime never sees.
+_OWNER: ContextVar[Optional["DTRuntime"]] = ContextVar("dt_task_owner",
+                                                      default=None)
+
+
+def note_flow_task(fut: Any, owner: Optional["DTRuntime"] = None) -> Optional[str]:
+    """Record the uid asyncflow assigned to `fut` against its owning twin.
+
+    The uid is the one rhapsody publishes in `task_status`: asyncflow puts
+    `task.NNNNNN` in the component description (`_assign_uid`) and the
+    execution backend keeps it (`setdefault`), so joining on it is exact.
+
+    Returns the uid when there was one.  A plain coroutine -- an inference
+    task that is not a flow task -- has none and is skipped, and so is a
+    future asyncflow has not stamped yet (`hook_engine` catches those).
+    """
+
+    who = owner or _OWNER.get()
+    desc = getattr(fut, "task", None)
+    uid = desc.get("uid") if isinstance(desc, dict) else None
+
+    if who is None or not uid:
+        return None
+
+    who.note_task(uid)
+
+    return uid
+
+
+def hook_engine(flow: Any, owner: Optional["DTRuntime"] = None) -> None:
+    """Capture every uid this engine assigns, at the moment it assigns it.
+
+    asyncflow stamps the future from a task of its own, so the uid is not on
+    it when a submitting call returns -- which is exactly when a twin would
+    like to record it.  `_register_component` is where the uid is minted, so
+    that is what this wraps, once per engine object; ownership comes from the
+    context (see `_OWNER`), because one engine serves every twin of a
+    session.  `owner` pins it for an engine driven from outside the runtime's
+    own tasks (the ex-situ one, whose loop is ROSE's).
+
+    In-package coupling to one asyncflow internal, deliberately: the
+    alternative is a uid the service cannot know, and every honest
+    alternative was tried first (see the README).
+    """
+
+    inner = getattr(flow, "_register_component", None)
+    if inner is None or getattr(flow, "_dt_uid_hook", False):
+        return
+
+    def hooked(comp_fut, comp_type, comp_desc, *args, **kwargs):
+        result = inner(comp_fut, comp_type, comp_desc, *args, **kwargs)
+        try:
+            uid = comp_desc.get("uid")
+            who = _OWNER.get() or owner
+            # blocks are not tasks and never appear in `task_status`
+            if who is not None and isinstance(uid, str) and uid.startswith("task."):
+                who.note_task(uid)
+        except Exception as exc:                       # never break a submit
+            logger.debug("uid capture failed: %s", exc)
+
+        return result
+
+    flow._register_component = hooked
+    flow._dt_uid_hook = True
 
 
 @dataclass(frozen=True)
@@ -583,8 +662,35 @@ class DTRuntime:
         # Its presence is also what closes the twin for new work.
         self._stop_task: Optional[asyncio.Task] = None
 
+        # Task ownership, for anything watching from outside: the uids this
+        # twin most recently submitted (see `TASK_UID_RING`).  A submission
+        # overwrites the oldest, which is also what makes it self-healing --
+        # nothing has to be cleaned up, and a twin that stops submitting
+        # stops appearing in new notifications.
+        self._task_uids: deque[str] = deque(maxlen=TASK_UID_RING)
+        self._task_seen: set[str] = set()
+
+        hook_engine(flow)
+
         # a stalled stream is a twin failure, not a log line
         streamer.on_error = self._record_error
+
+    def note_task(self, uid: str) -> None:
+        """Record a task uid as this twin's.  Idempotent and bounded."""
+
+        if uid in self._task_seen:
+            return
+
+        if len(self._task_uids) == self._task_uids.maxlen:
+            self._task_seen.discard(self._task_uids[0])
+
+        self._task_uids.append(uid)
+        self._task_seen.add(uid)
+
+    def task_uids(self) -> list[str]:
+        """The uids this twin submitted most recently, oldest first."""
+
+        return list(self._task_uids)
 
     @property
     def stream_config(self) -> PubSubConfig:
@@ -745,6 +851,18 @@ class DTRuntime:
                 yield ant
                 yield from ant.investigators.values()
 
+    async def _owned(self, func, *args, **kwargs):
+        """Run a component's coroutine as this twin's work.
+
+        The stamp lives in the task's own context, so it reaches every task
+        created underneath -- asyncflow's registration among them -- and no
+        sibling twin's.
+        """
+
+        _OWNER.set(self)
+
+        return await func(*args, **kwargs)
+
     def _to_asyncio_task(self, func, *args, **kwargs) -> Optional[asyncio.Task]:
         """Schedule a coroutine as an :class:`asyncio.Task` and track its
         completion.
@@ -764,7 +882,7 @@ class DTRuntime:
             logger.debug("twin is %s - not running %s", self.state, func)
             return None
 
-        task = asyncio.create_task(func(*args, **kwargs))
+        task = asyncio.create_task(self._owned(func, *args, **kwargs))
         self.running_tasks.add(task)
         task.add_done_callback(self._task_done)
 
@@ -1183,6 +1301,12 @@ class DTRuntime:
             joins and persistent utility tasks.)
         """
 
+        # Every task submitted under this call is this twin's, including the
+        # ones a component submits from inside its own coroutine.  Stamped
+        # here as well as in `_owned` because a client's `get_inference`
+        # arrives on a request handler's context, not on one of ours.
+        _OWNER.set(self)
+
         await self.is_start.wait()
         logger.info(f"Online run: {type(ant.component).__name__}.")
 
@@ -1286,9 +1410,11 @@ class DTRuntime:
             assert ant.model_select_task is not None
             logger.debug(f"Run {type(ant.component).__name__} selection task")
 
-            answer_ms = await ant.model_select_task(
+            selecting = ant.model_select_task(
                 in_data, *ant.model_select_args, **ant.model_select_kwargs
             )
+            note_flow_task(selecting)
+            answer_ms = await selecting
 
             # answer is an investigator id.
             if isinstance(answer_ms, tuple) and len(answer_ms) == 2:
@@ -1351,7 +1477,13 @@ class DTRuntime:
         """
 
         try:
-            return await ant.inference_task(in_data, **model_kwargs)
+            # the future first, so the task it stands for is recorded as this
+            # twin's before anyone can hear about it (`note_flow_task`); a
+            # plain coroutine has no uid and is simply skipped
+            pending = ant.inference_task(in_data, **model_kwargs)
+            note_flow_task(pending)
+
+            return await pending
 
         except TypeError as exc:
             traceback = exc.__traceback__

@@ -673,6 +673,39 @@ async def test_a_twin_summary_carries_its_metrics():
     assert twin.summary()["metrics"] == {}
 
 
+async def test_a_twin_counts_the_verbs_it_answered():
+    """The only trace a synchronous verb leaves: what the dashboard's
+    client-ward arcs are inferred from."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+
+    assert twin.summary()["calls"] == {}
+
+    for _ in range(3):
+        await session.twin_call("t1", "describe", stamp=version_stamp())
+
+    assert twin.summary()["calls"] == {"describe": 3}
+
+    await twin.close()
+
+
+async def test_a_verb_that_failed_is_not_counted():
+    """A round trip that was never answered is not one."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    await twin.runtime.stop()
+
+    with pytest.raises(HTTPException) as raised:
+        await session.twin_call("t1", "start", stamp=version_stamp())
+
+    assert raised.value.status_code == 409
+    assert "start" not in twin.summary()["calls"]
+
+    await twin.close()
+
+
 async def test_the_session_summary_names_the_engine_endpoints():
     """The dashboard draws one lane per engine *role*; `None` for
     `'exsitu'` is the documented alias of `'task'`, not an omission."""

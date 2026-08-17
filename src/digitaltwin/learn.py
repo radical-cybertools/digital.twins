@@ -59,7 +59,7 @@ from radical.asyncflow import WorkflowEngine  # type: ignore
 from rose.al.streaming_learner import StreamingActiveLearner  # type: ignore
 
 from .components import ModelInvestigator, TypedData
-from .runtime import RuntimeAPI
+from .runtime import RuntimeAPI, hook_engine, note_flow_task
 
 logger = logging.getLogger(__name__)
 
@@ -201,6 +201,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
             )
 
         self._warn_local_learner_tasks()
+        self._own_learner_tasks(runtime)
 
         runtime.set_inference_task(self.inference_task)
         runtime.subscribe_to_topic(RuntimeAPI.ON_INPUT, self._feed)
@@ -223,6 +224,43 @@ class StreamingLearnerInvestigator(ModelInvestigator):
             # the failure path too: no learner outlives its twin
             self.learner.stop()
             self._finished.set()
+
+    def _own_learner_tasks(self, runtime: RuntimeAPI) -> None:
+        """Record the ex-situ tasks as this twin's, as ROSE submits them.
+
+        Every training / active-learning / criterion task goes out through
+        `Learner._register_task`, which returns the asyncflow future -- so an
+        instance-attribute wrapper here sees all three without ROSE knowing.
+        The engine is hooked as well, because the uid is minted a tick after
+        the future is handed back; the wrapper's own reading catches the case
+        where the hook cannot (an engine ROSE replaced), and both write to the
+        same bounded ring, which ignores a uid it already has.
+
+        Best-effort by construction: a ROSE that stops routing through
+        `_register_task` loses the attribution, not the learning.
+        """
+
+        owner = getattr(runtime, "_runtime", None)
+        if owner is None:
+            return
+
+        hook_engine(self.learn_flow, owner)
+
+        inner = getattr(self.learner, "_register_task", None)
+        if inner is None or getattr(self.learner, "_dt_owned", False):
+            return
+
+        def registered(*args, **kwargs):
+            future = inner(*args, **kwargs)
+            try:
+                note_flow_task(future, owner)
+            except Exception as exc:
+                logger.debug("learner uid capture failed: %s", exc)
+
+            return future
+
+        self.learner._register_task = registered
+        self.learner._dt_owned = True
 
     def _record_metrics(self, state: Any) -> None:
         """Mirror the window's criterion state into `self.metrics`.
