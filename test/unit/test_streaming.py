@@ -149,6 +149,7 @@ async def test_stream_config_travels_and_reopens_the_endpoint(broker, stream_cli
         "pub_addr": config.pub_addr,
         "sub_addr": config.sub_addr,
         "kind": "zmq",
+        "broker_url": None,
     }
 
     # ... and the far end opens its own client from it, in the same
