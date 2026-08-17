@@ -51,6 +51,7 @@ package imports it.
 import asyncio
 import contextlib
 import logging
+import math
 
 from typing import Any, Callable, Optional
 
@@ -61,15 +62,6 @@ from .components import ModelInvestigator, TypedData
 from .runtime import RuntimeAPI
 
 logger = logging.getLogger(__name__)
-
-
-def _number(value: Any) -> Optional[float]:
-    """A JSON-safe float, or `None` -- a criterion may not have run yet."""
-
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return None
-
-    return round(float(value), 6)
 
 # how long twin teardown lets the learner leave its current window before
 # the runtime cancels it outright
@@ -83,8 +75,27 @@ _ROSE_STATE_KEYS = ("window_size",)
 
 # how much of the criterion's metric history travels in `metrics`.  A
 # days-long twin accumulates one value per window forever; the dashboard
-# only ever draws a sparkline of the recent tail.
-METRIC_HISTORY = 32
+# only ever draws a sparkline of the recent tail, and it keeps 24 points
+# (`SPARK_MAX` in `service/ui/dt_dash.js`) -- so sending more is paying
+# for something nothing reads.
+METRIC_HISTORY = 24
+
+
+def _number(value: Any) -> Optional[float]:
+    """A JSON-safe float, or `None` -- a criterion may not have run yet.
+
+    Six *significant* figures, not six decimal places: a criterion
+    threshold of 1e-8 is an ordinary target, and rounding it by decimals
+    would put 0.0 on the wire.  Infinities and NaN are dropped rather
+    than emitted, because neither survives JSON.
+    """
+
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+
+    number = float(f"{value:.6g}")
+
+    return number if math.isfinite(number) else None
 
 
 class StreamingLearnerInvestigator(ModelInvestigator):
@@ -227,11 +238,9 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         if not name:
             return
 
-        history = [
-            round(value, 6)
-            for value in (state.metric_history or [])[-METRIC_HISTORY:]
-            if isinstance(value, (int, float))
-        ]
+        window = (state.metric_history or [])[-METRIC_HISTORY:]
+        history = [value for value in map(_number, window)
+                   if value is not None]
 
         self.metrics = {
             name: {

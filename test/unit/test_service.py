@@ -718,12 +718,21 @@ def test_the_ui_assets_are_served_as_javascript(client, asset):
     assert "javascript" in resp.headers["content-type"]
 
 
-@pytest.mark.parametrize("asset", ["passwd", "plugin.py", ".env"])
+@pytest.mark.parametrize("asset", [
+    "passwd", "plugin.py", ".env",
+    # a percent-encoded separator survives the route's `[^/]+` segment, so
+    # the allow-list is what has to refuse it -- not the router
+    "..%2f..%2fplugin.py", "%2e%2e%2f%2e%2e%2fplugin.py",
+    "dt_dash.js%00.png",
+])
 def test_an_unlisted_ui_asset_is_404(client, asset):
     """An allow-list, not a directory walk: the asset name comes from the
     client."""
 
-    assert client.get(f"/dt/ui/{asset}").status_code == 404
+    resp = client.get(f"/dt/ui/{asset}")
+
+    assert resp.status_code == 404
+    assert "plugin" not in resp.text or "no such asset" in resp.text
 
 
 def test_the_explorer_module_is_the_one_the_plugin_declares():

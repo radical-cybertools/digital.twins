@@ -131,9 +131,34 @@ def test_events_are_sse_notifications_the_lanes_can_place(recording):
         assert {"endpoint", "plugin", "topic", "data"} <= set(event)
 
     assert len({e["endpoint"] for e in tasks}) == 2, "both role lanes"
+    assert {"rhapsody", "dt_stream"} & {e["plugin"] for e in events}
     states = {e["data"]["state"] for e in tasks}
     assert "RUNNING" in states and states & {"DONE", "COMPLETED"}
     assert all(e["data"]["uid"] for e in tasks)
+
+
+def test_a_stream_event_pins_the_pulse_path(recording):
+    """One `dt_stream` frame, synthetic and labelled as such in the sample:
+    the recorded deployment ran the `zmq` data plane, so this is the only
+    thing keeping the topic-to-twin-to-dtype parse honest."""
+
+    streams = [f["data"] for f in recording["frames"]
+               if f["kind"] == "event" and f["data"]["plugin"] == "dt_stream"]
+
+    assert streams, "no stream event: the pulse path is undemonstrated"
+
+    for event in streams:
+        # `PubSubClient.topic()`: dt/<namespace>/dtypes/<label> + terminator
+        namespace, _, label = event["topic"][3:].partition("/dtypes/")
+        assert event["topic"].startswith("dt/")
+        assert label.rstrip("\x00")
+        # the pulse has to land on a twin the snapshots actually name
+        twins = {t["twin_id"] for f in recording["frames"]
+                 if f["kind"] == "snapshot"
+                 for s in f["data"]["sessions"] for t in s["twins"]}
+        assert namespace in twins
+        # the cloudpickled payload is not carried: the topic draws the pulse
+        assert event["data"] == {}
 
 
 def test_the_page_and_the_plugin_ship_the_same_assets():

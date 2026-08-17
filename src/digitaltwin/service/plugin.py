@@ -320,6 +320,17 @@ class PluginDT(Plugin):
 
     @staticmethod
     def _ui_asset(asset: str) -> Response:
+        """A `Response`, not a dict -- which every dispatch path handles.
+
+        Checked, because it is the only route in this plugin that does not
+        return JSON: all three normalize on `status_code` and forward the
+        raw body.  `Plugin._wrap_handler` for the ASGI/Explorer path,
+        `BrokerPluginHost.handle_request` for a broker-hosted call
+        (`Broker._dispatch_to_host` then packs `bytes(result.body)` into
+        the wire response), and `EndpointRuntime._dispatch_served` for an
+        endpoint-hosted one.
+        """
+
         media = UI_ASSETS.get(asset)
         if media is None:
             raise http_exception(FileNotFoundError(f"no such asset: {asset}"))

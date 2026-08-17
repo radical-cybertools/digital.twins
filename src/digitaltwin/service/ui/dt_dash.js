@@ -139,6 +139,7 @@
   //  Timings, in seconds of *model* time (the replay speed scales them all)
   // -------------------------------------------------------------------------
   const POLL_INTERVAL = 1.0;    // admin/sessions poll period, live mode
+  const POLL_TIMEOUT  = 10.0;   // and the deadline on one such request
   const FLIGHT        = 1.0;    // create / destroy / spawn arc duration
   const FADE          = 0.9;    // completed task tile fade-out
   const MARKER_TTL    = 2.6;    // state-transition marker lifetime
@@ -146,6 +147,9 @@
   const GLOW          = 0.5;    // on-landing halo
   const SPARK_MAX     = 24;     // sparkline points kept per metric
   const TASK_MAX      = 400;    // tile slots per endpoint lane
+  const TASK_TTL      = 300;    // drop a task nothing has mentioned since
+  const CAPTURE_MAX   = 4000;   // frames one `rec` may hold
+  const SSE_BACKOFF   = 30;     // longest wait before re-opening the feed
 
   // =========================================================================
   //  MODEL -- frames fold into one world; nothing here knows live from replay
@@ -322,11 +326,17 @@
 
     if (!task) {
       const lane = laneOf(w, endpoint);
-      task = { uid, lane, state, t0: w.t, tEnd: null, slot: nextSlot(w, lane) };
+      task = { uid, lane, state, t0: w.t, seen: w.t, tEnd: null,
+               slot: nextSlot(w, lane) };
       w.tasks.set(uid, task);
       flight(w, 'spawn', null, task);
       w.counts[lane].running++;
     }
+
+    // every mention refreshes it, repeated states included: a task is
+    // aged out on *silence*, and a batch flush re-stating RUNNING is not
+    // silence (see `expire`)
+    task.seen = w.t;
 
     if (task.state !== state) {
       task.state = state;
@@ -351,13 +361,15 @@
 
   // `dt/<twin_id>/dtypes/<label>`: the DT topic is the ORBIT topic
   // verbatim under the orbit data-plane backend, so a pulse is
-  // attributable to the exact twin and dtype that produced it.
+  // attributable to the exact twin and dtype that produced it.  The label
+  // carries `PubSubClient.TOPIC_TERMINATOR` -- a NUL, there to stop ZMQ's
+  // prefix matching from confusing two labels that share a prefix.
   function applyStream(w, topic) {
     const parts = String(topic).split('/');
     if (parts.length < 4 || parts[0] !== 'dt') return;
 
     const tw = w.twins.get(parts[1]);
-    if (tw) tw.pulse = { t: w.t, label: parts[3].replace(/\|$/, '') };
+    if (tw) tw.pulse = { t: w.t, label: parts[3].replace(/\0+$/, '') };
   }
 
   // ---- inferred verbs: arcs and markers -----------------------------------
@@ -377,7 +389,20 @@
     w.markers = w.markers.filter(m => w.t - m.t0 < MARKER_TTL);
 
     for (const [uid, t] of w.tasks) {
-      if (t.tEnd !== null && w.t - t.tEnd > FADE) w.tasks.delete(uid);
+      if (t.tEnd !== null) {
+        if (w.t - t.tEnd > FADE) w.tasks.delete(uid);
+        continue;
+      }
+      // A terminal event lost in an SSE reconnect gap would otherwise
+      // leave a tile pulsing RUNNING for the rest of the session, holding
+      // its slot and its place in the tally.  The trade this makes is
+      // deliberate: a task that really does run longer than TASK_TTL
+      // stops being drawn.  Its fate is unknown, so it leaves the
+      // running count without joining `done` or `failed`.
+      if (w.t - t.seen > TASK_TTL) {
+        w.counts[t.lane].running = Math.max(0, w.counts[t.lane].running - 1);
+        w.tasks.delete(uid);
+      }
     }
     for (const [id, tw] of w.twins) {
       if (tw.gone !== null && w.t - tw.gone > FLIGHT + FADE) w.twins.delete(id);
@@ -415,6 +440,22 @@
     };
   }
 
+  // One frame of a recording.  Kept verbatim, with one exception: a DT
+  // stream event's payload is a cloudpickled blob that only its
+  // subscribers can read, is the largest thing on the feed, and is not
+  // what draws the pulse -- the topic is.  So the topic travels and the
+  // payload does not.
+  function captureFrame(t, frame) {
+    let data = frame.data;
+
+    if (frame.kind === 'event' && data && data.plugin === 'dt_stream') {
+      data = { endpoint: data.endpoint, plugin: data.plugin,
+               topic: data.topic, data: {} };
+    }
+
+    return { t: round(t, 3), kind: frame.kind, data };
+  }
+
   // The live stack: a 1 Hz `admin/sessions` poll plus the gateway's SSE
   // feed.  Both are turned into the same frames a recording holds, which
   // is what makes `Record` a memcpy rather than a second serializer.
@@ -423,7 +464,8 @@
     const dtPath = (opts.dtPath || '/broker/dt').replace(/\/$/, '');
     const url    = path => `${broker}${path}`;
 
-    let timer = null, es = null, stopped = false, polls = 0, fails = 0;
+    let timer = null, esTimer = null, es = null, stopped = false;
+    let polls = 0, fails = 0, esFails = 0;
 
     async function auth() {
       // A token mints the cookie the EventSource needs; without one we
@@ -442,28 +484,66 @@
         const resp = await fetch(url(`${dtPath}/admin/sessions`), {
           credentials: 'include',
           headers: opts.token ? { authorization: `Bearer ${opts.token}` } : {},
+          // a poll that outlives its own period is a poll nobody wants
+          signal: AbortSignal.timeout(POLL_TIMEOUT * 1000),
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        sink({ kind: 'snapshot', data: await resp.json() });
+        const snapshot = await resp.json();
+
+        // A response that lands after this source was replaced describes
+        // a world that no longer exists; sinking it would inject a stale
+        // snapshot into the new one and infer verbs from the difference.
+        if (stopped) return;
+
+        sink({ kind: 'snapshot', data: snapshot });
         polls++;
         fails = 0;
         onStatus(`live · ${broker || 'same origin'} · ${polls} polls`, true);
       } catch (exc) {
+        if (stopped) return;
         fails++;
         onStatus(`poll failed (${fails}): ${exc.message}`, false);
       }
     }
 
+    // One poll in flight at a time, the next scheduled from the previous
+    // one's completion.  `setInterval` would overlap on a slow broker and
+    // deliver snapshots out of order -- which the delta inference reads as
+    // twins vanishing and coming straight back, arcs and all.  Chaining
+    // also stops the period drifting under a loaded tab.
+    function schedule() {
+      timer = setTimeout(async () => {
+        await poll();
+        if (!stopped) schedule();
+      }, POLL_INTERVAL * 1000);
+    }
+
     function events() {
       es = new EventSource(url('/events'), { withCredentials: true });
+
+      es.onopen = () => { esFails = 0; };
       es.onmessage = ev => {
         let msg;
         try { msg = JSON.parse(ev.data); } catch { return; }
+        if (stopped) return;
         if (msg && msg.topic === 'notification') {
           sink({ kind: 'event', data: msg.data });
         }
       };
-      es.onerror = () => onStatus('event stream interrupted', false);
+
+      // The browser reconnects an EventSource itself only while it is
+      // CONNECTING; a CLOSED one stays closed for good, and a dashboard
+      // that has quietly stopped seeing tasks looks like an idle service.
+      es.onerror = () => {
+        if (stopped) return;
+        if (es.readyState !== 2 /* CLOSED */) {
+          onStatus('event stream interrupted, reconnecting…', false);
+          return;
+        }
+        const wait = Math.min(SSE_BACKOFF, 2 ** Math.min(esFails++, 5));
+        onStatus(`event stream closed, retrying in ${wait}s`, false);
+        esTimer = setTimeout(() => { if (!stopped) events(); }, wait * 1000);
+      };
     }
 
     return {
@@ -474,14 +554,16 @@
         await auth();
         if (stopped) return;
         await poll();
-        timer = setInterval(poll, POLL_INTERVAL * 1000);
+        if (stopped) return;
+        schedule();
         events();
       },
       stop() {
         stopped = true;
-        if (timer) clearInterval(timer);
+        if (timer) clearTimeout(timer);
+        if (esTimer) clearTimeout(esTimer);
         if (es) es.close();
-        timer = es = null;
+        timer = esTimer = es = null;
       },
     };
   }
@@ -517,12 +599,16 @@
 
     const sink = frame => {
       ingest(world, frame);
-      if (capture) {
-        capture.frames.push({
-          t: round(world.t - capture.t0, 3),
-          kind: frame.kind,
-          data: frame.data,
-        });
+      if (!capture) return;
+
+      capture.frames.push(captureFrame(world.t - capture.t0, frame));
+
+      // Bounded, and it has to be: under the orbit data plane every
+      // stream message is an event on this feed, so an unattended `rec`
+      // on a chatty twin would grow until the tab dies.  Stop at the cap
+      // and hand over what was captured rather than losing all of it.
+      if (capture.frames.length >= CAPTURE_MAX) {
+        toggleRecord(`recording stopped at the ${CAPTURE_MAX}-frame cap`);
       }
     };
 
@@ -534,7 +620,7 @@
     const $speed    = range(0.25, 8, 0.05, 1);
     const $speedVal = el('span', 'dtd-num', '1.00×');
     const $mode     = el('span', 'dtd-badge', 'IDLE');
-    const $rec      = btn('&#9679; rec', toggleRecord);
+    const $rec      = btn('&#9679; rec', () => toggleRecord());
     const $file     = fileInput();
     const $url      = input(opts.brokerUrl || '', 'broker url', 190);
     const $token    = input(opts.token || '', 'token', 120);
@@ -650,7 +736,9 @@
 
     // ---- recording --------------------------------------------------------
 
-    function toggleRecord() {
+    // `note` is set when the recording stopped itself rather than being
+    // stopped; it replaces the confirmation with the reason.
+    function toggleRecord(note) {
       if (capture) {
         const rec = {
           schema:   SCHEMA,
@@ -665,7 +753,7 @@
         capture = null;
         $rec.classList.remove('dtd-active');
         $rec.innerHTML = '&#9679; rec';
-        setStatus(`recorded ${rec.frames.length} frames`, true);
+        setStatus(note || `recorded ${rec.frames.length} frames`, !note);
         return;
       }
 
@@ -693,7 +781,27 @@
 
     const ro = new ResizeObserver(resize);
     ro.observe(stage);
+
+    // devicePixelRatio changes without a resize when the window moves to a
+    // display of another density, and a stale one draws the whole canvas
+    // blurry.  A resolution media query is the only event for it, and it
+    // has to be re-armed against the new ratio each time it fires.
+    let dprQuery = null;
+
+    function watchDpr() {
+      if (!window.matchMedia) return;
+      if (dprQuery) dprQuery.removeEventListener('change', onDpr);
+      dprQuery = window.matchMedia(`(resolution: ${dpr}dppx)`);
+      dprQuery.addEventListener('change', onDpr);
+    }
+
+    function onDpr() {
+      resize();
+      watchDpr();
+    }
+
     resize();
+    watchDpr();
 
     cv.addEventListener('mousemove', e => {
       const r = cv.getBoundingClientRect();
@@ -704,9 +812,18 @@
     // ---- frame loop -------------------------------------------------------
 
     let last = performance.now();
+    let seen = false;          // has this dashboard ever been in the document?
     let raf  = requestAnimationFrame(frame);
 
     function frame() {
+      // The ORBIT Explorer drops a page's node on disconnect without
+      // telling the module that drew it, and nothing else ever calls
+      // `destroy()` there.  Without this, every connect/disconnect cycle
+      // would leave another poll, EventSource and RAF loop running against
+      // a canvas nobody can see.
+      if (root.isConnected) seen = true;
+      else if (seen) { destroy(); return; }
+
       const now = performance.now();
       const dt  = Math.min(0.25, (now - last) / 1000);
       last = now;
@@ -728,6 +845,15 @@
       raf = requestAnimationFrame(frame);
     }
 
+    function destroy() {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      if (dprQuery) dprQuery.removeEventListener('change', onDpr);
+      dprQuery = null;
+      reset();
+      root.remove();
+    }
+
     // ---- start ------------------------------------------------------------
 
     setMode('idle');
@@ -736,16 +862,11 @@
     else setStatus('load a recording, or connect to a broker', false);
 
     return {
-      world:  () => world,
+      world: () => world,
       play,
       connect,
       setStatus,
-      destroy() {
-        cancelAnimationFrame(raf);
-        ro.disconnect();
-        reset();
-        root.remove();
-      },
+      destroy,
     };
   }
 

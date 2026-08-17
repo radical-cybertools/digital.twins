@@ -28,6 +28,11 @@
       &broker=https://host:p  broker origin ('' = same origin, the default)
       &dt=/broker/dt          the dt plugin's proxy path
       &token=<token>          POSTed to /auth once, to mint the cookie
+
+  Prefer the token *field* over `&token=`: a URL is remembered by the
+  browser's history, quoted in a Referer, and printed in access logs, and
+  the broker token is the whole trust domain.  The parameter is there for
+  a scripted local demo, not for a token anyone cares about.
 -->
 <style>
   html, body {
