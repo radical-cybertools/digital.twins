@@ -1,15 +1,50 @@
 /* ==========================================================================
  *  dt_dash.js -- a live / replayable dashboard for the DTaaS `dt` plugin
  *
- *  `index.html` loads this file with a plain <script src> and calls
- *  `DTDash.mount(el, opts)`.  It has no imports and no exports, so it is
- *  equally valid as an ES module -- which is what a second host will need;
- *  either way it publishes itself on `window.DTDash`.
+ *  One implementation, two hosts:
+ *
+ *    - standalone: `index.html` loads this file with a plain <script src>
+ *      and calls `DTDash.mount(el, opts)`.
+ *    - ORBIT Explorer: `dt_explorer.js` (the plugin's `ui_module`) pulls
+ *      this same file in with a dynamic `import()` and calls the same
+ *      `mount()`.  The file has no imports and no exports, so it is valid
+ *      as a classic script *and* as an ES module; it publishes itself on
+ *      `window.DTDash` either way.
  *
  *  Zero dependencies, no build step.  Everything is drawn on one canvas,
  *  which is resolution-adaptive (ResizeObserver + devicePixelRatio): the
  *  layout is recomputed from the container's size on every frame, because
  *  this has to be legible both full-screen and inside an Explorer page.
+ *
+ *  ------------------------------------------------------------------------
+ *  DATA SOURCES (live mode)
+ *
+ *    GET  {broker}{dtPath}/admin/sessions   -- polled at 1 Hz
+ *         Every session (sid, owner, age, engines, engine endpoints) and
+ *         every twin (twin_id, state, last_error, age, metrics), plus the
+ *         data plane's backend.  This is the ground truth for the lanes,
+ *         the twin cards and the convergence bars.  `dtPath` defaults to
+ *         `/broker/dt` -- the gateway's proxy path for a broker-hosted
+ *         `dt` plugin.
+ *
+ *    GET  {broker}/events                   -- EventSource
+ *         Frames are `{topic:'notification', data:{endpoint, plugin,
+ *         topic, data}}`.  The gateway fans every event to every SSE
+ *         client, so the filtering is ours:
+ *           plugin 'rhapsody', topic 'task_status' / 'task_status_batch'
+ *             -> simulation task tiles on the endpoint lane named by
+ *                `endpoint` (states RUNNING / DONE / FAILED / CANCELED);
+ *           plugin 'dt_stream' (only under DT_STREAM_BACKEND=orbit)
+ *             -> a stream pulse on the twin named by the DT topic
+ *                `dt/<twin_id>/dtypes/<label>`.
+ *
+ *    POST {broker}/auth                     -- once, with a bearer token
+ *         Mints the `orbit_broker_token` cookie that the EventSource rides
+ *         (EventSource cannot carry headers).
+ *
+ *  The create / destroy / state-change verbs are *inferred* from the delta
+ *  between two consecutive polls: nothing on the wire announces them in
+ *  v1, and `twin_list` polling is the documented observation mechanism.
  *
  *  ------------------------------------------------------------------------
  *  RECORDING SCHEMA  ("dt-dash-recording/1")
@@ -103,6 +138,7 @@
   // -------------------------------------------------------------------------
   //  Timings, in seconds of *model* time (the replay speed scales them all)
   // -------------------------------------------------------------------------
+  const POLL_INTERVAL = 1.0;    // admin/sessions poll period, live mode
   const FLIGHT        = 1.0;    // create / destroy / spawn arc duration
   const FADE          = 0.9;    // completed task tile fade-out
   const MARKER_TTL    = 2.6;    // state-transition marker lifetime
@@ -379,6 +415,77 @@
     };
   }
 
+  // The live stack: a 1 Hz `admin/sessions` poll plus the gateway's SSE
+  // feed.  Both are turned into the same frames a recording holds, which
+  // is what makes `Record` a memcpy rather than a second serializer.
+  function LiveSource(opts, sink, onStatus) {
+    const broker = (opts.brokerUrl || '').replace(/\/$/, '');
+    const dtPath = (opts.dtPath || '/broker/dt').replace(/\/$/, '');
+    const url    = path => `${broker}${path}`;
+
+    let timer = null, es = null, stopped = false, polls = 0, fails = 0;
+
+    async function auth() {
+      // A token mints the cookie the EventSource needs; without one we
+      // assume the browser already holds it (the Explorer host does).
+      if (!opts.token) return;
+      const resp = await fetch(url('/auth'), {
+        method: 'POST',
+        headers: { authorization: `Bearer ${opts.token}` },
+        credentials: 'include',
+      });
+      if (!resp.ok) throw new Error(`auth failed: HTTP ${resp.status}`);
+    }
+
+    async function poll() {
+      try {
+        const resp = await fetch(url(`${dtPath}/admin/sessions`), {
+          credentials: 'include',
+          headers: opts.token ? { authorization: `Bearer ${opts.token}` } : {},
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        sink({ kind: 'snapshot', data: await resp.json() });
+        polls++;
+        fails = 0;
+        onStatus(`live · ${broker || 'same origin'} · ${polls} polls`, true);
+      } catch (exc) {
+        fails++;
+        onStatus(`poll failed (${fails}): ${exc.message}`, false);
+      }
+    }
+
+    function events() {
+      es = new EventSource(url('/events'), { withCredentials: true });
+      es.onmessage = ev => {
+        let msg;
+        try { msg = JSON.parse(ev.data); } catch { return; }
+        if (msg && msg.topic === 'notification') {
+          sink({ kind: 'event', data: msg.data });
+        }
+      };
+      es.onerror = () => onStatus('event stream interrupted', false);
+    }
+
+    return {
+      mode:   'live',
+      broker: broker || location.origin,
+      advance() {},                  // frames arrive when they arrive
+      async start() {
+        await auth();
+        if (stopped) return;
+        await poll();
+        timer = setInterval(poll, POLL_INTERVAL * 1000);
+        events();
+      },
+      stop() {
+        stopped = true;
+        if (timer) clearInterval(timer);
+        if (es) es.close();
+        timer = es = null;
+      },
+    };
+  }
+
   // =========================================================================
   //  THE DASHBOARD -- DOM, controls, frame loop
   // =========================================================================
@@ -405,9 +512,19 @@
     let speed   = 1.0;
     let status  = { text: 'no data', ok: false };
     let hover   = null;        // {x, y} in canvas coordinates
+    let capture = null;        // {t0, iso, broker, frames} while recording
     let W = 0, H = 0, dpr = 1;
 
-    const sink = frame => ingest(world, frame);
+    const sink = frame => {
+      ingest(world, frame);
+      if (capture) {
+        capture.frames.push({
+          t: round(world.t - capture.t0, 3),
+          kind: frame.kind,
+          data: frame.data,
+        });
+      }
+    };
 
     // ---- controls ---------------------------------------------------------
 
@@ -417,7 +534,13 @@
     const $speed    = range(0.25, 8, 0.05, 1);
     const $speedVal = el('span', 'dtd-num', '1.00×');
     const $mode     = el('span', 'dtd-badge', 'IDLE');
+    const $rec      = btn('&#9679; rec', toggleRecord);
     const $file     = fileInput();
+    const $url      = input(opts.brokerUrl || '', 'broker url', 190);
+    const $token    = input(opts.token || '', 'token', 120);
+    $token.type = 'password';
+    const $connect  = btn('connect', connect);
+
     bar.appendChild($play);
     bar.appendChild($speedLbl);
     bar.appendChild($speed);
@@ -426,7 +549,14 @@
     bar.appendChild(el('span', 'dtd-spacer'));
     if (opts.sample) bar.appendChild(btn('sample', () => play(opts.sample)));
     bar.appendChild(btn('load…', () => $file.click()));
+    bar.appendChild($rec);
     bar.appendChild($file);
+    if (!opts.compact) {
+      bar.appendChild(el('span', 'dtd-spacer'));
+      bar.appendChild($url);
+      bar.appendChild($token);
+      bar.appendChild($connect);
+    }
 
     $speed.oninput = e => {
       speed = parseFloat(e.target.value);
@@ -465,6 +595,7 @@
       for (const node of [$play, $speedLbl, $speed, $speedVal]) {
         node.style.display = replay ? '' : 'none';
       }
+      $rec.style.display = mode === 'live' ? '' : 'none';
       $mode.textContent = mode.toUpperCase();
       $mode.className = 'dtd-badge' + (mode === 'live' ? ' dtd-live' : '');
     }
@@ -475,6 +606,7 @@
 
     function reset() {
       if (source) source.stop();
+      if (capture) toggleRecord();
       source = null;
       world = newWorld();
     }
@@ -491,6 +623,19 @@
       setPlaying(true);
     }
 
+    function connect() {
+      reset();
+      const live = LiveSource(
+        { brokerUrl: $url.value.trim(), token: $token.value.trim(),
+          dtPath: opts.dtPath },
+        sink, setStatus);
+      source = live;
+      setMode('live');
+      setPlaying(true);
+      setStatus('connecting…', true);
+      live.start().catch(exc => setStatus(exc.message, false));
+    }
+
     function readRecording(file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -501,6 +646,35 @@
         }
       };
       reader.readAsText(file);
+    }
+
+    // ---- recording --------------------------------------------------------
+
+    function toggleRecord() {
+      if (capture) {
+        const rec = {
+          schema:   SCHEMA,
+          recorded: capture.iso,
+          broker:   capture.broker,
+          duration: capture.frames.length
+            ? capture.frames[capture.frames.length - 1].t : 0,
+          frames:   capture.frames,
+        };
+        download(`dt-recording-${rec.recorded.replace(/[:.]/g, '-')}.json`,
+                 JSON.stringify(rec));
+        capture = null;
+        $rec.classList.remove('dtd-active');
+        $rec.innerHTML = '&#9679; rec';
+        setStatus(`recorded ${rec.frames.length} frames`, true);
+        return;
+      }
+
+      capture = {
+        t0: world.t, iso: new Date().toISOString(),
+        broker: (source && source.broker) || '', frames: [],
+      };
+      $rec.classList.add('dtd-active');
+      $rec.innerHTML = '&#9632; stop rec';
     }
 
     // ---- canvas sizing: adaptive, devicePixelRatio-aware -----------------
@@ -537,13 +711,14 @@
       const dt  = Math.min(0.25, (now - last) / 1000);
       last = now;
 
-      if (source && playing) {
-        world.t += dt * speed;
+      if (source && (playing || source.mode === 'live')) {
+        world.t += dt * (source.mode === 'replay' ? speed : 1);
         source.advance(world.t);
         expire(world);
 
         // a finished recording loops, after a beat on the last frame
-        if (source.done && world.t > source.duration + 1.5) {
+        if (source.mode === 'replay' && source.done
+            && world.t > source.duration + 1.5) {
           source.rewind();
           world = newWorld();
         }
@@ -556,12 +731,14 @@
     // ---- start ------------------------------------------------------------
 
     setMode('idle');
-    if (opts.sample) play(opts.sample);
-    else setStatus('load a recording', false);
+    if (opts.live) connect();
+    else if (opts.sample) play(opts.sample);
+    else setStatus('load a recording, or connect to a broker', false);
 
     return {
       world:  () => world,
       play,
+      connect,
       setStatus,
       destroy() {
         cancelAnimationFrame(raf);
@@ -711,6 +888,8 @@
   function short(id) {
     return String(id).replace(/^[a-z_]+\./, '').slice(0, 8);
   }
+
+  function round(v, n) { const f = 10 ** n; return Math.round(v * f) / f; }
 
   function fmt(v) {
     if (typeof v !== 'number' || !isFinite(v)) return '-';
@@ -1385,12 +1564,31 @@
     return r;
   }
 
+  function input(value, placeholder, width) {
+    const i = document.createElement('input');
+    i.className = 'dtd-in';
+    i.value = value;
+    i.placeholder = placeholder;
+    i.style.width = width + 'px';
+    return i;
+  }
+
   function fileInput() {
     const f = document.createElement('input');
     f.type = 'file';
     f.accept = '.json,application/json';
     f.style.display = 'none';
     return f;
+  }
+
+  function download(name, text) {
+    const url = URL.createObjectURL(
+      new Blob([text], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
 
   const CSS = `
@@ -1410,6 +1608,8 @@
            padding: 5px 12px; font-family: inherit; font-size: 12px;
            cursor: pointer; letter-spacing: 0.04em; }
 .dtd-btn:hover { background: #202840; }
+.dtd-btn.dtd-active { background: #3a1622; border-color: ${C.red};
+                      color: ${C.red}; }
 .dtd-btn.dtd-play { min-width: 92px; text-align: center; }
 .dtd-spacer { flex: 1; }
 .dtd-speed { width: 118px; accent-color: ${C.cyan}; vertical-align: middle; }
@@ -1420,6 +1620,10 @@
 .dtd-badge { font-size: 10px; letter-spacing: 0.1em; padding: 3px 8px;
              border: 1px solid ${C.cyan}; color: ${C.cyan};
              border-radius: 3px; }
+.dtd-badge.dtd-live { border-color: ${C.green}; color: ${C.green}; }
+.dtd-in { background: #0b1220; color: ${C.text};
+          border: 1px solid ${C.unused_brd}; border-radius: 4px;
+          padding: 5px 8px; font-family: ${FONT_MONO}; font-size: 11px; }
 `;
 
   function injectCss() {
@@ -1437,7 +1641,12 @@
   /**
    * Mount a dashboard into `host`.
    *
+   *   opts.brokerUrl  broker origin for live mode ('' = same origin)
+   *   opts.dtPath     the dt plugin's proxy path (default '/broker/dt')
+   *   opts.token      broker token; POSTed to /auth once to mint the cookie
+   *   opts.live       connect on load
    *   opts.sample     a bundled recording object to replay on load
+   *   opts.compact    hide the connect form (the Explorer host does)
    */
   function mount(host, opts) {
     return newDash(host, opts || {});

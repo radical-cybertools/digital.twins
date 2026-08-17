@@ -1513,6 +1513,32 @@ class DTRuntime:
             },
         }
 
+    def metrics(self) -> dict:
+        """Convergence metrics the graph's components report, by name.
+
+        Duck-typed on purpose: a `StreamingLearnerInvestigator` refreshes a
+        filtered `metrics` dict once per learning window, and this collects
+        whatever component carries one -- so the runtime never has to know
+        about ROSE.  A metric name two components both track is qualified
+        with the second one's class.
+        """
+
+        collected: dict = {}
+
+        for ant in self._annotated():
+            reported = getattr(ant.component, "metrics", None)
+            if not isinstance(reported, dict):
+                continue
+
+            component = type(ant.component).__name__
+            for name, entry in reported.items():
+                if not isinstance(entry, dict):
+                    continue
+                key = name if name not in collected else f"{component}.{name}"
+                collected[key] = {**entry, "component": component}
+
+        return collected
+
     def print_graph(self) -> str:
         """Human-readable rendering of `describe()`."""
 

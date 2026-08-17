@@ -228,6 +228,56 @@ no filesystem with the service; `as_executable=False` sends them as
 cloudpickled function tasks instead (the component warns if it finds
 executable ones).  `test/10-learner/` is a complete worked example.
 
+### Watching it run: the dashboard
+
+`src/digitaltwin/service/ui/` holds a dependency-free canvas dashboard
+(one JS file, no build step) that draws the service as four role lanes:
+the **client** with a sub-lane per session, the **broker** with one card
+per twin -- short uuid, colour-coded state, namespace, stream-backend
+badge, and a convergence bar per learner metric -- and, grouped under an
+*HPC resources* frame, the **task** and **ex-situ endpoint** lanes where
+the twins' simulation tasks appear as tiles.  The lanes are roles, not
+hosts: a single-endpoint deployment still gets both, and the ex-situ one
+is labelled `aliases task`.
+
+Two ways to open it, in increasing order of what they need:
+
+```sh
+# 1 - offline: replay the recording bundled in the repo, no stack at all
+xdg-open src/digitaltwin/service/ui/index.html
+
+# 2 - live, served by the broker itself (the only way live works -- see below)
+xdg-open https://<broker>/broker/dt/ui
+```
+
+**Live mode has to be same-origin with the broker.** The gateway's CORS
+allow-list holds a handful of `localhost` origins, and the
+`orbit_broker_token` cookie that the `EventSource` rides is
+`SameSite=Strict` -- so a page opened from anywhere else cannot reach a
+live broker even with the right token.  Served from the broker there is
+no cross-origin request at all.  The broker's certificate is self-signed:
+visit `https://<broker>/` once and accept it, which is also where the
+token is entered (that mints the cookie the dashboard then reuses).
+Everything else -- replaying a recording, loading one by drag-and-drop --
+works from `file://` with no server.
+
+The data layer treats live and replayed input identically: a stream of
+timestamped frames, either an `admin/sessions` poll at 1 Hz plus the
+gateway's SSE feed, or the same frames read back from a recording.  So
+`rec` captures the live stream to a JSON file, `load…` (or a drop on the
+canvas) replays one, and the play/pause and speed controls act on the
+data rather than on an animation.  The schema is documented at the top of
+`dt_dash.js` and checked by `test/unit/test_ui_recording.py`.
+
+Two things the dashboard reads that nothing else needed.  `twin_list` and
+`admin/sessions` now carry a per-twin `metrics` dict -- a filtered,
+read-only view of a learner's per-window criterion (`value`, `threshold`,
+`operator`, `should_stop`, window count and a bounded history), never the
+model itself -- and a per-session `endpoints` map naming the hardware
+behind each engine role.  The create / destroy / state-change verbs on
+the arcs are *inferred* from the delta between two polls: in v1 nothing
+on the wire announces them.
+
 ### When an endpoint disappears (R8)
 
 `OrbitExecutionBackend` does not reconnect and components bind their

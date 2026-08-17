@@ -62,6 +62,15 @@ from .runtime import RuntimeAPI
 
 logger = logging.getLogger(__name__)
 
+
+def _number(value: Any) -> Optional[float]:
+    """A JSON-safe float, or `None` -- a criterion may not have run yet."""
+
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+
+    return round(float(value), 6)
+
 # how long twin teardown lets the learner leave its current window before
 # the runtime cancels it outright
 LEARNER_STOP_TIMEOUT = 5.0
@@ -71,6 +80,11 @@ LEARNER_TASKS = ("training", "active_learn", "criterion")
 
 # ROSE's own per-window bookkeeping -- state, but not model parameters
 _ROSE_STATE_KEYS = ("window_size",)
+
+# how much of the criterion's metric history travels in `metrics`.  A
+# days-long twin accumulates one value per window forever; the dashboard
+# only ever draws a sparkline of the recent tail.
+METRIC_HISTORY = 32
 
 
 class StreamingLearnerInvestigator(ModelInvestigator):
@@ -112,6 +126,13 @@ class StreamingLearnerInvestigator(ModelInvestigator):
 
         # set by the subclass; the in-situ half of the pair
         self.inference_task: Optional[Callable] = None
+
+        # Read-only observation surface, refreshed once per window and
+        # carried by `twin_list` (see `_record_metrics`).  Nothing in the
+        # framework reads these -- they exist so an operator can see a
+        # learner converging without a second channel.
+        self.metrics: dict = {}
+        self.windows: int = 0
 
         self._started = False
         self._finished = asyncio.Event()
@@ -184,12 +205,47 @@ class StreamingLearnerInvestigator(ModelInvestigator):
 
         try:
             async for state in self.learner.start():
+                self._record_metrics(state)
                 self.on_window(state)
 
         finally:
             # the failure path too: no learner outlives its twin
             self.learner.stop()
             self._finished.set()
+
+    def _record_metrics(self, state: Any) -> None:
+        """Mirror the window's criterion state into `self.metrics`.
+
+        A filtered, JSON-safe view -- the value, the target it is compared
+        against, the operator doing the comparing and whether this window
+        met it -- and never the model, which can be megabytes.  This is
+        what `twin_list` and `admin/sessions` carry per twin.
+        """
+
+        self.windows = state.iteration + 1
+        name = state.metric_name
+        if not name:
+            return
+
+        history = [
+            round(value, 6)
+            for value in (state.metric_history or [])[-METRIC_HISTORY:]
+            if isinstance(value, (int, float))
+        ]
+
+        self.metrics = {
+            name: {
+                "value": _number(state.metric_value),
+                "threshold": _number(state.metric_threshold),
+                # '' for a standard metric, whose operator ROSE knows
+                # itself; the consumer then falls back on `should_stop`
+                "operator": (self.learner.criterion_function
+                             or {}).get("operator") or None,
+                "should_stop": bool(state.should_stop),
+                "windows": self.windows,
+                "history": history,
+            }
+        }
 
     async def _feed(self, in_data: TypedData) -> None:
         """`ON_INPUT`: everything the twin sees also feeds the learner."""

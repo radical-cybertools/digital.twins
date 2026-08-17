@@ -5,11 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Digital Twin Service — dashboard</title>
 <!--
-  The standalone host for dt_dash.js.
+  The standalone host for dt_dash.js.  Two ways to open it:
 
-  Open this file directly (file://) or from any static server: the bundled
-  sample recording, dt_sample.js, plays on load and loops.  Drop another
-  recording onto the canvas, or use `load…`, to replay that one instead.
+  REPLAY (offline, no stack): open this file directly (file://) or from any
+  static server.  The bundled sample recording, dt_sample.js, plays on load
+  and loops; drop another recording onto the canvas to replay that instead.
+
+  LIVE: open it from the broker itself, at
+      https://<broker>/broker/dt/ui
+  and it connects same-origin.  That path matters: the gateway's CORS
+  allow-list holds a handful of localhost origins only, and the
+  `orbit_broker_token` cookie the EventSource rides is SameSite=Strict --
+  so a page served from anywhere else cannot reach a live broker even with
+  the right token.  Same-origin has neither problem.
+
+  The broker's certificate is self-signed: visit https://<broker>/ once and
+  accept it (that page is also where the token is entered, which mints the
+  cookie this page then reuses).
+
+  Query parameters, all optional:
+      ?live=1                 connect on load instead of replaying
+      &broker=https://host:p  broker origin ('' = same origin, the default)
+      &dt=/broker/dt          the dt plugin's proxy path
+      &token=<token>          POSTed to /auth once, to mint the cookie
 -->
 <style>
   html, body {
@@ -47,7 +65,15 @@
   if (!window.DTDash) return;
   host.innerHTML = '';
 
-  DTDash.mount(host, { sample: window.DT_SAMPLE || null });
+  const q = new URLSearchParams(location.search);
+
+  DTDash.mount(host, {
+    brokerUrl: q.get('broker') || '',
+    dtPath:    q.get('dt')     || '/broker/dt',
+    token:     q.get('token')  || '',
+    live:      q.get('live') === '1',
+    sample:    window.DT_SAMPLE || null,
+  });
 })();
 </script>
 </body>

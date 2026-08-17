@@ -145,7 +145,13 @@ class TwinInstance:
         return self._last_error
 
     def summary(self) -> dict:
-        """The twin's entry in `twin_list` / `admin/sessions`."""
+        """The twin's entry in `twin_list` / `admin/sessions`.
+
+        `metrics` is the graph's convergence criteria (empty for a twin
+        with no learner in it): `twin_list` polling is the only
+        observation mechanism in v1, so anything an operator has to watch
+        rides here.
+        """
 
         return {
             "twin_id": self.twin_id,
@@ -153,6 +159,7 @@ class TwinInstance:
             "last_error": self.last_error,
             "age": round(time.time() - self.created, 3),
             "config": self.config,
+            "metrics": {} if self.runtime is None else self.runtime.metrics(),
         }
 
     def ready(self, runtime: DTRuntime, stream: PubSubClient) -> None:
@@ -635,13 +642,26 @@ class DTSession(PluginSession):
         return await super().close()
 
     def summary(self) -> dict:
-        """This session's entry in the `admin/sessions` listing."""
+        """This session's entry in the `admin/sessions` listing.
+
+        `endpoints` names the hardware behind each engine role -- the
+        endpoint the backend settled on, the configured one before that,
+        `None` for an engine that is not configured (`'exsitu'` then
+        aliases `'task'`, and an observer can say so).
+        """
 
         return {
             "sid": self.sid,
             "active": self.is_active,
             "age": round(time.time() - self.created, 3),
             "engines": sorted(self._engines),
+            "endpoints": {
+                TASK_ENGINE: self._engine_endpoint(TASK_ENGINE),
+                EXSITU_ENGINE: (
+                    self._engine_endpoint(EXSITU_ENGINE)
+                    if self.configured(EXSITU_ENGINE) else None
+                ),
+            },
             "twins": [twin.summary() for twin in self.twins.values()],
         }
 

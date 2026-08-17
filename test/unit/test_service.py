@@ -16,9 +16,9 @@ pytest.importorskip("radical.orbit")
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from digitaltwin.components import UtilityTask  # noqa: E402
+from digitaltwin.components import TRUTHY, DataType, UtilityTask  # noqa: E402
 from digitaltwin.runtime import DTRuntime  # noqa: E402
-from digitaltwin.service.plugin import PluginDT  # noqa: E402
+from digitaltwin.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
 from digitaltwin.service.session import DTSession, TwinInstance  # noqa: E402
 from digitaltwin.service.wire import (  # noqa: E402
     MAX_PAYLOAD,
@@ -642,3 +642,84 @@ async def test_shutdown_stops_the_broker_and_the_supervisor(plugin):
     assert not broker.is_alive()
     assert supervisor.done()
     assert plugin._stream_broker is None
+
+
+# ---------------------------------------------------------------------------
+# the observation surface the dashboard reads
+# ---------------------------------------------------------------------------
+
+class _Metered(UtilityTask):
+    """A component reporting a convergence metric, the way a
+    `StreamingLearnerInvestigator` does -- duck-typed, so this needs no
+    ROSE."""
+
+    metrics = {"rmse": {"value": 0.4, "threshold": 0.25, "operator": "<",
+                        "should_stop": False, "windows": 3,
+                        "history": [0.9, 0.6, 0.4]}}
+
+
+async def test_a_twin_summary_carries_its_metrics():
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    twin.runtime.add_task(_Metered(_FakeFlow()), TRUTHY, DataType("x"))
+
+    summary = twin.summary()
+
+    assert summary["metrics"]["rmse"]["value"] == 0.4
+    assert summary["metrics"]["rmse"]["component"] == "_Metered"
+
+    await twin.close()
+    # a closed twin has no graph left to ask
+    assert twin.summary()["metrics"] == {}
+
+
+async def test_the_session_summary_names_the_engine_endpoints():
+    """The dashboard draws one lane per engine *role*; `None` for
+    `'exsitu'` is the documented alias of `'task'`, not an omission."""
+
+    single = DTSession("s1", _dual(task="ep1"))
+    assert single.summary()["endpoints"] == {"task": "ep1", "exsitu": None}
+
+    dual = DTSession("s2", _dual(task="ep1", exsitu="hpc1"))
+    assert dual.summary()["endpoints"] == {"task": "ep1", "exsitu": "hpc1"}
+
+
+def test_admin_sessions_carries_endpoints_and_metrics(client):
+    sid = client.post("/dt/register_session",
+                      json={"config": _dual(task="ep1")}).json()["sid"]
+    entry = next(s for s in client.get("/dt/admin/sessions").json()["sessions"]
+                 if s["sid"] == sid)
+
+    assert entry["endpoints"] == {"task": "ep1", "exsitu": None}
+
+
+# ---------------------------------------------------------------------------
+# the dashboard's assets
+# ---------------------------------------------------------------------------
+
+def test_the_ui_route_serves_the_standalone_page(client):
+    """Served by the plugin so a browser can reach a live broker
+    same-origin: the gateway's CORS allow-list and the SameSite=Strict
+    auth cookie rule out every other origin."""
+
+    resp = client.get("/dt/ui")
+
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("text/html")
+    assert "dt_dash.js" in resp.text
+
+
+@pytest.mark.parametrize("asset", ["dt_dash.js", "dt_sample.js"])
+def test_the_ui_assets_are_served_as_javascript(client, asset):
+    resp = client.get(f"/dt/ui/{asset}")
+
+    assert resp.status_code == 200
+    assert "javascript" in resp.headers["content-type"]
+
+
+@pytest.mark.parametrize("asset", ["passwd", "plugin.py", ".env"])
+def test_an_unlisted_ui_asset_is_404(client, asset):
+    """An allow-list, not a directory walk: the asset name comes from the
+    client."""
+
+    assert client.get(f"/dt/ui/{asset}").status_code == 404

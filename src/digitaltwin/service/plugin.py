@@ -29,12 +29,14 @@ import logging
 import os
 import time
 
+from pathlib import Path
 from typing import Any, Optional
 
 from fastapi import FastAPI
 from radical.orbit.errors import http_exception
 from radical.orbit.plugin_base import Plugin
 from starlette.requests import Request
+from starlette.responses import Response
 
 from ..config import (
     BACKEND_ORBIT,
@@ -59,6 +61,20 @@ ROUTE_TWIN_LIST = "twin_list/{sid}"
 ROUTE_TWIN_CLOSE = "twin_close/{sid}/{twin_id}"
 ROUTE_TWIN_CALL = "twin_call/{sid}/{twin_id}"
 ROUTE_ADMIN_SESSIONS = "admin/sessions"
+ROUTE_UI = "ui"
+ROUTE_UI_ASSET = "ui/{asset}"
+
+# The dashboard.  The plugin serves it so that a browser can reach a live
+# broker *same-origin* -- the gateway's CORS allow-list and the
+# `SameSite=Strict` auth cookie rule out every other origin.  An
+# allow-list, not a directory walk: `{asset}` is a client-supplied path
+# segment.
+UI_DIR = Path(__file__).parent / "ui"
+UI_ASSETS = {
+    "index.html": "text/html; charset=utf-8",
+    "dt_dash.js": "application/javascript",
+    "dt_sample.js": "application/javascript",
+}
 
 # how often the supervisor checks that the stream broker is still alive
 BROKER_WATCH_INTERVAL = 5.0
@@ -77,6 +93,7 @@ class PluginDT(Plugin):
     - POST `/dt/twin_close/{sid}/{twin_id}`  -- stop and forget one twin
     - POST `/dt/twin_call/{sid}/{twin_id}`   -- exactly one graph verb
     - GET  `/dt/admin/sessions`              -- every session, twin and error
+    - GET  `/dt/ui`, `/dt/ui/{asset}`        -- the live dashboard
 
     Every call is short except `get_inference`.  No notifications, no
     request ids: `twin_list` polling is the observation mechanism.
@@ -115,6 +132,8 @@ class PluginDT(Plugin):
         self.add_route_post(ROUTE_TWIN_CLOSE, self.twin_close)
         self.add_route_post(ROUTE_TWIN_CALL, self.twin_call)
         self.add_route_get(ROUTE_ADMIN_SESSIONS, self.admin_sessions)
+        self.add_route_get(ROUTE_UI, self.ui_index)
+        self.add_route_get(ROUTE_UI_ASSET, self.ui_asset)
 
     # -- session policy -----------------------------------------------------
 
@@ -276,6 +295,35 @@ class PluginDT(Plugin):
             sessions.append(entry)
 
         return {"sessions": sessions, "stream_broker": self.stream_summary()}
+
+    # -- the dashboard ------------------------------------------------------
+
+    async def ui_index(self, request: Request) -> Response:
+        """The standalone dashboard page, same-origin with the broker."""
+
+        return self._ui_asset("index.html")
+
+    async def ui_asset(self, request: Request) -> Response:
+        """One dashboard asset, from the allow-list."""
+
+        return self._ui_asset(request.path_params["asset"])
+
+    @staticmethod
+    def _ui_asset(asset: str) -> Response:
+        media = UI_ASSETS.get(asset)
+        if media is None:
+            raise http_exception(FileNotFoundError(f"no such asset: {asset}"))
+
+        try:
+            body = (UI_DIR / asset).read_bytes()
+        except OSError as exc:
+            raise http_exception(FileNotFoundError(str(exc))) from exc
+
+        # read per request rather than cached: these are a handful of KiB,
+        # asked for once per page load, and editing one should not need a
+        # broker restart (the gateway's own `ui_module` cache does)
+        return Response(body, media_type=media,
+                        headers={"cache-control": "no-store"})
 
     # -- observability ------------------------------------------------------
 

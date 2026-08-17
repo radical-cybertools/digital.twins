@@ -170,6 +170,47 @@ async def test_the_learner_uses_the_engine_it_was_given(flow, engines):
     assert learner.flow is flow
 
 
+async def test_the_criterion_state_shows_up_in_the_twins_metrics(
+        flow, stream_clients):
+    """Per window, the learner mirrors its criterion into `metrics`, and
+    the runtime collects it for `twin_list` -- the only observation
+    mechanism v1 has, so convergence has to ride on it."""
+
+    runtime, learner = await _twin(flow, await stream_clients("twin-metrics"))
+
+    try:
+        await _await_learned(runtime)
+
+        assert learner.windows >= 1
+        metric = learner.metrics["fit_error"]
+
+        assert metric["threshold"] == 1e-6
+        assert metric["operator"] == "<"
+        assert metric["should_stop"] is True
+        assert metric["windows"] == learner.windows
+        assert metric["history"][-1] == metric["value"]
+        # filtered: the model itself never travels in a metric
+        assert set(metric) == {"value", "threshold", "operator",
+                               "should_stop", "windows", "history"}
+
+        collected = runtime.metrics()
+        assert collected["fit_error"]["component"] == "LinearLearner"
+        assert collected["fit_error"]["value"] == metric["value"]
+
+    finally:
+        await runtime.stop()
+
+
+async def test_a_twin_without_a_learner_reports_no_metrics(flow,
+                                                           stream_clients):
+    runtime = DTRuntime(flow, await stream_clients("twin-nometrics"))
+    runtime.add_task(Counter(flow), TRUTHY, X, is_persistent=True)
+
+    assert runtime.metrics() == {}
+
+    await runtime.stop()
+
+
 async def test_an_absent_exsitu_engine_falls_back_to_the_twins(flow):
     learner = LinearLearner(flow)
 
