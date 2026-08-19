@@ -83,25 +83,24 @@ def show(label: str, obj) -> None:
 def build(dt):
     """Phase one: two twins on one session, then walk away."""
 
-    step("1.  A session on the service",
-         f"  sid {dt.sid}\n"
-         "  The sid is the bearer capability: whoever holds it owns these\n"
-         "  twins.  Nothing else about this client is remembered.")
+    step("1.  Session",
+         f"  - sid: {dt.sid}\n"
+         "  - the sid is a bearer capability: it is the only client state\n"
+         "  - twins belong to the session, not to this process")
 
     # -- twin A: plain in-situ inference -----------------------------------
 
     step("2.  Create a twin",
-         "  `create_twin` is the one asynchronous verb -- it returns as soon\n"
-         "  as the twin is registered, and the helper polls until it is ready.\n"
-         "  Watch a card appear in the broker lane: initializing, then ready.")
+         "  - create_twin returns on registration; the helper polls to ready\n"
+         "  - dashboard: card in the broker lane, initializing -> ready")
     twin_a = dt.create_twin()
     print(f"  twin A: {twin_a}")
 
     step("3.  Ship the graph",
-         "  The service has none of this code.  What goes over the wire is\n"
-         "  the component *classes*, cloudpickled by value, plus their\n"
-         "  constructor arguments -- the service instantiates them with the\n"
-         "  session's engine injected as `flow`.")
+         "  - the service has none of this code\n"
+         "  - component classes go over the wire (cloudpickle, by value)\n"
+         "  - the service instantiates them, injecting the session engine\n"
+         "  - graph: sensor -> model -> sink")
     dt.add_task(twin_a, dt.package(PacedSensor), TRUTHY, SENSOR_DTYPE,
                 is_persistent=True)
     dt.add_investigator(twin_a, dt.package(RampModel), SENSOR_DTYPE,
@@ -109,31 +108,30 @@ def build(dt):
     dt.add_task(twin_a, dt.package(EchoSink), INFERENCE_DTYPE, NULL_DTYPE)
     show("graph", dt.describe(twin_a))
 
-    step("4.  Start it",
-         "  Readings every 2.5s.  In the dashboard: a sensor tile appears\n"
-         "  under the twin, arcs run client -> broker, and the inference\n"
-         "  task shows up as a tile on the HPC task lane -- that compute is\n"
-         "  running on a rhapsody endpoint, not in the broker.")
+    step("4.  Start",
+         "  - sensor publishes a reading every 2.5s\n"
+         "  - inference runs on the rhapsody endpoint, not in the broker\n"
+         "  - dashboard: sensor tile, client -> broker arcs, task tiles on\n"
+         "    the HPC lane")
     dt.start(twin_a)
 
     # -- the client asks directly ------------------------------------------
 
-    step("5.  Ask the twin a question",
-         "  `get_inference` is the one path that answers the caller\n"
-         "  directly.  Everything else the twin produces goes to the next\n"
-         "  component over an in-process queue -- and is dropped if nobody\n"
-         "  is registered for it.")
+    step("5.  Query the twin",
+         "  - get_inference is the one call that answers the caller\n"
+         "  - all other results flow component to component in the twin")
     answer = dt.get_inference(twin_a, TypedData(SENSOR_DTYPE, 21),
                               INFERENCE_DTYPE)
     print(f"  21 -> {answer.data}")
 
     # -- twin B: the dual-engine learner -----------------------------------
 
-    step("6.  A second twin, learning ex-situ",
-         "  Same session, same stream shape, but this one retrains on\n"
-         "  windows of its input via a *second* engine on a second endpoint.\n"
-         "  The convergence bar on its card is the ROSE stop criterion:\n"
-         "  fit_error against a threshold, updated per window.")
+    step("6.  Second twin: ex-situ learning",
+         "  - same session, same stream shape\n"
+         "  - retrains on input windows, on a second engine / endpoint\n"
+         "  - inference serves from the task endpoint while training runs\n"
+         "  - dashboard: convergence bar = ROSE stop criterion (fit_error\n"
+         "    vs threshold, updated per window)")
     twin_b = dt.create_twin()
     dt.add_task(twin_b, dt.package(PacedSensor), TRUTHY, SENSOR_DTYPE,
                 is_persistent=True)
@@ -143,16 +141,16 @@ def build(dt):
     dt.start(twin_b)
     print(f"  twin B: {twin_b}")
 
-    step("7.  The operator's view",
-         "  `admin_sessions` is how an orphaned session is found: owner,\n"
-         "  age, twins, states, last errors, and the hardware behind each\n"
-         "  engine role.")
+    step("7.  Operator view",
+         "  - admin_sessions: owner, age, twins, states, last errors\n"
+         "  - names the endpoint behind each engine role\n"
+         "  - this is how orphaned sessions are found")
     show("sessions", dt.admin_sessions())
 
-    step("8.  Now the client goes away",
-         "  This process is about to exit.  The twins do not stop, and\n"
-         "  nothing times them out -- a twin may run for days while clients\n"
-         "  come and go.  Keep watching the dashboard.")
+    step("8.  Client exits",
+         "  - this process ends; the twins do not\n"
+         "  - no timeout: twins run for days, clients come and go\n"
+         "  - the dashboard keeps updating")
 
     print("\n  reattach with:\n")
     print(f"      python run_me.py --attach {dt.sid}\n")
@@ -163,29 +161,27 @@ def build(dt):
 def attach(dt):
     """Phase two: the client is a different process now."""
 
-    step("9.  Back, with nothing but the sid",
-         "  A new process, no memory of the twins, holding one string.")
+    step("9.  Reattach",
+         "  - a new process; its only input is the sid")
     for entry in dt.twin_list():
         print(f"  {entry['twin_id'][:8]}  {entry['state']:<10}"
               f"  metrics={list((entry.get('metrics') or {}).keys())}")
 
-    step("10.  Tear them down",
-         "  `twin_close` is the ordinary route -- the same one an operator\n"
-         "  uses on a session found through `admin_sessions`.")
+    step("10.  Close the twins",
+         "  - twin_close, per twin; same route an operator uses")
     for entry in dt.twin_list():
         print(f"  closing {entry['twin_id'][:8]}")
         dt.twin_close(entry["twin_id"])
 
     show("sessions", dt.admin_sessions())
 
-    step("11.  ... and the session itself",
-         "  Sessions are persistent by design -- twins gone is not session\n"
-         "  gone.  `unregister_session` releases it: its engines shut down\n"
-         "  and their `rhapsody.<session>.<role>` participants leave the\n"
-         "  topology.  Watch them disappear from the Explorer.")
+    step("11.  Close the session",
+         "  - sessions are persistent: twins gone != session gone\n"
+         "  - unregister_session shuts the engines down\n"
+         "  - explorer: the rhapsody.<session>.<role> participants leave")
     sid = dt.sid
     dt.unregister_session()
-    print(f"  session {sid} unregistered -- the service holds nothing of ours")
+    print(f"  session {sid} unregistered; the service holds no state of ours")
 
 
 def main() -> int:
