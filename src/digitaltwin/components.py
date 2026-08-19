@@ -91,12 +91,6 @@ class JoinDataType(DataType):
     def __hash__(self) -> int:
         return super().__hash__()
 
-    # FIXME(review): equality is asymmetric.  `DataType.__eq__` matches on the
-    # name alone, so `DataType("JOIN[a,b]") == JoinDataType([a, b])` is True
-    # while the reverse is False -- with equal hashes.  That breaks the dict
-    # and set invariants these types are used under.  Inherited from
-    # `WindowDataType` rather than introduced here, but joins make composite
-    # dtypes common enough that it now matters.
     def __eq__(self, obj) -> bool:
         if (
             not isinstance(obj, JoinDataType)

@@ -97,14 +97,10 @@ class LRUCache:
         Returns:
             Any: The stored value.
         """
-        # FIXME(review): the membership test is outside the lock, so an
-        # eviction landing between it and the acquire below turns a clean
-        # KeyError into one raised from `move_to_end`.  Same exception type
-        # today, which is the only reason this is benign.  Move it inside.
-        if key not in self.cache:
-            raise KeyError
 
         async with self.edit_lock:
+            if key not in self.cache:
+                raise KeyError
             self.cache.move_to_end(key)
             return self.cache[key]
 
