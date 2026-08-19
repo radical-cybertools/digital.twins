@@ -296,8 +296,13 @@ class RuntimeAPI:
         """
 
         assert self.cmp_type in ["INVESTIGATOR"]
-        self._ant.model_kwargs = model_kwargs
-        self._ant.accuracy_kwargs = acc_kwargs
+
+        # `None` is the "caller passed nothing" sentinel, not a value the
+        # rest of the runtime can hold: `_run_component` splats these into
+        # the inference task, and `**None` raises.  Normalised here, the
+        # same way the callback below already normalises them.
+        self._ant.model_kwargs = model_kwargs or {}
+        self._ant.accuracy_kwargs = acc_kwargs or {}
         self._ant.has_published_model.set()
         if self._ant.model_publish_cb is not None:
             self._runtime._to_asyncio_task(
