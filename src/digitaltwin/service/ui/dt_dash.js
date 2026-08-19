@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.5.9';
+  const VERSION = '0.5.21';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -135,13 +135,6 @@
   // rhapsody task states that actually reach a browser.  There is no
   // QUEUED: the only non-terminal state any backend pushes is RUNNING.
   const TASK_TERMINAL = new Set(['DONE', 'FAILED', 'CANCELED', 'COMPLETED']);
-  const TASK_COLOR = {
-    RUNNING:   C.cyan,
-    DONE:      C.green,
-    COMPLETED: C.green,
-    FAILED:    C.red,
-    CANCELED:  C.grey,
-  };
 
   // -------------------------------------------------------------------------
   //  Timings, in seconds of *model* time (the replay speed scales them all)
@@ -194,6 +187,12 @@
       // '<twin>|<dtype>' -> {twin, dtype, t, count}: every stream
       // publisher we have seen, which is what the sensors lane draws
       publishers: new Map(),
+      // Per-pool event log for the task-manager graph.  A sequence of
+      // `{t, running}` samples pushed whenever the concurrent count
+      // changes -- so between events the value is exactly the running
+      // count that held over that interval, and the graph reads the
+      // true concurrent count at every instant of the visible window.
+      poolHistory: { task: [], exsitu: [] },
     };
   }
 
@@ -459,6 +458,7 @@
                armed: null, due: null };
       w.tasks.set(uid, task);
       w.counts[lane].running++;
+      recordPoolEvent(w, lane);
       armTasks(w);
     }
 
@@ -478,9 +478,26 @@
         // the compute coming back: a real observed transition, and the
         // only half of the round trip that was missing
         task.due = w.t;
+        recordPoolEvent(w, task.lane);
         armTasks(w);
       }
     }
+  }
+
+  // Event-driven graph record.  Called whenever the running count for a
+  // pool actually changes.  Old entries beyond the visible window are
+  // pruned lazily on each push, keeping the newest one older than the
+  // cutoff so the left edge of the graph knows what value to start at.
+  function recordPoolEvent(w, lane) {
+    const hist = w.poolHistory[lane];
+    hist.push({ t: w.t, running: w.counts[lane].running });
+    const cutoff = w.t - POOL_WINDOW - 2;
+    let keepFrom = -1;
+    for (let i = 0; i < hist.length; i++) {
+      if (hist[i].t <= cutoff) keepFrom = i;
+      else break;
+    }
+    if (keepFrom > 0) hist.splice(0, keepFrom);
   }
 
   // A task's arcs wait for the poll that says whose it is.  The notification
@@ -531,17 +548,19 @@
 
     tw.pulse = { t: w.t, label: dtype };
 
-    // one publisher per (twin, dtype).  A twin's own persistent
-    // components are the only things that publish, so this *is* the set
-    // of sensors -- observed, never declared.
-    const key = `${id}|${dtype}`;
+    // One publisher per dtype: multiple twins that emit the same channel
+    // share a row.  Counts and last-seen aggregate across them; `twin`
+    // records whichever twin last pulsed so the (now-muted) sample arc
+    // still resolves an origin twin if anything asks.
+    const key = dtype;
     let pub = w.publishers.get(key);
     if (!pub) {
-      pub = { key, twin: id, dtype, count: 0, t: w.t };
+      pub = { key, dtype, count: 0, t: w.t, twin: id };
       w.publishers.set(key, pub);
     }
+    pub.twin  = id;
     pub.count++;
-    pub.t = w.t;
+    pub.t     = w.t;
 
     // the message travelling from the publisher to its twin
     flight(w, 'sample', { twin: id, from: pub.key, dur: PULSE_FLIGHT });
@@ -831,7 +850,11 @@
     // per-card collapse state (`dt:<twinId>`, `agent:<twinId>|<name>`);
     // hits is rebuilt by the renderer each frame so the click handler
     // can hit-test against exactly the clickable header regions.
+    // `seenTwins` records ids already inserted into `collapsed` by the
+    // default-collapsed rule, so a user's expand click on a freshly-seen
+    // twin sticks instead of being re-collapsed on the next frame.
     const collapsed = new Set();
+    const seenTwins = new Set();
     let hits = [];
     // what the last frame drew, for `frame()`: the layout and every arc the
     // renderer resolved, so a test (or a console) sees the real geometry
@@ -1104,7 +1127,8 @@
 
       probe.arcs = [];
       hits = [];
-      render(ctx, W, H, world, { status, hover, probe, collapsed, hits });
+      render(ctx, W, H, world,
+             { status, hover, probe, collapsed, seenTwins, hits });
       raf = requestAnimationFrame(frame);
     }
 
@@ -1531,7 +1555,8 @@
 
   function drawBrokerLane(ctx, L, w, ui) {
     const S = L.S, r = L.broker;
-    panel(ctx, r, C.cyan_dim, 'broker · dt plugin', C.frame_label, S);
+    panel(ctx, r, C.cyan_dim, 'Digital Twins in Service on Broker',
+          C.frame_label, S);
 
     // Birth order, except that a twin which has gone yields its slot: its
     // card is a memento, and a live twin pushed behind `+N more` by one is
@@ -1543,6 +1568,15 @@
       return;
     }
     const twins = allTwins.slice(0, DEMO_TWIN_CAP);
+
+    // Newly-observed twins start collapsed.  `seenTwins` gates this so
+    // a user's expand click on a fresh twin isn't undone next frame.
+    for (const tw of twins) {
+      if (!ui.seenTwins.has(tw.id)) {
+        ui.seenTwins.add(tw.id);
+        ui.collapsed.add(`dt:${tw.id}`);
+      }
+    }
 
     const head = Math.round(28 * S);
     const pad  = Math.round(9 * S);
@@ -1902,17 +1936,32 @@
 
   // ---- HPC lanes: one per endpoint role ----------------------------------
 
+  // Task-manager graph: seconds on the x-axis (rightmost point is `now`
+  // snapped to the previous half-second, so the graph only shifts once
+  // every 0.5s and the buckets sit on a stable time grid), pool's
+  // running-task count on the y-axis.  Data comes from `recordPoolEvent`,
+  // called whenever the pool's running count actually changes; each
+  // `POOL_STEP`-second bucket plots the *max* concurrent count seen
+  // during that interval, so a spike lasting less than a bucket is
+  // preserved as that bucket's height rather than lost between samples.
+  const POOL_WINDOW      = 60;     // seconds shown on the x-axis
+  const POOL_STEP        = 0.5;    // bucket width, and the graph's tick
+  const POOL_TABLE_ROWS  = 5;
+
   function drawHpcLanes(ctx, L, w) {
     const S = L.S;
-    panel(ctx, L.hpc, C.frame_border, 'hpc resources', C.frame_label, S,
+    panel(ctx, L.hpc, C.frame_border, 'Endpoint Pools', C.frame_label, S,
           C.panel_deep);
 
-    // every endpoint any session put in that role, because the role is a
-    // per-session answer and two sessions need not agree
-    drawEndpointLane(ctx, L.task, 'task endpoint',
+    // Two pool cards, one per role.  Colour keeps them apart at a glance:
+    // task = cyan, exsitu = amber -- the same convention already used for
+    // task-result arcs on the broker lane.  A pool card also lists every
+    // endpoint any session put in that role, because the role is a
+    // per-session answer and two sessions need not agree.
+    drawEndpointLane(ctx, L.task, 'Pool: task',
                      w.endpoints.task.join(', '), 'task',
                      w, S, C.cyan_dim, null);
-    drawEndpointLane(ctx, L.exsitu, 'exsitu endpoint',
+    drawEndpointLane(ctx, L.exsitu, 'Pool: exsitu',
                      w.endpoints.exsitu.join(', '), 'exsitu', w, S,
                      C.amber_dim, w.endpoints.alias ? 'aliases task' : null);
   }
@@ -1942,8 +1991,7 @@
   function drawEndpointLane(ctx, r, title, endpoint, lane, w, S, border, note) {
     panel(ctx, r, border, title, C.frame_label, S);
 
-    const g = laneGeom(r, S);
-
+    // endpoint name (or 'aliases task' note) on the title row, right-aligned
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
     ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
@@ -1952,77 +2000,291 @@
     ctx.fillText(clip(ctx, note ? `${name} ${note}` : name, r.w * 0.62),
                  r.x + r.w - 9 * S, r.y + 11 * S);
 
-    for (const t of w.tasks.values()) {
-      if (t.lane !== lane) continue;
-      // still in the air, or still waiting for the poll that owns it
-      if (t.armed === null || w.t - t.armed < FLIGHT) continue;
-      const p = tilePos(r, g, t.slot);
-      drawTaskTile(ctx, p.x, p.y, g.tile, t, w, S);
-    }
+    // content area beneath the title
+    const head = Math.round(28 * S);
+    const padS = Math.round(9 * S);
+    const gap  = Math.round(6 * S);
+    const cx   = r.x + padS;
+    const cy   = r.y + head;
+    const cw   = r.w - 2 * padS;
+    const ch   = r.h - head - Math.round(6 * S);
 
-    // The beat in which a client's `get_inference` was being served.  It is
-    // served *here*: a twin answers a probe by running its investigator's
-    // inference task on the task engine, and the ex-situ engine only ever
-    // receives training windows.  Which of the tiles above it was cannot be
-    // known -- a `task_status` carries no verb -- so this marks the when and
-    // nothing else, dim like the other inferred marks, and only on the lane
-    // that could have run it.
-    if (lane === 'task' && w.probe) {
-      const age = w.t - w.probe.t;
-      const span = FLIGHT * 1.6;
-      if (age >= 0 && age < span) {
-        ctx.save();
-        ctx.globalAlpha = 0.28 + 0.42 * Math.max(0, 1 - age / span);
-        const pw = pillWidth(ctx, 'inference', S);
-        pill(ctx, r.x + r.w - pw - 9 * S, r.y + r.h - 20 * S,
-             'inference', C.amber, S);
-        ctx.restore();
-      }
-    }
+    // Split: table height fits 1 header + N rows; the rest is graph.
+    const rowH = Math.round(13 * S);
+    const wantTable = (POOL_TABLE_ROWS + 1) * rowH + Math.round(6 * S);
+    const tableH = Math.min(wantTable, Math.max(0, Math.floor(ch * 0.5)));
+    const graphH = Math.max(0, ch - tableH - gap);
 
-    const c = w.counts[lane];
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'bottom';
-    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
-    ctx.fillStyle = C.text_dim;
-    ctx.fillText(clip(ctx, `${c.running} running · ${c.done} done`
-      + (c.failed ? ` · ${c.failed} failed` : ''), r.w - 2 * g.pad),
-      r.x + g.pad, r.y + r.h - 6 * S);
+    const color = lane === 'exsitu' ? C.amber : C.cyan;
+    // Match the exsitu pool card's own outer border colour (`C.amber_dim`,
+    // set by the caller in `drawHpcLanes`) so the graph plot and the
+    // recent-tasks table read as one dark-orange unit inside it.  The
+    // task pool keeps the neutral frame border.
+    const inner = lane === 'exsitu' ? C.amber_dim : C.frame_border;
+
+    if (graphH > Math.round(30 * S)) {
+      drawTaskGraph(ctx, cx, cy, cw, graphH,
+                    w.poolHistory[lane] || [],
+                    w.t, w.counts[lane].running, color, inner, S);
+    }
+    if (tableH > rowH) {
+      drawTaskTable(ctx, cx, cy + graphH + gap, cw, tableH, rowH,
+                    w, lane, inner, S);
+    }
   }
 
-  function drawTaskTile(ctx, x, y, size, t, w, S) {
-    const color = TASK_COLOR[t.state] || C.cyan;
-    const age = w.t - (t.armed === null ? t.t0 : t.armed) - FLIGHT;
+  // The task-manager graph: y-axis labelled "tasks", x-axis is time
+  // (rightmost point = now), sliding window of `POOL_WINDOW` seconds.
+  // Y at each x = number of concurrent tasks running at that instant,
+  // drawn as the step function that comes straight out of `poolHistory`.
+  function drawTaskGraph(ctx, x, y, wd, ht, hist,
+                         nowT, nowRunning, color, border, S) {
+    const yLabelW = Math.round(22 * S);
+    const xTickH  = Math.round(12 * S);
+    const plotX = x + yLabelW;
+    const plotY = y + Math.round(3 * S);
+    const plotW = wd - yLabelW - Math.round(4 * S);
+    const plotH = ht - xTickH - Math.round(4 * S);
+    if (plotW < 20 || plotH < 12) return;
 
-    let alpha = 1;
-    if (t.tEnd !== null) alpha = Math.max(0, 1 - (w.t - t.tEnd) / FADE);
+    // plot background
+    ctx.fillStyle = C.panel_deep;
+    rr(ctx, plotX, plotY, plotW, plotH, 2 * S);
+    ctx.fill();
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1;
+    rr(ctx, plotX + 0.5, plotY + 0.5, plotW - 1, plotH - 1, 2 * S);
+    ctx.stroke();
 
-    // on-landing halo, then a gentle running pulse
-    if (age < GLOW && t.tEnd === null) {
-      const k = 1 - age / GLOW;
-      ctx.save();
-      ctx.shadowBlur = 14 * k * S;
-      ctx.shadowColor = color;
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = color;
-      rr(ctx, x, y, size, size, 2);
-      ctx.fill();
-      ctx.fill();
-      ctx.restore();
+    // rotated y-axis label
+    ctx.save();
+    ctx.translate(x + Math.round(9 * S), plotY + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.frame_label;
+    ctx.font = `600 ${Math.round(9 * S)}px ${FONT}`;
+    ctx.fillText('tasks', 0, 0);
+    ctx.restore();
+
+    // -------- data prep -----------------------------------------------
+    // Snap the right edge back to the previous `POOL_STEP` boundary so
+    // the graph only shifts one bucket every half-second instead of
+    // scrolling continuously.
+    const nBuckets = Math.round(POOL_WINDOW / POOL_STEP);
+    const rightT   = Math.floor(nowT / POOL_STEP) * POOL_STEP;
+    const tMin     = rightT - POOL_WINDOW;
+
+    // Left-edge value: the running count in effect at `tMin`.  Any event
+    // at or before tMin sets the value that held going into the window.
+    let running = 0;
+    let hi = 0;
+    while (hi < hist.length && hist[hi].t <= tMin) {
+      running = hist[hi].running;
+      hi++;
     }
 
-    ctx.globalAlpha = alpha * (t.tEnd === null
-      ? 0.8 + 0.2 * (0.5 + 0.5 * Math.sin(age * 3.0)) : 1);
+    // Per-bucket max concurrent value.  Between events the value is
+    // constant, so the bucket peak is max(value_at_start, event values
+    // that landed in the bucket).
+    const values = new Array(nBuckets).fill(0);
+    for (let b = 0; b < nBuckets; b++) {
+      const bEnd = tMin + (b + 1) * POOL_STEP;
+      let peakB = running;
+      while (hi < hist.length && hist[hi].t < bEnd) {
+        running = hist[hi].running;
+        if (running > peakB) peakB = running;
+        hi++;
+      }
+      values[b] = peakB;
+    }
+    // The rightmost bucket is the one still in progress: fold in the
+    // live `nowRunning` too, so a spike happening right now doesn't wait
+    // for the next boundary to appear.
+    if (nowRunning > values[nBuckets - 1]) values[nBuckets - 1] = nowRunning;
+
+    // -------- axes ---------------------------------------------------
+    let peak = Math.max(1, nowRunning);
+    for (const v of values) if (v > peak) peak = v;
+    const yTop = Math.max(1, Math.ceil(peak * 1.25));
+
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.text_dim;
+    ctx.font = `400 ${Math.round(8 * S)}px ${FONT_MONO}`;
+    ctx.fillText(String(yTop), plotX - 3 * S, plotY + Math.round(5 * S));
+    ctx.fillText('0', plotX - 3 * S, plotY + plotH - Math.round(4 * S));
+
+    // -------- draw stepped bars --------------------------------------
+    const bucketPx = plotW / nBuckets;
+    const toY = v => plotY + plotH - (v / yTop) * plotH;
+
+    // filled area under the step
+    ctx.save();
+    ctx.globalAlpha = 0.20;
     ctx.fillStyle = color;
-    rr(ctx, x, y, size, size, 2);
+    ctx.beginPath();
+    ctx.moveTo(plotX, plotY + plotH);
+    for (let b = 0; b < nBuckets; b++) {
+      const bx0 = plotX + b * bucketPx;
+      const bx1 = plotX + (b + 1) * bucketPx;
+      const by  = toY(values[b]);
+      ctx.lineTo(bx0, by);
+      ctx.lineTo(bx1, by);
+    }
+    ctx.lineTo(plotX + plotW, plotY + plotH);
+    ctx.closePath();
     ctx.fill();
-    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    // step outline on top
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (let b = 0; b < nBuckets; b++) {
+      const bx0 = plotX + b * bucketPx;
+      const bx1 = plotX + (b + 1) * bucketPx;
+      const by  = toY(values[b]);
+      if (b === 0) ctx.moveTo(bx0, by);
+      else {
+        const pby = toY(values[b - 1]);
+        if (pby !== by) ctx.lineTo(bx0, by);
+      }
+      ctx.lineTo(bx1, by);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // x-axis ticks
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = C.text_dim;
+    ctx.font = `400 ${Math.round(8 * S)}px ${FONT_MONO}`;
+    ctx.fillText(`-${POOL_WINDOW}s`, plotX,
+                 plotY + plotH + Math.round(2 * S));
+    ctx.textAlign = 'right';
+    ctx.fillText('now', plotX + plotW,
+                 plotY + plotH + Math.round(2 * S));
+  }
+
+  // Recent-tasks table, capped at `POOL_TABLE_ROWS` newest.  DT hash and
+  // lane are real; Kind / Inv / Task are faked from the uid because the
+  // wire does not carry per-task metadata.
+  function drawTaskTable(ctx, x, y, wd, ht, rowH, w, lane, border, S) {
+    // border + subtle background so the table reads as its own block
+    ctx.fillStyle = C.panel_deep;
+    rr(ctx, x, y, wd, ht, 2 * S);
+    ctx.fill();
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1;
+    rr(ctx, x + 0.5, y + 0.5, wd - 1, ht - 1, 2 * S);
+    ctx.stroke();
+
+    const padS = Math.round(6 * S);
+    const cx = x + padS;
+    const cw = wd - 2 * padS;
+
+    const cols = [
+      { label: 'DT',           frac: 0.12 },
+      { label: 'Kind',         frac: 0.13 },
+      { label: 'Agent',        frac: 0.28 },
+      { label: 'Investigator', frac: 0.20 },
+      { label: 'Task',         frac: 0.27 },
+    ];
+    const colX = [];
+    let cur = cx;
+    for (const c of cols) { colX.push(cur); cur += Math.round(c.frac * cw); }
+    colX.push(cx + cw);   // sentinel for last-column width
+
+    // header row
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.frame_label;
+    ctx.font = `600 ${Math.round(8 * S)}px ${FONT}`;
+    const hy = y + rowH / 2 + Math.round(2 * S);
+    cols.forEach((c, i) => {
+      spaced(ctx, c.label.toUpperCase(), colX[i], hy, 0.6);
+    });
+
+    // header underline (matches the outer table border colour)
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + padS, y + rowH + 0.5);
+    ctx.lineTo(x + wd - padS, y + rowH + 0.5);
+    ctx.stroke();
+
+    // Newest first, cap to POOL_TABLE_ROWS.
+    const tasks = [...w.tasks.values()]
+      .filter(t => t.lane === lane)
+      .sort((a, b) => b.t0 - a.t0)
+      .slice(0, POOL_TABLE_ROWS);
+
+    if (!tasks.length) {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = C.text_dim;
+      ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
+      ctx.fillText('no tasks yet', x + wd / 2,
+                   y + rowH + (ht - rowH) / 2);
+      return;
+    }
+
+    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
+    tasks.forEach((t, i) => {
+      const ry = y + rowH + i * rowH + rowH / 2;
+      if (ry + rowH / 2 > y + ht - 2) return;
+
+      const owner = w.owners.get(t.uid);
+      const attr = fakeTaskAttr(t.uid);
+      const cells = [
+        owner ? short(owner) : '—',
+        attr.kind,
+        attr.agent,
+        attr.inv,
+        attr.name,
+      ];
+      // faded once the task has ended; running tasks stay full brightness
+      ctx.fillStyle = t.tEnd === null ? C.text_label : C.text_dim;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      cells.forEach((cell, j) => {
+        const w2 = colX[j + 1] - colX[j] - 4 * S;
+        ctx.fillText(clip(ctx, cell, w2), colX[j], ry);
+      });
+    });
+  }
+
+  // Placeholder task attribution: 60% Agent / 40% Utility, with an
+  // investigator for the agent tasks and one of a handful of typical
+  // task names for both.
+  const FAKE_TASK_NAMES = [
+    'infer', 'predict', 'train_window', 'active_learn', 'criterion',
+    'checkpoint', 'validate', 'bootstrap', 'preprocess', 'stream_hop',
+  ];
+  function fakeTaskAttr(uid) {
+    const h = fnv1a(uid);
+    const isAgent = (Math.abs(h) % 5) < 3;          // 3/5 agent, 2/5 utility
+    const kind = isAgent ? 'Agent' : 'Utility';
+    const agent = isAgent
+      ? FAKE_AGENTS[Math.abs(h >>> 11) % FAKE_AGENTS.length].name
+      : '—';
+    const inv  = isAgent
+      ? FAKE_INVESTIGATORS[Math.abs(h >>> 3) % FAKE_INVESTIGATORS.length]
+      : '—';
+    const name = FAKE_TASK_NAMES[Math.abs(h >>> 7) % FAKE_TASK_NAMES.length];
+    return { kind, agent, inv, name };
   }
 
   // ---- flights: the inferred verbs, and spawned tasks -------------------
 
+  // Arcs are no longer drawn.  Twin lifecycle, calls and results all
+  // read on the cards in place (state pill, agent rows, pool graph and
+  // recent-task table), so the flying animations added noise for no new
+  // information.  The probe still records the resolved arc geometry so
+  // headless tests keep their assertions.
   function drawFlights(ctx, L, w, ui) {
-    const S = L.S;
+    if (!ui || !ui.probe) return;
 
     for (const f of w.flights) {
       const k = (w.t - f.t0) / f.dur;
@@ -2031,70 +2293,14 @@
       const seg = flightPath(L, w, f);
       if (!seg) continue;
 
-      if (ui && ui.probe) {
-        ui.probe.arcs.push({
-          kind: f.kind, label: f.label, twin: f.twinId,
-          uid:  f.task ? f.task.uid : null,
-          lane: f.task ? f.task.lane : null,
-          owner: f.task ? (w.owners.get(f.task.uid) || null) : null,
-          x0: seg.x0, y0: seg.y0, x1: seg.x1, y1: seg.y1,
-          color: seg.color, k,
-        });
-      }
-
-      const e = 1 - Math.pow(1 - k, 3);
-      const mx = (seg.x0 + seg.x1) / 2;
-      // The lift, which is what makes a centre anchor legible: a fixed one
-      // left a long arc lying flat across the cards between its ends, and an
-      // arc that starts *inside* a card has to climb out of it to be read as
-      // leaving it at all.  Proportional to the span, so the short client
-      // hops stay gentle and the long ones to the endpoint lanes clear the
-      // grid instead of crossing it.
-      const span = Math.hypot(seg.x1 - seg.x0, seg.y1 - seg.y0);
-      const lift = Math.min(96 * S, (20 + 0.20 * span) * S);
-      const midY = (seg.y0 + seg.y1) / 2;
-      // Bowed away from whichever side has the room.  The card grid sits at
-      // the top of its lane, so for most arcs that is downward, into the
-      // empty part of the lane: a curve with no room above flattens into a
-      // line that runs through the cards between its ends, which is the one
-      // thing a centre anchor cannot afford.
-      const my = !seg.onCard && midY - lift > L.hd + 10 * S
-        ? midY - lift : midY + lift;
-      const dim = seg.dim || 1;
-
-      // the trail
-      ctx.save();
-      ctx.globalAlpha = 0.22 * dim * (1 - k);
-      ctx.strokeStyle = seg.color;
-      ctx.lineWidth = 1;
-      if (seg.dash) ctx.setLineDash([3 * S, 3 * S]);
-      ctx.beginPath();
-      ctx.moveTo(seg.x0, seg.y0);
-      ctx.quadraticCurveTo(mx, my, seg.x1, seg.y1);
-      ctx.stroke();
-      ctx.restore();
-
-      // the tile, along the same quadratic
-      const u = 1 - e;
-      const x = u * u * seg.x0 + 2 * u * e * mx + e * e * seg.x1;
-      const y = u * u * seg.y0 + 2 * u * e * my + e * e * seg.y1;
-      const size = seg.size * (0.65 + 0.35 * e);
-
-      ctx.save();
-      ctx.globalAlpha = 0.95 * dim;
-      ctx.fillStyle = seg.color;
-      rr(ctx, x - size / 2, y - size / 2, size, size, 2);
-      ctx.fill();
-
-      if (seg.label && k < 0.7) {
-        ctx.globalAlpha = 0.85 * dim * (1 - k / 0.7);
-        ctx.fillStyle = seg.color;
-        ctx.font = `600 ${Math.round(8.5 * S)}px ${FONT}`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.fillText(seg.label, x, y - size / 2 - 2 * S);
-      }
-      ctx.restore();
+      ui.probe.arcs.push({
+        kind: f.kind, label: f.label, twin: f.twinId,
+        uid:  f.task ? f.task.uid : null,
+        lane: f.task ? f.task.lane : null,
+        owner: f.task ? (w.owners.get(f.task.uid) || null) : null,
+        x0: seg.x0, y0: seg.y0, x1: seg.x1, y1: seg.y1,
+        color: seg.color, k,
+      });
     }
   }
 
