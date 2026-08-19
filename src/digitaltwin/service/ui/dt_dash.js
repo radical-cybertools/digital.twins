@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.5.0';
+  const VERSION = '0.5.2';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -1115,7 +1115,7 @@
   // =========================================================================
 
   function render(ctx, W, H, w, ui) {
-    const L = layout(W, H, w.sessions.length);
+    const L = layout(W, H);
 
     // the probe carries this frame's geometry back out to `frame()`: a test
     // then reads the arcs the renderer resolved, on the code path a browser
@@ -1126,7 +1126,6 @@
     ctx.fillRect(0, 0, W, H);
 
     drawHeader(ctx, L, w, ui);
-    drawClientLane(ctx, L, w);
     drawSensorLane(ctx, L, w);
     drawBrokerLane(ctx, L, w);
     drawHpcLanes(ctx, L, w);
@@ -1136,7 +1135,7 @@
 
   // ---- layout: everything derived from the container's size --------------
 
-  function layout(W, H, sessions) {
+  function layout(W, H) {
     const S  = Math.max(0.7, Math.min(1.35, W / 1280));
     const M  = Math.round(13 * S);
     const G  = Math.round(11 * S);
@@ -1146,24 +1145,21 @@
     const height = H - top - M;
     const inner  = W - 2 * M - 2 * G;
 
-    const cw = Math.max(Math.round(140 * S), Math.round(inner * 0.20));
+    const cw = Math.max(Math.round(96 * S), Math.round(inner * 0.11));
     const hw = Math.max(Math.round(230 * S), Math.round(inner * 0.33));
     const bw = inner - cw - hw;
 
-    // The left column carries two frames: the client, sized to its
-    // sessions rather than to the column, and the sensors underneath it.
-    // header + one card per session + a line for the arc caption
-    const clientH = Math.max(
-      Math.round(96 * S),
-      Math.min(Math.round(height * 0.52),
-               Math.round(46 * S)
-               + Math.max(1, sessions) * Math.round(68 * S)));
-
-    const client  = { x: M, y: top, w: cw, h: clientH };
-    const sensors = { x: M, y: top + clientH + G, w: cw,
-                      h: height - clientH - G };
+    // The left column is now the sensors lane, full height.  The client
+    // frame is gone -- but the create / destroy / call arcs still need an
+    // origin, and `client` here is that virtual anchor: a 1x1 rect on the
+    // broker's left edge, off-canvas from anything drawn.  Arcs then read
+    // as coming in from outside the visible layout, which is where the
+    // client is now (see the note in `flightPath`).
+    const sensors = { x: M, y: top, w: cw, h: height };
     const broker  = { x: M + cw + G,          y: top, w: bw, h: height };
     const hpc     = { x: M + cw + G + bw + G, y: top, w: hw, h: height };
+    const client  = { x: broker.x - 1, y: broker.y + Math.round(20 * S),
+                      w: 1, h: 1 };
 
     // the HPC super-frame holds the two endpoint role lanes, stacked
     const head = Math.round(26 * S);
@@ -1339,95 +1335,6 @@
       L.W - L.M, cy);
   }
 
-  // ---- CLIENT lane: one sub-frame per session ----------------------------
-
-  function drawClientLane(ctx, L, w) {
-    const S = L.S, r = L.client;
-    panel(ctx, r, C.frame_border, 'client', C.frame_label, S);
-
-    if (!w.sessions.length) {
-      placeholder(ctx, r, 'no sessions', S);
-      return;
-    }
-
-    const head = Math.round(26 * S);
-    const pad  = Math.round(8 * S);
-    const n    = w.sessions.length;
-    const room = r.h - head - pad;
-    const cardH = Math.min(Math.round(62 * S),
-                           Math.floor((room - (n - 1) * 6 * S) / n));
-
-    w.sessions.forEach((s, i) => {
-      const y = r.y + head + i * (cardH + 6 * S);
-      if (cardH < 22 * S || y + cardH > r.y + r.h - pad * 0.5) return;
-
-      const box = { x: r.x + pad, y, w: r.w - 2 * pad, h: cardH };
-      s._rect = box;
-      panel(ctx, box, s.active ? C.cyan_dim : C.grey_dim, null, null, S,
-            C.panel_deep);
-
-      const px = box.x + 8 * S, maxW = box.w - 16 * S;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-
-      ctx.fillStyle = C.text;
-      ctx.font = `600 ${Math.round(11 * S)}px ${FONT_MONO}`;
-      ctx.fillText(clip(ctx, short(s.sid), maxW), px, box.y + 6 * S);
-
-      ctx.fillStyle = C.text_dim;
-      ctx.font = `400 ${Math.round(9.5 * S)}px ${FONT}`;
-      ctx.fillText(clip(ctx, s.owner ? `owner ${s.owner}` : 'owner unknown',
-                        maxW), px, box.y + 22 * S);
-
-      const age = s.age === null ? '' : `age ${humanAge(s.age)}  ·  `;
-      ctx.fillText(clip(ctx, `${age}${s.twins.length} twin`
-                        + `${s.twins.length === 1 ? '' : 's'}`, maxW),
-                   px, box.y + 34 * S);
-
-      if (cardH > 54 * S && s.engines.length) {
-        ctx.fillStyle = C.frame_label;
-        ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
-        ctx.fillText(clip(ctx, `engines ${s.engines.join(', ')}`, maxW),
-                     px, box.y + 46 * S);
-      }
-
-      drawReportTick(ctx, box, w, S);
-    });
-
-    // Label the dashed arcs and the ticks, once, where they land.  They
-    // are not a channel of their own: the client learns a twin's state by
-    // polling `twin_list`, and that is all these two marks stand for.
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'bottom';
-    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT}`;
-    ctx.fillStyle = C.text_dim;
-    ctx.globalAlpha = 0.75;
-    ctx.fillText(clip(ctx, '┆ twin_list state reports', r.w - 2 * pad),
-                 r.x + pad, r.y + r.h - 6 * S);
-    ctx.globalAlpha = 1;
-  }
-
-  // The steady-state counterpart of the dashed arcs: a tick on the right
-  // edge of each session card, brightening once per poll.  A transition is
-  // an event and gets an arc; *being told the state at all* is continuous,
-  // and this is what it looks like.
-  function drawReportTick(ctx, box, w, S) {
-    if (w.reported === null) return;
-
-    const age = w.t - w.reported;
-    const k = Math.max(0, 1 - age / (POLL_INTERVAL * 0.9));
-    const h = Math.round(9 * S);
-    const x = box.x + box.w - Math.round(3.5 * S);
-    const y = box.y + box.h / 2 - h / 2;
-
-    ctx.save();
-    ctx.globalAlpha = 0.22 + 0.68 * k;
-    ctx.fillStyle = C.cyan;
-    rr(ctx, x, y, Math.max(2, Math.round(2 * S)), h, 1);
-    ctx.fill();
-    ctx.restore();
-  }
-
   // ---- SENSORS lane: the twins' own publishers, as observed ------------
   //
   // Every entry here was seen on the data plane: a `dt_stream` topic names
@@ -1441,7 +1348,7 @@
     const S = L.S, r = L.sensors;
     if (r.h < 46 * S) return;
 
-    panel(ctx, r, C.frame_border, 'sensors', C.frame_label, S);
+    panel(ctx, r, C.frame_border, 'Channels', C.frame_label, S);
 
     const pubs = [...w.publishers.values()]
       .sort((a, b) => a.key < b.key ? -1 : 1);
@@ -1450,7 +1357,7 @@
     ctx.textBaseline = 'top';
     ctx.font = `400 ${Math.round(8 * S)}px ${FONT}`;
     ctx.fillStyle = C.text_dim;
-    ctx.fillText(clip(ctx, 'in the plugin host', r.w * 0.6),
+    ctx.fillText(clip(ctx, 'visible to broker', r.w * 0.6),
                  r.x + r.w - 9 * S, r.y + 12 * S);
 
     if (!pubs.length) {
@@ -1499,8 +1406,7 @@
       ctx.textAlign = 'right';
       ctx.fillStyle = C.text_dim;
       ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
-      ctx.fillText(`${short(pub.twin)} ${pub.count}`, box.x + box.w,
-                   box.y + 1 * S);
+      ctx.fillText(`${pub.count}`, box.x + box.w, box.y + 1 * S);
     });
 
     if (pubs.length > rows) {
@@ -2111,7 +2017,11 @@
       };
     }
 
-    // a create / destroy verb, inferred from the poll delta
+    // a create / destroy verb, inferred from the poll delta.  The client
+    // frame is no longer drawn (sessions are data-only now), so `sess._rect`
+    // is never set and `L.client` is a 1x1 virtual anchor on the broker's
+    // left edge -- see `layout`.  Arcs therefore emerge at the broker
+    // boundary as if arriving from off-canvas.
     const tw   = w.twins.get(f.twinId);
     const sess = tw && w.sessions.find(s => s.sid === tw.sid);
     const from = (sess && sess._rect) || L.client;
