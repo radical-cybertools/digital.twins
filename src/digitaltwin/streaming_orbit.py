@@ -285,7 +285,7 @@ class OrbitPubSubBackend(PubSubBackend):
                 plugin_name=STREAM_PLUGIN, topic=topic, callback=self._on_event
             )
 
-    async def unsubscribe(self, topic):
+    def unsubscribe(self, topic):
         if self._closed:
             return
 

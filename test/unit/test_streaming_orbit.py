@@ -268,7 +268,7 @@ async def test_unsubscribe_stops_delivery_and_the_subscription(
     await twin.publish(SENSOR, "first")
     assert (await drain(queue)).data == "first"
 
-    await twin.unsubscribe_dtype(SENSOR)
+    twin.unsubscribe_dtype(SENSOR)
     assert SENSOR not in twin.subscriptions
     assert loopback.topics() == []
 
