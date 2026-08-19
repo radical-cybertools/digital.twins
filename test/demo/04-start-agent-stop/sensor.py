@@ -6,6 +6,7 @@ import time
 
 from radical.asyncflow import WorkflowEngine
 from digitaltwin.components import UtilityTask
+from digitaltwin.streaming import PubSubClient
 from dtypes import *
 import random
 
@@ -25,11 +26,12 @@ class MySensor(UtilityTask):
         f = open("sensor.out", "w")
         f.write("SENSOR MEASUREMENTS ========================= \n")
 
+        ps = await runtime.stream_config.connect()
+
         for i in range(30):
             f.write(f"[{datetime.datetime.now()}] Publish: {i} \n")
+            await ps.publish(SENSOR_DTYPE, i)
             f.flush()
-
-            await runtime.stream.publish(SENSOR_DTYPE, i)
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
 
         f.close()

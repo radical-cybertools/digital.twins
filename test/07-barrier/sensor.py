@@ -10,6 +10,8 @@ import random
 
 import logging
 
+from digitaltwin.streaming import PubSubClient
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +23,8 @@ class MySensor(UtilityTask):
         self.output_dt = output_dt
 
     async def main_loop(self, runtime, in_data):
-        for i in range(30):
+        ps = await runtime.stream_config.connect()
+        for i in range(60):
             print(f"Publish {self.output_dt}. Val: {i}")
-            await runtime.stream.publish(self.output_dt, i)
+            await ps.publish(self.output_dt, i)
             await asyncio.sleep(self.delay)

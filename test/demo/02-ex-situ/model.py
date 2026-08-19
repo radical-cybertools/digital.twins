@@ -35,6 +35,7 @@ class MyModel(ModelInvestigator):
         # @self.flow.function_task
         async def do_inference(in_data: TypedData, model="", diff=100):
             f = open("model-inference.out", "a")
+            print(f"Do inf: {in_data}")
             val = diff - in_data.data
             f.write(
                 f"[{datetime.datetime.now()}] Received: {in_data.data}. Model: {model} Output: {val}\n"
