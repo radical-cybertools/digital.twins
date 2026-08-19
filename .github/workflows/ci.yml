@@ -27,11 +27,14 @@ jobs:
       - name: Install digitaltwin (test + service extras)
         run: pip install ".[test,service]" pytest-timeout
 
-      # --timeout guards against a hanging test taking down the whole
-      # job; it turns a hang into a failed test with a traceback.
+      # --continue-on-collection-errors: one broken test module (see the
+      # PR description) must not hide the rest of the suite behind an
+      # "Interrupted" abort. --timeout guards against a hanging test
+      # taking down the whole job; it turns a hang into a failed test
+      # with a traceback.
       - name: Run unit tests
         run: >-
-          pytest test/unit -rs
+          pytest test/unit -rs --continue-on-collection-errors
           --timeout=120 --timeout-method=thread
 
   integration:
@@ -70,5 +73,5 @@ jobs:
 
       - name: Run integration tests
         run: >-
-          pytest test/integration -rs
+          pytest test/integration -rs --continue-on-collection-errors
           --timeout=120 --timeout-method=thread
