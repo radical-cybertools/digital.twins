@@ -50,10 +50,6 @@ def freeze(obj: Any) -> Any:
     return obj
 
 
-def freeze_args(args: tuple[Any, ...], kwargs: dict[str, Any]) -> tuple[Any, Any]:
-    return freeze(args), freeze(kwargs)
-
-
 class LRUCache:
     """Async LRU cache.
 

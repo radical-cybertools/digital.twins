@@ -39,7 +39,7 @@ from .components import (
     _TwinComponent,
 )
 from .streaming import CODEC_JSON, PubSubClient, PubSubConfig, check_codec
-from .lru import LRUCache, freeze, freeze_args
+from .lru import LRUCache, freeze
 
 logger = logging.getLogger(__name__)
 
