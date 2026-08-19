@@ -62,7 +62,7 @@ async def test_unsubscribe_dtype_stops_delivery(stream_clients):
     await twin.publish(SENSOR, "first")
     assert (await _drain(queue)).data == "first"
 
-    await twin.unsubscribe_dtype(SENSOR)
+    twin.unsubscribe_dtype(SENSOR)
     assert SENSOR not in twin.subscriptions
     await asyncio.sleep(0.2)
 

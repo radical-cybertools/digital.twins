@@ -7,6 +7,7 @@ import time
 import numpy as np
 from radical.asyncflow import WorkflowEngine
 from digitaltwin.components import UtilityTask
+from digitaltwin.streaming import PubSubClient
 from dtypes import *
 from al.sim import plot_image
 import matplotlib
@@ -28,6 +29,7 @@ class Camera(UtilityTask):
         self.flow = flow
 
     async def main_loop(self, runtime, in_data):
+        ps = await runtime.stream_config.connect()
 
         f = open("sensor.out", "w")
         f.write("SENSOR MEASUREMENTS ========================= \n")
@@ -53,9 +55,10 @@ class Camera(UtilityTask):
                 plt.figure()
                 plot_image(None, label, img)
                 plt.savefig("sensor.png")
+                plt.close()
                 # request inference of image
                 f.write(f"[{datetime.datetime.now()}] Emit an image of {label} \n")
-                await runtime.stream.publish(CAMERA_DTYPE, {"label": label, "img": img})
+                await ps.publish(CAMERA_DTYPE, {"label": label, "img": img})
                 f.flush()
                 await asyncio.sleep(2)
 

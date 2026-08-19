@@ -12,7 +12,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 from digitaltwin.components import *
 from digitaltwin.runtime import DTRuntime, RuntimeAPI
-from digitaltwin.streaming import connect_stream_client
+from digitaltwin.streaming import PubSubClient, connect_stream_client
 
 from radical.asyncflow.logging import init_default_logger
 
@@ -97,10 +97,12 @@ class MyPersistentTask(UtilityTask):
 
     async def main_loop(self, runtime, in_data):
         output_dtype = SENSOR_DTYPE
-        while True:
+        ps = await runtime.stream_config.connect()
+
+        for i in range(100):
             await asyncio.sleep(1)
             logger.debug(f"Publish message with dtype: {output_dtype}")
-            await runtime.stream.publish(output_dtype, message="Hello!")
+            await ps.publish(output_dtype, message="Hello!")
 
 
 if __name__ == "__main__":
