@@ -9,6 +9,7 @@ disturbs its siblings or the engines.
 """
 
 import asyncio
+import inspect
 import contextlib
 import logging
 import time
@@ -569,12 +570,24 @@ class DTSession(PluginSession):
             cfg.get("endpoint_name") or "<auto>",
         )
 
-        backend = await OrbitExecutionBackend(
+        kwargs: dict = dict(
             broker_url=self.broker_url,
             endpoint_name=cfg.get("endpoint_name"),
             backends=cfg.get("backends") or DEFAULT_BACKENDS,
             batch_window=0,  # per-call latency beats batching for in-situ
         )
+
+        # name the backend's broker participant after what it is for, so a
+        # topology view shows `rhapsody.<session>.<role>` instead of an
+        # anonymous uuid.  Unique by construction: one engine per role per
+        # session (`engine` caches, `_lost` forbids rebuilds).  Guarded so
+        # a rhapsody without the parameter keeps working.
+        if "participant_name" in inspect.signature(
+                OrbitExecutionBackend.__init__).parameters:
+            kwargs["participant_name"] = (
+                f"rhapsody.{self.sid.split('.')[-1]}.{name}")
+
+        backend = await OrbitExecutionBackend(**kwargs)
 
         # the endpoint the backend *settled on* (it auto-selects when the
         # config named none) -- what a topology change is matched against
