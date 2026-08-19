@@ -168,14 +168,18 @@ def build(dt):
 
     step("5.  Query the twin",
          "  - get_inference is the one call that answers the caller\n"
-         "  - all other results flow component to component in the twin",
+         "  - all other results flow component to component in the twin\n"
+         "  - 10 calls, 2s apart; dashboard: one arc per call",
          code="""
-             answer = dt.get_inference(twin, TypedData(SENSOR_DTYPE, 21),
-                                       INFERENCE_DTYPE)
+             for value in range(10):
+                 answer = dt.get_inference(twin, TypedData(SENSOR_DTYPE, value),
+                                           INFERENCE_DTYPE)
          """)
-    answer = dt.get_inference(twin_a, TypedData(SENSOR_DTYPE, 21),
-                              INFERENCE_DTYPE)
-    print(f"  21 -> {answer.data}")
+    for value in range(10):
+        answer = dt.get_inference(twin_a, TypedData(SENSOR_DTYPE, value),
+                                  INFERENCE_DTYPE)
+        print(f"  {value} -> {answer.data}", flush=True)
+        time.sleep(2)
 
     # -- twin B: the dual-engine learner -----------------------------------
 
