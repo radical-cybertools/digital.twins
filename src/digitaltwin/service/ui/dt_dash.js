@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.5.2';
+  const VERSION = '0.5.9';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -828,6 +828,11 @@
     let status  = { text: 'no data', ok: false };
     let hover   = null;        // {x, y} in canvas coordinates
     let capture = null;        // {t0, iso, broker, frames} while recording
+    // per-card collapse state (`dt:<twinId>`, `agent:<twinId>|<name>`);
+    // hits is rebuilt by the renderer each frame so the click handler
+    // can hit-test against exactly the clickable header regions.
+    const collapsed = new Set();
+    let hits = [];
     // what the last frame drew, for `frame()`: the layout and every arc the
     // renderer resolved, so a test (or a console) sees the real geometry
     const probe = { t: 0, L: null, arcs: [] };
@@ -1044,8 +1049,26 @@
     cv.addEventListener('mousemove', e => {
       const r = cv.getBoundingClientRect();
       hover = { x: e.clientX - r.left, y: e.clientY - r.top };
+      // cheap cursor cue: show the pointer when over a clickable header
+      let overHit = false;
+      for (const h of hits) {
+        if (hover.x >= h.x && hover.x <= h.x + h.w
+            && hover.y >= h.y && hover.y <= h.y + h.h) { overHit = true; break; }
+      }
+      cv.style.cursor = overHit ? 'pointer' : '';
     });
     cv.addEventListener('mouseleave', () => { hover = null; });
+    cv.addEventListener('click', e => {
+      const r = cv.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      for (const h of hits) {
+        if (x >= h.x && x <= h.x + h.w && y >= h.y && y <= h.y + h.h) {
+          if (collapsed.has(h.key)) collapsed.delete(h.key);
+          else collapsed.add(h.key);
+          return;
+        }
+      }
+    });
 
     // ---- frame loop -------------------------------------------------------
 
@@ -1080,7 +1103,8 @@
       }
 
       probe.arcs = [];
-      render(ctx, W, H, world, { status, hover, probe });
+      hits = [];
+      render(ctx, W, H, world, { status, hover, probe, collapsed, hits });
       raf = requestAnimationFrame(frame);
     }
 
@@ -1127,7 +1151,7 @@
 
     drawHeader(ctx, L, w, ui);
     drawSensorLane(ctx, L, w);
-    drawBrokerLane(ctx, L, w);
+    drawBrokerLane(ctx, L, w, ui);
     drawHpcLanes(ctx, L, w);
     drawFlights(ctx, L, w, ui);
     drawTooltip(ctx, L, w, ui);
@@ -1278,6 +1302,63 @@
     if (sec < 5400) return `${(sec / 60).toFixed(0)}m`;
     if (sec < 172800) return `${(sec / 3600).toFixed(1)}h`;
     return `${(sec / 86400).toFixed(1)}d`;
+  }
+
+  // Placeholder card content: the wire does not carry per-twin
+  // components, utility-task counts or per-investigator RMSE yet, so all
+  // three are synthesised here.  The agent roster is fixed (every twin
+  // runs the same two, each carrying an ANN and an RNN investigator),
+  // and the utility counts / RMSE traces are deterministic from a seed
+  // so they stay stable across frames and replays.  Swap `fakeAgents` /
+  // `fakeUtility` / `fakeSpark` the day the service starts serialising
+  // `runtime.components`.
+  const FAKE_AGENTS = [
+    { name: 'Gravity Estimator',  inD: 'SENSOR', outD: 'GRAVITY'  },
+    { name: 'Velocity Estimator', inD: 'SENSOR', outD: 'VELOCITY' },
+  ];
+
+  const FAKE_INVESTIGATORS = ['ANN', 'RNN'];
+
+  // A per-investigator model name that ticks up once a second, offset by
+  // the seed so investigators don't all read the same version.
+  function fakeModelName(seed, tick) {
+    const start = 1 + (Math.abs(seed) % 30);
+    return `model-v${start + tick}`;
+  }
+
+  function fakeAgents() { return FAKE_AGENTS; }
+
+  function fnv1a(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h;
+  }
+
+  function fakeUtility(id) {
+    const h = fnv1a(id);
+    const total   = 2 + (Math.abs(h) % 5);                          // 2-6
+    const persist = 1 + (Math.abs(h >>> 5) % Math.min(3, total));   // 1..min(3,total)
+    return { total, persist };
+  }
+
+  // A per-investigator RMSE trace, sampled to the model clock so it
+  // slides as `w.t` advances.  Starts high, decays with mild oscillation
+  // -- looks like a learner converging.  Nothing here reads real state.
+  function fakeSpark(seed, t) {
+    const N = 28, step = 0.5;
+    const out = [];
+    const t0 = t - N * step;
+    for (let i = 0; i < N; i++) {
+      const tt = t0 + i * step;
+      const decay = Math.exp(-Math.max(0, tt) / 40);
+      const noise = Math.sin(tt * 0.9 + seed * 1.31) * 0.08
+                  + Math.cos(tt * 0.31 + seed * 0.71) * 0.05;
+      out.push(Math.max(0.01, 0.10 + 0.9 * decay + noise * decay));
+    }
+    return out;
   }
 
   // ---- header ------------------------------------------------------------
@@ -1444,67 +1525,95 @@
 
   // ---- BROKER lane: the twin cards are the centrepiece -------------------
 
-  function drawBrokerLane(ctx, L, w) {
+  // The demo runs two digital twins.  The bundled sample recording holds
+  // more; anything past the cap gets `+N more` at the bottom of the lane.
+  const DEMO_TWIN_CAP = 2;
+
+  function drawBrokerLane(ctx, L, w, ui) {
     const S = L.S, r = L.broker;
     panel(ctx, r, C.cyan_dim, 'broker · dt plugin', C.frame_label, S);
 
     // Birth order, except that a twin which has gone yields its slot: its
     // card is a memento, and a live twin pushed behind `+N more` by one is
     // a worse trade than a memento moving.
-    const twins = [...w.twins.values()].sort((a, b) =>
+    const allTwins = [...w.twins.values()].sort((a, b) =>
       (a.gone === null ? 0 : 1) - (b.gone === null ? 0 : 1) || a.born - b.born);
-    if (!twins.length) {
+    if (!allTwins.length) {
       placeholder(ctx, r, 'no twins', S);
       return;
     }
+    const twins = allTwins.slice(0, DEMO_TWIN_CAP);
 
     const head = Math.round(28 * S);
     const pad  = Math.round(9 * S);
     const gap  = Math.round(8 * S);
 
-    const cols = Math.max(1, Math.min(3,
-      Math.floor((r.w - 2 * pad + gap) / (178 * S + gap))));
-    // as many rows as the twins need, capped by what fits: a handful of
-    // twins then get tall cards (room for their metrics) rather than short
-    // ones with an empty lane underneath
-    const fits = Math.max(1,
-      Math.floor((r.h - head - pad + gap) / (104 * S + gap)));
-    const rows = Math.min(fits, Math.ceil(twins.length / cols));
-    const cardW = Math.floor((r.w - 2 * pad - (cols - 1) * gap) / cols);
-    const cardH = Math.min(Math.round(150 * S),
-      Math.floor((r.h - head - pad - (rows - 1) * gap) / rows));
+    // One column, variable height: a collapsed card is a slim strip, an
+    // expanded card is as tall as the sum of its (possibly-collapsed)
+    // agents.  Cards past what fits get `+N more`.
+    const cardW = r.w - 2 * pad;
+    const top    = r.y + head;
+    const bottom = r.y + r.h - pad;
 
-    // The grid starts at the top of the lane and grows downward, so a card
-    // stays where it was when the next twin arrives; centring moved every
-    // card -- and every arc anchored on one -- each time the count changed.
-    // What is left over stays empty, below.
-    const top = r.y + head;
-
-    const shown = Math.min(twins.length, cols * rows);
-    for (let i = 0; i < shown; i++) {
-      const box = {
-        x: r.x + pad + (i % cols) * (cardW + gap),
-        y: top + Math.floor(i / cols) * (cardH + gap),
-        w: cardW, h: cardH,
-      };
-      twins[i]._rect = box;
-      drawTwinCard(ctx, box, twins[i], w, S);
+    let cursor = top;
+    let shown  = 0;
+    for (const tw of twins) {
+      const cardH = twinCardHeight(tw, ui, S);
+      if (cursor + cardH > bottom) break;
+      const box = { x: r.x + pad, y: cursor, w: cardW, h: cardH };
+      tw._rect = box;
+      drawTwinCard(ctx, box, tw, w, S, ui);
+      cursor += cardH + gap;
+      shown++;
     }
-    for (let i = shown; i < twins.length; i++) twins[i]._rect = null;
+    for (let i = shown; i < allTwins.length; i++) allTwins[i]._rect = null;
 
-    if (twins.length > shown) {
+    const hidden = allTwins.length - shown;
+    if (hidden > 0) {
       ctx.fillStyle = C.text_dim;
       ctx.font = `400 ${Math.round(10 * S)}px ${FONT}`;
       ctx.textAlign = 'right';
       ctx.textBaseline = 'bottom';
-      ctx.fillText(`+${twins.length - shown} more`,
+      ctx.fillText(`+${hidden} more`,
                    r.x + r.w - pad, r.y + r.h - 4 * S);
     }
   }
 
-  function drawTwinCard(ctx, box, tw, w, S) {
+  // Sizing that both the layout and `drawTwinCard` agree on.  Kept as
+  // one function so a change to any padding is a single edit.
+  const DT_HEAD_H   = 20;   // title row (font 12) baseline
+  const DT_UTIL_H   = 16;   // utility line (font 9.5)
+  const DT_TOP_PAD  = 7;
+  const DT_BOT_PAD  = 8;
+  const DT_AGENT_GAP = 6;
+  const AGENT_COLLAPSED_H = 42;
+  const AGENT_EXPANDED_H  = 140;
+
+  function agentHeight(twinId, agentName, ui, S) {
+    const key = `agent:${twinId}|${agentName}`;
+    const h   = ui.collapsed.has(key) ? AGENT_COLLAPSED_H : AGENT_EXPANDED_H;
+    return Math.round(h * S);
+  }
+
+  function twinCardHeight(tw, ui, S) {
+    const headBlock = Math.round((DT_TOP_PAD + DT_HEAD_H + DT_UTIL_H) * S);
+    if (ui.collapsed.has(`dt:${tw.id}`)) {
+      return headBlock + Math.round(DT_BOT_PAD * S);
+    }
+    const agents = fakeAgents();
+    let h = headBlock + Math.round(DT_AGENT_GAP * S);
+    agents.forEach((a, i) => {
+      h += agentHeight(tw.id, a.name, ui, S);
+      if (i < agents.length - 1) h += Math.round(DT_AGENT_GAP * S);
+    });
+    return h + Math.round(DT_BOT_PAD * S);
+  }
+
+  function drawTwinCard(ctx, box, tw, w, S, ui) {
     const state = tw.state || 'initializing';
     const closing = tw.gone !== null;
+    const dtKey = `dt:${tw.id}`;
+    const dtCollapsed = ui.collapsed.has(dtKey);
 
     // A card that has gone stays up for the whole grace period at a dimmed
     // but readable strength, then fades over the last of it; what it keeps
@@ -1541,48 +1650,68 @@
 
     const px = box.x + 9 * S;
     const maxW = box.w - 18 * S;
-    let y = box.y + 7 * S;
+    let y = box.y + Math.round(DT_TOP_PAD * S);
 
+    // Title row + clickable header (chevron + "DT: <hash>").  The whole
+    // title strip toggles collapse.
+    const chevron = dtCollapsed ? '▸' : '▾';   // ▸ ▾
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillStyle = C.text;
     ctx.font = `600 ${Math.round(12 * S)}px ${FONT_MONO}`;
-    ctx.fillText(short(tw.id), px, y);
+    ctx.fillText(clip(ctx, `${chevron} DT: ${short(tw.id)}`,
+                      maxW - pillWidth(ctx, state, S) - 6 * S),
+                 px, y);
 
     pill(ctx, box.x + box.w - 9 * S - pillWidth(ctx, state, S), y - 1,
          state, STATE_TEXT[state] || C.text_dim, S);
-    y += 20 * S;
 
+    // Utility-task count line -- kept visible even when the DT card is
+    // collapsed, so a rolled-up card still reports what it holds.
+    // Placeholder counts (`fakeUtility`) until the service reports them.
+    const utilY = y + Math.round(DT_HEAD_H * S);
+    const util  = fakeUtility(tw.id);
     ctx.fillStyle = C.text_dim;
-    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
-    const badge = w.backend ? `  [${w.backend}]` : '';
-    ctx.fillText(clip(ctx, `ns dt/${short(tw.id)}/…${badge}`, maxW), px, y);
-    y += 12 * S;
+    ctx.font = `400 ${Math.round(9.5 * S)}px ${FONT}`;
+    ctx.fillText(clip(ctx, `Utility Tasks ${util.total}`
+                      + ` (Persist: ${util.persist})`, maxW),
+                 px, utilY);
 
-    if (tw.age !== null) {
-      ctx.fillStyle = C.frame_label;
-      ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
-      let line = `age ${humanAge(tw.age)}`;
-      if (tw.pulse && w.t - tw.pulse.t < PULSE_TTL * 3) {
-        line += `  ·  stream ${tw.pulse.label}`;
+    // Register the clickable region: full title + utility area, so a
+    // click anywhere on the visible-when-collapsed portion toggles.
+    ui.hits.push({
+      key: dtKey,
+      x: box.x, y: box.y,
+      w: box.w, h: Math.round((DT_TOP_PAD + DT_HEAD_H + DT_UTIL_H) * S),
+    });
+
+    y = utilY + Math.round(DT_UTIL_H * S);
+
+    if (!dtCollapsed) {
+      if (state === 'failed' && tw.last_error) {
+        ctx.fillStyle = C.red;
+        ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
+        ctx.fillText(clip(ctx, tw.last_error, maxW), px, y);
+        y += 13 * S;
       }
-      ctx.fillText(clip(ctx, line, maxW), px, y);
-      y += 13 * S;
-    }
 
-    if (state === 'failed' && tw.last_error) {
-      ctx.fillStyle = C.red;
-      ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
-      ctx.fillText(clip(ctx, tw.last_error, maxW), px, y);
-      y += 13 * S;
-    }
-
-    // convergence criteria: one block per learner metric
-    for (const [name, m] of Object.entries(tw.metrics || {})) {
-      const h = Math.round(34 * S);
-      if (y + h > box.y + box.h - 4 * S) break;
-      drawMetric(ctx, px, y, maxW, h, name, m, tw.spark.get(name) || [], S);
-      y += h + 4 * S;
+      // Agent blocks.  Placeholder data (`fakeAgents`) until the service
+      // starts serialising `runtime.components`; swap the source here.
+      const rowGap = Math.round(DT_AGENT_GAP * S);
+      const rowPad = Math.round(4 * S);
+      const rowX   = px + rowPad;
+      const rowW   = maxW - 2 * rowPad;
+      y += rowGap;
+      const bottom = box.y + box.h - Math.round(DT_BOT_PAD * S)
+                   - (closing ? 10 * S : 0);
+      const agents = fakeAgents();
+      agents.forEach((a, i) => {
+        const rowH = agentHeight(tw.id, a.name, ui, S);
+        if (y + rowH > bottom + 1) return;
+        drawAgentRow(ctx, rowX, y, rowW, rowH, a, tw.id, w, S, ui);
+        y += rowH;
+        if (i < agents.length - 1) y += rowGap;
+      });
     }
 
     // A card that has gone says so for as long as it is up: the `closed`
@@ -1615,126 +1744,155 @@
     ctx.globalAlpha = 1;
   }
 
-  // A criterion metric: a value bar with the target tick on it, the name,
-  // the value, and a sparkline.  Which side of the target is *good* comes
-  // from the learner's own comparison operator -- nothing here guesses.
-  function drawMetric(ctx, x, y, wd, ht, name, m, hist, S) {
-    const good  = metricGood(m);
-    const color = good ? C.green : C.amber;
-    const barW  = Math.round(7 * S);
-    const scale = metricScale(m, hist);
+  // One agent block inside a twin card.  Structure, top to bottom:
+  //   NAME (bold)                                          model: <model>
+  //   IN <inD>  →  OUT <outD>
+  //     ANN [bold]   rmse 0.14   [micro sparkline]
+  //     RNN [bold]   rmse 0.11   [micro sparkline]
+  // Everything shown here is placeholder data until the service starts
+  // serialising `runtime.components`.
+  const INV_COLOR = { ANN: C.cyan, RNN: C.violet };
 
-    ctx.fillStyle = C.unused;
-    rr(ctx, x, y, barW, ht, 2 * S);
+  function drawAgentRow(ctx, x, y, wd, ht, agent, twinId, w, S, ui) {
+    const agentKey = `agent:${twinId}|${agent.name}`;
+    const agentCollapsed = ui.collapsed.has(agentKey);
+
+    ctx.fillStyle = C.panel_deep;
+    rr(ctx, x, y, wd, ht, 4 * S);
     ctx.fill();
-    ctx.strokeStyle = C.unused_brd;
+    ctx.strokeStyle = C.frame_border;
     ctx.lineWidth = 1;
-    rr(ctx, x + 0.5, y + 0.5, barW - 1, ht - 1, 2 * S);
+    rr(ctx, x + 0.5, y + 0.5, wd - 1, ht - 1, 4 * S);
     ctx.stroke();
 
-    // the value, rising from the bottom
-    if (typeof m.value === 'number') {
-      const fh = Math.max(1, Math.min(ht, (m.value / scale) * ht));
-      ctx.globalAlpha *= 0.5;
-      ctx.fillStyle = color;
-      rr(ctx, x, y + ht - fh, barW, fh, 2 * S);
-      ctx.fill();
-      ctx.globalAlpha /= 0.5;
-      ctx.fillStyle = color;
-      rr(ctx, x - 1 * S, y + ht - fh - 1, barW + 2 * S, 2, 1);
-      ctx.fill();
-    }
+    const padX = Math.round(10 * S);
+    const lx = x + padX;
+    const rx = x + wd - padX;
+    let ry = y + Math.round(7 * S);
 
-    // the target
-    if (typeof m.threshold === 'number') {
-      const th = Math.max(0, Math.min(ht, (m.threshold / scale) * ht));
-      ctx.save();
-      ctx.globalAlpha *= 0.75;
-      ctx.strokeStyle = C.text;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x - 2 * S, y + ht - th + 0.5);
-      ctx.lineTo(x + barW + 2 * S, y + ht - th + 0.5);
-      ctx.stroke();
-      ctx.restore();
-    }
+    // Selected investigator (stable per agent) and its current model
+    // name, computed first so the agent's name knows the room left over.
+    const tick = Math.floor(w.t);
+    const selIdx = Math.abs(fnv1a(`sel|${twinId}|${agent.name}`))
+                 % FAKE_INVESTIGATORS.length;
+    const selInv = FAKE_INVESTIGATORS[selIdx];
+    const selModel = fakeModelName(fnv1a(`${twinId}|${agent.name}|${selInv}`),
+                                   tick);
+    const selText = `Selected: ${selInv}. Model: ${selModel}`;
 
-    const tx = x + barW + 7 * S;
-    const tw = wd - barW - 7 * S;
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'right';
+    ctx.fillStyle = C.text_dim;
+    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
+    ctx.fillText(clip(ctx, selText, wd * 0.6), rx, ry + 1 * S);
+    const selW = Math.min(ctx.measureText(selText).width, wd * 0.6);
+
+    // Chevron sits on the agent name so the whole header row reads as
+    // clickable.
+    const chev = agentCollapsed ? '▸' : '▾';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = C.text;
+    ctx.font = `600 ${Math.round(11 * S)}px ${FONT}`;
+    ctx.fillText(clip(ctx, `${chev} Agent: ${agent.name}`,
+                      wd - 2 * padX - selW - Math.round(10 * S)),
+                 lx, ry);
+    ry += 15 * S;
+
+    ctx.fillStyle = C.text_dim;
+    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
+    ctx.fillText(clip(ctx, `IN ${agent.inD}  →  OUT ${agent.outD}`,
+                      wd - 2 * padX),
+                 lx, ry);
+    ry += 14 * S;
+
+    // Click region covers the header (name + selection + IN/OUT), which
+    // is exactly what remains when the agent is collapsed.
+    ui.hits.push({
+      key: agentKey,
+      x, y,
+      w: wd, h: Math.round(AGENT_COLLAPSED_H * S),
+    });
+
+    if (agentCollapsed) return;
+
+    // Investigator cards, each with its own graph.  The trace and model
+    // name are both quantised to the model clock at 1 Hz -- the graph
+    // shifts and the version ticks once a second, not every frame.
+    const indent = Math.round(14 * S);
+    const invH   = Math.round(46 * S);
+    const invGap = Math.round(4 * S);
+    const invX   = lx + indent;
+    const invW   = wd - 2 * padX - indent;
+    for (const invName of FAKE_INVESTIGATORS) {
+      if (ry + invH > y + ht - Math.round(4 * S)) break;
+      const seed  = fnv1a(`${twinId}|${agent.name}|${invName}`);
+      const hist  = fakeSpark(seed, tick);
+      const model = fakeModelName(seed, tick);
+      drawInvestigatorCard(ctx, invX, ry, invW, invH, invName, model, hist,
+                           INV_COLOR[invName] || C.text_dim, S);
+      ry += invH + invGap;
+    }
+  }
+
+  // Investigator card: bordered in the investigator's own colour so ANN
+  // and RNN read as siblings under the agent.  Three rows inside: title
+  // + rmse, model name, then the graph.
+  function drawInvestigatorCard(ctx, x, y, wd, ht, name, model, hist, color, S) {
+    ctx.save();
+    ctx.globalAlpha *= 0.55;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    rr(ctx, x + 0.5, y + 0.5, wd - 1, ht - 1, 3 * S);
+    ctx.stroke();
+    ctx.restore();
+
+    const padX = Math.round(7 * S);
+    const lx = x + padX;
+    const rx = x + wd - padX;
+    let ry = y + Math.round(4 * S);
 
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillStyle = C.text_label;
-    ctx.font = `600 ${Math.round(9.5 * S)}px ${FONT}`;
-    ctx.fillText(clip(ctx, name, tw * 0.55), tx, y);
+    ctx.fillStyle = C.text;
+    ctx.font = `700 ${Math.round(9.5 * S)}px ${FONT}`;
+    ctx.fillText(`Inv: ${name}`, lx, ry);
 
-    ctx.fillStyle = color;
-    ctx.font = `400 ${Math.round(9.5 * S)}px ${FONT_MONO}`;
+    // model on the title row, right-aligned
     ctx.textAlign = 'right';
-    ctx.fillText(fmt(m.value), x + wd, y);
+    ctx.fillStyle = C.text_dim;
+    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
+    ctx.fillText(clip(ctx, `Model: ${model}`, wd * 0.6), rx, ry + 1 * S);
+    ry += 13 * S;
 
+    // rmse on its own line beneath
+    const cur = hist[hist.length - 1];
     ctx.textAlign = 'left';
     ctx.fillStyle = C.text_dim;
     ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
-    ctx.fillText(clip(ctx, `${m.operator || ''} ${fmt(m.threshold)}`
-      + (m.windows ? `  ${m.windows}w` : ''), tw), tx, y + 11 * S);
+    ctx.fillText(`rmse ${cur.toFixed(3)}`, lx, ry);
+    ry += 11 * S;
 
-    drawSpark(ctx, tx, y + 22 * S, tw, ht - 23 * S, hist, color,
-              m.threshold, scale);
+    const graphH = Math.max(1, y + ht - ry - Math.round(3 * S));
+    drawMicroSpark(ctx, lx, ry, wd - 2 * padX, graphH, hist, color);
   }
 
-  function metricGood(m) {
-    if (typeof m.should_stop === 'boolean') return m.should_stop;
-    if (typeof m.value !== 'number' || typeof m.threshold !== 'number') {
-      return false;
-    }
-    switch (m.operator) {
-      case '<':  return m.value <  m.threshold;
-      case '<=': return m.value <= m.threshold;
-      case '>':  return m.value >  m.threshold;
-      case '>=': return m.value >= m.threshold;
-      case '==': return m.value === m.threshold;
-      default:   return false;
-    }
-  }
-
-  // One scale for bar, tick and sparkline: the largest thing any of them
-  // has to show, with the target kept comfortably inside the track.
-  function metricScale(m, hist) {
-    let top = 0;
-    for (const v of hist) if (typeof v === 'number') top = Math.max(top, v);
-    if (typeof m.value === 'number') top = Math.max(top, m.value);
-    if (typeof m.threshold === 'number') top = Math.max(top, m.threshold * 1.6);
-    return top > 0 ? top * 1.08 : 1;
-  }
-
-  function drawSpark(ctx, x, y, wd, ht, hist, color, threshold, scale) {
-    if (wd < 12 || ht < 5) return;
-
-    if (typeof threshold === 'number') {
-      const ty = y + ht - Math.min(ht, (threshold / scale) * ht);
-      ctx.save();
-      ctx.globalAlpha *= 0.4;
-      ctx.strokeStyle = C.text_dim;
-      ctx.setLineDash([2, 2]);
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, ty + 0.5);
-      ctx.lineTo(x + wd, ty + 0.5);
-      ctx.stroke();
-      ctx.restore();
-    }
-
+  // Auto-ranged micro sparkline: the whole trace uses the visible min /
+  // max, so a slow decay still shows a shape rather than flattening.
+  function drawMicroSpark(ctx, x, y, wd, ht, hist, color) {
     if (hist.length < 2) return;
 
-    const step = wd / (hist.length - 1);
+    let lo = Infinity, hi = -Infinity;
+    for (const v of hist) { if (v < lo) lo = v; if (v > hi) hi = v; }
+    const span = Math.max(hi - lo, 1e-6);
+
     ctx.save();
-    ctx.globalAlpha *= 0.9;
     ctx.strokeStyle = color;
-    ctx.lineWidth = 1.2;
+    ctx.globalAlpha *= 0.9;
+    ctx.lineWidth = 1.15;
     ctx.beginPath();
+    const step = wd / (hist.length - 1);
     hist.forEach((v, i) => {
-      const py = y + ht - Math.max(0, Math.min(ht, (v / scale) * ht));
+      const py = y + ht - ((v - lo) / span) * ht;
       if (i === 0) ctx.moveTo(x, py);
       else ctx.lineTo(x + i * step, py);
     });
