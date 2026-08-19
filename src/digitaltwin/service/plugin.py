@@ -151,7 +151,7 @@ class PluginDT(Plugin):
         # of the page work
         for asset in UI_ASSETS:
             if asset != "index.html":
-                self.add_route_get(asset, self.ui_asset_root)
+                self.add_route_get(asset, self._root_asset(asset))
 
     # -- session policy -----------------------------------------------------
 
@@ -326,10 +326,17 @@ class PluginDT(Plugin):
 
         return self._ui_asset(request.path_params["asset"])
 
-    async def ui_asset_root(self, request: Request) -> Response:
-        """The same assets, next to `ui` instead of under it (see routes)."""
+    def _root_asset(self, asset: str):
+        """The same assets, next to `ui` instead of under it (see routes).
 
-        return self._ui_asset(request.url.path.rsplit("/", 1)[-1])
+        The name is bound per route: the broker-hosted dispatch hands a
+        request shim, so the handler must not introspect the request.
+        """
+
+        async def handler(request: Request) -> Response:
+            return self._ui_asset(asset)
+
+        return handler
 
     @staticmethod
     def _ui_asset(asset: str) -> Response:
