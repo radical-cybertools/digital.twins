@@ -164,26 +164,9 @@ def build(dt):
          """)
     dt.start(twin_a)
 
-    # -- the client asks directly ------------------------------------------
-
-    step("5.  Query the twin",
-         "  - get_inference is the one call that answers the caller\n"
-         "  - all other results flow component to component in the twin\n"
-         "  - 10 calls, 2s apart; dashboard: one arc per call",
-         code="""
-             for value in range(10):
-                 answer = dt.get_inference(twin, TypedData(SENSOR_DTYPE, value),
-                                           INFERENCE_DTYPE)
-         """)
-    for value in range(10):
-        answer = dt.get_inference(twin_a, TypedData(SENSOR_DTYPE, value),
-                                  INFERENCE_DTYPE)
-        print(f"  {value} -> {answer.data}", flush=True)
-        time.sleep(2)
-
     # -- twin B: the dual-engine learner -----------------------------------
 
-    step("6.  Second twin: ex-situ learning",
+    step("5.  Second twin: ex-situ learning",
          "  - same session, same stream shape\n"
          "  - retrains on input windows, on a second engine / endpoint\n"
          "  - inference serves from the task endpoint while training runs\n"
@@ -209,6 +192,27 @@ def build(dt):
     dt.add_task(twin_b, dt.package(EchoSink), INFERENCE_DTYPE, NULL_DTYPE)
     dt.start(twin_b)
     print(f"  twin B: {twin_b}")
+
+    # -- the client asks directly ------------------------------------------
+
+    step("6.  Query twin A",
+         "  - get_inference is the one call that answers the caller\n"
+         "  - all other results flow component to component in the twin\n"
+         "  - 10 calls, 2s apart; dashboard: one arc per call\n"
+         "  - meanwhile twin B trains: exsitu tiles, convergence bar\n"
+         "    per window (~15s)",
+         code="""
+             for value in range(10):
+                 answer = dt.get_inference(twin, TypedData(SENSOR_DTYPE, value),
+                                           INFERENCE_DTYPE)
+         """)
+    for value in range(10):
+        answer = dt.get_inference(twin_a, TypedData(SENSOR_DTYPE, value),
+                                  INFERENCE_DTYPE)
+        print(f"  {value} -> {answer.data}", flush=True)
+        time.sleep(2)
+
+
 
     step("7.  Operator view",
          "  - admin_sessions: owner, age, twins, states, last errors\n"
