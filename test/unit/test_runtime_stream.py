@@ -1,4 +1,10 @@
-"""M0.3 -- persistent components publish through the injected stream client."""
+"""M0.3 -- persistent components publish through the injected stream client.
+
+No `function_task` wrapping, no hand-built ZMQ client, no address in sight:
+the component only ever touches `runtime.stream`.  A component which opens
+its own client from `runtime.stream_config` instead leaks it -- `no_task_leaks`
+catches that here.
+"""
 
 import asyncio
 
@@ -20,9 +26,8 @@ INFERENCE = DataType("inference")
 class Sensor(UtilityTask):
     async def main_loop(self, runtime, in_data):
         value = 0
-        ps = await runtime.stream_config.connect()
         while True:
-            await ps.publish(SENSOR, value)
+            await runtime.stream.publish(SENSOR, value)
             value += 1
             await asyncio.sleep(0.05)
 

@@ -333,13 +333,17 @@ class ZMQ_BrokerProcess:
 
 class ZMQ_PS_Client(PubSubBackend):
     """Pub/Sub client that talks to a ZMQ broker.
-    kind = "zmq"
 
     The client manages a pair of asynchronous sockets (PUB/SUB) and
     keeps a mapping from topics to user callbacks.
     """
 
     label: str = "local"
+
+    # names this backend in a PubSubConfig (see `PubSubBackend.kind`).  Without
+    # it the class inherits "generic", and every config which travels to
+    # another process names a backend nothing can reopen.
+    kind = "zmq"
 
     def __init__(
         self, pub_addr: Optional[str] = None, sub_addr: Optional[str] = None
