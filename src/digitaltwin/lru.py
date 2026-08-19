@@ -24,6 +24,9 @@ from typing import Any
 
 
 def freeze(obj: Any) -> Any:
+    # FIXME(review): a Mapping and a set of pairs freeze to the same value, so
+    # `freeze({'a': 1})` and `freeze({('a', 1)})` collide in the cache.  Tag the
+    # container kind into the frozen form to keep them apart.
     if isinstance(obj, Mapping):
         return frozenset((freeze(key), freeze(value)) for key, value in obj.items())
 
@@ -38,6 +41,9 @@ def freeze(obj: Any) -> Any:
 
     try:
         hash(obj)
+    # FIXME(review): a bare `except` also swallows KeyboardInterrupt and
+    # SystemExit and reports them as an unfreezable object.  `except TypeError`
+    # is what is meant.
     except:
         raise TypeError(f"Cannot freeze object of type {type(obj).__name__}")
 
@@ -97,6 +103,10 @@ class LRUCache:
         Returns:
             Any: The stored value.
         """
+        # FIXME(review): the membership test is outside the lock, so an
+        # eviction landing between it and the acquire below turns a clean
+        # KeyError into one raised from `move_to_end`.  Same exception type
+        # today, which is the only reason this is benign.  Move it inside.
         if key not in self.cache:
             raise KeyError
 

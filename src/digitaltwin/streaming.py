@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+
+# FIXME(review): `dataclass` is imported twice, here and below.
 from dataclasses import dataclass
 import json
 import logging
@@ -153,6 +155,14 @@ class PubSubBackend(ABC):
     @abstractmethod
     def unsubscribe(self, topic: str) -> None:
         """Unsubscribe from *topic*."""
+
+        # FIXME(review): this went from `async def` to `def`, and
+        # `PubSubClient` now calls it without `await`.  Defensible -- the ZMQ
+        # body has nothing to await -- but there is a second implementor:
+        # `OrbitPubSubBackend`, in the open M3 PR, still declares `async def`.
+        # Against that backend the coroutine is created and dropped, so the
+        # unsubscribe silently never happens.  Its body is synchronous too, so
+        # the fix is to drop the keyword there; it lives in that PR, not here.
         pass
 
     @abstractmethod
@@ -160,6 +170,9 @@ class PubSubBackend(ABC):
         """Release all resources.  Idempotent."""
         pass
 
+    # FIXME(review): dead code.  Nothing calls `get_config` on either backend
+    # -- a `PubSubConfig` is built from `kind`, `pub_addr` and `sub_addr`
+    # directly.  Either wire it into `PubSubClient.config` or drop both.
     def get_config(self) -> dict:
         return {}
 
@@ -712,6 +725,8 @@ class PubSubClient:
         if backend_params is None:
             backend_params = {}
 
+        # FIXME(review): added twice.  Harmless on a set, but one of the two
+        # lines is a leftover.
         self.subscriptions.add(dtype)
         self.subscriptions.add(dtype)
 
@@ -817,6 +832,10 @@ class PubSubConfig:
 
     async def connect(self, timeout: Optional[float] = None) -> PubSubClient:
         """Open a connected, namespaced client for this endpoint."""
+
+        # FIXME(review): a real precondition expressed as `assert`, so it
+        # vanishes under `python -O` and the None reaches the namespace logic
+        # instead.  Should raise.
         assert self.namespace is not None
         return PubSubClient(await self.connect_backend(timeout), self.namespace)
 

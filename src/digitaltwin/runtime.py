@@ -95,6 +95,18 @@ class _JoinComponent(_TwinComponent):
     """
 
     def __init__(self, join_dtype: JoinDataType, submit_event_fn: Callable) -> None:
+        # FIXME(review): the depth-1 queues below plus the blocking `put` in
+        # `update()` make a join a *non-local* operator.  `update` is awaited
+        # from `_run_component`, which is gathered by `_dtype_consumer`, which
+        # is awaited in `_launch_consumer`'s loop -- so while one input waits
+        # for its partner, the whole consumer for that dtype is stalled,
+        # including components which have nothing to do with the join.  The
+        # existing `Barrier` deliberately does the opposite (unbounded output
+        # queues, plus a soft mode).  Having two synchronisation primitives
+        # with opposite back-pressure semantics and no stated distinction is
+        # the actual problem; it needs a policy decision, not a patch.
+        # Invisible in `08-data-join` because both sensors tick at 1 Hz.
+
         # need a queue for each input.
         self.input_queues: dict[DataType, asyncio.Queue] = {}
         self.submit_event_fn = submit_event_fn
@@ -427,6 +439,26 @@ class RuntimeAPI:
         assert self.cmp_type in ["AGENT"]
         logger.info(f"Register shared subtask with label {label}. LRU size: {lru_size}")
 
+        # FIXME(review): four open defects in the memoisation below, none
+        # addressed here because they want a redesign rather than a patch:
+        #
+        #  1. `struct.lock.acquire()` has no `try/finally`.  A cancellation
+        #     between acquire and release -- twin teardown is the obvious one
+        #     -- leaves the lock held forever, and every later call on this
+        #     label deadlocks.
+        #  2. the cache stores the future, so a task which *raised* is cached
+        #     with its exception and re-raises for every later caller.  A
+        #     transient failure poisons the key for the life of the process.
+        #     Cancellation of the first caller propagates to the shared future
+        #     and poisons it for everyone else the same way.
+        #  3. `call_shared_subtask` freezes the arguments to build a cache key
+        #     and then passes the *frozen* values on: the task sees a tuple
+        #     where the caller passed a list, and a frozenset of pairs where it
+        #     passed a dict.  Key and argument need separating.
+        #  4. registration copies the label into `self._ant.investigators` as
+        #     they stand *now*; an investigator started afterwards silently has
+        #     no such label.  `11-shared-sim` happens to start its two first.
+
         async def wrapper(*args, **kwargs):
             # task must be awaitable
             return await task(*args, **kwargs)
@@ -507,10 +539,18 @@ class RuntimeAPI:
         """
 
         assert self.cmp_type in ["AGENT", "INVESTIGATOR"]
+
+        # FIXME(review): this does not do what the docstring says, and
+        # `test/11-shared-sim` crashes on it today with "fetch_wrapper()
+        # missing 1 required positional argument: 'kwargs'".  What comes back
+        # is the *internal* wrapper, whose signature is `(args, kwargs)` -- a
+        # pre-frozen pair, not a natural call.  Left alone deliberately: the
+        # shape of the public API here is the author's call, and the fix is
+        # either to return a `(*args, **kwargs)` adapter over
+        # `call_shared_subtask` or to drop this method in favour of it.
+        #
         # uses the shared_tasks dict in the annotated component
         # reference was copied to investigator by agent.
-        #
-        # Simply returns the callable.
         if label not in self._ant.shared_tasks:
             raise ValueError(
                 f"Unknown shared task label: {label}. Expected: {list(self._ant.shared_tasks.keys())}"
@@ -1084,6 +1124,9 @@ class DTRuntime:
             join_dtype: Combined data type representing the join.
         """
 
+        # FIXME(review): missing `self._check_mutable()`.  Every other `add_*`
+        # refuses to touch a stopped or failed twin; these two do not, so a
+        # join or a split can still be grafted onto a dead graph.
         if join_dtype in self.join_components:
             raise ValueError("Data join already exists for that type")
 
@@ -1113,6 +1156,7 @@ class DTRuntime:
             output_dtypes: Tuple of output data types produced.
         """
 
+        # FIXME(review): missing `self._check_mutable()` -- see `add_data_join`.
         assert input_dtype != TRUTHY
 
         ant_comp = _AnnotatedComponent(task, input_dtype, NULL_DTYPE, False)
@@ -1186,6 +1230,12 @@ class DTRuntime:
             # for split tasks, treat the answer differently
             # splits also don't support an output callback
             if isinstance(ant.component, SplitTask):
+                # FIXME(review): these are user-input checks -- a component
+                # returning the wrong arity or the wrong dtypes -- expressed as
+                # `assert`, so `python -O` removes them and the mismatch turns
+                # into a confusing failure further downstream.  They should be
+                # `raise ValueError`, like the equivalent check on the utility
+                # task path a few lines above.
                 # do checks
                 assert answer is not None
                 l_answer = cast(tuple[TypedData], answer)  # type: ignore

@@ -86,6 +86,12 @@ class JoinDataType(DataType):
     def __hash__(self) -> int:
         return super().__hash__()
 
+    # FIXME(review): equality is asymmetric.  `DataType.__eq__` matches on the
+    # name alone, so `DataType("JOIN[a,b]") == JoinDataType([a, b])` is True
+    # while the reverse is False -- with equal hashes.  That breaks the dict
+    # and set invariants these types are used under.  Inherited from
+    # `WindowDataType` rather than introduced here, but joins make composite
+    # dtypes common enough that it now matters.
     def __eq__(self, obj) -> bool:
         if (
             not isinstance(obj, JoinDataType)
@@ -203,6 +209,13 @@ class _TwinComponent(ABC):
     Implementations must provide ``main_loop``.
     """
 
+    # FIXME(review): the ABC buys close to nothing.  Every concrete base a user
+    # actually subclasses -- `ModelInvestigator`, `UtilityTask`, `SciAgent`,
+    # `SplitTask` -- supplies a `main_loop` stub returning None, so the
+    # abstractmethod below only prevents instantiating `_TwinComponent` itself,
+    # which nobody does.  Either the stubs go and the contract becomes real, or
+    # the ABC goes and the class is honestly a mixin.
+
     def __init__(self) -> None:
         pass
 
@@ -296,6 +309,10 @@ class SplitTask(UtilityTask):
     # expects a tuple of TypedData, with the same dtypes matching
     # what the runtime was given at graph creation
     async def main_loop(self, runtime, in_data: TypedData):
+        # FIXME(review): a stub which fabricates plausible-looking data rather
+        # than refusing to run.  A subclass which forgets to override it emits
+        # `("a", 1), ("b", 2)` into the graph and fails the runtime's dtype
+        # check somewhere else.  `raise NotImplementedError` belongs here.
         return TypedData(DataType("a"), 1), TypedData(DataType("b"), 2)
 
 
