@@ -13,6 +13,11 @@ import asyncio
 import time
 
 from digitaltwin.streaming import ChannelPublisher
+
+# FIXME(review): everything from here to `SENSOR_CHANNEL` is merge noise.  This
+# file is a standalone external publisher -- it has no runtime, no component
+# and no twin -- so the component imports below are unused, and `from dtypes
+# import *` shadows the explicit import that follows them.
 from radical.asyncflow import WorkflowEngine
 from digitaltwin.components import UtilityTask
 from digitaltwin.runtime import RuntimeAPI
