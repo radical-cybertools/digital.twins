@@ -36,7 +36,7 @@ ASYNCFLOW="radical.asyncflow @ git+https://github.com/radical-cybertools/radical
 # that path hard-imports opentelemetry -- an endpoint without it fails every
 # session init with "No module named 'opentelemetry'".  (Known upstream gap;
 # the proper fix is an ImportError guard in orbit's plugin_rhapsody.)
-RHAPSODY="rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@6b00e14"   # f479c75 + participant_name
+RHAPSODY="rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"   # f479c75 + participant_name + engine role
 
 # orbit: the 0.5.0 RELEASE carries the SSE bytes fix (#113) -- PyPI is fine
 ORBIT="radical.orbit==0.5.0"
