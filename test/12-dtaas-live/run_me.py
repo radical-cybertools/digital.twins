@@ -23,6 +23,7 @@ import json
 import logging
 import os
 import sys
+import textwrap
 import time
 
 from radical.orbit import EndpointRuntime
@@ -57,13 +58,39 @@ ENGINES = {
 
 PACE = os.environ.get("DEMO_STEP", "manual")
 
+# syntax highlighting is a soft dependency: without pygments (or with
+# NO_COLOR set) the api snippets print plain
+try:
+    from pygments import highlight
+    from pygments.formatters import Terminal256Formatter
+    from pygments.lexers import PythonLexer
+    _LEXER = PythonLexer()
+    _FORMATTER = Terminal256Formatter(style="monokai")
+except ImportError:
+    _LEXER = None
 
-def step(title: str, note: str = "") -> None:
+
+def _render_code(code: str) -> None:
+    """The step's API surface, as a block the audience can read."""
+
+    text = textwrap.dedent(code).strip("\n")
+    if _LEXER is not None and not os.environ.get("NO_COLOR"):
+        text = highlight(text, _LEXER, _FORMATTER).rstrip("\n")
+
+    print("  \033[2mapi:\033[0m")
+    for line in text.splitlines():
+        print(f"      {line}")
+    print()
+
+
+def step(title: str, note: str = "", code: str = "") -> None:
     """Announce the next beat and hold until the narrator is ready."""
 
     print(f"\n\033[1m{'=' * 70}\n{title}\033[0m")
     if note:
         print(f"{note}\n")
+    if code:
+        _render_code(code)
 
     if PACE == "manual":
         try:
@@ -86,13 +113,23 @@ def build(dt):
     step("1.  Session",
          f"  - sid: {dt.sid}\n"
          "  - the sid is a bearer capability: it is the only client state\n"
-         "  - twins belong to the session, not to this process")
+         "  - twins belong to the session, not to this process",
+         code="""
+             ENGINES = {'engines': {'task':   {'endpoint_name': 'dt_task_ep'},
+                                    'exsitu': {'endpoint_name': 'dt_exsitu_ep'}}}
+
+             runtime = EndpointRuntime()        # the ORBIT client runtime
+             dt      = runtime.get_plugin('broker', 'dt', config=ENGINES)
+         """)
 
     # -- twin A: plain in-situ inference -----------------------------------
 
     step("2.  Create a twin",
          "  - create_twin returns on registration; the helper polls to ready\n"
-         "  - dashboard: card in the broker lane, initializing -> ready")
+         "  - dashboard: card in the broker lane, initializing -> ready",
+         code="""
+             twin = dt.create_twin()
+         """)
     twin_a = dt.create_twin()
     print(f"  twin A: {twin_a}")
 
@@ -100,7 +137,16 @@ def build(dt):
          "  - the service has none of this code\n"
          "  - component classes go over the wire (cloudpickle, by value)\n"
          "  - the service instantiates them, injecting the session engine\n"
-         "  - graph: sensor -> model -> sink")
+         "  - graph: sensor -> model -> sink",
+         code="""
+             dt.add_task        (twin, dt.package(PacedSensor),
+                                 TRUTHY,          SENSOR_DTYPE, is_persistent=True)
+             dt.add_investigator(twin, dt.package(RampModel),
+                                 SENSOR_DTYPE,    INFERENCE_DTYPE)
+             dt.add_task        (twin, dt.package(EchoSink),
+                                 INFERENCE_DTYPE, NULL_DTYPE)
+             dt.describe(twin)
+         """)
     dt.add_task(twin_a, dt.package(PacedSensor), TRUTHY, SENSOR_DTYPE,
                 is_persistent=True)
     dt.add_investigator(twin_a, dt.package(RampModel), SENSOR_DTYPE,
@@ -112,14 +158,21 @@ def build(dt):
          "  - sensor publishes a reading every 2.5s\n"
          "  - inference runs on the rhapsody endpoint, not in the broker\n"
          "  - dashboard: sensor tile, client -> broker arcs, task tiles on\n"
-         "    the HPC lane")
+         "    the HPC lane",
+         code="""
+             dt.start(twin)
+         """)
     dt.start(twin_a)
 
     # -- the client asks directly ------------------------------------------
 
     step("5.  Query the twin",
          "  - get_inference is the one call that answers the caller\n"
-         "  - all other results flow component to component in the twin")
+         "  - all other results flow component to component in the twin",
+         code="""
+             answer = dt.get_inference(twin, TypedData(SENSOR_DTYPE, 21),
+                                       INFERENCE_DTYPE)
+         """)
     answer = dt.get_inference(twin_a, TypedData(SENSOR_DTYPE, 21),
                               INFERENCE_DTYPE)
     print(f"  21 -> {answer.data}")
@@ -131,7 +184,19 @@ def build(dt):
          "  - retrains on input windows, on a second engine / endpoint\n"
          "  - inference serves from the task endpoint while training runs\n"
          "  - dashboard: convergence bar = ROSE stop criterion (fit_error\n"
-         "    vs threshold, updated per window)")
+         "    vs threshold, updated per window)",
+         code="""
+             dt.add_investigator(twin_b, dt.package(DriftingLearner),
+                                 SENSOR_DTYPE, INFERENCE_DTYPE)
+
+             # inside DriftingLearner (ROSE):
+             @learner.training_task
+             async def training(window): ...
+
+             @learner.as_stop_criterion(metric_name='fit_error',
+                                        threshold=1e-6, operator='<')
+             async def criterion(): ...
+         """)
     twin_b = dt.create_twin()
     dt.add_task(twin_b, dt.package(PacedSensor), TRUTHY, SENSOR_DTYPE,
                 is_persistent=True)
@@ -144,13 +209,20 @@ def build(dt):
     step("7.  Operator view",
          "  - admin_sessions: owner, age, twins, states, last errors\n"
          "  - names the endpoint behind each engine role\n"
-         "  - this is how orphaned sessions are found")
+         "  - this is how orphaned sessions are found",
+         code="""
+             dt.admin_sessions()
+         """)
     show("sessions", dt.admin_sessions())
 
     step("8.  Client exits",
          "  - this process ends; the twins do not\n"
          "  - no timeout: twins run for days, clients come and go\n"
-         "  - the dashboard keeps updating")
+         "  - the dashboard keeps updating",
+         code="""
+             # no teardown call
+             sys.exit(0)
+         """)
 
     print("\n  reattach with:\n")
     print(f"      python run_me.py --attach {dt.sid}\n")
@@ -162,13 +234,21 @@ def attach(dt):
     """Phase two: the client is a different process now."""
 
     step("9.  Reattach",
-         "  - a new process; its only input is the sid")
+         "  - a new process; its only input is the sid",
+         code="""
+             dt = runtime.get_plugin('broker', 'dt', sid=sid)
+             dt.twin_list()
+         """)
     for entry in dt.twin_list():
         print(f"  {entry['twin_id'][:8]}  {entry['state']:<10}"
               f"  metrics={list((entry.get('metrics') or {}).keys())}")
 
     step("10.  Close the twins",
-         "  - twin_close, per twin; same route an operator uses")
+         "  - twin_close, per twin; same route an operator uses",
+         code="""
+             for twin in dt.twin_list():
+                 dt.twin_close(twin['twin_id'])
+         """)
     for entry in dt.twin_list():
         print(f"  closing {entry['twin_id'][:8]}")
         dt.twin_close(entry["twin_id"])
@@ -178,7 +258,10 @@ def attach(dt):
     step("11.  Close the session",
          "  - sessions are persistent: twins gone != session gone\n"
          "  - unregister_session shuts the engines down\n"
-         "  - explorer: the rhapsody.<session>.<role> participants leave")
+         "  - explorer: the rhapsody.<session>.<role> participants leave",
+         code="""
+             dt.unregister_session()
+         """)
     sid = dt.sid
     dt.unregister_session()
     print(f"  session {sid} unregistered; the service holds no state of ours")

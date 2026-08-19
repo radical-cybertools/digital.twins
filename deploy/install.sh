@@ -81,6 +81,10 @@ echo "==> $ROLE: installing pinned radical deps (asyncflow, rhapsody, orbit, ros
 echo "==> $ROLE: installing digitaltwin @ ${REF:0:8} (+ service, learn)"
 "$VENV/bin/pip" install --quiet "digitaltwin[service,learn] @ git+$REPO@$REF"
 
+# soft dependency of the demo driver: highlighted api snippets.  The
+# driver degrades to plain text without it -- never demo-critical.
+"$VENV/bin/pip" install --quiet pygments
+
 # (the SSE bytes fix that used to be patched in here is upstream now --
 # radical.orbit#113 -- and rides in via the ORBIT pin above)
 
