@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """The live DTaaS demo, paced for narration.
 
 Two phases, because the point of phase two is that phase one's process is

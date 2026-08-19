@@ -43,11 +43,11 @@ Sanity: pane 1 shows `registered as 'dt_task_ep'` and `'dt_exsitu_ep'`.
    python 3.12 like the service; NOT the 3.13 dev venv `ve3`, which the
    service would reject for version skew):
 
-       source ve.demo/bin/activate   # from the repo root
-       cd test/12-dtaas-live
-       export RADICAL_ORBIT_BROKER_URL=wss://95.217.193.116:8000
-       export RADICAL_ORBIT_BROKER_CERT=$HOME/.radical/orbit/broker_cert.radical3.pem
-       export DT_TASK_ENDPOINT=dt_task_ep DT_EXSITU_ENDPOINT=dt_exsitu_ep
+       . demo.sh                     # from the repo root
+
+   (`demo.sh` is operator-local, untracked: activates ve.demo, cds into
+   test/12-dtaas-live, and exports the broker URL, the broker's pinned
+   cert and the two endpoint names.)
 
    ('radical.3' is only an ssh alias -- the client and browser use the IP.
    The CERT is the BROKER's cert, fetched once via
@@ -58,8 +58,8 @@ Sanity: pane 1 shows `registered as 'dt_task_ep'` and `'dt_exsitu_ep'`.
 
 ## The show
 
-    python run_me.py            # steps 1-8, Enter-paced; EXITS at step 8
-    python run_me.py --attach session.XXXXXXXX     # steps 9-10
+    ./run_me.py                 # steps 1-8, Enter-paced; EXITS at step 8
+    ./run_me.py --attach session.XXXXXXXX          # steps 9-11
 
 Step 8 prints the exact --attach line — leave the terminal visible so
 the "client is gone, twins are not" beat lands, give it ~30s while the
