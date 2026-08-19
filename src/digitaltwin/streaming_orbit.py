@@ -159,7 +159,10 @@ class OrbitPubSubBackend(PubSubBackend):
 
         logger.info("connecting stream participant %s", self.name)
 
-        runtime = EndpointRuntime(broker_url=self.broker_url, name=self.name)
+        # role: the default 'consumer' says nothing in a topology view.
+        # This participant is a twin's data plane.
+        runtime = EndpointRuntime(broker_url=self.broker_url, name=self.name,
+                                  role="stream")
 
         try:
             runtime.start(wait=True, timeout=timeout)

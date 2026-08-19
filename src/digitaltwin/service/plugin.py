@@ -145,6 +145,14 @@ class PluginDT(Plugin):
         self.add_route_get(ROUTE_UI, self.ui_index)
         self.add_route_get(ROUTE_UI_ASSET, self.ui_asset)
 
+        # the page references its script relative to itself, and a browser
+        # at `{namespace}/ui` (no trailing slash) resolves that against the
+        # *parent* -- so the assets answer there as well, and both spellings
+        # of the page work
+        for asset in UI_ASSETS:
+            if asset != "index.html":
+                self.add_route_get(asset, self.ui_asset_root)
+
     # -- session policy -----------------------------------------------------
 
     def _normalize_session_policy(self, data: dict) -> tuple:
@@ -317,6 +325,11 @@ class PluginDT(Plugin):
         """One dashboard asset, from the allow-list."""
 
         return self._ui_asset(request.path_params["asset"])
+
+    async def ui_asset_root(self, request: Request) -> Response:
+        """The same assets, next to `ui` instead of under it (see routes)."""
+
+        return self._ui_asset(request.url.path.rsplit("/", 1)[-1])
 
     @staticmethod
     def _ui_asset(asset: str) -> Response:

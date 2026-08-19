@@ -33,7 +33,7 @@ Sanity: pane 1 shows `registered as 'dt_task_ep'` and `'dt_exsitu_ep'`.
 1. Browser: open `https://95.217.193.116:8000/`, accept the self-signed
    cert, enter the token.  This mints the cookie the dashboard rides;
    skipping it means a 401 at the worst possible moment.
-2. Open `https://95.217.193.116:8000/broker/dt/ui` full-window — the
+2. Open `https://95.217.193.116:8000/broker/dt/ui/` full-window — the
    standalone dashboard.  Check the version badge next to the stream
    pill reads 0.5.0.
 3. Second tab, loaded and paused: the bundled recording
