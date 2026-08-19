@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      # src/ layout: pytest tests the *installed* package, never the
+      # working tree.  Always install before testing -- a stale install
+      # will silently pass against old code.
+      - name: Install digitaltwin (test + service extras)
+        run: pip install ".[test,service]" pytest-timeout
+
+      # --timeout guards against a hanging test taking down the whole
+      # job; it turns a hang into a failed test with a traceback.
+      - name: Run unit tests
+        run: >-
+          pytest test/unit -rs
+          --timeout=120 --timeout-method=thread
+
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      # src/ layout: pytest tests the *installed* package, never the
+      # working tree.  Always install before testing -- a stale install
+      # will silently pass against old code.
+      - name: Install digitaltwin (test + service extras)
+        run: pip install ".[test,service]" pytest-timeout
+
+      # The ORBIT broker needs a self-signed TLS cert/key and a shared
+      # ingress token at the default ~/.radical/orbit location -- see
+      # `radical-orbit-broker.py --help`.  Generated fresh every run,
+      # never committed; test/integration/conftest.py starts the broker
+      # and skips the whole suite if it cannot come up.
+      - name: Generate ORBIT broker TLS cert/key and ingress token
+        run: |
+          mkdir -p ~/.radical/orbit
+          openssl req -x509 -newkey rsa:4096 -nodes \
+              -keyout ~/.radical/orbit/broker_key.pem \
+              -out    ~/.radical/orbit/broker_cert.pem \
+              -days 365 -subj "/CN=localhost"
+          chmod 600 ~/.radical/orbit/broker_key.pem
+          python3 -c "import secrets; print(secrets.token_urlsafe(32))" \
+              > ~/.radical/orbit/broker.token
+          chmod 600 ~/.radical/orbit/broker.token
+
+      - name: Run integration tests
+        run: >-
+          pytest test/integration -rs
+          --timeout=120 --timeout-method=thread
