@@ -14,12 +14,12 @@
 #   ./install.sh <role> [venv-dir]
 #
 #     role       broker | endpoint | client   (informational; same install)
-#     venv-dir   default ./ve-dtaas
+#     venv-dir   default ./ve.demo
 #
 set -euo pipefail
 
 ROLE="${1:-}"
-VENV="${2:-$PWD/ve-dtaas}"
+VENV="${2:-$PWD/ve.demo}"
 
 REPO="https://github.com/radical-cybertools/digital.twins"
 REF="268f57fe8852b96c00bac4df2ac2479e9c6b6cb5"   # feature/dtaas-viz (incl. participant rename)

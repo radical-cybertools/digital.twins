@@ -12,7 +12,7 @@
 set -euo pipefail
 NAME="${1:?usage: $0 <name> <broker-host> [venv-dir]}"
 BROKER="${2:?usage: $0 <name> <broker-host> [venv-dir]}"
-VENV="${3:-$PWD/ve-dtaas}"
+VENV="${3:-$PWD/ve.demo}"
 
 export RADICAL_ORBIT_BROKER_URL="wss://$BROKER:8000"
 

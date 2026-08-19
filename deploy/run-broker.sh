@@ -5,7 +5,7 @@
 #   ./run-broker.sh [venv-dir]
 #
 set -euo pipefail
-VENV="${1:-$PWD/ve-dtaas}"
+VENV="${1:-$PWD/ve.demo}"
 
 # The broker needs its *own* URL in the environment, not just on the CLI:
 # the `dt` plugin builds a rhapsody client from it when a twin is created,

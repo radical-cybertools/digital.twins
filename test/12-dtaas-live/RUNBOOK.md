@@ -8,7 +8,7 @@ on radical.3 are overkill — broker and endpoints can live in one tmux.
 
     # radical.3
     ~/.radical/orbit/    broker_cert.pem  broker_key.pem (0600)  broker.token
-    ./deploy/install.sh broker      ~/ve-dtaas
+    ./deploy/install.sh broker    # venv: ./ve.demo
 
     # laptop (already true for ve3, listed for completeness)
     ~/.radical/orbit/    broker_cert.pem  broker.token
@@ -20,11 +20,11 @@ so only the pinned install guarantees the trees match.
 ## Demo day, radical.3 (tmux, three panes)
 
     # pane 1 -- broker + dt plugin
-    ./deploy/run-broker.sh ~/ve-dtaas
+    ./deploy/run-broker.sh
 
     # pane 2 + 3 -- the two endpoints (order after the broker)
-    ./deploy/run-endpoint.sh dt_task_ep   localhost ~/ve-dtaas
-    ./deploy/run-endpoint.sh dt_exsitu_ep localhost ~/ve-dtaas
+    ./deploy/run-endpoint.sh dt_task_ep   localhost
+    ./deploy/run-endpoint.sh dt_exsitu_ep localhost
 
 Sanity: pane 1 shows `registered as 'dt_task_ep'` and `'dt_exsitu_ep'`.
 
@@ -43,7 +43,7 @@ Sanity: pane 1 shows `registered as 'dt_task_ep'` and `'dt_exsitu_ep'`.
    python 3.12 like the service; NOT the 3.13 dev venv `ve3`, which the
    service would reject for version skew):
 
-       source ~/ve-dtaas/bin/activate
+       source ve.demo/bin/activate   # from the repo root
        cd test/12-dtaas-live
        export RADICAL_ORBIT_BROKER_URL=wss://95.217.193.116:8000
        export RADICAL_ORBIT_BROKER_CERT=$HOME/.radical/orbit/broker_cert.radical3.pem
