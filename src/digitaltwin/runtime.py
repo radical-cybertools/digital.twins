@@ -473,7 +473,7 @@ class RuntimeAPI:
 
             await struct.lock.acquire()
 
-            if struct.cache.exists(key):
+            if await struct.cache.exists(key):
                 logger.info(
                     f"Computation of {label} {key if len(str(key)) < 20 else ''} saved. Return future."
                 )
@@ -1114,9 +1114,7 @@ class DTRuntime:
             join_dtype: Combined data type representing the join.
         """
 
-        # FIXME(review): missing `self._check_mutable()`.  Every other `add_*`
-        # refuses to touch a stopped or failed twin; these two do not, so a
-        # join or a split can still be grafted onto a dead graph.
+        self._check_mutable()
         if join_dtype in self.join_components:
             raise ValueError("Data join already exists for that type")
 
@@ -1146,7 +1144,7 @@ class DTRuntime:
             output_dtypes: Tuple of output data types produced.
         """
 
-        # FIXME(review): missing `self._check_mutable()` -- see `add_data_join`.
+        self._check_mutable()
         assert input_dtype != TRUTHY
 
         ant_comp = _AnnotatedComponent(task, input_dtype, NULL_DTYPE, False)
@@ -1220,22 +1218,21 @@ class DTRuntime:
             # for split tasks, treat the answer differently
             # splits also don't support an output callback
             if isinstance(ant.component, SplitTask):
-                # FIXME(review): these are user-input checks -- a component
-                # returning the wrong arity or the wrong dtypes -- expressed as
-                # `assert`, so `python -O` removes them and the mismatch turns
-                # into a confusing failure further downstream.  They should be
-                # `raise ValueError`, like the equivalent check on the utility
-                # task path a few lines above.
                 # do checks
-                assert answer is not None
+                if answer is None:
+                    raise ValueError("Answer is None!")
+
                 l_answer = cast(tuple[TypedData], answer)  # type: ignore
-                assert ant.split_outputs is not None
-                assert len(l_answer) == len(ant.split_outputs)
+
+                if ant.split_outputs is None or len(l_answer) != len(ant.split_outputs):
+                    raise ValueError("Unexpected outputs returned by SplitTask")
 
                 for i in range(len(l_answer)):
-                    assert (
-                        l_answer[i] is None or l_answer[i].dtype == ant.split_outputs[i]
-                    )
+                    if (
+                        l_answer[i] is not None
+                        and l_answer[i].dtype != ant.split_outputs[i]
+                    ):
+                        raise ValueError("Unexpected outputs returned by SplitTask")
 
                 # checks done, send out. None acts as a blank
                 for part in l_answer:

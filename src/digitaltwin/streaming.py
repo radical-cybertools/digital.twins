@@ -25,8 +25,6 @@ from __future__ import annotations
 import asyncio
 import contextlib
 
-# FIXME(review): `dataclass` is imported twice, here and below.
-from dataclasses import dataclass
 import json
 import logging
 import multiprocessing
@@ -161,12 +159,6 @@ class PubSubBackend(ABC):
     async def close(self):
         """Release all resources.  Idempotent."""
         pass
-
-    # FIXME(review): dead code.  Nothing calls `get_config` on either backend
-    # -- a `PubSubConfig` is built from `kind`, `pub_addr` and `sub_addr`
-    # directly.  Either wire it into `PubSubClient.config` or drop both.
-    def get_config(self) -> dict:
-        return {}
 
     def __str__(self):
         return f"{self.kind}"
@@ -377,9 +369,6 @@ class ZMQ_PS_Client(PubSubBackend):
         self._task: Optional[asyncio.Task] = None
         self._closed = False
         self.is_running = asyncio.Event()
-
-    def get_config(self) -> dict:
-        return {"pub_addr": self.pub_addr, "sub_addr": self.sub_addr}
 
     async def _connect_socket(self, sock, addr):
         """Connect `sock` and wait until the connection is established.
@@ -717,9 +706,6 @@ class PubSubClient:
         if backend_params is None:
             backend_params = {}
 
-        # FIXME(review): added twice.  Harmless on a set, but one of the two
-        # lines is a leftover.
-        self.subscriptions.add(dtype)
         self.subscriptions.add(dtype)
 
         # add message to queue
@@ -825,10 +811,9 @@ class PubSubConfig:
     async def connect(self, timeout: Optional[float] = None) -> PubSubClient:
         """Open a connected, namespaced client for this endpoint."""
 
-        # FIXME(review): a real precondition expressed as `assert`, so it
-        # vanishes under `python -O` and the None reaches the namespace logic
-        # instead.  Should raise.
-        assert self.namespace is not None
+        if self.namespace is None:
+            raise ValueError("backend is None!")
+
         return PubSubClient(await self.connect_backend(timeout), self.namespace)
 
 

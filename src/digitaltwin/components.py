@@ -34,6 +34,11 @@ class DataType:
         return hash(self.name)
 
     def __eq__(self, obj) -> bool:
+        if isinstance(obj, (WindowDataType, JoinDataType)):
+            # this should always be false, as SELF is polymorphed
+            # and will use the subclass __eq__, not this one.
+            return False
+
         return isinstance(obj, DataType) and obj.name == self.name
 
     def __str__(self) -> str:
@@ -56,7 +61,7 @@ class TypedData:
         data:  The actual value of the payload.
 
     Returns:
-        None – this is a plain data container.
+        None - this is a plain data container.
     """
 
     dtype: DataType
@@ -203,23 +208,15 @@ class SharedSubtaskLabel:
 # ------------------------------------------------------------------
 
 
-class _TwinComponent(ABC):
+class _TwinComponent:
     """Abstract base class for all component types.  Provides a minimal
     interface that the runtime uses to call a component's main loop.
     Implementations must provide ``main_loop``.
     """
 
-    # FIXME(review): the ABC buys close to nothing.  Every concrete base a user
-    # actually subclasses -- `ModelInvestigator`, `UtilityTask`, `SciAgent`,
-    # `SplitTask` -- supplies a `main_loop` stub returning None, so the
-    # abstractmethod below only prevents instantiating `_TwinComponent` itself,
-    # which nobody does.  Either the stubs go and the contract becomes real, or
-    # the ABC goes and the class is honestly a mixin.
-
     def __init__(self) -> None:
         pass
 
-    @abstractmethod
     async def main_loop(self, runtime, *args, **kwargs) -> TypedData | None:
         """Entry point for a component's run loop.
 
@@ -275,7 +272,7 @@ class ModelInvestigator(_TwinComponent):
             return False
 
     async def main_loop(self, runtime, *args, **kwargs) -> TypedData | None:
-        # Placeholder – subclasses provide the actual logic.
+        # Placeholder - subclasses provide the actual logic.
         return None
 
 
@@ -309,11 +306,8 @@ class SplitTask(UtilityTask):
     # expects a tuple of TypedData, with the same dtypes matching
     # what the runtime was given at graph creation
     async def main_loop(self, runtime, in_data: TypedData):
-        # FIXME(review): a stub which fabricates plausible-looking data rather
-        # than refusing to run.  A subclass which forgets to override it emits
-        # `("a", 1), ("b", 2)` into the graph and fails the runtime's dtype
-        # check somewhere else.  `raise NotImplementedError` belongs here.
-        return TypedData(DataType("a"), 1), TypedData(DataType("b"), 2)
+        # return TypedData(DataType("a"), 1), TypedData(DataType("b"), 2)
+        raise NotImplementedError
 
 
 # ------------------------------------------------------------------
