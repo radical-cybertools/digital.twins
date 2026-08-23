@@ -21,6 +21,18 @@ jobs:
           python-version: "3.13"
           cache: pip
 
+      # The radical dependencies must not come from naive PyPI resolution:
+      # PyPI's rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit`
+      # -- the backend `digitaltwin.service` imports -- which was the
+      # collection-blocking ModuleNotFoundError this workflow documented.
+      # Pre-installed pinned, so resolving digitaltwin's requirements
+      # keeps them.  asyncflow 0.5.1 and orbit 0.5.0 are the releases
+      # carrying the non-main-thread and SSE-bytes fixes respectively.
+      - name: Install pinned radical dependencies
+        run: >-
+          pip install "radical.asyncflow==0.5.1" "radical.orbit==0.5.0"
+          "rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"
+
       # src/ layout: pytest tests the *installed* package, never the
       # working tree.  Always install before testing -- a stale install
       # will silently pass against old code.
@@ -47,6 +59,18 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
+
+      # The radical dependencies must not come from naive PyPI resolution:
+      # PyPI's rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit`
+      # -- the backend `digitaltwin.service` imports -- which was the
+      # collection-blocking ModuleNotFoundError this workflow documented.
+      # Pre-installed pinned, so resolving digitaltwin's requirements
+      # keeps them.  asyncflow 0.5.1 and orbit 0.5.0 are the releases
+      # carrying the non-main-thread and SSE-bytes fixes respectively.
+      - name: Install pinned radical dependencies
+        run: >-
+          pip install "radical.asyncflow==0.5.1" "radical.orbit==0.5.0"
+          "rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"
 
       # src/ layout: pytest tests the *installed* package, never the
       # working tree.  Always install before testing -- a stale install
