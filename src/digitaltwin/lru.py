@@ -25,7 +25,10 @@ from typing import Any
 
 def freeze(obj: Any) -> Any:
     if isinstance(obj, Mapping):
-        return frozenset((freeze(key), freeze(value)) for key, value in obj.items())
+        return (
+            frozenset((freeze(key), freeze(value)) for key, value in obj.items()),
+            type(obj),
+        )
 
     if isinstance(obj, list):
         return tuple(freeze(item) for item in obj)
@@ -34,18 +37,15 @@ def freeze(obj: Any) -> Any:
         return tuple(freeze(item) for item in obj)
 
     if isinstance(obj, (set, frozenset)):
-        return frozenset(freeze(item) for item in obj)
+        return (frozenset(freeze(item) for item in obj), freeze(type(obj)))
 
     try:
         hash(obj)
-    except:
+
+    except TypeError:
         raise TypeError(f"Cannot freeze object of type {type(obj).__name__}")
 
     return obj
-
-
-def freeze_args(args: tuple[Any, ...], kwargs: dict[str, Any]) -> tuple[Any, Any]:
-    return freeze(args), freeze(kwargs)
 
 
 class LRUCache:
@@ -97,13 +97,15 @@ class LRUCache:
         Returns:
             Any: The stored value.
         """
-        if key not in self.cache:
-            raise KeyError
 
         async with self.edit_lock:
+            if key not in self.cache:
+                raise KeyError
             self.cache.move_to_end(key)
             return self.cache[key]
 
-    def exists(self, key: Any) -> bool:
+    async def exists(self, key: Any) -> bool:
         """Return ``True`` if *key* is in the cache, ``False`` otherwise."""
-        return key in self.cache
+
+        async with self.edit_lock:
+            return key in self.cache

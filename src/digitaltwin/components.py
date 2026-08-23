@@ -34,6 +34,11 @@ class DataType:
         return hash(self.name)
 
     def __eq__(self, obj) -> bool:
+        if isinstance(obj, (WindowDataType, JoinDataType)):
+            # this should always be false, as SELF is polymorphed
+            # and will use the subclass __eq__, not this one.
+            return False
+
         return isinstance(obj, DataType) and obj.name == self.name
 
     def __str__(self) -> str:
@@ -56,7 +61,7 @@ class TypedData:
         data:  The actual value of the payload.
 
     Returns:
-        None – this is a plain data container.
+        None - this is a plain data container.
     """
 
     dtype: DataType
@@ -197,7 +202,7 @@ class SharedSubtaskLabel:
 # ------------------------------------------------------------------
 
 
-class _TwinComponent(ABC):
+class _TwinComponent:
     """Abstract base class for all component types.  Provides a minimal
     interface that the runtime uses to call a component's main loop.
     Implementations must provide ``main_loop``.
@@ -206,7 +211,6 @@ class _TwinComponent(ABC):
     def __init__(self) -> None:
         pass
 
-    @abstractmethod
     async def main_loop(self, runtime, *args, **kwargs) -> TypedData | None:
         """Entry point for a component's run loop.
 
@@ -262,7 +266,7 @@ class ModelInvestigator(_TwinComponent):
             return False
 
     async def main_loop(self, runtime, *args, **kwargs) -> TypedData | None:
-        # Placeholder – subclasses provide the actual logic.
+        # Placeholder - subclasses provide the actual logic.
         return None
 
 
@@ -296,7 +300,8 @@ class SplitTask(UtilityTask):
     # expects a tuple of TypedData, with the same dtypes matching
     # what the runtime was given at graph creation
     async def main_loop(self, runtime, in_data: TypedData):
-        return TypedData(DataType("a"), 1), TypedData(DataType("b"), 2)
+        # return TypedData(DataType("a"), 1), TypedData(DataType("b"), 2)
+        raise NotImplementedError
 
 
 # ------------------------------------------------------------------
