@@ -39,7 +39,7 @@ from .components import (
     _TwinComponent,
 )
 from .streaming import CODEC_JSON, PubSubClient, PubSubConfig, check_codec
-from .lru import LRUCache, freeze, freeze_args
+from .lru import LRUCache, freeze
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +95,18 @@ class _JoinComponent(_TwinComponent):
     """
 
     def __init__(self, join_dtype: JoinDataType, submit_event_fn: Callable) -> None:
+        # FIXME(review): the depth-1 queues below plus the blocking `put` in
+        # `update()` make a join a *non-local* operator.  `update` is awaited
+        # from `_run_component`, which is gathered by `_dtype_consumer`, which
+        # is awaited in `_launch_consumer`'s loop -- so while one input waits
+        # for its partner, the whole consumer for that dtype is stalled,
+        # including components which have nothing to do with the join.  The
+        # existing `Barrier` deliberately does the opposite (unbounded output
+        # queues, plus a soft mode).  Having two synchronisation primitives
+        # with opposite back-pressure semantics and no stated distinction is
+        # the actual problem; it needs a policy decision, not a patch.
+        # Invisible in `08-data-join` because both sensors tick at 1 Hz.
+
         # need a queue for each input.
         self.input_queues: dict[DataType, asyncio.Queue] = {}
         self.submit_event_fn = submit_event_fn
@@ -296,8 +308,13 @@ class RuntimeAPI:
         """
 
         assert self.cmp_type in ["INVESTIGATOR"]
-        self._ant.model_kwargs = model_kwargs
-        self._ant.accuracy_kwargs = acc_kwargs
+
+        # `None` is the "caller passed nothing" sentinel, not a value the
+        # rest of the runtime can hold: `_run_component` splats these into
+        # the inference task, and `**None` raises.  Normalised here, the
+        # same way the callback below already normalises them.
+        self._ant.model_kwargs = model_kwargs or {}
+        self._ant.accuracy_kwargs = acc_kwargs or {}
         self._ant.has_published_model.set()
         if self._ant.model_publish_cb is not None:
             self._runtime._to_asyncio_task(
@@ -422,6 +439,26 @@ class RuntimeAPI:
         assert self.cmp_type in ["AGENT"]
         logger.info(f"Register shared subtask with label {label}. LRU size: {lru_size}")
 
+        # FIXME(review): three open defects in the memoisation below, none
+        # addressed here because they want a redesign rather than a patch:
+        #
+        #  1. `struct.lock.acquire()` has no `try/finally`.  A cancellation
+        #     between acquire and release -- twin teardown is the obvious one
+        #     -- leaves the lock held forever, and every later call on this
+        #     label deadlocks.
+        #  2. the cache stores the future, so a task which *raised* is cached
+        #     with its exception and re-raises for every later caller.  A
+        #     transient failure poisons the key for the life of the process.
+        #     Cancellation of the first caller propagates to the shared future
+        #     and poisons it for everyone else the same way.
+        #  3. registration copies the label into `self._ant.investigators` as
+        #     they stand *now*; an investigator started afterwards silently has
+        #     no such label.  `11-shared-sim` happens to start its two first.
+        #
+        # A fourth -- frozen values passed on to the task in place of the
+        # caller's arguments -- was fixed upstream in 97c96b4/8487a4b: the key
+        # is now the only thing frozen.
+
         async def wrapper(*args, **kwargs):
             # task must be awaitable
             return await task(*args, **kwargs)
@@ -436,7 +473,7 @@ class RuntimeAPI:
 
             await struct.lock.acquire()
 
-            if struct.cache.exists(key):
+            if await struct.cache.exists(key):
                 logger.info(
                     f"Computation of {label} {key if len(str(key)) < 20 else ''} saved. Return future."
                 )
@@ -499,6 +536,7 @@ class RuntimeAPI:
         """
 
         assert self.cmp_type in ["AGENT", "INVESTIGATOR"]
+
         # uses the shared_tasks dict in the annotated component
         # reference was copied to investigator by agent.
         #
@@ -1076,6 +1114,7 @@ class DTRuntime:
             join_dtype: Combined data type representing the join.
         """
 
+        self._check_mutable()
         if join_dtype in self.join_components:
             raise ValueError("Data join already exists for that type")
 
@@ -1105,6 +1144,7 @@ class DTRuntime:
             output_dtypes: Tuple of output data types produced.
         """
 
+        self._check_mutable()
         assert input_dtype != TRUTHY
 
         ant_comp = _AnnotatedComponent(task, input_dtype, NULL_DTYPE, False)
@@ -1179,15 +1219,20 @@ class DTRuntime:
             # splits also don't support an output callback
             if isinstance(ant.component, SplitTask):
                 # do checks
-                assert answer is not None
+                if answer is None:
+                    raise ValueError("Answer is None!")
+
                 l_answer = cast(tuple[TypedData], answer)  # type: ignore
-                assert ant.split_outputs is not None
-                assert len(l_answer) == len(ant.split_outputs)
+
+                if ant.split_outputs is None or len(l_answer) != len(ant.split_outputs):
+                    raise ValueError("Unexpected outputs returned by SplitTask")
 
                 for i in range(len(l_answer)):
-                    assert (
-                        l_answer[i] is None or l_answer[i].dtype == ant.split_outputs[i]
-                    )
+                    if (
+                        l_answer[i] is not None
+                        and l_answer[i].dtype != ant.split_outputs[i]
+                    ):
+                        raise ValueError("Unexpected outputs returned by SplitTask")
 
                 # checks done, send out. None acts as a blank
                 for part in l_answer:

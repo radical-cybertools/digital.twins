@@ -21,9 +21,14 @@ class MySensor(UtilityTask):
 
     async def main_loop(self, runtime: RuntimeAPI, in_data):
 
-        ps = await runtime.stream_config.connect()
+        # `runtime.stream` -- not `stream_config.connect()`.  This component
+        # runs inline on the service loop, so the twin's own client is right
+        # here; opening a second one leaks a context, a socket pair and a
+        # receive task per twin, none of which teardown can reach.
+        # `stream_config` is for the other case: a task in another process or
+        # on another host, which cannot be handed a live client.
         for i in range(10):
             await asyncio.sleep(1)
             val = random.random()
             print(f"Sensor val: {val}")
-            await ps.publish(SENSOR_DTYPE, val)
+            await runtime.stream.publish(SENSOR_DTYPE, val)
