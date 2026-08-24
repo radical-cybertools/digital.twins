@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.8.3';
+  const VERSION = '0.8.4';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -1448,11 +1448,15 @@
       for (const h of hits) {
         if (x >= h.x && x <= h.x + h.w && y >= h.y && y <= h.y + h.h) {
           if (h.key.startsWith('link:')) {
-            // sibling plugin surfaces live next to ours on the broker:
-            // '/broker/dt' -> '/broker/<target>'
-            const base = (opts.dtPath || '/broker/dt')
-              .replace(/\/dt\/?$/, '/');
-            window.location.href = base + h.key.slice(5);
+            // Explorer deep link (`#plugin/<endpoint>/<name>`).  Inside
+            // the Explorer the hash change navigates in place; from the
+            // standalone page it is a plain redirect to the Explorer.
+            const target = h.key.slice(5);
+            if (window.location.pathname === '/') {
+              window.location.hash = target;
+            } else {
+              window.location.href = '/' + target;
+            }
             return;
           }
           if (collapsed.has(h.key)) collapsed.delete(h.key);
@@ -2012,7 +2016,7 @@
     if (ui) {
       ctx.font = `600 ${Math.round(10 * S)}px ${FONT}`;
       const tw2 = ctx.measureText(title.toUpperCase()).width + 22 * S;
-      ui.hits.push({ key: 'link:task_dispatcher/pools',
+      ui.hits.push({ key: 'link:#plugin/broker/task_dispatcher',
                      x: r.x, y: r.y, w: Math.min(tw2, r.w * 0.5),
                      h: Math.round(24 * S) });
     }
