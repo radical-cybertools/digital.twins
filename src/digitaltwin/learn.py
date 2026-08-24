@@ -5,31 +5,32 @@ spells out by hand -- a `StreamingActiveLearner` fed from `ON_INPUT`, a
 bootstrap model published up front, `on_model_ready ->
 publish_new_model`, and a learner whose lifetime is the twin's.
 
-It is also the marker for **dual-engine injection**: the learner's
-training / active-learning / criterion tasks run on the `'exsitu'` engine
-(typically remote HPC hardware) while inference stays on the twin's
-`'task'` engine.  The service detects this class by subclass check and
-passes the second engine as `learn_flow`; locally the caller passes it
-(or nothing -- one engine then serves both, which is what a
-single-endpoint deployment does).
+It is also the marker for **role injection**: the learner's training /
+active-learning / criterion tasks carry the `'learning'` backend label
+(typically remote HPC hardware) while inference rides the default
+`'inference'` backend of the same engine.  The service detects this
+class by subclass check and passes the label as `learn_backend`; locally
+the caller passes it (or nothing -- every task then rides the one
+backend, which is what a single-endpoint deployment does).
 
 A subclass provides its learner tasks and its inference task::
 
     class Fit(StreamingLearnerInvestigator):
 
-        def __init__(self, flow, learn_flow=None):
-            super().__init__(flow, learn_flow, batch_size=8)
+        def __init__(self, flow, learn_backend=None):
+            super().__init__(flow, learn_backend, batch_size=8)
 
-            # ex-situ, on `learn_flow`.  as_executable=False makes these
-            # cloudpickled function tasks, which is what lets them run on
-            # an endpoint that shares no filesystem with the service
+            # learning role: the label is injected on registration.
+            # as_executable=False makes these cloudpickled function
+            # tasks, which is what lets them run on an endpoint that
+            # shares no filesystem with the service
             @self.learner.training_task(as_executable=False)
             async def training(window, *args):
                 return {'slope': fit(window)}
 
             ...
 
-            # in-situ, on `flow`
+            # inference role, on the default backend
             @flow.function_task
             async def predict(in_data, slope=0.0):
                 return in_data.data * slope
@@ -98,6 +99,7 @@ def _number(value: Any) -> Optional[float]:
     return number if math.isfinite(number) else None
 
 
+
 class StreamingLearnerInvestigator(ModelInvestigator):
     """A `ModelInvestigator` with a ROSE `StreamingActiveLearner` inside.
 
@@ -105,7 +107,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
     (`ON_INPUT`) *and* served by the inference task, so one stream drives
     both retraining and prediction.  Each window of `batch_size` items (or
     `max_wait` seconds' worth) runs one training / active-learning /
-    criterion iteration on the `'exsitu'` engine; a met criterion is a
+    criterion iteration under the `'learning'` label; a met criterion is a
     publish gate, not a terminator -- it swaps the model the in-situ
     inference task runs with.
     """
@@ -113,27 +115,44 @@ class StreamingLearnerInvestigator(ModelInvestigator):
     def __init__(
         self,
         flow: WorkflowEngine,
-        learn_flow: Optional[WorkflowEngine] = None,
+        learn_backend: Optional[str] = None,
         batch_size: int = 5,
         max_wait: Optional[float] = 2.0,
         conflate: bool = True,
     ):
         super().__init__(flow)
 
-        # Dual engine.  `learn_flow` is the 'exsitu' engine the service
-        # injects; without one (local use, or a deployment that configured
-        # no 'exsitu' engine) the twin's own engine serves both roles.
-        self.learn_flow = flow if learn_flow is None else learn_flow
+        # One engine, two roles.  `learn_backend` is the name of the
+        # 'learning' backend the service injects; the learner's tasks
+        # carry it as their asyncflow routing label.  Without one (local
+        # use, or a deployment that configured no 'learning' backend) the
+        # label is omitted and every task rides the default backend.
+        self.learn_backend = learn_backend
 
         # conflate: a stream faster than the learner drops its backlog
         # rather than growing it -- a days-long twin must not queue days
         # of sensor data
         self.learner = StreamingActiveLearner(
-            self.learn_flow,
+            flow,
             batch_size=batch_size,
             max_wait=max_wait,
             conflate=conflate,
         )
+
+        # The routing label rides ROSE's own registration seam: every
+        # learner task passes `_register_task`, which forwards
+        # `decor_kwargs` into `asyncflow.function_task`.  Injected there
+        # rather than via an engine proxy -- ROSE type-checks the engine
+        # argument, a wrapper object does not pass.
+        if learn_backend is not None:
+            inner_register = self.learner._register_task
+
+            def labeled(task_obj, *args, **kwargs):
+                decor = task_obj.setdefault("decor_kwargs", {})
+                decor.setdefault("backend", learn_backend)
+                return inner_register(task_obj, *args, **kwargs)
+
+            self.learner._register_task = labeled
 
         # set by the subclass; the in-situ half of the pair
         self.inference_task: Optional[Callable] = None
@@ -197,7 +216,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         if self.inference_task is None:
             raise ValueError(
                 f"{type(self).__name__} must set self.inference_task -- the"
-                " in-situ inference, on the twin's 'task' engine"
+                " inference, on the twin's default backend"
             )
 
         self._warn_local_learner_tasks()
@@ -244,7 +263,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         if owner is None:
             return
 
-        hook_engine(self.learn_flow, owner)
+        hook_engine(self.flow, owner)
 
         inner = getattr(self.learner, "_register_task", None)
         if inner is None or getattr(self.learner, "_dt_owned", False):
@@ -332,17 +351,17 @@ class StreamingLearnerInvestigator(ModelInvestigator):
 
         ROSE registers tasks as *executables* by default: the task body
         returns a command line, which only runs where that command exists
-        under that path.  The `'exsitu'` engine points at other hardware,
+        under that path.  The `'learning'` backend points at other hardware,
         so learner tasks belong on the cloudpickle path -- registered with
         `as_executable=False` they travel as function tasks, and the
         backend's Python-version guard covers the rest.
 
-        Only when there *is* a separate ex-situ engine: a learner running
-        both halves on one engine is the local case, where a shell
-        command with local paths is a perfectly good task.
+        Only when there *is* a separate learning backend: a learner
+        running both halves on one backend is the local case, where a
+        shell command with local paths is a perfectly good task.
         """
 
-        if self.learn_flow is self.flow:
+        if self.learn_backend is None:
             return
 
         local = [
@@ -356,7 +375,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         if local:
             logger.warning(
                 "%s registered %s as executable task(s): a shell command with"
-                " local paths does not survive a remote 'exsitu' endpoint."
+                " local paths does not survive a remote 'learning' endpoint."
                 " Register them with as_executable=False.",
                 type(self).__name__,
                 ", ".join(local),

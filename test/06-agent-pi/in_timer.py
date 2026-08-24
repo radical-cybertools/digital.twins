@@ -4,6 +4,8 @@ import sys
 
 from radical.asyncflow import WorkflowEngine
 from digitaltwin.components import UtilityTask
+from digitaltwin.runtime import RuntimeAPI
+from digitaltwin.streaming import PubSubClient, PubSubConfig
 from dtypes import *
 import random
 
@@ -17,8 +19,9 @@ class Timer(UtilityTask):
         super().__init__(flow)
         self.flow = flow
 
-    async def main_loop(self, runtime, in_data):
+    async def main_loop(self, runtime: RuntimeAPI, in_data):
         counter = 0
+        ps = await runtime.stream_config.connect()
         while True:
-            await runtime.stream.publish(TIMER_TRIGGER_DTYPE, counter)
+            await ps.publish(TIMER_TRIGGER_DTYPE, counter)
             await asyncio.sleep(1)

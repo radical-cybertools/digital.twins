@@ -1,5 +1,5 @@
 from concurrent.futures import ProcessPoolExecutor
-from radical.asyncflow import WorkflowEngine
+from radical.asyncflow import WorkflowEngine, NoopExecutionBackend
 from rhapsody.backends import ConcurrentExecutionBackend
 import time
 import asyncio
@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
     async def main():
         exe = await ConcurrentExecutionBackend(ProcessPoolExecutor())
+        # exe = NoopExecutionBackend()
         flow = await WorkflowEngine.create(backend=exe)
 
         @flow.function_task

@@ -23,10 +23,11 @@ so only the pinned install guarantees the trees match.
     ./deploy/run-broker.sh
 
     # pane 2 + 3 -- the two endpoints (order after the broker)
-    ./deploy/run-endpoint.sh dt_task_ep   localhost
-    ./deploy/run-endpoint.sh dt_exsitu_ep localhost
+    ./deploy/run-endpoint.sh dt_inference_ep localhost
+    ./deploy/run-endpoint.sh dt_learning_ep  localhost
 
-Sanity: pane 1 shows `registered as 'dt_task_ep'` and `'dt_exsitu_ep'`.
+Sanity: pane 1 shows `registered as 'dt_inference_ep'` and
+`'dt_learning_ep'`.
 
 ## Demo day, laptop -- BEFORE the audience arrives
 
@@ -70,7 +71,7 @@ dashboard keeps moving, then reattach.
 Talking anchors per step live in run_me.py itself; the two on-screen
 proofs worth pointing at explicitly:
 
-  - EchoSink line `served_by: dt_task_ep, trained_on: dt_exsitu_ep`
+  - EchoSink line `served_by: dt_inference_ep, trained_on: dt_learning_ep`
     -- in-situ and ex-situ on different hardware, printed by the twin.
   - The convergence bar on twin B's card -- ROSE's fit_error criterion,
     updated per training window (~15s cadence).

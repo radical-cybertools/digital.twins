@@ -184,12 +184,12 @@ class PluginDT(Plugin):
         Body (all optional): `{"sid": str, "config": {...}}`.  `config`
         carries the engine configuration and applies at create time only:
 
-            {"engines": {"task":   {"endpoint_name": "ep1",
+            {"engines": {"inference": {"endpoint_name": "ep1",
                                     "backends": ["concurrent"]},
-                         "exsitu": {"endpoint_name": "hpc1",
+                         "learning":  {"endpoint_name": "hpc1",
                                     "backends": ["concurrent"]}}}
 
-        `'exsitu'` is optional: unconfigured, it aliases `'task'`.
+        `'learning'` is optional: unconfigured, it aliases `'inference'`.
         """
 
         self._ensure_cleanup_task()

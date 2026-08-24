@@ -5,15 +5,15 @@ a ROSE streaming learner refits `(slope, intercept)` ex-situ from the
 same stream.  Two engines, stated explicitly:
 
 - the **learner** tasks (training / active learning / criterion) run on
-  the `'exsitu'` engine -- typically remote HPC hardware.  They are
+  the `'learning'` backend -- typically remote HPC hardware.  They are
   registered `as_executable=False`, which makes them *cloudpickled
   function tasks*: a shell command with local paths would not survive an
   endpoint that shares no filesystem with the service.
-- the **inference** task runs on the twin's `'task'` engine, co-located
+- the **inference** task rides the twin's `'inference'` backend, co-located
   with the service, because it sits in the per-reading critical path.
 
 `StreamingLearnerInvestigator` is what tells the service to inject both:
-it takes the ex-situ engine as `learn_flow`, and passes the ordinary
+it takes the learning label as `learn_backend`, and passes the ordinary
 `flow` to the inference task.
 """
 
@@ -75,8 +75,8 @@ def rmse(slope: float, intercept: float, xs: list) -> float:
 class CalibrationLearner(StreamingLearnerInvestigator):
     """Refits the sensor calibration from every window of readings."""
 
-    def __init__(self, flow, learn_flow=None, batch_size: int = 8):
-        super().__init__(flow, learn_flow, batch_size=batch_size, max_wait=5.0)
+    def __init__(self, flow, learn_backend=None, batch_size: int = 8):
+        super().__init__(flow, learn_backend, batch_size=batch_size, max_wait=5.0)
 
         # The criterion task takes no dependency, so the model it scores
         # has to travel *with* it: ROSE registers a task's returned dict
@@ -86,7 +86,7 @@ class CalibrationLearner(StreamingLearnerInvestigator):
         latest: dict = {}
         self.learner.on_state_update(latest.__setitem__)
 
-        # -- ex-situ, on `learn_flow` ---------------------------------------
+        # -- learning role: the label rides registration ---------------------
 
         @self.learner.training_task(as_executable=False)
         async def training(window, previous=None, *args):

@@ -43,8 +43,8 @@ class LinearLearner(StreamingLearnerInvestigator):
     engines.
     """
 
-    def __init__(self, flow, learn_flow=None):
-        super().__init__(flow, learn_flow, batch_size=BATCH_SIZE,
+    def __init__(self, flow, learn_backend=None):
+        super().__init__(flow, learn_backend, batch_size=BATCH_SIZE,
                          max_wait=MAX_WAIT)
 
         # the criterion task takes no dependency, so the model it scores
@@ -53,7 +53,7 @@ class LinearLearner(StreamingLearnerInvestigator):
         latest: dict = {}
         self.learner.on_state_update(latest.__setitem__)
 
-        # -- ex-situ, on `learn_flow` ---------------------------------------
+        # -- learning role: the label rides registration ---------------------
 
         @self.learner.training_task(as_executable=False)
         async def training(window, *args):

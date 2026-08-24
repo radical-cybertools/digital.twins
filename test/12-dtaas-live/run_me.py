@@ -14,8 +14,8 @@ Environment:
 
     RADICAL_ORBIT_BROKER_URL   wss://radical.3:8000
     DT_SERVICE_HOST            participant hosting the `dt` plugin (default 'broker')
-    DT_TASK_ENDPOINT           endpoint for in-situ compute
-    DT_EXSITU_ENDPOINT         endpoint for the learner's training windows
+    DT_INFERENCE_ENDPOINT      endpoint serving inference
+    DT_LEARNING_ENDPOINT       endpoint for the learner's training windows
 """
 
 import argparse
@@ -43,16 +43,16 @@ import learner
 register_user_modules([dtypes, components, learner])
 
 DT_HOST = os.environ.get("DT_SERVICE_HOST", "broker")
-TASK_EP = os.environ.get("DT_TASK_ENDPOINT") or None
-EXSITU_EP = os.environ.get("DT_EXSITU_ENDPOINT") or TASK_EP
+INFERENCE_EP = os.environ.get("DT_INFERENCE_ENDPOINT") or None
+LEARNING_EP = os.environ.get("DT_LEARNING_ENDPOINT") or INFERENCE_EP
 
-# Two engines, named by role and pinned to hardware.  'exsitu' is what
+# Two role backends, pinned to hardware.  'learning' is what
 # makes the learner's training a separate lane in the dashboard rather
-# than an alias of 'task'.
+# than an alias of 'inference'.
 ENGINES = {
     "engines": {
-        "task": {"endpoint_name": TASK_EP, "backends": ["concurrent"]},
-        "exsitu": {"endpoint_name": EXSITU_EP, "backends": ["concurrent"]},
+        "inference": {"endpoint_name": INFERENCE_EP, "backends": ["concurrent"]},
+        "learning": {"endpoint_name": LEARNING_EP, "backends": ["concurrent"]},
     }
 }
 
@@ -115,8 +115,8 @@ def build(dt):
          "  - the sid is a bearer capability: it is the only client state\n"
          "  - twins belong to the session, not to this process",
          code="""
-             ENGINES = {'engines': {'task':   {'endpoint_name': 'dt_task_ep'},
-                                    'exsitu': {'endpoint_name': 'dt_exsitu_ep'}}}
+             ENGINES = {'engines': {'inference': {'endpoint_name': 'dt_inference_ep'},
+                                    'learning':  {'endpoint_name': 'dt_learning_ep'}}}
 
              runtime = EndpointRuntime()        # the ORBIT client runtime
              dt      = runtime.get_plugin('broker', 'dt', config=ENGINES)
@@ -199,7 +199,7 @@ def build(dt):
          "  - get_inference is the one call that answers the caller\n"
          "  - all other results flow component to component in the twin\n"
          "  - 10 calls, 2s apart; dashboard: one arc per call\n"
-         "  - meanwhile twin B trains: exsitu tiles, convergence bar\n"
+         "  - meanwhile twin B trains: learning-lane tiles, convergence bar\n"
          "    per window (~15s)",
          code="""
              for value in range(10):

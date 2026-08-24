@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.5.21';
+  const VERSION = '0.7.0';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -170,14 +170,14 @@
       stream:    null,      // the stream_broker summary, verbatim
       sessions:  [],        // [{sid, owner, age, engines, twins, _rect}]
       twins:     new Map(), // twin_id -> twin
-      endpoints: { task: [], exsitu: [], alias: true },
-      roles:     new Map(), // endpoint -> Set('task'|'exsitu'), all sessions
+      endpoints: { inference: [], learning: [], alias: true },
+      roles:     new Map(), // endpoint -> Set('inference'|'learning')
       tasks:     new Map(), // uid -> {uid, lane, state, t0, tEnd, slot}
       // task uid -> twin_id, straight off the twins' own `tasks` lists: the
       // service records what it submitted, so this is the whole of the
       // dashboard's task attribution -- nothing here guesses any more
       owners:    new Map(),
-      counts:    { task: zeroCount(), exsitu: zeroCount() },
+      counts:    { inference: zeroCount(), learning: zeroCount() },
       flights:   [],
       markers:   [],
       snapshots: 0,
@@ -192,7 +192,7 @@
       // changes -- so between events the value is exactly the running
       // count that held over that interval, and the graph reads the
       // true concurrent count at every instant of the visible window.
-      poolHistory: { task: [], exsitu: [] },
+      poolHistory: { inference: [], learning: [] },
     };
   }
 
@@ -240,23 +240,24 @@
     // deployment that configured no ex-situ engine still gets two lanes --
     // the ex-situ one then says it aliases the task one, which is the truth
     // on the wire.
-    const task = [], exsitu = [];
-    let sawExsitu = false;
+    const inference = [], learning = [];
+    let sawLearning = false;
     w.roles = new Map();
 
     for (const s of sessions) {
       const eps = s.endpoints || {};
-      for (const role of ['task', 'exsitu']) {
+      for (const role of ['inference', 'learning']) {
         const name = eps[role];
         if (!name) continue;
-        if (role === 'exsitu') sawExsitu = true;
-        const into = role === 'task' ? task : exsitu;
+        if (role === 'learning') sawLearning = true;
+        const into = role === 'inference' ? inference : learning;
         if (!into.includes(name)) into.push(name);
         if (!w.roles.has(name)) w.roles.set(name, new Set());
         w.roles.get(name).add(role);
       }
     }
-    w.endpoints = { task, exsitu, alias: sessions.length > 0 && !sawExsitu };
+    w.endpoints = { inference, learning,
+                    alias: sessions.length > 0 && !sawLearning };
 
     for (const s of sessions) {
       for (const t of (s.twins || [])) {
@@ -431,14 +432,14 @@
 
     if (own) {
       const eps = own.endpoints || {};
-      if (eps.exsitu === endpoint) return 'exsitu';
-      if (eps.task === endpoint) return 'task';
+      if (eps.learning === endpoint) return 'learning';
+      if (eps.inference === endpoint) return 'inference';
     }
 
     const roles = w.roles.get(endpoint);
     if (!roles) return null;
 
-    return roles.has('task') ? 'task' : 'exsitu';
+    return roles.has('inference') ? 'inference' : 'learning';
   }
 
   function applyTask(w, endpoint, t) {
@@ -1212,11 +1213,13 @@
     // the HPC super-frame holds the two endpoint role lanes, stacked
     const head = Math.round(26 * S);
     const subH = Math.floor((hpc.h - head - G - Math.round(7 * S)) / 2);
-    const task = { x: hpc.x + Math.round(8 * S), y: hpc.y + head,
-                   w: hpc.w - Math.round(16 * S), h: subH };
-    const exsitu = { x: task.x, y: task.y + subH + G, w: task.w, h: subH };
+    const inference = { x: hpc.x + Math.round(8 * S), y: hpc.y + head,
+                        w: hpc.w - Math.round(16 * S), h: subH };
+    const learning = { x: inference.x, y: inference.y + subH + G,
+                       w: inference.w, h: subH };
 
-    return { S, M, G, hd, W, H, client, sensors, broker, hpc, task, exsitu };
+    return { S, M, G, hd, W, H, client, sensors, broker, hpc,
+             inference, learning };
   }
 
   // ---- primitives (the reference's idioms) -------------------------------
@@ -1954,16 +1957,17 @@
           C.panel_deep);
 
     // Two pool cards, one per role.  Colour keeps them apart at a glance:
-    // task = cyan, exsitu = amber -- the same convention already used for
-    // task-result arcs on the broker lane.  A pool card also lists every
-    // endpoint any session put in that role, because the role is a
-    // per-session answer and two sessions need not agree.
-    drawEndpointLane(ctx, L.task, 'Pool: task',
-                     w.endpoints.task.join(', '), 'task',
+    // inference = cyan, learning = amber -- the same convention already
+    // used for task-result arcs on the broker lane.  A pool card also
+    // lists every endpoint any session put in that role, because the role
+    // is a per-session answer and two sessions need not agree.
+    drawEndpointLane(ctx, L.inference, 'Pool: inference',
+                     w.endpoints.inference.join(', '), 'inference',
                      w, S, C.cyan_dim, null);
-    drawEndpointLane(ctx, L.exsitu, 'Pool: exsitu',
-                     w.endpoints.exsitu.join(', '), 'exsitu', w, S,
-                     C.amber_dim, w.endpoints.alias ? 'aliases task' : null);
+    drawEndpointLane(ctx, L.learning, 'Pool: learning',
+                     w.endpoints.learning.join(', '), 'learning', w, S,
+                     C.amber_dim,
+                     w.endpoints.alias ? 'aliases inference' : null);
   }
 
   // Tile geometry, shared by the renderer and the spawn arcs so a task
@@ -2015,12 +2019,12 @@
     const tableH = Math.min(wantTable, Math.max(0, Math.floor(ch * 0.5)));
     const graphH = Math.max(0, ch - tableH - gap);
 
-    const color = lane === 'exsitu' ? C.amber : C.cyan;
-    // Match the exsitu pool card's own outer border colour (`C.amber_dim`,
+    const color = lane === 'learning' ? C.amber : C.cyan;
+    // Match the learning pool card's own outer border colour (`C.amber_dim`,
     // set by the caller in `drawHpcLanes`) so the graph plot and the
     // recent-tasks table read as one dark-orange unit inside it.  The
     // task pool keeps the neutral frame border.
-    const inner = lane === 'exsitu' ? C.amber_dim : C.frame_border;
+    const inner = lane === 'learning' ? C.amber_dim : C.frame_border;
 
     if (graphH > Math.round(30 * S)) {
       drawTaskGraph(ctx, cx, cy, cw, graphH,
@@ -2345,11 +2349,11 @@
     // a spawned simulation task: its origin -> the endpoint lane's own slot
     // and, on completion, the same hop back
     if ((f.kind === 'spawn' || f.kind === 'result') && f.task) {
-      const r = f.task.lane === 'exsitu' ? L.exsitu : L.task;
+      const r = f.task.lane === 'learning' ? L.learning : L.inference;
       const g = laneGeom(r, S);
       const p = tilePos(r, g, f.task.slot);
       const home = originRect(L, w, f.task.uid);
-      const color = f.task.lane === 'exsitu' ? C.amber : C.cyan;
+      const color = f.task.lane === 'learning' ? C.amber : C.cyan;
 
       const at = { x: p.x + g.tile / 2, y: p.y + g.tile / 2 };
       // an unattributed task leaves the broker lane's edge instead: that rect

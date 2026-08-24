@@ -252,14 +252,46 @@ class _FakeFlow:
 
     def __init__(self):
         self.registered = []
+        self.backends = []
         self.is_shut_down = False
 
     def function_task(self, func):
         self.registered.append(func)
         return func
 
+    def _attach_backend(self, backend):
+        self.backends.append(backend)
+
+    async def shutdown(self):
+        # asyncflow's shutdown takes the attached backends down with it
+        self.is_shut_down = True
+        for backend in self.backends:
+            await backend.shutdown()
+
+
+class _FakeBackend:
+    def __init__(self, name):
+        self.name = name
+        self.is_shut_down = False
+
     async def shutdown(self):
         self.is_shut_down = True
+
+
+class _FakeEngineFactory:
+    """Stands in for `WorkflowEngine` inside `_build_engine`."""
+
+    @staticmethod
+    async def create(backend=None):
+        flow = _FakeFlow()
+        flow.backends.append(backend)
+        return flow
+
+
+@pytest.fixture(autouse=True)
+def _fake_engine(monkeypatch):
+    monkeypatch.setattr(
+        "digitaltwin.service.session.WorkflowEngine", _FakeEngineFactory)
 
 
 class _Persistent(UtilityTask):
@@ -341,11 +373,11 @@ def _slow_build(session, delay: float, started: Optional[asyncio.Event] = None):
         if started is not None:
             started.set()
         await asyncio.sleep(delay)
-        flow = _FakeFlow()
-        built.append(flow)
-        return flow
+        backend = _FakeBackend(name)
+        built.append(backend)
+        return backend
 
-    session._create_engine = build
+    session._create_backend = build
 
     return built
 
@@ -376,8 +408,8 @@ async def test_an_engine_build_survives_a_cancelled_caller():
 
     flow = await session.engine()
 
-    assert built == [flow]
-    assert session._engines == {"task": flow}
+    assert session._flow is flow
+    assert built == [session._backends["inference"]]
 
 
 async def test_an_engine_landing_after_close_disposes_of_itself():
@@ -396,22 +428,23 @@ async def test_an_engine_landing_after_close_disposes_of_itself():
 
     assert len(built) == 1
     assert built[0].is_shut_down
-    assert session._engines == {}
+    assert session._flow is None
 
 
 async def test_close_shuts_down_a_built_engine():
     session = DTSession("s1")
-    _slow_build(session, 0)
+    built = _slow_build(session, 0)
 
     flow = await session.engine()
     await session.close()
 
     assert flow.is_shut_down
-    assert session._engines == {}
+    assert built[0].is_shut_down
+    assert session._flow is None
 
 
 # ---------------------------------------------------------------------------
-# the 'exsitu' engine (M2)
+# the 'learning' role (M2)
 # ---------------------------------------------------------------------------
 
 def _dual(**endpoints: str) -> dict:
@@ -419,68 +452,69 @@ def _dual(**endpoints: str) -> dict:
                         for name, endpoint in endpoints.items()}}
 
 
-async def test_an_unconfigured_engine_aliases_task():
-    """Adding `'exsitu'` must stay a config-only change: without one, a
-    learner twin runs both halves on the twin's own engine."""
+async def test_an_unconfigured_role_aliases_inference():
+    """Adding `'learning'` must stay a config-only change: without one, a
+    learner twin runs both halves on the one backend."""
 
-    session = DTSession("s1", _dual(task="ep1"))
+    session = DTSession("s1", _dual(inference="ep1"))
     built = _slow_build(session, 0)
 
-    assert await session.engine("exsitu") is await session.engine("task")
+    assert (await session.engine("learning")
+            is await session.engine("inference"))
     assert len(built) == 1
-    assert sorted(session._engines) == ["task"]
+    assert sorted(session._backends) == ["inference"]
 
 
-async def test_a_slow_exsitu_build_does_not_hold_up_task():
-    """Per-name build tasks and locks: a remote backend taking minutes
-    must not serialize ahead of the engine a sibling twin needs."""
+async def test_a_slow_learning_build_does_not_hold_up_inference():
+    """Per-role build tasks and locks: a remote backend taking minutes
+    must not serialize ahead of the backend a sibling twin needs."""
 
-    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
-    delays = {"task": 0.0, "exsitu": 5.0}
+    session = DTSession("s1", _dual(inference="ep1", learning="hpc1"))
+    delays = {"inference": 0.0, "learning": 5.0}
 
     async def build(name):
         await asyncio.sleep(delays[name])
-        return _FakeFlow()
+        return _FakeBackend(name)
 
-    session._create_engine = build
+    session._create_backend = build
 
-    slow = asyncio.create_task(session.engine("exsitu"))
+    slow = asyncio.create_task(session.engine("learning"))
     await asyncio.sleep(0.05)
 
-    assert await asyncio.wait_for(session.engine("task"), 1.0)
+    assert await asyncio.wait_for(session.engine("inference"), 1.0)
 
     slow.cancel()
 
 
-async def test_a_learner_gets_the_exsitu_engine():
-    """Dual-engine injection, by subclass check -- there is no
-    user-facing engine selector in v1."""
+async def test_a_learner_gets_the_learning_label():
+    """Role injection, by subclass check -- there is no user-facing
+    role selector in v1."""
 
     learn = pytest.importorskip("digitaltwin.learn")
 
     class _Learner(learn.StreamingLearnerInvestigator):
-        def __init__(self, flow, learn_flow=None):
-            self.flow, self.learn_flow = flow, learn_flow
+        def __init__(self, flow, learn_backend=None):
+            self.flow, self.learn_backend = flow, learn_backend
 
-    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
-    exsitu = session._engines["exsitu"] = _FakeFlow()
+    session = DTSession("s1", _dual(inference="ep1", learning="hpc1"))
+    session._backends["learning"] = _FakeBackend("learning")
 
     twin = _twin_with(_FakeFlow())
     component = session._instantiate(Package(_Learner), twin)
 
-    assert component.learn_flow is exsitu
+    assert component.learn_backend == "learning"
     assert component.flow is twin.runtime.flow
-    assert twin.engines == {"task", "exsitu"}
+    assert twin.engines == {"inference", "learning"}
 
 
-async def test_a_plain_component_never_sees_a_second_engine():
-    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
-    session._engines["exsitu"] = _FakeFlow()
+async def test_a_plain_component_never_sees_a_second_role():
+    session = DTSession("s1", _dual(inference="ep1", learning="hpc1"))
+    session._backends["learning"] = _FakeBackend("learning")
 
     twin = _twin_with(_FakeFlow())
     session._instantiate(Package(_Plain), twin)
 
-    assert twin.engines == {"task"}
+    assert twin.engines == {"inference"}
 
 
 # ---------------------------------------------------------------------------
@@ -498,9 +532,9 @@ def _running_twin(session, twin_id, *engines: str):
 
 async def test_a_lost_endpoint_fails_only_the_twins_that_used_it():
     session = DTSession("s1")
-    session._endpoints = {"task": "ep1", "exsitu": "hpc1"}
+    session._endpoints = {"inference": "ep1", "learning": "hpc1"}
 
-    learner = _running_twin(session, "learner", "exsitu")
+    learner = _running_twin(session, "learner", "learning")
     plain = _running_twin(session, "plain")
 
     assert session.endpoints_lost({"hpc1"}) == ("learner",)
@@ -518,38 +552,38 @@ async def test_a_lost_endpoint_is_never_handed_out_again():
     created afterwards must fail fast instead of binding it and
     stalling."""
 
-    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
+    session = DTSession("s1", _dual(inference="ep1", learning="hpc1"))
     _slow_build(session, 0)
 
-    task_flow = await session.engine("task")
-    await session.engine("exsitu")
-    session._endpoints = {"task": "ep1", "exsitu": "hpc1"}
+    flow = await session.engine("inference")
+    await session.engine("learning")
+    session._endpoints = {"inference": "ep1", "learning": "hpc1"}
 
     session.endpoints_lost({"hpc1"})
 
     with pytest.raises(RuntimeError, match="recreate the session"):
-        await session.engine("exsitu")
+        await session.engine("learning")
 
-    # the surviving engine is still handed out
-    assert await session.engine("task") is task_flow
+    # the surviving role is still handed out
+    assert await session.engine("inference") is flow
 
 
 async def test_a_loss_before_the_build_is_remembered_too():
     """The engine need not have been built for its endpoint to be
     known: the configuration named it."""
 
-    session = DTSession("s1", _dual(task="ep1", exsitu="hpc1"))
+    session = DTSession("s1", _dual(inference="ep1", learning="hpc1"))
     _slow_build(session, 0)
 
     session.endpoints_lost({"hpc1"})
 
     with pytest.raises(RuntimeError, match="recreate the session"):
-        await session.engine("exsitu")
+        await session.engine("learning")
 
 
 async def test_a_surviving_topology_change_fails_nothing():
     session = DTSession("s1")
-    session._endpoints = {"task": "ep1"}
+    session._endpoints = {"inference": "ep1"}
     twin = _running_twin(session, "t1")
 
     assert session.endpoints_lost({"someone-else"}) == ()
@@ -558,7 +592,7 @@ async def test_a_surviving_topology_change_fails_nothing():
 
 async def test_the_plugin_routes_lost_participants_to_its_sessions(plugin):
     session = plugin._sessions["s1"] = DTSession("s1")
-    session._endpoints = {"task": "ep1"}
+    session._endpoints = {"inference": "ep1"}
     twin = _running_twin(session, "t1")
 
     await plugin.on_topology_change({
@@ -575,7 +609,7 @@ async def test_a_suspect_participant_is_not_a_loss(plugin):
     twin -- the broker's grace timer decides."""
 
     session = plugin._sessions["s1"] = DTSession("s1")
-    session._endpoints = {"task": "ep1"}
+    session._endpoints = {"inference": "ep1"}
     twin = _running_twin(session, "t1")
 
     await plugin.on_topology_change({"ep1": {"liveness": "suspect"}})
@@ -707,23 +741,26 @@ async def test_a_verb_that_failed_is_not_counted():
 
 
 async def test_the_session_summary_names_the_engine_endpoints():
-    """The dashboard draws one lane per engine *role*; `None` for
-    `'exsitu'` is the documented alias of `'task'`, not an omission."""
+    """The dashboard draws one lane per *role*; `None` for
+    `'learning'` is the documented alias of `'inference'`, not an
+    omission."""
 
-    single = DTSession("s1", _dual(task="ep1"))
-    assert single.summary()["endpoints"] == {"task": "ep1", "exsitu": None}
+    single = DTSession("s1", _dual(inference="ep1"))
+    assert single.summary()["endpoints"] == {
+        "inference": "ep1", "learning": None}
 
-    dual = DTSession("s2", _dual(task="ep1", exsitu="hpc1"))
-    assert dual.summary()["endpoints"] == {"task": "ep1", "exsitu": "hpc1"}
+    dual = DTSession("s2", _dual(inference="ep1", learning="hpc1"))
+    assert dual.summary()["endpoints"] == {
+        "inference": "ep1", "learning": "hpc1"}
 
 
 def test_admin_sessions_carries_endpoints_and_metrics(client):
     sid = client.post("/dt/register_session",
-                      json={"config": _dual(task="ep1")}).json()["sid"]
+                      json={"config": _dual(inference="ep1")}).json()["sid"]
     entry = next(s for s in client.get("/dt/admin/sessions").json()["sessions"]
                  if s["sid"] == sid)
 
-    assert entry["endpoints"] == {"task": "ep1", "exsitu": None}
+    assert entry["endpoints"] == {"inference": "ep1", "learning": None}
 
 
 # ---------------------------------------------------------------------------

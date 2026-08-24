@@ -1,7 +1,7 @@
 """The second twin: a ROSE streaming learner, retraining ex-situ.
 
 Two engines, two endpoints.  The learner's training windows go to the
-`exsitu` engine; the inference it serves runs on `task`.  Both halves
+`learning` backend; the inference it serves rides `inference`.  Both halves
 report which endpoint they ran on, so the claim is checkable on screen
 rather than asserted in prose.
 
@@ -33,8 +33,8 @@ def _tag() -> str:
 
 
 class DriftingLearner(StreamingLearnerInvestigator):
-    def __init__(self, flow, learn_flow=None):
-        super().__init__(flow, learn_flow, batch_size=BATCH_SIZE,
+    def __init__(self, flow, learn_backend=None):
+        super().__init__(flow, learn_backend, batch_size=BATCH_SIZE,
                          max_wait=MAX_WAIT)
 
         # the criterion task takes no dependency, so the model it scores
@@ -43,7 +43,7 @@ class DriftingLearner(StreamingLearnerInvestigator):
         latest: dict = {}
         self.learner.on_state_update(latest.__setitem__)
 
-        # -- ex-situ, on `learn_flow` ---------------------------------------
+        # -- learning role: the label rides registration ---------------------
 
         @self.learner.training_task(as_executable=False)
         async def training(window, *args):

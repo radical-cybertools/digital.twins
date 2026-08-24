@@ -1,7 +1,9 @@
 """M0.3 -- persistent components publish through the injected stream client.
 
 No `function_task` wrapping, no hand-built ZMQ client, no address in sight:
-the component only ever touches `runtime.stream`.
+the component only ever touches `runtime.stream`.  A component which opens
+its own client from `runtime.stream_config` instead leaks it -- `no_task_leaks`
+catches that here.
 """
 
 import asyncio
@@ -15,6 +17,7 @@ from digitaltwin import (
     TypedData,
     UtilityTask,
 )
+from digitaltwin.streaming import PubSubClient
 
 SENSOR = DataType("sensor")
 INFERENCE = DataType("inference")
