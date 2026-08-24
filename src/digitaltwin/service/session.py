@@ -178,6 +178,11 @@ class TwinInstance:
             # task belongs to; bounded, newest last, and a uid that has aged
             # out is unattributed rather than wrong.
             "tasks": [] if self.runtime is None else self.runtime.task_uids(),
+            # uid -> submitting component's class name, for the same ring.
+            # A uid absent here is unattributed, not wrong -- the dashboard
+            # shows a dash for it.
+            "task_components": ({} if self.runtime is None
+                                else self.runtime.task_components()),
             # The graph itself: what the dashboard draws its twin cards
             # from.  Class names, kinds, dtypes and model-parameter names
             # only -- never a model, so the entry stays poll-sized.

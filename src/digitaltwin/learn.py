@@ -272,7 +272,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         def registered(*args, **kwargs):
             future = inner(*args, **kwargs)
             try:
-                note_flow_task(future, owner)
+                note_flow_task(future, owner, type(self).__name__)
             except Exception as exc:
                 logger.debug("learner uid capture failed: %s", exc)
 

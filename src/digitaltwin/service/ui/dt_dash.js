@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.9.0';
+  const VERSION = '0.10.0';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -177,6 +177,9 @@
       // service records what it submitted, so this is the whole of the
       // dashboard's task attribution -- nothing here guesses any more
       owners:    new Map(),
+      // task uid -> submitting component's class name, from the twins'
+      // `task_components`; bounded together with `owners`
+      taskComp:  new Map(),
       counts:    { inference: zeroCount(), learning: zeroCount() },
       flights:   [],
       markers:   [],
@@ -320,7 +323,7 @@
     applyMetrics(tw, t.metrics);
     if (Array.isArray(t.components)) tw.components = t.components;
     applyCalls(w, tw, t.calls);
-    applyTasks(w, id, t.tasks);
+    applyTasks(w, id, t.tasks, t.task_components);
   }
 
   // The twin's own record of what it submitted (`TASK_UID_RING` in the
@@ -328,16 +331,24 @@
   // to cover a poll period while this map has to outlive the task: an event
   // arriving before the poll that explains it draws from the broker's edge
   // and snaps to the card on the next frame, which is the whole of the join.
-  function applyTasks(w, id, uids) {
+  function applyTasks(w, id, uids, components) {
     if (!Array.isArray(uids)) return;
 
+    const comp = components && typeof components === 'object'
+      ? components : {};
+
     for (const uid of uids) {
-      if (typeof uid === 'string') w.owners.set(uid, id);
+      if (typeof uid !== 'string') continue;
+      w.owners.set(uid, id);
+      // uid -> submitting component's class name; absent = unattributed
+      if (typeof comp[uid] === 'string') w.taskComp.set(uid, comp[uid]);
     }
 
     // bounded, and insertion-ordered, so the oldest uid goes first
     while (w.owners.size > OWNERS_MAX) {
-      w.owners.delete(w.owners.keys().next().value);
+      const oldest = w.owners.keys().next().value;
+      w.owners.delete(oldest);
+      w.taskComp.delete(oldest);
     }
   }
 
@@ -550,7 +561,25 @@
   // prefix matching from confusing two labels that share a prefix.
   function applyStream(w, topic) {
     const parts = String(topic).split('/');
-    if (parts.length < 4 || parts[0] !== 'dt') return;
+    if (parts.length < 4 || parts[0] !== 'dt') {
+      // A bare topic is an external input channel (`add_input`): it rides
+      // the same dt_stream plugin, but no twin publishes it, so there is
+      // no card to pulse -- it gets its own row in the channels pane.
+      // The 'in:' key prefix keeps it apart from a twin stream that
+      // happens to share the name.
+      const name = String(topic).replace(/\0+$/, '');
+      if (!name) return;
+      const key = 'in:' + name;
+      let pub = w.publishers.get(key);
+      if (!pub) {
+        pub = { key, dtype: name, group: 'input', count: 0, t: w.t,
+                twin: null };
+        w.publishers.set(key, pub);
+      }
+      pub.count++;
+      pub.t = w.t;
+      return;
+    }
 
     const id = parts[1];
     const dtype = parts[3].replace(/\0+$/, '');
@@ -566,7 +595,7 @@
     const key = dtype;
     let pub = w.publishers.get(key);
     if (!pub) {
-      pub = { key, dtype, count: 0, t: w.t, twin: id };
+      pub = { key, dtype, group: 'twin', count: 0, t: w.t, twin: id };
       w.publishers.set(key, pub);
     }
     pub.twin  = id;
@@ -1837,8 +1866,14 @@
 
     panel(ctx, r, C.frame_border, 'Channels', C.frame_label, S);
 
-    const pubs = [...w.publishers.values()]
-      .sort((a, b) => a.key < b.key ? -1 : 1);
+    // Inputs (bare channels an external producer feeds the twins) before
+    // twin streams (`dt/<twin>/dtypes/...`), each sorted by name.  A
+    // recording made before `group` existed has only twin streams.
+    const all = [...w.publishers.values()]
+      .sort((a, b) => a.dtype < b.dtype ? -1 : 1);
+    const inputs  = all.filter(p => p.group === 'input');
+    const streams = all.filter(p => p.group !== 'input');
+    const pubs = [...inputs, ...streams];
 
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
@@ -1877,11 +1912,34 @@
       return;
     }
 
-    pubs.forEach((pub, i) => {
+    // Section headers only when both kinds are on screen: a single-kind
+    // lane keeps the old ungrouped look.
+    const items = [];
+    if (inputs.length && streams.length) {
+      items.push({ header: 'inputs' }, ...inputs,
+                 { header: 'twin streams' }, ...streams);
+    } else {
+      items.push(...pubs);
+    }
+
+    let drawn = 0;
+    items.forEach((it, i) => {
       if (i >= rows) return;
       const y = r.y + head + i * rowH;
       const box = { x: r.x + pad, y, w: r.w - 2 * pad, h: rowH - 4 * S };
+
+      if (it.header) {
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = C.frame_label;
+        ctx.font = `600 ${Math.round(8 * S)}px ${FONT}`;
+        spaced(ctx, it.header.toUpperCase(), box.x, box.y + 4 * S, 0.6);
+        return;
+      }
+
+      const pub = it;
       pub._rect = box;
+      drawn++;
 
       drawSensorTile(ctx, { x: box.x, y: box.y + 2 * S,
                             w: Math.round(9 * S), h: Math.round(9 * S) },
@@ -1900,26 +1958,28 @@
       ctx.fillText(`${pub.count}`, box.x + box.w, box.y + 1 * S);
     });
 
-    if (pubs.length > rows) {
+    if (pubs.length > drawn) {
       ctx.textAlign = 'right';
       ctx.textBaseline = 'bottom';
       ctx.fillStyle = C.text_dim;
       ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
-      ctx.fillText(`+${pubs.length - rows} more`, r.x + r.w - pad,
+      ctx.fillText(`+${pubs.length - drawn} more`, r.x + r.w - pad,
                    r.y + r.h - 5 * S);
     }
   }
 
   function drawSensorTile(ctx, box, pub, w, S) {
     const k = Math.max(0, 1 - (w.t - pub.t) / (PULSE_TTL * 1.4));
+    // inputs in amber, twin streams in green -- same split as the rows
+    const col = pub.group === 'input' ? C.amber : C.green;
 
     ctx.save();
     if (k > 0) {
       ctx.shadowBlur = 10 * k * S;
-      ctx.shadowColor = C.green;
+      ctx.shadowColor = col;
     }
     ctx.globalAlpha = 0.35 + 0.65 * k;
-    ctx.fillStyle = C.green;
+    ctx.fillStyle = col;
     rr(ctx, box.x, box.y, box.w, box.h, 2);
     ctx.fill();
     ctx.restore();
@@ -2203,9 +2263,9 @@
                  plotY + plotH + Math.round(2 * S));
   }
 
-  // Recent-tasks table, capped at `POOL_TABLE_ROWS` newest.  DT hash and
-  // lane are real; component attribution needs per-task metadata the
-  // wire does not carry per-task metadata.
+  // Recent-tasks table, capped at `POOL_TABLE_ROWS` newest.  Every cell
+  // is real wire data: uid, owner twin, submitting component
+  // (`task_components`), state, timing.
   function drawTaskTable(ctx, x, y, wd, ht, rowH, w, lane, border, S) {
     // border + subtle background so the table reads as its own block
     ctx.fillStyle = C.panel_deep;
@@ -2220,14 +2280,12 @@
     const cx = x + padS;
     const cw = wd - 2 * padS;
 
-    // What the wire actually carries per task: uid, owner twin, state,
-    // timing.  Component attribution (agent / investigator names) needs
-    // per-task metadata the service does not send yet -- #8.
     const cols = [
-      { label: 'DT',    frac: 0.16 },
-      { label: 'Task',  frac: 0.34 },
-      { label: 'State', frac: 0.26 },
-      { label: 'Age',   frac: 0.24 },
+      { label: 'DT',        frac: 0.12 },
+      { label: 'Component', frac: 0.28 },
+      { label: 'Task',      frac: 0.24 },
+      { label: 'State',     frac: 0.18 },
+      { label: 'Age',       frac: 0.18 },
     ];
     const colX = [];
     let cur = cx;
@@ -2278,6 +2336,7 @@
       const age = Math.max(0, (ended ? t.tEnd : w.t) - t.t0);
       const cells = [
         owner ? short(owner) : '—',
+        w.taskComp.get(t.uid) || '—',
         t.uid,
         t.state.toLowerCase(),
         `${age.toFixed(1)}s${ended ? '' : ' …'}`,

@@ -159,6 +159,8 @@ async def test_an_inference_task_is_recorded_against_its_twin(
     uids = runtime.task_uids()
     assert len(uids) == 1, uids
     assert uids[0].startswith("task."), uids
+    # the submitting component's class name rides along
+    assert runtime.task_components().get(uids[0]) == component.__name__
 
     # and a second call is a second task, in order
     await runtime.get_inference(TypedData(X, 1.0), Y)
@@ -178,13 +180,15 @@ async def test_the_ring_is_bounded_and_keeps_the_newest(engines,
     runtime.start()
 
     for i in range(TASK_UID_RING + 5):
-        runtime.note_task(f"task.{i:06d}")
+        runtime.note_task(f"task.{i:06d}", component="Feeder")
 
     uids = runtime.task_uids()
 
     assert len(uids) == TASK_UID_RING
     assert uids[-1] == f"task.{TASK_UID_RING + 4:06d}"
     assert uids[0] == f"task.{5:06d}"
+    # the component map is ring-bounded with the uids
+    assert set(runtime.task_components()) == set(uids)
     # a uid it already has is not a new submission
     runtime.note_task(uids[-1])
     assert runtime.task_uids() == uids
@@ -221,6 +225,8 @@ async def test_the_learners_own_tasks_are_recorded_too(engines,
 
     assert getattr(learner.learner, "_dt_owned", False)
     assert all(uid.startswith("task.") for uid in runtime.task_uids())
+    # every recorded task is the learner's, and says so
+    assert set(runtime.task_components().values()) == {"Learner"}
     # every window is three learner tasks, so a handful arrive quickly
     assert len(set(runtime.task_uids())) == len(runtime.task_uids())
 
