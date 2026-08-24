@@ -470,6 +470,7 @@ async def test_describe_is_serializable(stream_clients):
     assert info["components"] == [
         {
             "component": "Forever",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "tick",
             "is_persistent": True,
@@ -479,6 +480,7 @@ async def test_describe_is_serializable(stream_clients):
         },
         {
             "component": "Forever",
+            "kind": "utility",
             "input_dtype": "inference",
             "output_dtype": "NULL",
             "is_persistent": False,
