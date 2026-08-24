@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.10.0';
+  const VERSION = '0.10.1';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -2075,13 +2075,27 @@
                             ui) {
     panel(ctx, r, border, title, C.frame_label, S);
 
-    // the pool title is a link: pools are the task dispatcher's, so the
-    // title leads to its surface (REST for now; its Explorer page when
-    // one exists).  `link:` hits navigate instead of toggling.
+    // The pool title is a link, and where it leads follows what serves
+    // the lane: a dispatcher-managed pool (`pool:<name>` in the session's
+    // endpoints map) leads to the task dispatcher's Explorer page, a
+    // plain endpoint to that endpoint's own rhapsody page.  An aliasing
+    // learning lane follows the inference lane's answer; with nothing
+    // known yet the dispatcher page is the default.  `link:` hits
+    // navigate instead of toggling.
     if (ui) {
+      let eps = w.endpoints[lane] || [];
+      if (!eps.length && lane === 'learning' && w.endpoints.alias) {
+        eps = w.endpoints.inference || [];
+      }
+      const pooled = eps.some(n => String(n).startsWith('pool:'));
+      const plain  = eps.filter(n => n && !String(n).startsWith('pool:'));
+      const target = (pooled || !plain.length)
+        ? '#plugin/broker/task_dispatcher'
+        : `#plugin/${plain[0]}/rhapsody`;
+
       ctx.font = `600 ${Math.round(10 * S)}px ${FONT}`;
       const tw2 = ctx.measureText(title.toUpperCase()).width + 22 * S;
-      ui.hits.push({ key: 'link:#plugin/broker/task_dispatcher',
+      ui.hits.push({ key: 'link:' + target,
                      x: r.x, y: r.y, w: Math.min(tw2, r.w * 0.5),
                      h: Math.round(24 * S) });
     }
