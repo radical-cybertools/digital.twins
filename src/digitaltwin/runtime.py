@@ -64,8 +64,17 @@ TASK_UID_RING = 24
 _OWNER: ContextVar[Optional["DTRuntime"]] = ContextVar("dt_task_owner",
                                                       default=None)
 
+# The component whose work the current asyncio task is doing, by class name.
+# Same mechanism as `_OWNER`: stamped when a component's coroutine starts,
+# copied by asyncio into every task created underneath, so a uid minted below
+# attributes to the component that caused it.  Class-name granularity on
+# purpose -- it is what the dashboard's twin cards show.
+_COMPONENT: ContextVar[Optional[str]] = ContextVar("dt_task_component",
+                                                   default=None)
 
-def note_flow_task(fut: Any, owner: Optional["DTRuntime"] = None) -> Optional[str]:
+
+def note_flow_task(fut: Any, owner: Optional["DTRuntime"] = None,
+                   component: Optional[str] = None) -> Optional[str]:
     """Record the uid asyncflow assigned to `fut` against its owning twin.
 
     The uid is the one rhapsody publishes in `task_status`: asyncflow puts
@@ -75,6 +84,9 @@ def note_flow_task(fut: Any, owner: Optional["DTRuntime"] = None) -> Optional[st
     Returns the uid when there was one.  A plain coroutine -- an inference
     task that is not a flow task -- has none and is skipped, and so is a
     future asyncflow has not stamped yet (`hook_engine` catches those).
+
+    `component` pins the submitting component's class name for callers that
+    know it; without one it comes from the context (see `_COMPONENT`).
     """
 
     who = owner or _OWNER.get()
@@ -84,7 +96,7 @@ def note_flow_task(fut: Any, owner: Optional["DTRuntime"] = None) -> Optional[st
     if who is None or not uid:
         return None
 
-    who.note_task(uid)
+    who.note_task(uid, component or _COMPONENT.get())
 
     return uid
 
@@ -116,7 +128,7 @@ def hook_engine(flow: Any, owner: Optional["DTRuntime"] = None) -> None:
             who = _OWNER.get() or owner
             # blocks are not tasks and never appear in `task_status`
             if who is not None and isinstance(uid, str) and uid.startswith("task."):
-                who.note_task(uid)
+                who.note_task(uid, _COMPONENT.get())
         except Exception as exc:                       # never break a submit
             logger.debug("uid capture failed: %s", exc)
 
@@ -704,28 +716,49 @@ class DTRuntime:
         # stops appearing in new notifications.
         self._task_uids: deque[str] = deque(maxlen=TASK_UID_RING)
         self._task_seen: set[str] = set()
+        # uid -> submitting component's class name, ring-bounded with the
+        # uids above; a uid submitted with no component stays unattributed
+        self._task_comp: dict[str, str] = {}
 
         hook_engine(flow)
 
         # a stalled stream is a twin failure, not a log line
         streamer.on_error = self._record_error
 
-    def note_task(self, uid: str) -> None:
-        """Record a task uid as this twin's.  Idempotent and bounded."""
+    def note_task(self, uid: str, component: Optional[str] = None) -> None:
+        """Record a task uid as this twin's.  Idempotent and bounded.
+
+        `component` names the submitting component's class when the caller
+        knows it; a uid recorded without one stays unattributed.
+        """
 
         if uid in self._task_seen:
             return
 
         if len(self._task_uids) == self._task_uids.maxlen:
-            self._task_seen.discard(self._task_uids[0])
+            old = self._task_uids[0]
+            self._task_seen.discard(old)
+            self._task_comp.pop(old, None)
 
         self._task_uids.append(uid)
         self._task_seen.add(uid)
+
+        if component:
+            self._task_comp[uid] = component
 
     def task_uids(self) -> list[str]:
         """The uids this twin submitted most recently, oldest first."""
 
         return list(self._task_uids)
+
+    def task_components(self) -> dict[str, str]:
+        """uid -> submitting component's class name, for the current ring.
+
+        Only uids with a known component appear; the dashboard joins this
+        onto `task_uids` and shows the rest unattributed.
+        """
+
+        return dict(self._task_comp)
 
     @property
     def stream_config(self) -> PubSubConfig:
@@ -895,6 +928,11 @@ class DTRuntime:
         """
 
         _OWNER.set(self)
+
+        # a bound component method (a main loop) also names the component
+        holder = getattr(func, "__self__", None)
+        if isinstance(holder, _TwinComponent):
+            _COMPONENT.set(type(holder).__name__)
 
         return await func(*args, **kwargs)
 
@@ -1343,6 +1381,7 @@ class DTRuntime:
         # here as well as in `_owned` because a client's `get_inference`
         # arrives on a request handler's context, not on one of ours.
         _OWNER.set(self)
+        _COMPONENT.set(type(ant.component).__name__)
 
         await self.is_start.wait()
         logger.info(f"Online run: {type(ant.component).__name__}.")
@@ -1518,12 +1557,17 @@ class DTRuntime:
         body has its own frame in the traceback and is left alone.
         """
 
+        # the inference belongs to the *selected* investigator, not to the
+        # agent whose context this runs in -- restamp before the call so a
+        # flow task submitted inside a wrapping coroutine attributes right
+        _COMPONENT.set(type(ant.component).__name__)
+
         try:
             # the future first, so the task it stands for is recorded as this
             # twin's before anyone can hear about it (`note_flow_task`); a
             # plain coroutine has no uid and is simply skipped
             pending = ant.inference_task(in_data, **model_kwargs)
-            note_flow_task(pending)
+            note_flow_task(pending, component=type(ant.component).__name__)
 
             return await pending
 

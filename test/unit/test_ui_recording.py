@@ -29,7 +29,7 @@ TOPIC_TERMINATOR = "\x00"
 
 # every field the renderer reads off a twin summary
 TWIN_KEYS = {"twin_id", "state", "last_error", "age", "metrics", "calls",
-             "tasks"}
+             "tasks", "components", "task_components"}
 METRIC_KEYS = {"value", "threshold", "operator", "should_stop", "windows",
                "history", "component"}
 
