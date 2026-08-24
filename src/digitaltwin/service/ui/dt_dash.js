@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.8.2';
+  const VERSION = '0.8.3';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -1126,7 +1126,9 @@
                                        / pane.scrollHeight);
         const top = (rect.h - h) * pane.scrollTop / more;
         thumb.style.display = '';
-        thumb.style.left   = `${rect.x + rect.w - 4}px`;
+        // in the gutter between the cards and the panel frame, so it
+        // reads against the panel, not against a card border
+        thumb.style.left   = `${rect.x + rect.w + 3}px`;
         thumb.style.top    = `${rect.y + top}px`;
         thumb.style.height = `${h}px`;
       } else thumb.style.display = 'none';
@@ -2664,9 +2666,9 @@
 .dtd-twinpane { scrollbar-width: none; }
 .dtd-twinpane::-webkit-scrollbar { display: none; }
 .dtd-thumb { position: absolute; width: 3px; border-radius: 2px;
-             background: ${C.grey}; opacity: 0.55; z-index: 3;
+             background: ${C.text_dim}; opacity: 0.7; z-index: 3;
              cursor: grab; touch-action: none; }
-.dtd-thumb:hover { opacity: 0.9; width: 5px; }
+.dtd-thumb:hover { opacity: 1; width: 5px; }
 .dtd-panebar { position: absolute; display: flex; align-items: center;
                justify-content: flex-end; gap: 6px; pointer-events: none;
                z-index: 3; }
