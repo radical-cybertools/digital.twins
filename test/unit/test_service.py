@@ -817,3 +817,88 @@ def test_the_explorer_module_is_the_one_the_plugin_declares():
     assert module.is_file()
     assert module.name in UI_ASSETS
     assert "window.DTDash.mount" in module.read_text()
+
+
+# ---------------------------------------------------------------------------
+# pool-backed roles (dispatcher pools)
+# ---------------------------------------------------------------------------
+
+class _FakePoolBackend:
+    """Signature-faithful stand-in: the pool path checks the constructor's
+    parameters before using them."""
+
+    captured: dict = {}
+
+    def __init__(self, broker_url=None, endpoint_name=None, backends=None,
+                 name=None, participant_name=None, plugin_name="rhapsody",
+                 pool=None, session_kwargs=None, batch_window=0):
+        type(self).captured = dict(
+            endpoint_name=endpoint_name, name=name,
+            participant_name=participant_name, plugin_name=plugin_name,
+            pool=pool, session_kwargs=session_kwargs)
+        self._endpoint_name = endpoint_name or "broker"
+
+    def __await__(self):
+        async def _self():
+            return self
+        return _self().__await__()
+
+
+class _FakeOldBackend:
+    """A backend from before pool support -- no `pool` parameter."""
+
+    def __init__(self, broker_url=None, endpoint_name=None, backends=None,
+                 name=None, batch_window=0):
+        pass
+
+
+async def test_a_pool_backed_role_targets_the_dispatcher(monkeypatch):
+    """`pool` in a role's config routes it at the task dispatcher: one
+    dispatcher session per DT session (keyed by the DT sid), the
+    session-level pool configs declared with it."""
+
+    import digitaltwin.service.session as session_mod
+
+    session = DTSession("s1")
+    session.config = {
+        "pools": [{"name": "exsitu", "endpoint_name": "hpc1"}],
+        "engines": {"inference": {"endpoint_name": "ep1"},
+                    "learning": {"pool": "exsitu"}},
+    }
+    monkeypatch.setattr(session_mod, "OrbitExecutionBackend",
+                        _FakePoolBackend)
+
+    await session._create_backend("learning")
+
+    got = _FakePoolBackend.captured
+    assert got["plugin_name"] == "task_dispatcher"
+    assert got["pool"] == "exsitu"
+    assert got["session_kwargs"]["sid"] == "s1"
+    assert got["session_kwargs"]["pools"] == [
+        {"name": "exsitu", "endpoint_name": "hpc1"}]
+    # the role records its pool, not an endpoint -- the R8 opt-out
+    assert session._endpoints["learning"] == "pool:exsitu"
+
+
+async def test_a_pool_needs_a_pool_capable_backend(monkeypatch):
+    import digitaltwin.service.session as session_mod
+
+    session = DTSession("s1")
+    session.config = {"engines": {"learning": {"pool": "exsitu"}}}
+    monkeypatch.setattr(session_mod, "OrbitExecutionBackend",
+                        _FakeOldBackend)
+
+    with pytest.raises(RuntimeError, match="no pool support"):
+        await session._create_backend("learning")
+
+
+async def test_endpoint_loss_spares_pool_backed_roles():
+    """Losing an endpoint requeues a pool's tasks inside the dispatcher;
+    only endpoint-bound roles fail their twins (R8)."""
+
+    session = DTSession("s1")
+    session.config = {"engines": {"learning": {"pool": "exsitu"}}}
+    session._endpoints["learning"] = "pool:exsitu"
+
+    assert session.endpoints_lost({"hpc1", "exsitu", "pool"}) == ()
+    assert not session._lost

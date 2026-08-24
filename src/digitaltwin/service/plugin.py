@@ -190,6 +190,13 @@ class PluginDT(Plugin):
                                     "backends": ["concurrent"]}}}
 
         `'learning'` is optional: unconfigured, it aliases `'inference'`.
+
+        A role may name a dispatcher-managed pool instead of an endpoint
+        (`{"pool": "exsitu"}`), with the pool configs declared once at the
+        session level (`"pools": [<PoolConfig>, ...]` -- the task
+        dispatcher's own schema).  Pool-backed roles run on the pool's
+        pilots, survive single-endpoint loss (tasks requeue; keep them
+        idempotent), and share one dispatcher session per DT session.
         """
 
         self._ensure_cleanup_task()
