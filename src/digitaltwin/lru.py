@@ -12,13 +12,16 @@ Typical usage pattern:
     await cache.put_item("foo", 42)
     value = await cache.fetch_item("foo")
 
-The API is short and to the point - only ``put_item``, ``fetch_item`` and ``exists`` are public.
+The API is short and to the point - only ``put_item``, ``fetch_item``,
+``exists`` and ``drop`` are public.
 """
 
 import asyncio
 from collections import OrderedDict
 from collections.abc import Mapping
 from typing import Any
+
+_MISSING = object()
 
 # Helper freeze functions:
 
@@ -109,3 +112,22 @@ class LRUCache:
 
         async with self.edit_lock:
             return key in self.cache
+
+    def drop(self, key: Any, value: Any = _MISSING) -> None:
+        """Remove *key* from the cache if present.
+
+        Synchronous on purpose: it is called from future done-callbacks,
+        which run between event-loop callbacks and thus never interleave
+        with the dict operations the async methods perform under
+        ``edit_lock``.
+
+        Args:
+            key (Any): Key of the entry to remove.  Absent keys are ignored.
+            value (Any, optional): When given, the entry is removed only
+                while it still maps to this exact object -- so a stale
+                callback cannot evict a successor entry under the same key.
+        """
+
+        if value is not _MISSING and self.cache.get(key) is not value:
+            return
+        self.cache.pop(key, None)
