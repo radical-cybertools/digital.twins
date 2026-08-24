@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.7.2';
+  const VERSION = '0.8.3';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -830,6 +830,355 @@
     };
   }
 
+
+  // =========================================================================
+  //  THE TWIN PANE -- DOM, scrollable
+  //
+  //  The one part of the page that is a variable-height nested tree with
+  //  per-node collapse -- exactly what a browser already knows how to lay
+  //  out, scroll and hit-test.  Everything else stays canvas.  Contract
+  //  with the canvas: `drawBrokerLane` publishes the interior rect, the
+  //  pane publishes each visible card's rect back onto `tw._rect` (canvas
+  //  coordinates, `null` when scrolled out), which is what keeps the
+  //  probe geometry and any future arcs honest about visibility.
+  // =========================================================================
+
+  const INV_COLOR = { ANN: C.cyan, RNN: C.violet };
+
+  function newTwinPane(stage, collapsed, seenTwins) {
+    const pane = el('div', 'dtd-twinpane');
+    stage.appendChild(pane);
+
+    // non-scrolling companions: the all-twins toggle in the panel header,
+    // and two gradient cues that say "there is more" at either edge
+    const bar = el('div', 'dtd-panebar');
+    const allChip = el('span', 'dtd-chip');
+    bar.appendChild(allChip);
+    stage.appendChild(bar);
+    const fadeTop = el('div', 'dtd-fade dtd-fade-top');
+    const fadeBot = el('div', 'dtd-fade dtd-fade-bottom');
+    stage.appendChild(fadeTop);
+    stage.appendChild(fadeBot);
+
+    // The scroll-position indicator.  Native scrollbars are overlay-style
+    // on most desktops now and hide themselves; this one is always there
+    // when the pane overflows, and it drags.
+    const thumb = el('div', 'dtd-thumb');
+    stage.appendChild(thumb);
+    let dragging = null;
+    thumb.addEventListener('pointerdown', e => {
+      dragging = { y: e.clientY, top: pane.scrollTop };
+      thumb.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    thumb.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const scale = pane.scrollHeight / pane.clientHeight;
+      pane.scrollTop = dragging.top + (e.clientY - dragging.y) * scale;
+    });
+    thumb.addEventListener('pointerup', () => { dragging = null; });
+
+    allChip.addEventListener('click', () => {
+      const w = lastWorld;
+      if (!w) return;
+      const ids = [...w.twins.keys()];
+      const anyOpen = ids.some(id => !collapsed.has(`dt:${id}`));
+      for (const id of ids) {
+        if (anyOpen) collapsed.add(`dt:${id}`);
+        else collapsed.delete(`dt:${id}`);
+      }
+      lastSig = null;
+    });
+
+    let lastSig = null;
+    let lastWorld = null;
+    const cards = new Map();   // twin id -> card element
+
+    pane.addEventListener('click', e => {
+      const act = e.target.closest('[data-action]');
+      if (act && pane.contains(act)) {
+        // per-twin: expand / collapse every agent of that twin at once
+        const id = act.getAttribute('data-action');
+        const keys = fakeAgents().map(a => `agent:${id}|${a.name}`);
+        const anyOpen = keys.some(k => !collapsed.has(k));
+        for (const k of keys) {
+          if (anyOpen) collapsed.add(k);
+          else collapsed.delete(k);
+        }
+        lastSig = null;
+        return;
+      }
+      const hit = e.target.closest('[data-key]');
+      if (!hit || !pane.contains(hit)) return;
+      const key = hit.getAttribute('data-key');
+      if (collapsed.has(key)) collapsed.delete(key);
+      else collapsed.add(key);
+      lastSig = null;                    // rebuild on the next sync
+    });
+
+    // ---- markup builders --------------------------------------------------
+
+    function svgSpark(hist, color) {
+      let lo = Infinity, hi = -Infinity;
+      for (const v of hist) { if (v < lo) lo = v; if (v > hi) hi = v; }
+      const span = Math.max(hi - lo, 1e-6);
+      const pts = hist.map((v, i) =>
+        `${(i / (hist.length - 1)) * 100},${28 - ((v - lo) / span) * 26 - 1}`)
+        .join(' ');
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 100 28');
+      svg.setAttribute('preserveAspectRatio', 'none');
+      svg.classList.add('dtd-spark');
+      const line = document.createElementNS(svg.namespaceURI, 'polyline');
+      line.setAttribute('points', pts);
+      line.setAttribute('fill', 'none');
+      line.setAttribute('stroke', color);
+      line.setAttribute('stroke-width', '1.2');
+      line.setAttribute('vector-effect', 'non-scaling-stroke');
+      svg.appendChild(line);
+      return svg;
+    }
+
+    function investigatorCard(twinId, agentName, invName, tick) {
+      const seed  = fnv1a(`${twinId}|${agentName}|${invName}`);
+      const hist  = fakeSpark(seed, tick);
+      const color = INV_COLOR[invName] || C.text_dim;
+
+      const card = el('div', 'dtd-inv');
+      card.style.borderColor = color;
+      const head = el('div', 'dtd-inv-head');
+      head.appendChild(el('span', 'dtd-inv-name', `Inv: ${invName}`));
+      head.appendChild(el('span', 'dtd-inv-model',
+                          `Model: ${fakeModelName(seed, tick)}`));
+      card.appendChild(head);
+      card.appendChild(el('div', 'dtd-inv-rmse',
+                          `rmse ${hist[hist.length - 1].toFixed(3)}`));
+      card.appendChild(svgSpark(hist, color));
+      return card;
+    }
+
+    function agentBlock(tw, agent, tick) {
+      const key = `agent:${tw.id}|${agent.name}`;
+      const closed = collapsed.has(key);
+
+      const block = el('div', 'dtd-agent');
+      const head = el('div', 'dtd-agent-head');
+      head.setAttribute('data-key', key);
+      head.appendChild(el('span', 'dtd-agent-name',
+                          `${closed ? '\u25b8' : '\u25be'} Agent: ${agent.name}`));
+      const selIdx = Math.abs(fnv1a(`sel|${tw.id}|${agent.name}`))
+                   % FAKE_INVESTIGATORS.length;
+      const selInv = FAKE_INVESTIGATORS[selIdx];
+      head.appendChild(el('span', 'dtd-agent-sel',
+        `Selected: ${selInv}. Model: `
+        + fakeModelName(fnv1a(`${tw.id}|${agent.name}|${selInv}`), tick)));
+      block.appendChild(head);
+      block.appendChild(el('div', 'dtd-agent-io',
+                           `IN ${agent.inD}  \u2192  OUT ${agent.outD}`));
+
+      if (!closed) {
+        for (const invName of FAKE_INVESTIGATORS) {
+          block.appendChild(investigatorCard(tw.id, agent.name, invName, tick));
+        }
+      }
+      return block;
+    }
+
+    function twinCard(tw, w, tick) {
+      const state = tw.state || 'initializing';
+      const key = `dt:${tw.id}`;
+      const closed = collapsed.has(key);
+      const gone = tw.gone !== null;
+
+      const card = el('div', 'dtd-card');
+      card.style.borderColor = STATE_COLOR[state] || C.grey;
+      if (state === 'initializing') card.classList.add('dtd-init');
+
+      const head = el('div', 'dtd-card-head');
+      head.setAttribute('data-key', key);
+      const title = el('span', 'dtd-card-title',
+                       `${closed ? '\u25b8' : '\u25be'} DT: ${short(tw.id)}`);
+      title.title = tw.id;               // the full id, selectable via tooltip
+      head.appendChild(title);
+      if (!closed) {
+        const keys = fakeAgents().map(a => `agent:${tw.id}|${a.name}`);
+        const anyOpen = keys.some(k => !collapsed.has(k));
+        const chip = el('span', 'dtd-chip dtd-mini',
+                        anyOpen ? 'agents \u25b8' : 'agents \u25be');
+        chip.title = anyOpen ? 'collapse all agents' : 'expand all agents';
+        chip.setAttribute('data-action', tw.id);
+        head.appendChild(chip);
+      }
+      const pill = el('span', 'dtd-pill', state);
+      pill.style.color = STATE_TEXT[state] || C.text_dim;
+      pill.style.borderColor = STATE_TEXT[state] || C.text_dim;
+      head.appendChild(pill);
+      card.appendChild(head);
+
+      // visible even collapsed, same as before.  Placeholder counts
+      // (`fakeUtility`) until the service reports them.
+      const util = fakeUtility(tw.id);
+      card.appendChild(el('div', 'dtd-card-util',
+        `Utility Tasks ${util.total} (Persist: ${util.persist})`));
+
+      if (!closed) {
+        if (state === 'failed' && tw.last_error) {
+          card.appendChild(el('div', 'dtd-card-error', tw.last_error));
+        }
+        for (const agent of fakeAgents()) {
+          card.appendChild(agentBlock(tw, agent, tick));
+        }
+      }
+
+      if (gone) {
+        card.appendChild(el('div', 'dtd-card-mark', '\u25b8 closed'));
+      } else {
+        const marks = w.markers.filter(m => m.twinId === tw.id);
+        if (marks.length) {
+          const m = marks[marks.length - 1];
+          const mark = el('div', 'dtd-card-mark', `\u25b8 ${m.label}`);
+          mark.style.color = m.color;
+          card.appendChild(mark);
+        }
+      }
+      return card;
+    }
+
+    // ---- rebuild + per-frame sync ----------------------------------------
+
+    function signature(w, tick) {
+      const keys = [...collapsed].sort().join(',');
+      const twins = [...w.twins.values()].map(tw => {
+        const mark = w.markers.filter(m => m.twinId === tw.id).pop();
+        return `${tw.id}|${tw.state}|${tw.gone !== null}|${tw.last_error || ''}`
+             + `|${mark ? mark.label : ''}`;
+      }).join(';');
+      return `${tick}#${keys}#${twins}`;
+    }
+
+    function rebuild(w, tick) {
+      const scroll = pane.scrollTop;
+      pane.textContent = '';
+      cards.clear();
+      // plain birth order, gone twins in place: with a scrollbar there is
+      // no slot to yield, and a card that stops moving is one that can be
+      // read while it fades
+      const twins = [...w.twins.values()].sort((a, b) => a.born - b.born);
+      for (const tw of twins) {
+        // newly-observed twins start collapsed; `seenTwins` gates this so
+        // a user's expand click on a fresh twin sticks
+        if (!seenTwins.has(tw.id)) {
+          seenTwins.add(tw.id);
+          collapsed.add(`dt:${tw.id}`);
+          for (const a of fakeAgents()) {
+            collapsed.add(`agent:${tw.id}|${a.name}`);
+          }
+        }
+        const card = twinCard(tw, w, tick);
+        cards.set(tw.id, card);
+        pane.appendChild(card);
+      }
+      pane.scrollTop = scroll;           // no jumping, whatever changed
+    }
+
+    function sync(w, rect, headRect) {
+      lastWorld = w;
+      if (!rect) {
+        pane.style.display = 'none';
+        bar.style.display = 'none';
+        fadeTop.style.display = 'none';
+        fadeBot.style.display = 'none';
+        return;
+      }
+      pane.style.display = '';
+      pane.style.left   = `${rect.x}px`;
+      pane.style.top    = `${rect.y}px`;
+      pane.style.width  = `${rect.w}px`;
+      pane.style.height = `${rect.h}px`;
+
+      if (headRect && w.twins.size) {
+        bar.style.display = '';
+        bar.style.left   = `${headRect.x}px`;
+        bar.style.top    = `${headRect.y}px`;
+        bar.style.width  = `${headRect.w}px`;
+        bar.style.height = `${headRect.h}px`;
+        const anyOpen = [...w.twins.keys()]
+          .some(id => !collapsed.has(`dt:${id}`));
+        allChip.textContent = anyOpen ? 'twins \u25b8' : 'twins \u25be';
+        allChip.title = anyOpen ? 'collapse all twins' : 'expand all twins';
+      } else bar.style.display = 'none';
+
+      // the cues only when there is actually more in that direction
+      const more = pane.scrollHeight - pane.clientHeight;
+      const below = more > 1 && pane.scrollTop < more - 1;
+      const above = more > 1 && pane.scrollTop > 1;
+      fadeBot.style.display = below ? '' : 'none';
+      fadeTop.style.display = above ? '' : 'none';
+      for (const [f, y] of [[fadeTop, rect.y],
+                            [fadeBot, rect.y + rect.h - 16]]) {
+        f.style.left  = `${rect.x}px`;
+        f.style.top   = `${y}px`;
+        f.style.width = `${rect.w}px`;
+      }
+
+      if (more > 1) {
+        const h = Math.max(24, rect.h * pane.clientHeight
+                                       / pane.scrollHeight);
+        const top = (rect.h - h) * pane.scrollTop / more;
+        thumb.style.display = '';
+        // in the gutter between the cards and the panel frame, so it
+        // reads against the panel, not against a card border
+        thumb.style.left   = `${rect.x + rect.w + 3}px`;
+        thumb.style.top    = `${rect.y + top}px`;
+        thumb.style.height = `${h}px`;
+      } else thumb.style.display = 'none';
+
+      const tick = Math.floor(w.t);
+      const sig = signature(w, tick);
+      if (sig !== lastSig) { rebuild(w, tick); lastSig = sig; }
+
+      // dynamic pass, every frame: fades and the visibility contract
+      for (const [id, card] of cards) {
+        const tw = w.twins.get(id);
+        if (!tw) { card.remove(); cards.delete(id); continue; }
+
+        let alpha = 1;
+        if (tw.gone !== null) {
+          const left = GONE_LINGER - (w.t - tw.gone);
+          alpha = 0.7 * Math.max(0, Math.min(1, left / GONE_FADE));
+        } else if (w.t - tw.fresh < 0.4) alpha = (w.t - tw.fresh) / 0.4;
+        card.style.opacity = alpha.toFixed(3);
+
+        card.classList.toggle('dtd-pulse',
+          !!(tw.pulse && w.t - tw.pulse.t < PULSE_TTL));
+
+        // the card's rect in canvas coordinates; null when scrolled out --
+        // the same contract the canvas layout used to keep
+        const top = card.offsetTop - pane.scrollTop;
+        const bot = top + card.offsetHeight;
+        if (bot < 0 || top > rect.h) tw._rect = null;
+        else tw._rect = { x: rect.x + card.offsetLeft, y: rect.y + top,
+                          w: card.offsetWidth, h: card.offsetHeight };
+      }
+    }
+
+    pane.addEventListener('scroll', () => {
+      if (lastWorld) {
+        // rects follow the scroll on the next frame anyway; this only
+        // keeps them exact for a probe read between frames
+        for (const tw of lastWorld.twins.values()) {
+          const card = cards.get(tw.id);
+          if (card === undefined) tw._rect = null;
+        }
+      }
+    });
+
+    return { sync, destroy: () => {
+      pane.remove(); bar.remove(); fadeTop.remove(); fadeBot.remove();
+      thumb.remove();
+    } };
+  }
+
   // =========================================================================
   //  THE DASHBOARD -- DOM, controls, frame loop
   // =========================================================================
@@ -865,6 +1214,8 @@
     // twin sticks instead of being re-collapsed on the next frame.
     const collapsed = new Set();
     const seenTwins = new Set();
+    // the scrollable DOM pane that owns the twin cards (see `newTwinPane`)
+    const pane = newTwinPane(stage, collapsed, seenTwins);
     let hits = [];
     // what the last frame drew, for `frame()`: the layout and every arc the
     // renderer resolved, so a test (or a console) sees the real geometry
@@ -1096,6 +1447,14 @@
       const x = e.clientX - r.left, y = e.clientY - r.top;
       for (const h of hits) {
         if (x >= h.x && x <= h.x + h.w && y >= h.y && y <= h.y + h.h) {
+          if (h.key.startsWith('link:')) {
+            // sibling plugin surfaces live next to ours on the broker:
+            // '/broker/dt' -> '/broker/<target>'
+            const base = (opts.dtPath || '/broker/dt')
+              .replace(/\/dt\/?$/, '/');
+            window.location.href = base + h.key.slice(5);
+            return;
+          }
           if (collapsed.has(h.key)) collapsed.delete(h.key);
           else collapsed.add(h.key);
           return;
@@ -1137,13 +1496,15 @@
 
       probe.arcs = [];
       hits = [];
-      render(ctx, W, H, world,
-             { status, hover, probe, collapsed, seenTwins, hits });
+      const uiArg = { status, hover, probe, collapsed, seenTwins, hits };
+      render(ctx, W, H, world, uiArg);
+      pane.sync(world, uiArg.twinPaneRect, uiArg.twinPaneHead);
       raf = requestAnimationFrame(frame);
     }
 
     function destroy() {
       cancelAnimationFrame(raf);
+      pane.destroy();
       ro.disconnect();
       if (dprQuery) dprQuery.removeEventListener('change', onDpr);
       dprQuery = null;
@@ -1186,7 +1547,7 @@
     drawHeader(ctx, L, w, ui);
     drawSensorLane(ctx, L, w);
     drawBrokerLane(ctx, L, w, ui);
-    drawHpcLanes(ctx, L, w);
+    drawHpcLanes(ctx, L, w, ui);
     drawFlights(ctx, L, w, ui);
     drawTooltip(ctx, L, w, ui);
   }
@@ -1566,403 +1927,24 @@
   // ---- BROKER lane: the twin cards are the centrepiece -------------------
 
   // The demo runs two digital twins.  The bundled sample recording holds
-  // more; anything past the cap gets `+N more` at the bottom of the lane.
-  const DEMO_TWIN_CAP = 12;
-
   function drawBrokerLane(ctx, L, w, ui) {
     const S = L.S, r = L.broker;
-    panel(ctx, r, C.cyan_dim, 'Digital Twins',
-          C.frame_label, S);
-
-    // Birth order, except that a twin which has gone yields its slot: its
-    // card is a memento, and a live twin pushed behind `+N more` by one is
-    // a worse trade than a memento moving.
-    const allTwins = [...w.twins.values()].sort((a, b) =>
-      (a.gone === null ? 0 : 1) - (b.gone === null ? 0 : 1) || a.born - b.born);
-    if (!allTwins.length) {
-      placeholder(ctx, r, 'no twins', S);
-      return;
-    }
-    const twins = allTwins.slice(0, DEMO_TWIN_CAP);
-
-    // Newly-observed twins start collapsed.  `seenTwins` gates this so
-    // a user's expand click on a fresh twin isn't undone next frame.
-    for (const tw of twins) {
-      if (!ui.seenTwins.has(tw.id)) {
-        ui.seenTwins.add(tw.id);
-        ui.collapsed.add(`dt:${tw.id}`);
-      }
-    }
+    panel(ctx, r, C.cyan_dim, 'Digital Twins', C.frame_label, S);
 
     const head = Math.round(28 * S);
     const pad  = Math.round(9 * S);
-    const gap  = Math.round(8 * S);
 
-    // One column, variable height: a collapsed card is a slim strip, an
-    // expanded card is as tall as the sum of its (possibly-collapsed)
-    // agents.  Cards past what fits get `+N more`.
-    const cardW = r.w - 2 * pad;
-    const top    = r.y + head;
-    const bottom = r.y + r.h - pad;
+    // The DOM pane (`newTwinPane`) owns everything inside the frame: it
+    // scrolls, so no twin can vanish behind a bottom edge again.  The
+    // canvas hands it the interior rect and draws only the frame -- and
+    // the placeholder, which shows through the pane while it is empty.
+    ui.twinPaneRect = { x: r.x + pad, y: r.y + head,
+                        w: r.w - 2 * pad, h: r.h - head - pad };
+    // the header band, for the pane's own controls (expand/collapse all)
+    ui.twinPaneHead = { x: r.x + pad, y: r.y + Math.round(5 * S),
+                        w: r.w - 2 * pad, h: head - Math.round(8 * S) };
 
-    // Every twin keeps at least its collapsed strip: an expanded card is
-    // clamped to the height that leaves the strips below it room, and its
-    // content clips inside the card.  Expanding one twin must never make
-    // a sibling vanish.
-    const stripH = Math.round(
-      (DT_TOP_PAD + DT_HEAD_H + DT_UTIL_H + DT_BOT_PAD) * S);
-
-    let cursor = top;
-    let shown  = 0;
-    twins.forEach((tw, i) => {
-      const below = twins.length - 1 - i;
-      const reserve = below * (stripH + gap);
-      const maxH = bottom - cursor - reserve;
-      const cardH = Math.min(twinCardHeight(tw, ui, S),
-                             Math.max(stripH, maxH));
-      if (cursor + stripH > bottom) { tw._rect = null; return; }
-      const box = { x: r.x + pad, y: cursor, w: cardW, h: cardH };
-      tw._rect = box;
-      ctx.save();
-      rr(ctx, box.x, box.y, box.w, box.h, 6 * S);
-      ctx.clip();
-      drawTwinCard(ctx, box, tw, w, S, ui);
-      ctx.restore();
-      cursor += cardH + gap;
-      shown++;
-    });
-    for (let i = shown; i < allTwins.length; i++) allTwins[i]._rect = null;
-
-    const hidden = allTwins.length - shown;
-    if (hidden > 0) {
-      ctx.fillStyle = C.text_dim;
-      ctx.font = `400 ${Math.round(10 * S)}px ${FONT}`;
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(`+${hidden} more`,
-                   r.x + r.w - pad, r.y + r.h - 4 * S);
-    }
-  }
-
-  // Sizing that both the layout and `drawTwinCard` agree on.  Kept as
-  // one function so a change to any padding is a single edit.
-  const DT_HEAD_H   = 20;   // title row (font 12) baseline
-  const DT_UTIL_H   = 16;   // utility line (font 9.5)
-  const DT_TOP_PAD  = 7;
-  const DT_BOT_PAD  = 8;
-  const DT_AGENT_GAP = 6;
-  const AGENT_COLLAPSED_H = 42;
-  const AGENT_EXPANDED_H  = 140;
-
-  function agentHeight(twinId, agentName, ui, S) {
-    const key = `agent:${twinId}|${agentName}`;
-    const h   = ui.collapsed.has(key) ? AGENT_COLLAPSED_H : AGENT_EXPANDED_H;
-    return Math.round(h * S);
-  }
-
-  function twinCardHeight(tw, ui, S) {
-    const headBlock = Math.round((DT_TOP_PAD + DT_HEAD_H + DT_UTIL_H) * S);
-    if (ui.collapsed.has(`dt:${tw.id}`)) {
-      return headBlock + Math.round(DT_BOT_PAD * S);
-    }
-    const agents = fakeAgents();
-    let h = headBlock + Math.round(DT_AGENT_GAP * S);
-    agents.forEach((a, i) => {
-      h += agentHeight(tw.id, a.name, ui, S);
-      if (i < agents.length - 1) h += Math.round(DT_AGENT_GAP * S);
-    });
-    return h + Math.round(DT_BOT_PAD * S);
-  }
-
-  function drawTwinCard(ctx, box, tw, w, S, ui) {
-    const state = tw.state || 'initializing';
-    const closing = tw.gone !== null;
-    const dtKey = `dt:${tw.id}`;
-    const dtCollapsed = ui.collapsed.has(dtKey);
-
-    // A card that has gone stays up for the whole grace period at a dimmed
-    // but readable strength, then fades over the last of it; what it keeps
-    // is the last thing the service said about the twin.
-    let alpha = 1;
-    if (closing) {
-      const left = GONE_LINGER - (w.t - tw.gone);
-      alpha = 0.7 * Math.max(0, Math.min(1, left / GONE_FADE));
-    } else if (w.t - tw.fresh < 0.4) alpha = (w.t - tw.fresh) / 0.4;
-    ctx.globalAlpha = alpha;
-
-    // `initializing` pulses: the twin is busy with something slow (engine
-    // build + stream connect, up to minutes) and has no runtime yet
-    const border = STATE_COLOR[state] || C.grey;
-    if (state === 'initializing') {
-      ctx.globalAlpha = alpha
-        * (0.45 + 0.55 * (0.5 + 0.5 * Math.sin((w.t - tw.born) * 3.2)));
-    }
-    panel(ctx, box, border, null, null, S, C.panel_deep);
-    ctx.globalAlpha = alpha;
-
-    // a stream pulse: an expanding ring on the twin that published
-    if (tw.pulse && w.t - tw.pulse.t < PULSE_TTL) {
-      const k = 1 - (w.t - tw.pulse.t) / PULSE_TTL;
-      ctx.save();
-      ctx.globalAlpha = alpha * k * 0.85;
-      ctx.strokeStyle = C.green;
-      ctx.lineWidth = 1.5;
-      const g = 3 * S * (1 - k);
-      rr(ctx, box.x - g, box.y - g, box.w + 2 * g, box.h + 2 * g, 9 * S);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    const px = box.x + 9 * S;
-    const maxW = box.w - 18 * S;
-    let y = box.y + Math.round(DT_TOP_PAD * S);
-
-    // Title row + clickable header (chevron + "DT: <hash>").  The whole
-    // title strip toggles collapse.
-    const chevron = dtCollapsed ? '▸' : '▾';   // ▸ ▾
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = C.text;
-    ctx.font = `600 ${Math.round(12 * S)}px ${FONT_MONO}`;
-    ctx.fillText(clip(ctx, `${chevron} DT: ${short(tw.id)}`,
-                      maxW - pillWidth(ctx, state, S) - 6 * S),
-                 px, y);
-
-    pill(ctx, box.x + box.w - 9 * S - pillWidth(ctx, state, S), y - 1,
-         state, STATE_TEXT[state] || C.text_dim, S);
-
-    // Utility-task count line -- kept visible even when the DT card is
-    // collapsed, so a rolled-up card still reports what it holds.
-    // Placeholder counts (`fakeUtility`) until the service reports them.
-    const utilY = y + Math.round(DT_HEAD_H * S);
-    const util  = fakeUtility(tw.id);
-    ctx.fillStyle = C.text_dim;
-    ctx.font = `400 ${Math.round(9.5 * S)}px ${FONT}`;
-    ctx.fillText(clip(ctx, `Utility Tasks ${util.total}`
-                      + ` (Persist: ${util.persist})`, maxW),
-                 px, utilY);
-
-    // Register the clickable region: full title + utility area, so a
-    // click anywhere on the visible-when-collapsed portion toggles.
-    ui.hits.push({
-      key: dtKey,
-      x: box.x, y: box.y,
-      w: box.w, h: Math.round((DT_TOP_PAD + DT_HEAD_H + DT_UTIL_H) * S),
-    });
-
-    y = utilY + Math.round(DT_UTIL_H * S);
-
-    if (!dtCollapsed) {
-      if (state === 'failed' && tw.last_error) {
-        ctx.fillStyle = C.red;
-        ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
-        ctx.fillText(clip(ctx, tw.last_error, maxW), px, y);
-        y += 13 * S;
-      }
-
-      // Agent blocks.  Placeholder data (`fakeAgents`) until the service
-      // starts serialising `runtime.components`; swap the source here.
-      const rowGap = Math.round(DT_AGENT_GAP * S);
-      const rowPad = Math.round(4 * S);
-      const rowX   = px + rowPad;
-      const rowW   = maxW - 2 * rowPad;
-      y += rowGap;
-      const bottom = box.y + box.h - Math.round(DT_BOT_PAD * S)
-                   - (closing ? 10 * S : 0);
-      const agents = fakeAgents();
-      agents.forEach((a, i) => {
-        const rowH = agentHeight(tw.id, a.name, ui, S);
-        if (y + rowH > bottom + 1) return;
-        drawAgentRow(ctx, rowX, y, rowW, rowH, a, tw.id, w, S, ui);
-        y += rowH;
-        if (i < agents.length - 1) y += rowGap;
-      });
-    }
-
-    // A card that has gone says so for as long as it is up: the `closed`
-    // marker below outlives its own TTL by a beat only, and the state pill
-    // still reads whatever the twin was doing when it left the listing.
-    if (closing) {
-      ctx.fillStyle = C.grey;
-      ctx.font = `600 ${Math.round(8.5 * S)}px ${FONT}`;
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText('▸ closed', box.x + box.w - 8 * S, box.y + box.h - 6 * S);
-      ctx.globalAlpha = 1;
-      return;
-    }
-
-    // the newest inferred verb / transition, bottom-right of the card
-    const marks = w.markers.filter(m => m.twinId === tw.id);
-    if (marks.length) {
-      const m = marks[marks.length - 1];
-      ctx.globalAlpha = alpha
-        * Math.max(0, Math.min(1, 2 * (1 - (w.t - m.t0) / MARKER_TTL)));
-      ctx.fillStyle = m.color;
-      ctx.font = `600 ${Math.round(8.5 * S)}px ${FONT}`;
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(`▸ ${m.label}`, box.x + box.w - 8 * S,
-                   box.y + box.h - 6 * S);
-    }
-
-    ctx.globalAlpha = 1;
-  }
-
-  // One agent block inside a twin card.  Structure, top to bottom:
-  //   NAME (bold)                                          model: <model>
-  //   IN <inD>  →  OUT <outD>
-  //     ANN [bold]   rmse 0.14   [micro sparkline]
-  //     RNN [bold]   rmse 0.11   [micro sparkline]
-  // Everything shown here is placeholder data until the service starts
-  // serialising `runtime.components`.
-  const INV_COLOR = { ANN: C.cyan, RNN: C.violet };
-
-  function drawAgentRow(ctx, x, y, wd, ht, agent, twinId, w, S, ui) {
-    const agentKey = `agent:${twinId}|${agent.name}`;
-    const agentCollapsed = ui.collapsed.has(agentKey);
-
-    ctx.fillStyle = C.panel_deep;
-    rr(ctx, x, y, wd, ht, 4 * S);
-    ctx.fill();
-    ctx.strokeStyle = C.frame_border;
-    ctx.lineWidth = 1;
-    rr(ctx, x + 0.5, y + 0.5, wd - 1, ht - 1, 4 * S);
-    ctx.stroke();
-
-    const padX = Math.round(10 * S);
-    const lx = x + padX;
-    const rx = x + wd - padX;
-    let ry = y + Math.round(7 * S);
-
-    // Selected investigator (stable per agent) and its current model
-    // name, computed first so the agent's name knows the room left over.
-    const tick = Math.floor(w.t);
-    const selIdx = Math.abs(fnv1a(`sel|${twinId}|${agent.name}`))
-                 % FAKE_INVESTIGATORS.length;
-    const selInv = FAKE_INVESTIGATORS[selIdx];
-    const selModel = fakeModelName(fnv1a(`${twinId}|${agent.name}|${selInv}`),
-                                   tick);
-    const selText = `Selected: ${selInv}. Model: ${selModel}`;
-
-    ctx.textBaseline = 'top';
-    ctx.textAlign = 'right';
-    ctx.fillStyle = C.text_dim;
-    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
-    ctx.fillText(clip(ctx, selText, wd * 0.6), rx, ry + 1 * S);
-    const selW = Math.min(ctx.measureText(selText).width, wd * 0.6);
-
-    // Chevron sits on the agent name so the whole header row reads as
-    // clickable.
-    const chev = agentCollapsed ? '▸' : '▾';
-    ctx.textAlign = 'left';
-    ctx.fillStyle = C.text;
-    ctx.font = `600 ${Math.round(11 * S)}px ${FONT}`;
-    ctx.fillText(clip(ctx, `${chev} Agent: ${agent.name}`,
-                      wd - 2 * padX - selW - Math.round(10 * S)),
-                 lx, ry);
-    ry += 15 * S;
-
-    ctx.fillStyle = C.text_dim;
-    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
-    ctx.fillText(clip(ctx, `IN ${agent.inD}  →  OUT ${agent.outD}`,
-                      wd - 2 * padX),
-                 lx, ry);
-    ry += 14 * S;
-
-    // Click region covers the header (name + selection + IN/OUT), which
-    // is exactly what remains when the agent is collapsed.
-    ui.hits.push({
-      key: agentKey,
-      x, y,
-      w: wd, h: Math.round(AGENT_COLLAPSED_H * S),
-    });
-
-    if (agentCollapsed) return;
-
-    // Investigator cards, each with its own graph.  The trace and model
-    // name are both quantised to the model clock at 1 Hz -- the graph
-    // shifts and the version ticks once a second, not every frame.
-    const indent = Math.round(14 * S);
-    const invH   = Math.round(46 * S);
-    const invGap = Math.round(4 * S);
-    const invX   = lx + indent;
-    const invW   = wd - 2 * padX - indent;
-    for (const invName of FAKE_INVESTIGATORS) {
-      if (ry + invH > y + ht - Math.round(4 * S)) break;
-      const seed  = fnv1a(`${twinId}|${agent.name}|${invName}`);
-      const hist  = fakeSpark(seed, tick);
-      const model = fakeModelName(seed, tick);
-      drawInvestigatorCard(ctx, invX, ry, invW, invH, invName, model, hist,
-                           INV_COLOR[invName] || C.text_dim, S);
-      ry += invH + invGap;
-    }
-  }
-
-  // Investigator card: bordered in the investigator's own colour so ANN
-  // and RNN read as siblings under the agent.  Three rows inside: title
-  // + rmse, model name, then the graph.
-  function drawInvestigatorCard(ctx, x, y, wd, ht, name, model, hist, color, S) {
-    ctx.save();
-    ctx.globalAlpha *= 0.55;
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1;
-    rr(ctx, x + 0.5, y + 0.5, wd - 1, ht - 1, 3 * S);
-    ctx.stroke();
-    ctx.restore();
-
-    const padX = Math.round(7 * S);
-    const lx = x + padX;
-    const rx = x + wd - padX;
-    let ry = y + Math.round(4 * S);
-
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = C.text;
-    ctx.font = `700 ${Math.round(9.5 * S)}px ${FONT}`;
-    ctx.fillText(`Inv: ${name}`, lx, ry);
-
-    // model on the title row, right-aligned
-    ctx.textAlign = 'right';
-    ctx.fillStyle = C.text_dim;
-    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
-    ctx.fillText(clip(ctx, `Model: ${model}`, wd * 0.6), rx, ry + 1 * S);
-    ry += 13 * S;
-
-    // rmse on its own line beneath
-    const cur = hist[hist.length - 1];
-    ctx.textAlign = 'left';
-    ctx.fillStyle = C.text_dim;
-    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
-    ctx.fillText(`rmse ${cur.toFixed(3)}`, lx, ry);
-    ry += 11 * S;
-
-    const graphH = Math.max(1, y + ht - ry - Math.round(3 * S));
-    drawMicroSpark(ctx, lx, ry, wd - 2 * padX, graphH, hist, color);
-  }
-
-  // Auto-ranged micro sparkline: the whole trace uses the visible min /
-  // max, so a slow decay still shows a shape rather than flattening.
-  function drawMicroSpark(ctx, x, y, wd, ht, hist, color) {
-    if (hist.length < 2) return;
-
-    let lo = Infinity, hi = -Infinity;
-    for (const v of hist) { if (v < lo) lo = v; if (v > hi) hi = v; }
-    const span = Math.max(hi - lo, 1e-6);
-
-    ctx.save();
-    ctx.strokeStyle = color;
-    ctx.globalAlpha *= 0.9;
-    ctx.lineWidth = 1.15;
-    ctx.beginPath();
-    const step = wd / (hist.length - 1);
-    hist.forEach((v, i) => {
-      const py = y + ht - ((v - lo) / span) * ht;
-      if (i === 0) ctx.moveTo(x, py);
-      else ctx.lineTo(x + i * step, py);
-    });
-    ctx.stroke();
-    ctx.restore();
+    if (!w.twins.size) placeholder(ctx, r, 'no twins', S);
   }
 
   // ---- HPC lanes: one per endpoint role ----------------------------------
@@ -1979,9 +1961,9 @@
   const POOL_STEP        = 0.5;    // bucket width, and the graph's tick
   const POOL_TABLE_ROWS  = 5;
 
-  function drawHpcLanes(ctx, L, w) {
+  function drawHpcLanes(ctx, L, w, ui) {
     const S = L.S;
-    panel(ctx, L.hpc, C.frame_border, 'Endpoint Pools', C.frame_label, S,
+    panel(ctx, L.hpc, C.frame_border, 'Resource Pools', C.frame_label, S,
           C.panel_deep);
 
     // Two pool cards, one per role.  Colour keeps them apart at a glance:
@@ -1991,11 +1973,11 @@
     // is a per-session answer and two sessions need not agree.
     drawEndpointLane(ctx, L.inference, 'Pool: inference',
                      w.endpoints.inference.join(', '), 'inference',
-                     w, S, C.cyan_dim, null);
+                     w, S, C.cyan_dim, null, ui);
     drawEndpointLane(ctx, L.learning, 'Pool: learning',
                      w.endpoints.learning.join(', '), 'learning', w, S,
                      C.amber_dim,
-                     w.endpoints.alias ? 'aliases inference' : null);
+                     w.endpoints.alias ? 'aliases inference' : null, ui);
   }
 
   // Tile geometry, shared by the renderer and the spawn arcs so a task
@@ -2020,8 +2002,20 @@
     };
   }
 
-  function drawEndpointLane(ctx, r, title, endpoint, lane, w, S, border, note) {
+  function drawEndpointLane(ctx, r, title, endpoint, lane, w, S, border, note,
+                            ui) {
     panel(ctx, r, border, title, C.frame_label, S);
+
+    // the pool title is a link: pools are the task dispatcher's, so the
+    // title leads to its surface (REST for now; its Explorer page when
+    // one exists).  `link:` hits navigate instead of toggling.
+    if (ui) {
+      ctx.font = `600 ${Math.round(10 * S)}px ${FONT}`;
+      const tw2 = ctx.measureText(title.toUpperCase()).width + 22 * S;
+      ui.hits.push({ key: 'link:task_dispatcher/pools',
+                     x: r.x, y: r.y, w: Math.min(tw2, r.w * 0.5),
+                     h: Math.round(24 * S) });
+    }
 
     // endpoint name (or 'aliases task' note) on the title row, right-aligned
     ctx.textAlign = 'right';
@@ -2628,6 +2622,67 @@
 .dtd-in { background: #0b1220; color: ${C.text};
           border: 1px solid ${C.unused_brd}; border-radius: 4px;
           padding: 5px 8px; font-family: ${FONT_MONO}; font-size: 11px; }
+.dtd-twinpane { position: absolute; overflow-y: auto; overflow-x: hidden;
+                display: flex; flex-direction: column; gap: 8px;
+                scrollbar-width: thin;
+                scrollbar-color: ${C.unused_brd} transparent; }
+.dtd-card { flex: none; border: 1px solid ${C.grey}; border-radius: 6px;
+            background: ${C.panel_deep}; padding: 7px 9px 8px;
+            position: relative; }
+.dtd-card.dtd-init { animation: dtd-breathe 1.9s ease-in-out infinite; }
+.dtd-card.dtd-pulse { box-shadow: 0 0 0 1.5px ${C.green}; }
+@keyframes dtd-breathe { 50% { opacity: 0.45; } }
+.dtd-card-head { display: flex; align-items: baseline; gap: 8px;
+                 cursor: pointer; user-select: none; }
+.dtd-card-title { font: 600 12px ${FONT_MONO}; color: ${C.text};
+                  flex: 1; overflow: hidden; text-overflow: ellipsis;
+                  white-space: nowrap; }
+.dtd-pill { font: 600 9px ${FONT}; letter-spacing: 0.09em;
+            text-transform: uppercase; border: 1px solid;
+            border-radius: 9px; padding: 2px 8px; }
+.dtd-card-util { font: 400 9.5px ${FONT}; color: ${C.text_dim};
+                 margin-top: 2px; }
+.dtd-card-error { font: 400 9px ${FONT}; color: ${C.red}; margin-top: 4px; }
+.dtd-card-mark { position: absolute; right: 8px; bottom: 5px;
+                 font: 600 8.5px ${FONT}; color: ${C.grey}; }
+.dtd-agent { border: 1px solid ${C.frame_border}; border-radius: 4px;
+             background: ${C.panel_deep}; margin: 6px 0 0 4px;
+             padding: 6px 10px 6px; }
+.dtd-agent-head { display: flex; align-items: baseline; gap: 8px;
+                  cursor: pointer; user-select: none; }
+.dtd-agent-name { font: 600 11px ${FONT}; color: ${C.text}; flex: 1; }
+.dtd-agent-sel { font: 400 9px ${FONT_MONO}; color: ${C.text_dim};
+                 overflow: hidden; text-overflow: ellipsis;
+                 white-space: nowrap; max-width: 60%; }
+.dtd-agent-io { font: 400 9px ${FONT_MONO}; color: ${C.text_dim};
+                margin: 2px 0 4px; }
+.dtd-inv { border: 1px solid; border-radius: 3px; margin: 4px 0 0 14px;
+           padding: 4px 7px 5px; opacity: 0.92; }
+.dtd-inv-head { display: flex; align-items: baseline; gap: 8px; }
+.dtd-inv-name { font: 700 9.5px ${FONT}; color: ${C.text}; flex: 1; }
+.dtd-inv-model { font: 400 8.5px ${FONT_MONO}; color: ${C.text_dim}; }
+.dtd-inv-rmse { font: 400 8.5px ${FONT_MONO}; color: ${C.text_dim}; }
+.dtd-spark { display: block; width: 100%; height: 22px; margin-top: 2px; }
+.dtd-twinpane { scrollbar-width: none; }
+.dtd-twinpane::-webkit-scrollbar { display: none; }
+.dtd-thumb { position: absolute; width: 3px; border-radius: 2px;
+             background: ${C.text_dim}; opacity: 0.7; z-index: 3;
+             cursor: grab; touch-action: none; }
+.dtd-thumb:hover { opacity: 1; width: 5px; }
+.dtd-panebar { position: absolute; display: flex; align-items: center;
+               justify-content: flex-end; gap: 6px; pointer-events: none;
+               z-index: 3; }
+.dtd-chip { pointer-events: auto; font: 600 8.5px ${FONT};
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: ${C.text_dim}; background: #0e1626;
+            border: 1px solid ${C.unused_brd}; border-radius: 3px;
+            padding: 2px 7px; cursor: pointer; user-select: none; }
+.dtd-chip:hover { color: ${C.text}; border-color: ${C.frame_border}; }
+.dtd-chip.dtd-mini { font-size: 8px; padding: 1px 6px; }
+.dtd-fade { position: absolute; height: 16px; pointer-events: none;
+            z-index: 2; }
+.dtd-fade-top { background: linear-gradient(${C.bg}, transparent); }
+.dtd-fade-bottom { background: linear-gradient(transparent, ${C.bg}); }
 `;
 
   function injectCss() {
