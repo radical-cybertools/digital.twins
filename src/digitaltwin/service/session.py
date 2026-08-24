@@ -23,7 +23,7 @@ from rhapsody.backends.execution.orbit import OrbitExecutionBackend  # type: ign
 
 from ..components import DataType, TypedData
 from ..runtime import DTRuntime, RuntimeState
-from ..streaming import PubSubClient, connect_stream_client
+from ..streaming import PubSubClient
 from .wire import Package, check_versions, decode, encode
 
 log = logging.getLogger("radical.orbit")
@@ -669,9 +669,10 @@ class DTSession(PluginSession):
 
                 flow, *_ = await asyncio.gather(*map(self.engine, names))
 
-                pub_addr, sub_addr = await self._plugin.stream_addresses()
-                stream = await connect_stream_client(
-                    twin.twin_id, pub_addr, sub_addr, STREAM_CONNECT_TIMEOUT
+                # the plugin owns the transport choice (zmq / orbit); the
+                # twin only ever sees a connected, namespaced client
+                stream = await self._plugin.connect_stream(
+                    twin.twin_id, STREAM_CONNECT_TIMEOUT
                 )
                 twin.ready(DTRuntime(flow, stream), stream)
 

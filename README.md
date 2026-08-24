@@ -5,7 +5,7 @@ Main set of features implemented:
 - Utility Tasks
 - Persistent Tasks
 - Callbacks
-- Simple ZMQ pubsub backend
+- Two pubsub backends: ZMQ, and ORBIT eventing
 - Graph builder
 - Convert to a Python Package
 - Several Tests / Examples
@@ -69,7 +69,57 @@ are cloudpickled, so anyone who can reach the broker ports can execute code
 in every subscriber.  A non-loopback bind needs an explicit configuration
 and a private/firewalled network.  External channels are decoded with the
 codec their binding names: `json` (the default) and `raw` are safe to
-accept from a producer you do not control, `cloudpickle` is not.
+accept from a producer you do not control, `cloudpickle` is not.  The
+demos are the reason the ZMQ backend exists; anything beyond a laptop
+should be on the ORBIT one below.
+
+## Choosing a data plane
+
+`DT_STREAM_BACKEND` picks which transport carries the twins' streams.  It
+is a **deployment-time** choice, resolved once where the framework runs;
+no client and no session can ask for a different one.  Nothing above
+`PubSubBackend` -- not `DTRuntime`, not a component, not the injected
+`RuntimeAPI.stream` client -- knows which is in use.
+
+| `DT_STREAM_BACKEND` | transport | ports it opens | use |
+|---------------------|-----------|----------------|-----|
+| `zmq` (default)     | the framework's own XSUB/XPUB broker | two, unauthenticated, loopback by default | local, demos, the two-terminal loop |
+| `orbit`             | ORBIT eventing (`radical.orbit`)     | **none** | anything shared, and everything in production |
+
+```sh
+# a service deployment with the data plane inside the token domain
+DT_STREAM_BACKEND=orbit radical-orbit-broker.py --plugins default,dt
+```
+
+An external subscriber joins the same way -- as an ORBIT participant, so
+it needs the broker URL and the token, and no addresses at all:
+
+```python
+from digitaltwin.streaming import connect_stream_client
+
+stream = await connect_stream_client(twin_id, backend='orbit')
+await stream.subscribe_to_dtype(ECHO, queue)
+```
+
+**Payload ceiling**: an ORBIT frame is capped at 4 MiB, so a single
+stream message must cloudpickle to less than that (64 KiB of the budget
+is reserved for the envelope).  Oversized payloads raise a clear
+`ValueError` at `publish` -- ORBIT itself would drop the frame with
+nothing but a log line, which on a days-long twin is indistinguishable
+from a stalled stream.  The ZMQ backend has no such ceiling; a twin meant
+to run on either should stay well under it.  Chunk large artifacts, or
+stream a reference and move the bytes with the staging plugin.
+
+**Semantics** are the same on both: at-most-once, with bounded
+drop-oldest queues (broker-side, and again on the hop into the host
+loop).  That *is* the DT conflation contract, so nothing above the
+backend adds a second one -- a slow consumer loses samples rather than
+memory, and never backpressures a producer.  Loss is visible as a gap in
+the broker-assigned sequence numbers.  ORBIT's `replay` plugin would give
+late joiners history; it is deliberately not integrated in v1.
+
+`perf/bench_streams.py` measures what the choice costs: about a
+millisecond per stream hop on loopback.
 
 ## Running it as a service (the `dt` ORBIT plugin)
 
@@ -195,17 +245,43 @@ again, so a `twin_create` after it fails immediately with `engine
 `ready` and stalling.  `unregister_session`, then build the session and
 its twins again.
 
-### Binding policy for the service (R7)
+### The data plane and its trust boundary (R7)
 
-The plugin runs its own DT stream broker, embedded, one per plugin and
-shared by every twin.  **It binds to loopback on a random port by
-default, and that default is the safe one**: its payloads are
-cloudpickled, so anyone who can reach the XSUB/XPUB ports gets code
-execution in every subscriber -- weaker than the token-authenticated
-ORBIT channel around it.
+The DT streams carry cloudpickled payloads.  That is accepted -- the
+service already executes client-shipped component classes, and both sit
+inside ORBIT's single-token trust domain (risk R4).  What was *not*
+acceptable is where those payloads used to travel: a pair of ZMQ ports
+that authenticate nobody, so anyone who could reach them got code
+execution in every subscriber, no token required.  The data plane was
+weaker than the control plane wrapped around it.
 
-A non-loopback bind is possible (`DT_STREAM_PUB_ADDR` /
-`DT_STREAM_SUB_ADDR` on the service host) but requires a deliberate
-decision *and* a firewalled or private network.  Until the data plane
-moves inside ORBIT's authenticated channel, do not expose those ports --
-including in demos.
+**`DT_STREAM_BACKEND=orbit` closes that gap**, and a production
+deployment must use it:
+
+```sh
+DT_STREAM_BACKEND=orbit radical-orbit-broker.py --plugins default,dt
+```
+
+The twins' streams become ORBIT events on the same token-authenticated
+WebSocket star as every other call, under one `dt_stream` plugin
+namespace.  The embedded ZMQ broker is then **never started** -- the
+service opens no data-plane port at all, and there is nothing left to
+firewall.  The payloads are still cloudpickle; what changed is that
+reaching them now requires the same token as calling `twin_create`.
+Reviewers can check the guarantee directly: the plugin host has no child
+processes, and `admin/sessions` reports `{"stream_broker": {"backend":
+"orbit"}}`.
+
+Two things this does *not* do.  It does not make the payloads safe to
+receive from an untrusted party -- per-tenant auth is post-v1, so
+everything inside the token domain is still mutually trusting.  And it
+does not remove the 4 MiB frame cap, which the ZMQ backend did not have
+(see "Choosing a data plane").
+
+**With the `zmq` backend the old mitigations still apply, in full.** The
+plugin runs its own DT stream broker, embedded, one per plugin and shared
+by every twin.  It binds to loopback on a random port by default, and
+that default is the safe one.  A non-loopback bind is possible
+(`DT_STREAM_PUB_ADDR` / `DT_STREAM_SUB_ADDR` on the service host) but
+requires a deliberate decision *and* a firewalled or private network.  Do
+not expose those ports -- including in demos.

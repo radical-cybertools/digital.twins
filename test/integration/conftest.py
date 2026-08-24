@@ -10,6 +10,12 @@ Session-scoped fixtures bring up, on loopback:
   is where the `'exsitu'` engine sends learner tasks,
 - a consumer runtime the tests get `DTClient`s from.
 
+Plus a *second, independent* stack on the next port whose `dt` plugin
+runs with `DT_STREAM_BACKEND=orbit` (M3): same shape, but the twins'
+streams ride ORBIT eventing and no ZMQ broker is started anywhere.  It is
+a separate deployment because the backend is a deployment-time choice --
+which is exactly what the M3 tests assert.
+
 Every endpoint carries a `DT_TEST_ENDPOINT_TAG` in its environment, so a
 task can report where it ran -- which is how the dual-engine tests prove
 that learning and inference really landed on different endpoints.
@@ -46,10 +52,15 @@ BROKER_HOST = "127.0.0.1"
 BROKER_PORT = int(os.environ.get("DT_TEST_BROKER_PORT", "8031"))
 BROKER_URL = f"https://{BROKER_HOST}:{BROKER_PORT}"
 
+# the M3 stack: a `dt` deployment whose data plane is ORBIT eventing
+ORBIT_BROKER_PORT = BROKER_PORT + 1
+ORBIT_BROKER_URL = f"https://{BROKER_HOST}:{ORBIT_BROKER_PORT}"
+
 TASK_ENDPOINT = "dt_test_task_ep"
 EXSITU_ENDPOINT = "dt_test_exsitu_ep"  # stands in for remote HPC hardware
 DOOMED_ENDPOINT = "dt_test_doomed_ep"  # started to be killed (R8)
 DT_ENDPOINT = "dt_test_dt_ep"  # endpoint-hosted `dt`, for the smoke test
+ORBIT_TASK_ENDPOINT = "dt_test_orbit_task_ep"  # on the M3 stack
 
 STARTUP_TIMEOUT = 60.0
 LOGS = Path(os.environ.get("DT_TEST_LOG_DIR", "/tmp")) / "dt-integration-logs"
@@ -75,6 +86,9 @@ ENGINES_DUAL = engines(task=TASK_ENDPOINT, exsitu=EXSITU_ENDPOINT)
 # same, but with an ex-situ engine on an endpoint the test will kill
 ENGINES_DOOMED = engines(task=TASK_ENDPOINT, exsitu=DOOMED_ENDPOINT)
 
+# the M3 stack's single engine
+ENGINES_ORBIT = engines(task=ORBIT_TASK_ENDPOINT)
+
 
 def _port_free(port: int) -> bool:
     with socket.socket() as sock:
@@ -86,7 +100,9 @@ def _child_env(**extra: str) -> dict:
     """Environment for a broker / endpoint child process.
 
     `src` goes first on PYTHONPATH so the children run the working tree,
-    not whatever `digitaltwin` happens to be installed.
+    not whatever `digitaltwin` happens to be installed.  Anything in
+    `extra` wins -- that is how the M3 children get their own broker URL
+    and `DT_STREAM_BACKEND`.
     """
 
     env = dict(os.environ)
@@ -168,41 +184,63 @@ class Broker(NamedTuple):
     pid: int
 
 
-@pytest.fixture(scope="session")
-def broker():
-    """An ORBIT broker on a non-default loopback port, hosting `dt`."""
+@contextlib.contextmanager
+def _dt_broker(label: str, port: int, url: str, **env: str):
+    """An ORBIT broker on a loopback port, hosting `dt`, torn down on exit."""
 
-    if not _port_free(BROKER_PORT):
-        pytest.skip(f"port {BROKER_PORT} is busy")
+    if not _port_free(port):
+        pytest.skip(f"port {port} is busy")
 
     argv = _orbit_script("radical-orbit-broker.py") + [
         "--host", BROKER_HOST,
-        "--port", str(BROKER_PORT),
+        "--port", str(port),
         "--plugins", "default,dt",
     ]
-    proc = _spawn("broker", argv)
+    proc = _spawn(label, argv, RADICAL_ORBIT_BROKER_URL=url, **env)
 
     try:
-        _await_broker(proc)
-        yield Broker(BROKER_URL, proc.pid)
+        _await_broker(label, url, proc)
+        yield Broker(url, proc.pid)
     finally:
         _terminate(proc)
 
 
-def _await_broker(proc: subprocess.Popen) -> None:
+@pytest.fixture(scope="session")
+def broker():
+    """An ORBIT broker on a non-default loopback port, hosting `dt`."""
+
+    with _dt_broker("broker", BROKER_PORT, BROKER_URL) as running:
+        yield running
+
+
+@pytest.fixture(scope="session")
+def orbit_broker():
+    """The M3 deployment: the same broker with the ORBIT data plane.
+
+    `DT_STREAM_BACKEND=orbit` is set on the broker process, because the
+    transport is a property of the deployment -- no client and no session
+    can ask for it.
+    """
+
+    with _dt_broker("orbit-broker", ORBIT_BROKER_PORT, ORBIT_BROKER_URL,
+                    DT_STREAM_BACKEND="orbit") as running:
+        yield running
+
+
+def _await_broker(label: str, url: str, proc: subprocess.Popen) -> None:
     deadline = time.time() + STARTUP_TIMEOUT
 
     while time.time() < deadline:
         if proc.poll() is not None:
-            pytest.skip(f"broker exited early -- see {LOGS / 'broker.log'}")
+            pytest.skip(f"{label} exited early -- see {LOGS / label}.log")
         try:
-            httpx.get(BROKER_URL + "/", verify=False, timeout=2)
+            httpx.get(url + "/", verify=False, timeout=2)
             return
         except Exception:
             time.sleep(0.25)
 
     _terminate(proc)
-    pytest.skip(f"broker did not come up -- see {LOGS / 'broker.log'}")
+    pytest.skip(f"{label} did not come up -- see {LOGS / label}.log")
 
 
 @contextlib.contextmanager
@@ -220,13 +258,14 @@ def _rhapsody_endpoint(name: str, broker, **env: str):
     proc = _spawn(
         name,
         argv,
+        RADICAL_ORBIT_BROKER_URL=broker.url,
         RADICAL_ORBIT_RHAPSODY_BACKEND="concurrent",
         DT_TEST_ENDPOINT_TAG=name,
         **env,
     )
 
     try:
-        _await_plugin(name, "rhapsody", proc)
+        _await_plugin(name, "rhapsody", proc, broker.url)
         yield proc
     finally:
         _terminate(proc)
@@ -283,16 +322,17 @@ def dt_endpoint(broker):
     proc = _spawn(DT_ENDPOINT, argv)
 
     try:
-        _await_plugin(DT_ENDPOINT, "dt", proc)
+        _await_plugin(DT_ENDPOINT, "dt", proc, BROKER_URL)
         yield DT_ENDPOINT
     finally:
         _terminate(proc)
 
 
-def _await_plugin(endpoint: str, plugin: str, proc: subprocess.Popen) -> None:
+def _await_plugin(endpoint: str, plugin: str, proc: subprocess.Popen,
+                  broker_url: str = BROKER_URL) -> None:
     """Wait until `endpoint` advertises `plugin` in the broker topology."""
 
-    runtime = EndpointRuntime(broker_url=BROKER_URL)
+    runtime = EndpointRuntime(broker_url=broker_url)
     runtime.start(wait=True)
 
     try:
@@ -385,3 +425,46 @@ def twin_id():
     """A fresh client-supplied twin uuid."""
 
     return str(uuid.uuid4())
+
+
+# ---------------------------------------------------------------------------
+# the M3 stack: the same shape, with the ORBIT data plane
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="session")
+def orbit_task_endpoint(orbit_broker):
+    """The M3 stack's co-located rhapsody endpoint."""
+
+    with _rhapsody_endpoint(ORBIT_TASK_ENDPOINT, orbit_broker,
+                            RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0"):
+        yield ORBIT_TASK_ENDPOINT
+
+
+@pytest.fixture(scope="session")
+def orbit_stack(orbit_broker, orbit_task_endpoint):
+    """The full M3 stack; returns its broker URL."""
+
+    return orbit_broker.url
+
+
+@pytest.fixture
+def orbit_runtime(orbit_stack):
+    """A consumer runtime on the M3 broker -- one per test."""
+
+    rt = EndpointRuntime(broker_url=orbit_stack)
+    rt.start(wait=True)
+    try:
+        yield rt
+    finally:
+        rt.stop()
+
+
+@pytest.fixture
+def orbit_dt(orbit_runtime):
+    """A `DTClient` on a fresh session of the M3 stack."""
+
+    client = orbit_runtime.get_plugin("broker", "dt", config=ENGINES_ORBIT)
+    try:
+        yield client
+    finally:
+        _drop_session(client)

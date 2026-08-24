@@ -32,12 +32,13 @@ jobs:
         run: >-
           pip install "radical.asyncflow==0.5.1" "radical.orbit==0.5.0"
           "rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"
+          "rose @ git+https://github.com/radical-cybertools/ROSE@64330d9cb43c3e13ca67daf0d8ae84a2ae6c3f17"
 
       # src/ layout: pytest tests the *installed* package, never the
       # working tree.  Always install before testing -- a stale install
       # will silently pass against old code.
       - name: Install digitaltwin (test + service extras)
-        run: pip install ".[test,service]" pytest-timeout
+        run: pip install ".[test,service,learn]" pytest-timeout
 
       # --continue-on-collection-errors: one broken test module (see the
       # PR description) must not hide the rest of the suite behind an
@@ -71,12 +72,13 @@ jobs:
         run: >-
           pip install "radical.asyncflow==0.5.1" "radical.orbit==0.5.0"
           "rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"
+          "rose @ git+https://github.com/radical-cybertools/ROSE@64330d9cb43c3e13ca67daf0d8ae84a2ae6c3f17"
 
       # src/ layout: pytest tests the *installed* package, never the
       # working tree.  Always install before testing -- a stale install
       # will silently pass against old code.
       - name: Install digitaltwin (test + service extras)
-        run: pip install ".[test,service]" pytest-timeout
+        run: pip install ".[test,service,learn]" pytest-timeout
 
       # The ORBIT broker needs a self-signed TLS cert/key and a shared
       # ingress token at the default ~/.radical/orbit location -- see

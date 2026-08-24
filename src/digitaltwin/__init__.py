@@ -13,7 +13,7 @@ from .components import (
     WindowDataType,
     WindowedTypeData,
 )
-from .config import stream_addresses
+from .config import stream_addresses, stream_backend
 from .runtime import DTRuntime, RuntimeAPI, RuntimeState
 from .streaming import (
     CODEC_CLOUDPICKLE,
@@ -56,4 +56,5 @@ __all__ = [
     "ZMQ_PS_Client",
     "connect_stream_client",
     "stream_addresses",
+    "stream_backend",
 ]
