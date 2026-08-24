@@ -90,7 +90,7 @@ def test_snapshots_are_admin_sessions_responses(recording):
 
     for session in sessions:
         assert {"sid", "age", "engines", "endpoints", "twins"} <= set(session)
-        assert set(session["endpoints"]) == {"task", "exsitu"}
+        assert set(session["endpoints"]) == {"inference", "learning"}
         for twin in session["twins"]:
             assert TWIN_KEYS <= set(twin)
 

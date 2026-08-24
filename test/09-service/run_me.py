@@ -37,13 +37,13 @@ logger = logging.getLogger(__name__)
 # where the `dt` plugin is hosted ('broker', or an endpoint name), and
 # which endpoint runs the twin's tasks (unset: let ORBIT pick one)
 DT_HOST = os.environ.get("DT_SERVICE_HOST", "broker")
-TASK_ENDPOINT = os.environ.get("DT_TASK_ENDPOINT") or None
+TASK_ENDPOINT = os.environ.get("DT_INFERENCE_ENDPOINT") or None
 
-# engine wiring, stated explicitly: one 'task' engine per session, on a
+# engine wiring, stated explicitly: one 'inference' backend per session, on a
 # co-located endpoint, with the concurrent backend
 ENGINES = {
     "engines": {
-        "task": {"endpoint_name": TASK_ENDPOINT, "backends": ["concurrent"]}
+        "inference": {"endpoint_name": TASK_ENDPOINT, "backends": ["concurrent"]}
     }
 }
 

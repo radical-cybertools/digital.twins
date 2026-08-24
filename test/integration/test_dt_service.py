@@ -204,7 +204,7 @@ def test_twin_churn_leaks_nothing(dt, broker_pid):
     session = next(s for s in dt.admin_sessions()["sessions"]
                    if s["sid"] == dt.sid)
     # one engine per session, never one per twin
-    assert session["engines"] == ["task"]
+    assert session["engines"] == ["inference"]
     assert session["twins"] == []
 
     after = broker_fds(broker_pid)
@@ -429,7 +429,7 @@ def test_version_skew_is_rejected(dt, twin_id):
 # endpoint-hosted deployment
 # ---------------------------------------------------------------------------
 
-def test_endpoint_hosted_smoke(dt_endpoint, task_endpoint, runtime):
+def test_endpoint_hosted_smoke(dt_endpoint, inference_endpoint, runtime):
     """The endpoint-hosted mode must not silently rot.
 
     Create / list / close only -- `get_inference` is the one verb the

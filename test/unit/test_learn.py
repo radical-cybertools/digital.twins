@@ -62,7 +62,7 @@ async def engines():
 
 @pytest.fixture
 async def flow(engines):
-    """The twin's `'task'` engine."""
+    """The twin's engine."""
 
     return await engines()
 
@@ -79,8 +79,8 @@ class Counter(UtilityTask):
 class LinearLearner(StreamingLearnerInvestigator):
     """Fits `y = slope * x` on each window; serves `slope * x`."""
 
-    def __init__(self, flow, learn_flow=None):
-        super().__init__(flow, learn_flow, batch_size=BATCH, max_wait=5.0)
+    def __init__(self, flow, learn_backend=None):
+        super().__init__(flow, learn_backend, batch_size=BATCH, max_wait=5.0)
 
         latest: dict = {}
         self.learner.on_state_update(latest.__setitem__)
@@ -114,11 +114,11 @@ class LinearLearner(StreamingLearnerInvestigator):
         return {"slope": 0.0}, {}
 
 
-async def _twin(flow, stream, learn_flow=None):
+async def _twin(flow, stream, learn_backend=None):
     """A started twin: counter -> learner."""
 
     runtime = DTRuntime(flow, stream)
-    learner = LinearLearner(flow, learn_flow)
+    learner = LinearLearner(flow, learn_backend)
 
     runtime.add_task(Counter(flow), TRUTHY, X, is_persistent=True)
     runtime.add_investigator(learner, X, Y)
@@ -163,16 +163,27 @@ async def test_a_published_model_changes_the_next_prediction(flow,
         await runtime.stop()
 
 
-async def test_the_learner_uses_the_engine_it_was_given(flow, engines):
-    """Dual-engine: the learner's tasks go to `learn_flow`, the
-    inference task stays on `flow`."""
+async def test_the_learner_labels_its_tasks_with_the_learning_role(flow):
+    """Role labels: every task the learner registers carries the
+    `'learning'` backend label; unlabeled tasks ride the default."""
 
-    exsitu = await engines()
-    learner = LinearLearner(flow, learn_flow=exsitu)
+    learner = LinearLearner(flow, learn_backend="learning")
+    assert learner.learn_backend == "learning"
 
-    assert learner.learn_flow is exsitu
-    assert learner.learner.asyncflow is exsitu
-    assert learner.flow is flow
+    seen = {}
+
+    class _Flow:
+        def function_task(self, func, **kwargs):
+            seen.update(kwargs)
+            return lambda *a, **k: object()
+        executable_task = function_task
+
+    learner.learner.asyncflow = _Flow()
+    learner.learner._register_task(
+        {"func": (lambda: None), "args": (), "kwargs": {},
+         "decor_kwargs": {}, "as_executable": False})
+
+    assert seen.get("backend") == "learning"
 
 
 async def test_the_criterion_state_shows_up_in_the_twins_metrics(
@@ -232,8 +243,8 @@ def test_a_tiny_threshold_survives_the_wire(flow):
     tick has to be the target the learner is comparing against."""
 
     class Tiny(LinearLearner):
-        def __init__(self, flow, learn_flow=None):
-            super().__init__(flow, learn_flow)
+        def __init__(self, flow, learn_backend=None):
+            super().__init__(flow, learn_backend)
 
             @self.learner.as_stop_criterion(
                 metric_name="fit_error", threshold=1e-8, operator="<",
@@ -280,11 +291,26 @@ async def test_a_twin_without_a_learner_reports_no_metrics(flow,
     await runtime.stop()
 
 
-async def test_an_absent_exsitu_engine_falls_back_to_the_twins(flow):
+async def test_an_absent_learning_role_leaves_tasks_unlabeled(flow):
     learner = LinearLearner(flow)
 
-    assert learner.learn_flow is flow
+    assert learner.learn_backend is None
     assert learner.learner.asyncflow is flow
+
+    seen = {}
+
+    class _Flow:
+        def function_task(self, func, **kwargs):
+            seen.update(kwargs)
+            return lambda *a, **k: object()
+        executable_task = function_task
+
+    learner.learner.asyncflow = _Flow()
+    learner.learner._register_task(
+        {"func": (lambda: None), "args": (), "kwargs": {},
+         "decor_kwargs": {}, "as_executable": False})
+
+    assert "backend" not in seen
 
 
 # ---------------------------------------------------------------------------
@@ -347,8 +373,8 @@ async def test_a_missing_inference_task_is_a_clear_error(flow,
 class Shelling(LinearLearner):
     """A learner left on ROSE's executable default."""
 
-    def __init__(self, flow, learn_flow=None):
-        super().__init__(flow, learn_flow)
+    def __init__(self, flow, learn_backend=None):
+        super().__init__(flow, learn_backend)
 
         @self.learner.training_task
         async def training(window, *args, task_description={"shell": True}):
@@ -358,7 +384,7 @@ class Shelling(LinearLearner):
 async def test_executable_learner_tasks_warn(flow, engines, stream_clients,
                                              caplog):
     """ROSE's default is a shell command with local paths, which cannot
-    reach a remote 'exsitu' endpoint."""
+    reach a remote 'learning' endpoint."""
 
     runtime = DTRuntime(flow, await stream_clients("twin-shell"))
     runtime.add_investigator(Shelling(flow, await engines()), X, Y)
@@ -426,8 +452,8 @@ async def test_a_model_the_inference_task_rejects_is_named(flow,
 async def test_the_task_bodys_own_TypeError_is_left_alone(flow,
                                                           stream_clients):
     class Exploding(LinearLearner):
-        def __init__(self, flow, learn_flow=None):
-            super().__init__(flow, learn_flow)
+        def __init__(self, flow, learn_backend=None):
+            super().__init__(flow, learn_backend)
 
             async def infer(in_data, slope=0.0):
                 raise TypeError("the body's own complaint")

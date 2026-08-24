@@ -1,7 +1,7 @@
 """Integration tests for M2: ex-situ learning on a second endpoint.
 
 Covers the DTaaS plan's M2 item 11 against a live stack with *distinct*
-`'task'` and `'exsitu'` endpoints: a twin whose
+`'inference'` and `'learning'` endpoints: a twin whose
 `StreamingLearnerInvestigator` retrains on streamed windows ex-situ
 while serving inference in-situ, a model update actually propagating to
 the next prediction, and (risk R8) an endpoint loss failing exactly the
@@ -94,13 +94,14 @@ def await_learned(dt, twin, timeout=LEARN_TIMEOUT):
 # ---------------------------------------------------------------------------
 
 def test_learned_model_propagates_across_two_endpoints(
-    dt_client, task_endpoint, exsitu_endpoint, twin_id
+    dt_client, inference_endpoint, learning_endpoint, twin_id
 ):
     """The M2 acceptance test.
 
     One stream feeds both halves of the twin: the learner retrains on
-    windows of it via the `'exsitu'` endpoint, the inference task serves
-    it from the `'task'` endpoint, and a published model changes what
+    windows of it via the `'learning'` endpoint, the inference task
+    serves it from the `'inference'` endpoint, and a published model
+    changes what
     the *next* prediction answers.
     """
 
@@ -124,11 +125,11 @@ def test_learned_model_propagates_across_two_endpoints(
 
     session = next(s for s in dt.admin_sessions()["sessions"]
                    if s["sid"] == dt.sid)
-    assert session["engines"] == ["exsitu", "task"]
+    assert session["engines"] == ["inference", "learning"]
 
 
-def test_a_learner_twin_stops_cleanly(dt_client, task_endpoint,
-                                      exsitu_endpoint, twin_id):
+def test_a_learner_twin_stops_cleanly(dt_client, inference_endpoint,
+                                      learning_endpoint, twin_id):
     """The learner's lifetime is the twin's.
 
     `stop` is terminal and must not hang on a learner parked in a
@@ -147,9 +148,9 @@ def test_a_learner_twin_stops_cleanly(dt_client, task_endpoint,
     assert dt.twin_close(twin_id) == "closed"
 
 
-def test_an_unconfigured_exsitu_engine_aliases_task(dt, task_endpoint,
+def test_an_unconfigured_learning_role_aliases_inference(dt, inference_endpoint,
                                                     twin_id):
-    """Adding `'exsitu'` is a config-only change: a single-endpoint
+    """Adding `'learning'` is a config-only change: a single-endpoint
     deployment keeps working, with one engine serving both roles."""
 
     build_learner_twin(dt, twin_id)
@@ -160,7 +161,7 @@ def test_an_unconfigured_exsitu_engine_aliases_task(dt, task_endpoint,
 
     session = next(s for s in dt.admin_sessions()["sessions"]
                    if s["sid"] == dt.sid)
-    assert session["engines"] == ["task"]
+    assert session["engines"] == ["inference"]
 
 
 # ---------------------------------------------------------------------------
@@ -168,7 +169,7 @@ def test_an_unconfigured_exsitu_engine_aliases_task(dt, task_endpoint,
 # ---------------------------------------------------------------------------
 
 def test_a_lost_endpoint_fails_only_the_twins_that_used_it(
-    dt_client, task_endpoint, doomed_endpoint, twin_id
+    dt_client, inference_endpoint, doomed_endpoint, twin_id
 ):
     """Killing the ex-situ endpoint strands the learner twin -- which
     must show up as `failed` with a readable reason, while its

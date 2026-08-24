@@ -97,8 +97,8 @@ class Wrapped(ModelInvestigator):
 class Learner(StreamingLearnerInvestigator):
     """Windows of one, so a single item drives a whole ROSE iteration."""
 
-    def __init__(self, flow, learn_flow=None):
-        super().__init__(flow, learn_flow, batch_size=1, max_wait=1.0)
+    def __init__(self, flow, learn_backend=None):
+        super().__init__(flow, learn_backend, batch_size=1, max_wait=1.0)
 
         @self.learner.training_task(as_executable=False)
         async def training(window, *args):
@@ -198,15 +198,14 @@ async def test_the_ring_is_bounded_and_keeps_the_newest(engines,
 
 async def test_the_learners_own_tasks_are_recorded_too(engines,
                                                        stream_clients):
-    """Training / active learning / criterion run on the ex-situ engine and
+    """Training / active learning / criterion carry the learning label and
     never pass through the runtime; the wrapper in `main_loop` is what makes
     them the twin's (`_own_learner_tasks`)."""
 
     flow = await engines()
-    learn_flow = await engines()
 
     runtime = DTRuntime(flow, await stream_clients("own-learner"))
-    learner = Learner(flow, learn_flow)
+    learner = Learner(flow)
 
     runtime.add_task(Feeder(flow), TRUTHY, X, is_persistent=True)
     runtime.add_investigator(learner, X, Y)
@@ -222,7 +221,7 @@ async def test_the_learners_own_tasks_are_recorded_too(engines,
 
     assert getattr(learner.learner, "_dt_owned", False)
     assert all(uid.startswith("task.") for uid in runtime.task_uids())
-    # every window is three ex-situ tasks, so a handful arrive quickly
+    # every window is three learner tasks, so a handful arrive quickly
     assert len(set(runtime.task_uids())) == len(runtime.task_uids())
 
     await runtime.stop()
