@@ -193,6 +193,12 @@
       // count that held over that interval, and the graph reads the
       // true concurrent count at every instant of the visible window.
       poolHistory: { inference: [], learning: [] },
+      // every task ever observed this session -- the header counts it
+      taskTotal: 0,
+      // rolling per-pool history for the recent-tasks table.  Holds the
+      // task objects themselves, so a row keeps its final state after
+      // `expire` drops the live entry; capped, newest last.
+      recent: [],
     };
   }
 
@@ -458,6 +464,9 @@
                // both wait for the poll that says whose task this is
                armed: null, due: null };
       w.tasks.set(uid, task);
+      w.taskTotal++;
+      w.recent.push(task);
+      if (w.recent.length > 64) w.recent.shift();
       w.counts[lane].running++;
       recordPoolEvent(w, lane);
       armTasks(w);
@@ -1438,7 +1447,7 @@
     ctx.font = `400 ${Math.round(10.5 * S)}px ${FONT_MONO}`;
     ctx.fillStyle = ui.status.ok ? C.text_dim : C.amber;
     ctx.fillText(clip(ctx,
-      `${ui.status.text}   |   ${live} twins · ${w.tasks.size} tasks`
+      `${ui.status.text}   |   ${live} twins · ${w.taskTotal} tasks`
       + `   |   t = ${w.t.toFixed(1)} s`, L.W * 0.55),
       L.W - L.M, cy);
   }
@@ -1465,8 +1474,12 @@
     ctx.textBaseline = 'top';
     ctx.font = `400 ${Math.round(8 * S)}px ${FONT}`;
     ctx.fillStyle = C.text_dim;
-    ctx.fillText(clip(ctx, 'visible to broker', r.w * 0.6),
-                 r.x + r.w - 9 * S, r.y + 12 * S);
+    // to the right of the panel title, only when there is room for it
+    const subAvail = r.w - 110 * S;
+    if (subAvail > 46 * S) {
+      ctx.fillText(clip(ctx, 'visible to broker', subAvail),
+                   r.x + r.w - 9 * S, r.y + 12 * S);
+    }
 
     if (!pubs.length) {
       placeholder(ctx, r, 'no stream traffic seen', S);
@@ -2189,12 +2202,14 @@
     const cx = x + padS;
     const cw = wd - 2 * padS;
 
+    // What the wire actually carries per task: uid, owner twin, state,
+    // timing.  Component attribution (agent / investigator names) needs
+    // per-task metadata the service does not send yet -- #8.
     const cols = [
-      { label: 'DT',           frac: 0.12 },
-      { label: 'Kind',         frac: 0.13 },
-      { label: 'Agent',        frac: 0.28 },
-      { label: 'Investigator', frac: 0.20 },
-      { label: 'Task',         frac: 0.27 },
+      { label: 'DT',    frac: 0.16 },
+      { label: 'Task',  frac: 0.34 },
+      { label: 'State', frac: 0.26 },
+      { label: 'Age',   frac: 0.24 },
     ];
     const colX = [];
     let cur = cx;
@@ -2219,8 +2234,9 @@
     ctx.lineTo(x + wd - padS, y + rowH + 0.5);
     ctx.stroke();
 
-    // Newest first, cap to POOL_TABLE_ROWS.
-    const tasks = [...w.tasks.values()]
+    // Newest first, cap to POOL_TABLE_ROWS.  From the rolling list, so
+    // a finished task keeps its row instead of vanishing on expiry.
+    const tasks = [...w.recent]
       .filter(t => t.lane === lane)
       .sort((a, b) => b.t0 - a.t0)
       .slice(0, POOL_TABLE_ROWS);
@@ -2240,13 +2256,13 @@
       if (ry + rowH / 2 > y + ht - 2) return;
 
       const owner = w.owners.get(t.uid);
-      const attr = fakeTaskAttr(t.uid);
+      const ended = t.tEnd !== null;
+      const age = Math.max(0, (ended ? t.tEnd : w.t) - t.t0);
       const cells = [
         owner ? short(owner) : '—',
-        attr.kind,
-        attr.agent,
-        attr.inv,
-        attr.name,
+        t.uid,
+        t.state.toLowerCase(),
+        `${age.toFixed(1)}s${ended ? '' : ' …'}`,
       ];
       // faded once the task has ended; running tasks stay full brightness
       ctx.fillStyle = t.tEnd === null ? C.text_label : C.text_dim;
