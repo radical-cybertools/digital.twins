@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.7.1';
+  const VERSION = '0.7.2';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -1571,7 +1571,7 @@
 
   function drawBrokerLane(ctx, L, w, ui) {
     const S = L.S, r = L.broker;
-    panel(ctx, r, C.cyan_dim, 'Digital Twins in Service on Broker',
+    panel(ctx, r, C.cyan_dim, 'Digital Twins',
           C.frame_label, S);
 
     // Birth order, except that a twin which has gone yields its slot: its
