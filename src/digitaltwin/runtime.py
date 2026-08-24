@@ -518,24 +518,15 @@ class RuntimeAPI:
         assert self.cmp_type in ["AGENT"]
         logger.info(f"Register shared subtask with label {label}. LRU size: {lru_size}")
 
-        # FIXME(review): three open defects in the memoisation below, none
-        # addressed here because they want a redesign rather than a patch:
+        # FIXME(review): one open defect in the memoisation below:
         #
-        #  1. `struct.lock.acquire()` has no `try/finally`.  A cancellation
-        #     between acquire and release -- twin teardown is the obvious one
-        #     -- leaves the lock held forever, and every later call on this
-        #     label deadlocks.
-        #  2. the cache stores the future, so a task which *raised* is cached
-        #     with its exception and re-raises for every later caller.  A
-        #     transient failure poisons the key for the life of the process.
-        #     Cancellation of the first caller propagates to the shared future
-        #     and poisons it for everyone else the same way.
-        #  3. registration copies the label into `self._ant.investigators` as
-        #     they stand *now*; an investigator started afterwards silently has
-        #     no such label.  `11-shared-sim` happens to start its two first.
+        #  * registration copies the label into `self._ant.investigators` as
+        #    they stand *now*; an investigator started afterwards silently has
+        #    no such label.  `11-shared-sim` happens to start its two first.
         #
-        # A fourth -- frozen values passed on to the task in place of the
-        # caller's arguments -- was fixed upstream in 97c96b4/8487a4b: the key
+        # Two others -- a lock held forever after cancellation, and failed or
+        # cancelled futures staying cached (issue #12) -- are fixed below; the
+        # frozen-arguments one was fixed upstream in 97c96b4/8487a4b: the key
         # is now the only thing frozen.
 
         async def wrapper(*args, **kwargs):
@@ -550,22 +541,31 @@ class RuntimeAPI:
             key = freeze((args, tuple(sorted(kwargs.items()))))
             struct = self._ant.shared_tasks[label]
 
-            await struct.lock.acquire()
+            async with struct.lock:
+                if await struct.cache.exists(key):
+                    logger.info(
+                        f"Computation of {label} {key if len(str(key)) < 20 else ''} saved. Return future."
+                    )
+                    fut = await struct.cache.fetch_item(key)
+                else:
+                    logger.info(
+                        f"Begin compute of {label} {key if len(str(key)) < 20 else ''}. Return future."
+                    )
+                    fut = asyncio.ensure_future(wrapper(*args, **kwargs))
 
-            if await struct.cache.exists(key):
-                logger.info(
-                    f"Computation of {label} {key if len(str(key)) < 20 else ''} saved. Return future."
-                )
-                fut = await struct.cache.fetch_item(key)
-            else:
-                logger.info(
-                    f"Begin compute of {label} {key if len(str(key)) < 20 else ''}. Return future."
-                )
-                fut = asyncio.ensure_future(wrapper(*args, **kwargs))
-                await struct.cache.put_item(key, fut)
+                    # only a future that completed is worth keeping: one that
+                    # raised or was cancelled would replay its failure to every
+                    # later caller, so it leaves the cache the moment it ends
+                    def evict_on_failure(f, key=key, struct=struct):
+                        if f.cancelled() or f.exception() is not None:
+                            struct.cache.drop(key, f)
 
-            struct.lock.release()
-            return await fut
+                    fut.add_done_callback(evict_on_failure)
+                    await struct.cache.put_item(key, fut)
+
+            # shielded: a cancelled caller must not cancel the shared future
+            # under the other waiters
+            return await asyncio.shield(fut)
 
         # store wrapped function
         self._ant.shared_tasks[label].wrap_fn = fetch_wrapper
