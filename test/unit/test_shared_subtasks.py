@@ -10,7 +10,11 @@ import asyncio
 
 import pytest
 
-from digitaltwin.components import SciAgent, SharedSubtaskLabel
+from digitaltwin.components import (
+    ModelInvestigator,
+    SciAgent,
+    SharedSubtaskLabel,
+)
 from digitaltwin.runtime import RuntimeAPI, _AnnotatedComponent
 
 
@@ -114,3 +118,28 @@ async def test_cancelling_one_waiter_does_not_fail_the_other():
     release.set()
     assert await asyncio.wait_for(second, timeout=5) == 5
     assert runs == [5]
+
+
+async def test_label_visibility_is_registration_order_independent():
+    """An investigator sees the agent's labels whether it started before
+    or after `register_shared_subtask` -- they alias the agent's dict."""
+
+    api = make_api()
+    api._internal_add_investigator = lambda ant: None
+
+    async def bump(x):
+        return x + 1
+
+    early = SharedSubtaskLabel("early")
+    api.register_shared_subtask(early, bump)
+
+    # started AFTER the label existed
+    api.start_investigator(ModelInvestigator(flow=None))
+    inv_api = RuntimeAPI(None, api._ant.investigators[0])
+
+    assert await inv_api.call_shared_subtask(early, 1) == 2
+
+    # and a label registered after the investigator started reaches it too
+    late = SharedSubtaskLabel("late")
+    api.register_shared_subtask(late, bump)
+    assert await inv_api.call_shared_subtask(late, 2) == 3

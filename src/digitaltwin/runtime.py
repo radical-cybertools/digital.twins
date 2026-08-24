@@ -455,6 +455,9 @@ class RuntimeAPI:
         assert isinstance(self._ant.component, SciAgent)
         new.model_publish_cb = self._ant.component.model_publish_cb
         investigator.runtime_id = count
+        # the agent's shared subtasks, by reference: a label registered
+        # before *or after* this investigator started is visible to it
+        new.shared_tasks = self._ant.shared_tasks
         self._ant.investigators[count] = new
         self._internal_add_investigator(new)  # calls the loop
 
@@ -530,16 +533,12 @@ class RuntimeAPI:
         assert self.cmp_type in ["AGENT"]
         logger.info(f"Register shared subtask with label {label}. LRU size: {lru_size}")
 
-        # FIXME(review): one open defect in the memoisation below:
-        #
-        #  * registration copies the label into `self._ant.investigators` as
-        #    they stand *now*; an investigator started afterwards silently has
-        #    no such label.  `11-shared-sim` happens to start its two first.
-        #
-        # Two others -- a lock held forever after cancellation, and failed or
-        # cancelled futures staying cached (issue #12) -- are fixed below; the
-        # frozen-arguments one was fixed upstream in 97c96b4/8487a4b: the key
-        # is now the only thing frozen.
+        # Two earlier defects here -- a lock held forever after cancellation,
+        # and failed or cancelled futures staying cached (issue #12) -- are
+        # fixed below; the frozen-arguments one was fixed upstream in
+        # 97c96b4/8487a4b: the key is now the only thing frozen.  Label
+        # visibility for investigators is registration-order independent:
+        # they alias the agent's `shared_tasks` dict (`start_investigator`).
 
         async def wrapper(*args, **kwargs):
             # task must be awaitable
@@ -579,12 +578,9 @@ class RuntimeAPI:
             # under the other waiters
             return await asyncio.shield(fut)
 
-        # store wrapped function
+        # store wrapped function.  Investigators alias this dict (see
+        # `start_investigator`), so the label reaches them with no copy.
         self._ant.shared_tasks[label].wrap_fn = fetch_wrapper
-
-        # add to investigators
-        for inv_ant in self._ant.investigators.values():
-            inv_ant.shared_tasks[label] = self._ant.shared_tasks[label]
 
         return fetch_wrapper
 
