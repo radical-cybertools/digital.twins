@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.8.1';
+  const VERSION = '0.8.2';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -860,6 +860,24 @@
     stage.appendChild(fadeTop);
     stage.appendChild(fadeBot);
 
+    // The scroll-position indicator.  Native scrollbars are overlay-style
+    // on most desktops now and hide themselves; this one is always there
+    // when the pane overflows, and it drags.
+    const thumb = el('div', 'dtd-thumb');
+    stage.appendChild(thumb);
+    let dragging = null;
+    thumb.addEventListener('pointerdown', e => {
+      dragging = { y: e.clientY, top: pane.scrollTop };
+      thumb.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    thumb.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const scale = pane.scrollHeight / pane.clientHeight;
+      pane.scrollTop = dragging.top + (e.clientY - dragging.y) * scale;
+    });
+    thumb.addEventListener('pointerup', () => { dragging = null; });
+
     allChip.addEventListener('click', () => {
       const w = lastWorld;
       if (!w) return;
@@ -1086,7 +1104,8 @@
         bar.style.height = `${headRect.h}px`;
         const anyOpen = [...w.twins.keys()]
           .some(id => !collapsed.has(`dt:${id}`));
-        allChip.textContent = anyOpen ? 'collapse all' : 'expand all';
+        allChip.textContent = anyOpen ? 'twins \u25b8' : 'twins \u25be';
+        allChip.title = anyOpen ? 'collapse all twins' : 'expand all twins';
       } else bar.style.display = 'none';
 
       // the cues only when there is actually more in that direction
@@ -1101,6 +1120,16 @@
         f.style.top   = `${y}px`;
         f.style.width = `${rect.w}px`;
       }
+
+      if (more > 1) {
+        const h = Math.max(24, rect.h * pane.clientHeight
+                                       / pane.scrollHeight);
+        const top = (rect.h - h) * pane.scrollTop / more;
+        thumb.style.display = '';
+        thumb.style.left   = `${rect.x + rect.w - 4}px`;
+        thumb.style.top    = `${rect.y + top}px`;
+        thumb.style.height = `${h}px`;
+      } else thumb.style.display = 'none';
 
       const tick = Math.floor(w.t);
       const sig = signature(w, tick);
@@ -1144,6 +1173,7 @@
 
     return { sync, destroy: () => {
       pane.remove(); bar.remove(); fadeTop.remove(); fadeBot.remove();
+      thumb.remove();
     } };
   }
 
@@ -2631,10 +2661,12 @@
 .dtd-inv-model { font: 400 8.5px ${FONT_MONO}; color: ${C.text_dim}; }
 .dtd-inv-rmse { font: 400 8.5px ${FONT_MONO}; color: ${C.text_dim}; }
 .dtd-spark { display: block; width: 100%; height: 22px; margin-top: 2px; }
-.dtd-twinpane::-webkit-scrollbar { width: 6px; }
-.dtd-twinpane::-webkit-scrollbar-thumb { background: ${C.unused_brd};
-                                         border-radius: 3px; }
-.dtd-twinpane::-webkit-scrollbar-track { background: transparent; }
+.dtd-twinpane { scrollbar-width: none; }
+.dtd-twinpane::-webkit-scrollbar { display: none; }
+.dtd-thumb { position: absolute; width: 3px; border-radius: 2px;
+             background: ${C.grey}; opacity: 0.55; z-index: 3;
+             cursor: grab; touch-action: none; }
+.dtd-thumb:hover { opacity: 0.9; width: 5px; }
 .dtd-panebar { position: absolute; display: flex; align-items: center;
                justify-content: flex-end; gap: 6px; pointer-events: none;
                z-index: 3; }
