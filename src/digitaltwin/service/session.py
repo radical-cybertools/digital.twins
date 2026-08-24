@@ -595,13 +595,15 @@ class DTSession(PluginSession):
                         self.sid, exc)
 
     async def _create_backend(self, name: str):
-        cfg = self._engine_config(name)
+        cfg  = self._engine_config(name)
+        pool = cfg.get("pool")
 
         log.info(
-            "[dt] session %s building %r backend on endpoint %s",
+            "[dt] session %s building %r backend on %s",
             self.sid,
             name,
-            cfg.get("endpoint_name") or "<auto>",
+            f"pool {pool!r}" if pool
+            else f"endpoint {cfg.get('endpoint_name') or '<auto>'}",
         )
 
         kwargs: dict = dict(
@@ -612,22 +614,56 @@ class DTSession(PluginSession):
             name=name,       # the asyncflow routing label: task backend=<role>
         )
 
+        params = inspect.signature(OrbitExecutionBackend.__init__).parameters
+
         # name the backend's broker participant after what it is for, so a
         # topology view shows `rhapsody.<session>.<role>` instead of an
         # anonymous uuid.  Unique by construction: one engine per role per
         # session (`engine` caches, `_lost` forbids rebuilds).  Guarded so
         # a rhapsody without the parameter keeps working.
-        if "participant_name" in inspect.signature(
-                OrbitExecutionBackend.__init__).parameters:
+        if "participant_name" in params:
             kwargs["participant_name"] = (
                 f"rhapsody.{self.sid.split('.')[-1]}.{name}")
 
+        if pool:
+            # A dispatcher-managed pool: the task dispatcher runs on the
+            # broker, and the pool's pilots pick the executing endpoints --
+            # this backend targets no endpoint of its own.  One dispatcher
+            # session per DT session, keyed by this session's own sid and
+            # shared by every role that names a pool; the session-level
+            # `pools` configs are declared with it, and re-declaring an
+            # owned pool is idempotent, so role build order does not
+            # matter.
+            #
+            # Contract: a task lost with its pilot is requeued and
+            # re-executes, so twin tasks must stay idempotent.  In return
+            # the twin no longer dies with a single endpoint -- pool-backed
+            # roles opt out of the R8 fail-fast (see `endpoints_lost`), and
+            # a task that ultimately fails surfaces through the normal
+            # task-status path.
+            if "pool" not in params:
+                raise RuntimeError(
+                    f"engine {name!r} names pool {pool!r}, but the installed"
+                    " rhapsody's OrbitExecutionBackend has no pool support")
+            session_kwargs: dict = {"sid": self.sid}
+            if self.config.get("pools"):
+                session_kwargs["pools"] = self.config["pools"]
+            kwargs.update(
+                plugin_name="task_dispatcher",
+                pool=pool,
+                session_kwargs=session_kwargs,
+            )
+
         backend = await OrbitExecutionBackend(**kwargs)
 
-        # the endpoint the backend *settled on* (it auto-selects when the
-        # config named none) -- what a topology change is matched against
+        # What a topology change is matched against: the endpoint the
+        # backend *settled on* (it auto-selects when the config named
+        # none).  A pool-backed role records its pool instead -- no lost
+        # endpoint ever matches it, which is exactly the R8 opt-out.
         self._endpoints[name] = (
-            getattr(backend, "_endpoint_name", None) or cfg.get("endpoint_name")
+            f"pool:{pool}" if pool
+            else getattr(backend, "_endpoint_name", None)
+            or cfg.get("endpoint_name")
         )
 
         return backend
@@ -645,6 +681,12 @@ class DTSession(PluginSession):
 
         The loss is also remembered, because the broker announces it only
         once -- see `engine`.
+
+        A pool-backed role never matches: its `_endpoints` entry is
+        `pool:<name>`, not an endpoint.  Losing a pilot's endpoint there
+        requeues the pilot's tasks inside the dispatcher instead of
+        killing the twin -- the twin's failure surface for pools is a task
+        that ultimately fails, not a single endpoint going away.
         """
 
         names = set(self._endpoints) | set(self.config.get("engines") or {})
