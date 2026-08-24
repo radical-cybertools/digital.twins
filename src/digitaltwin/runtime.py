@@ -725,6 +725,8 @@ class DTRuntime:
             logger.error("twin teardown failed: %s", exc, exc_info=exc)
 
     async def _teardown(self, timeout: float):
+        await self._quiesce(timeout)
+
         tasks, self.running_tasks = self.running_tasks, set()
         for task in tasks:
             task.cancel()
@@ -744,6 +746,39 @@ class DTRuntime:
             logger.warning("stream client did not close within %ss", timeout)
         except Exception as exc:
             self._record_error(exc)
+
+    async def _quiesce(self, timeout: float):
+        """Let components wind down their own machinery before cancellation.
+
+        One shared budget, spent *concurrently*: two learners waiting five
+        seconds each must not add up to ten.  Whoever ignores the budget
+        is cancelled like everything else a moment later.
+        """
+
+        async def wind_down(component: _TwinComponent):
+            try:
+                await component._on_stop()
+            except Exception as exc:
+                self._record_error(exc)
+
+        hooks = [wind_down(ant.component) for ant in self._annotated()]
+        if not hooks:
+            return
+
+        try:
+            async with asyncio.timeout(timeout):
+                await asyncio.gather(*hooks)
+
+        except TimeoutError:
+            logger.warning("component teardown exceeded %ss", timeout)
+
+    def _annotated(self):
+        """Every component in the graph, child investigators included."""
+
+        for ants in list(self.components.values()):
+            for ant in ants:
+                yield ant
+                yield from ant.investigators.values()
 
     def _to_asyncio_task(self, func, *args, **kwargs) -> Optional[asyncio.Task]:
         """Schedule a coroutine as an :class:`asyncio.Task` and track its
@@ -784,7 +819,18 @@ class DTRuntime:
         if exc is not None:
             self._record_error(exc)
 
-    def _record_error(self, exc: BaseException):
+    def fail(self, error: str):
+        """Route an out-of-band failure into the twin state.
+
+        Component failures arrive through the done-callbacks; this is the
+        door for the ones only the host can see -- a lost engine endpoint
+        (R8) strands every component bound to that engine, but nothing
+        inside the runtime notices.
+        """
+
+        self._record_error(error)
+
+    def _record_error(self, exc: BaseException | str):
         """Route a failure into the twin state, and stop the twin.
 
         A component failure is a twin failure: the other components have
@@ -805,8 +851,12 @@ class DTRuntime:
         half-dead component -- which is logged and dropped.
         """
 
-        error = f"{type(exc).__name__}: {exc}"
-        logger.error("twin component failed: %s", error, exc_info=exc)
+        error = exc if isinstance(exc, str) else f"{type(exc).__name__}: {exc}"
+        logger.error(
+            "twin component failed: %s",
+            error,
+            exc_info=exc if isinstance(exc, BaseException) else None,
+        )
 
         if self.state is RuntimeState.FAILED:
             # the cause is already recorded, and its teardown is running
@@ -1261,7 +1311,7 @@ class DTRuntime:
             assert ant.inference_task is not None
 
             logger.debug(f"Run {type(ant.component).__name__} inference task")
-            answer = await ant.inference_task(in_data, **ant.model_kwargs)
+            answer = await self._infer(ant, in_data, ant.model_kwargs)
             if answer is None:
                 return
             assert isinstance(answer, TypedData)
@@ -1305,7 +1355,7 @@ class DTRuntime:
                 self._to_asyncio_task(self._call_await, cb, in_data)
 
             await i_select.has_published_model.wait()
-            answer = await i_select.inference_task(in_data, **model_kwargs)
+            answer = await self._infer(i_select, in_data, model_kwargs)
 
             for cb in i_select.subscriptions[RuntimeAPI.ON_FILTERED_OUTPUT]:
                 self._to_asyncio_task(self._call_await, cb, answer)
@@ -1326,6 +1376,35 @@ class DTRuntime:
             self._put_to_dtype_queue(answer)
 
         return answer
+
+    async def _infer(
+        self, ant: _AnnotatedComponent, in_data: TypedData, model_kwargs: dict
+    ):
+        """Run an investigator's inference task with its published model.
+
+        A published model is just kwargs, so publishing a key the
+        inference task does not accept fails as a `TypeError` deep inside
+        a call the user never wrote -- and for a learner that publishes
+        whatever its training task returned, that is an easy mistake to
+        make.  Name it instead.
+
+        Only the *call* is rewritten: a `TypeError` raised inside the task
+        body has its own frame in the traceback and is left alone.
+        """
+
+        try:
+            return await ant.inference_task(in_data, **model_kwargs)
+
+        except TypeError as exc:
+            traceback = exc.__traceback__
+            if traceback is None or traceback.tb_next is not None:
+                raise
+
+            raise TypeError(
+                f"published model keys do not match the inference task"
+                f" signature of {type(ant.component).__name__}: published"
+                f" {sorted(model_kwargs)} -- {exc}"
+            ) from exc
 
     ## flow.block
     async def _dtype_consumer(self, input_data: TypedData) -> None:

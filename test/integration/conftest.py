@@ -6,12 +6,19 @@ Session-scoped fixtures bring up, on loopback:
 - a co-located rhapsody endpoint with `backends=['concurrent']` and the
   notification window at 0 (P2 -- otherwise every sequential task pays
   250 ms),
+- a second rhapsody endpoint standing in for remote HPC hardware, which
+  is where the `'exsitu'` engine sends learner tasks,
 - a consumer runtime the tests get `DTClient`s from.
+
+Every endpoint carries a `DT_TEST_ENDPOINT_TAG` in its environment, so a
+task can report where it ran -- which is how the dual-engine tests prove
+that learning and inference really landed on different endpoints.
 
 Everything is skipped when the broker cannot be started (no certs, no
 token, port taken), so the suite stays runnable without a deployment.
 """
 
+import contextlib
 import os
 import shutil
 import socket
@@ -40,17 +47,33 @@ BROKER_PORT = int(os.environ.get("DT_TEST_BROKER_PORT", "8031"))
 BROKER_URL = f"https://{BROKER_HOST}:{BROKER_PORT}"
 
 TASK_ENDPOINT = "dt_test_task_ep"
+EXSITU_ENDPOINT = "dt_test_exsitu_ep"  # stands in for remote HPC hardware
+DOOMED_ENDPOINT = "dt_test_doomed_ep"  # started to be killed (R8)
 DT_ENDPOINT = "dt_test_dt_ep"  # endpoint-hosted `dt`, for the smoke test
 
 STARTUP_TIMEOUT = 60.0
 LOGS = Path(os.environ.get("DT_TEST_LOG_DIR", "/tmp")) / "dt-integration-logs"
 
-# engine wiring every test uses: the co-located endpoint, concurrent backend
-ENGINES = {
-    "engines": {
-        "task": {"endpoint_name": TASK_ENDPOINT, "backends": ["concurrent"]}
+
+def engines(**endpoints: str) -> dict:
+    """Session config for the named engines, concurrent backend each."""
+
+    return {
+        "engines": {
+            name: {"endpoint_name": endpoint, "backends": ["concurrent"]}
+            for name, endpoint in endpoints.items()
+        }
     }
-}
+
+
+# the single-engine wiring most tests use: the co-located endpoint only
+ENGINES = engines(task=TASK_ENDPOINT)
+
+# dual-engine wiring: learner tasks ex-situ, everything else co-located
+ENGINES_DUAL = engines(task=TASK_ENDPOINT, exsitu=EXSITU_ENDPOINT)
+
+# same, but with an ex-situ engine on an endpoint the test will kill
+ENGINES_DOOMED = engines(task=TASK_ENDPOINT, exsitu=DOOMED_ENDPOINT)
 
 
 def _port_free(port: int) -> bool:
@@ -182,25 +205,68 @@ def _await_broker(proc: subprocess.Popen) -> None:
     pytest.skip(f"broker did not come up -- see {LOGS / 'broker.log'}")
 
 
+@contextlib.contextmanager
+def _rhapsody_endpoint(name: str, broker, **env: str):
+    """A rhapsody endpoint, up and advertised, torn down on exit.
+
+    `DT_TEST_ENDPOINT_TAG` is the endpoint's name to a task running on
+    it: `os.environ` is the only channel a cloudpickled function body has
+    for finding out where it landed.
+    """
+
+    argv = _orbit_script("radical-orbit-endpoint.py") + [
+        "-n", name, "-u", broker.url, "-p", "default",
+    ]
+    proc = _spawn(
+        name,
+        argv,
+        RADICAL_ORBIT_RHAPSODY_BACKEND="concurrent",
+        DT_TEST_ENDPOINT_TAG=name,
+        **env,
+    )
+
+    try:
+        _await_plugin(name, "rhapsody", proc)
+        yield proc
+    finally:
+        _terminate(proc)
+
+
 @pytest.fixture(scope="session")
 def task_endpoint(broker):
     """A co-located rhapsody endpoint: where the twins' tasks execute."""
 
-    argv = _orbit_script("radical-orbit-endpoint.py") + [
-        "-n", TASK_ENDPOINT, "-u", broker.url, "-p", "default",
-    ]
-    proc = _spawn(
-        TASK_ENDPOINT,
-        argv,
-        RADICAL_ORBIT_RHAPSODY_BACKEND="concurrent",
-        RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0",
-    )
-
-    try:
-        _await_plugin(TASK_ENDPOINT, "rhapsody", proc)
+    # notify window 0 (P2): every sequential in-situ prediction would
+    # otherwise pay 250 ms
+    with _rhapsody_endpoint(TASK_ENDPOINT, broker,
+                            RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0"):
         yield TASK_ENDPOINT
-    finally:
-        _terminate(proc)
+
+
+@pytest.fixture(scope="session")
+def exsitu_endpoint(broker):
+    """A second rhapsody endpoint: where learner tasks execute.
+
+    Distinct from `task_endpoint` on purpose -- that is the whole point
+    of the `'exsitu'` engine.  It keeps the default notify window: 250 ms
+    is noise under a training task.
+    """
+
+    with _rhapsody_endpoint(EXSITU_ENDPOINT, broker):
+        yield EXSITU_ENDPOINT
+
+
+@pytest.fixture
+def doomed_endpoint(broker):
+    """A disposable rhapsody endpoint the test is expected to kill (R8).
+
+    Its own endpoint rather than a shared one: the R8 test asserts on
+    what an endpoint *loss* does, and the rest of the suite still needs
+    somewhere to run.
+    """
+
+    with _rhapsody_endpoint(DOOMED_ENDPOINT, broker) as proc:
+        yield proc
 
 
 @pytest.fixture(scope="session")
@@ -275,14 +341,32 @@ def runtime(stack):
 
 
 @pytest.fixture
-def dt(runtime):
-    """A `DTClient` on a fresh session, torn down with the test."""
+def dt_client(runtime):
+    """Factory for `DTClient`s with an explicit engine configuration.
 
-    client = runtime.get_plugin("broker", "dt", config=ENGINES)
+    Every session it hands out is closed with the test -- sessions are
+    immortal, so nothing else would ever reclaim them.
+    """
+
+    clients = []
+
+    def make(config: dict = ENGINES):
+        client = runtime.get_plugin("broker", "dt", config=config)
+        clients.append(client)
+        return client
+
     try:
-        yield client
+        yield make
     finally:
-        _drop_session(client)
+        for client in clients:
+            _drop_session(client)
+
+
+@pytest.fixture
+def dt(dt_client):
+    """A `DTClient` on a fresh single-engine session."""
+
+    return dt_client()
 
 
 def _drop_session(client) -> None:

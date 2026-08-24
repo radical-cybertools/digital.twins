@@ -126,8 +126,12 @@ class PluginDT(Plugin):
         Body (all optional): `{"sid": str, "config": {...}}`.  `config`
         carries the engine configuration and applies at create time only:
 
-            {"engines": {"task": {"endpoint_name": "ep1",
-                                  "backends": ["concurrent"]}}}
+            {"engines": {"task":   {"endpoint_name": "ep1",
+                                    "backends": ["concurrent"]},
+                         "exsitu": {"endpoint_name": "hpc1",
+                                    "backends": ["concurrent"]}}}
+
+        `'exsitu'` is optional: unconfigured, it aliases `'task'`.
         """
 
         self._ensure_cleanup_task()
@@ -257,6 +261,53 @@ class PluginDT(Plugin):
                 "alive": bool(self._stream_broker and self._stream_broker.is_alive()),
             },
         }
+
+    # -- observability ------------------------------------------------------
+
+    async def on_topology_change(self, participants: dict) -> None:
+        """Mark twins failed when an engine's endpoint is lost (risk R8).
+
+        `OrbitExecutionBackend` has no reconnect and components bind their
+        engine at construction, so a twin whose endpoint went away is
+        stranded and cannot be healed in v1.  What it must not be is
+        *silent*: on a days-long twin an endpoint loss would otherwise
+        show up as inference calls that simply never return.  So this maps
+        the lost participants onto the sessions' engine endpoints and
+        turns the affected twins into `failed` + a reason in `twin_list`.
+        Twins on surviving engines are untouched.  Recovery is the
+        client's, and it is the *session* that has to go: engines are
+        session-shared and one of them is dead, so a twin created
+        afterwards would inherit it.  `unregister_session`, then build
+        the session and its twins again.
+        """
+
+        await super().on_topology_change(participants)
+
+        lost = {
+            name
+            for name, info in (participants or {}).items()
+            if (info or {}).get("liveness") == "lost"
+        }
+        if not lost:
+            return
+
+        for sid, session in list(self._sessions.items()):
+            if not isinstance(session, DTSession):
+                continue
+
+            # one session's bookkeeping must not cost the others their
+            # notification -- this is the only announcement they get
+            try:
+                failed = session.endpoints_lost(lost)
+            except Exception:
+                log.exception("[dt] session %s: endpoint loss handling", sid)
+                continue
+
+            if failed:
+                log.warning(
+                    "[dt] session %s: endpoint(s) %s lost -- twins failed: %s",
+                    sid, ", ".join(sorted(lost)), ", ".join(failed),
+                )
 
     # -- embedded stream broker --------------------------------------------
 

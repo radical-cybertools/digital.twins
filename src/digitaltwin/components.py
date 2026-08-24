@@ -227,6 +227,16 @@ class _TwinComponent:
 
 # ------------------------------------------------------------------
 
+    async def _on_stop(self) -> None:
+        """Internal teardown hook, called by `DTRuntime.stop()` just before
+        the runtime cancels this component's tasks.
+
+        For components owning machinery the runtime cannot see -- a ROSE
+        learner loop and the source pumps it spawned, say -- winding it
+        down here means a cancellation never has to interrupt it
+        mid-flight.  Not user API: best-effort, bounded, must not raise.
+        """
+
 
 class ModelInvestigator(_TwinComponent):
     """Model-oriented investigation step.  ``flow`` is a

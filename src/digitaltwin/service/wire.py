@@ -46,8 +46,11 @@ class Package:
     args: tuple = ()
     kwargs: dict = field(default_factory=dict)
 
-    def instantiate(self, flow) -> Any:
-        return self.cls(flow, *self.args, **self.kwargs)
+    def instantiate(self, flow, **engines: Any) -> Any:
+        """Instantiate with the twin's engine, plus any extra engine the
+        service injects by class (`learn_flow` for a streaming learner)."""
+
+        return self.cls(flow, *self.args, **{**self.kwargs, **engines})
 
 
 def register_user_modules(modules: list) -> None:
