@@ -1636,9 +1636,21 @@ class DTRuntime:
         `print_graph()` is just a rendering of it.
         """
 
+        def kind_of(component) -> str:
+            if isinstance(component, _JoinComponent):
+                return "join"
+            if isinstance(component, SplitTask):
+                return "split"
+            if isinstance(component, SciAgent):
+                return "agent"
+            if isinstance(component, ModelInvestigator):
+                return "investigator"
+            return "utility"
+
         def described(ant: _AnnotatedComponent) -> dict:
             entry = {
                 "component": type(ant.component).__name__,
+                "kind": kind_of(ant.component),
                 "input_dtype": ant.input_dtype.name,
                 "output_dtype": ant.output_dtype.name,
                 "is_persistent": ant.is_persistent,
@@ -1647,6 +1659,13 @@ class DTRuntime:
                 entry["investigators"] = [
                     described(inv) for inv in ant.investigators.values()
                 ]
+
+            # what an observer can know about an investigator's model
+            # without shipping the model: whether one has been published,
+            # and the names of its parameters
+            if entry["kind"] == "investigator":
+                entry["model_published"] = ant.has_published_model.is_set()
+                entry["model_keys"] = sorted(ant.model_kwargs or {})
 
             entry["is_join"] = isinstance(ant.component, _JoinComponent)
             entry["is_split"] = isinstance(ant.component, SplitTask)

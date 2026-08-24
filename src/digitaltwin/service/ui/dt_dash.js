@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.8.4';
+  const VERSION = '0.9.0';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -293,7 +293,7 @@
       tw = {
         id, sid: s.sid, state: t.state, born: w.t, fresh: w.t, tState: w.t,
         last_error: null, age: null, metrics: {}, spark: new Map(),
-        pulse: null, gone: null,
+        components: null, pulse: null, gone: null,
       };
       w.twins.set(id, tw);
       // A twin that was already there when we attached is not a `create`
@@ -318,6 +318,7 @@
     tw.age        = num(t.age);
     tw.gone       = null;
     applyMetrics(tw, t.metrics);
+    if (Array.isArray(t.components)) tw.components = t.components;
     applyCalls(w, tw, t.calls);
     applyTasks(w, id, t.tasks);
   }
@@ -893,13 +894,16 @@
     let lastSig = null;
     let lastWorld = null;
     const cards = new Map();   // twin id -> card element
+    const seenBlocks = new Set();   // block keys already default-collapsed
 
     pane.addEventListener('click', e => {
       const act = e.target.closest('[data-action]');
       if (act && pane.contains(act)) {
         // per-twin: expand / collapse every agent of that twin at once
         const id = act.getAttribute('data-action');
-        const keys = fakeAgents().map(a => `agent:${id}|${a.name}`);
+        const tw2 = lastWorld && lastWorld.twins.get(id);
+        const keys = tw2
+          ? blocksOf(tw2).map(b => `agent:${id}|${b.component}`) : [];
         const anyOpen = keys.some(k => !collapsed.has(k));
         for (const k of keys) {
           if (anyOpen) collapsed.add(k);
@@ -939,46 +943,89 @@
       return svg;
     }
 
-    function investigatorCard(twinId, agentName, invName, tick) {
-      const seed  = fnv1a(`${twinId}|${agentName}|${invName}`);
-      const hist  = fakeSpark(seed, tick);
-      const color = INV_COLOR[invName] || C.text_dim;
+    // the expandable blocks of a twin: its agents and bare investigators
+    function blocksOf(tw) {
+      return (tw.components || [])
+        .filter(c => c.kind === 'agent' || c.kind === 'investigator');
+    }
 
+    const BLOCK_COLORS = [C.cyan, C.violet, C.green, C.amber];
+
+    function modelText(comp) {
+      if (!comp.model_published) return 'no model yet';
+      const keys = (comp.model_keys || []).join(', ');
+      return keys ? `model: ${keys}` : 'model published';
+    }
+
+    // one convergence metric, drawn from the real per-window history the
+    // service mirrors out of the learner
+    function metricCard(name, m, hist, color) {
       const card = el('div', 'dtd-inv');
       card.style.borderColor = color;
       const head = el('div', 'dtd-inv-head');
-      head.appendChild(el('span', 'dtd-inv-name', `Inv: ${invName}`));
+      head.appendChild(el('span', 'dtd-inv-name', name));
+      const thr = (typeof m.threshold === 'number')
+        ? ` ${m.operator || '<'} ${m.threshold}` : '';
       head.appendChild(el('span', 'dtd-inv-model',
-                          `Model: ${fakeModelName(seed, tick)}`));
+        `${Number(m.value).toPrecision(3)}${thr}`
+        + (m.should_stop ? ' ✓' : '')));
       card.appendChild(head);
-      card.appendChild(el('div', 'dtd-inv-rmse',
-                          `rmse ${hist[hist.length - 1].toFixed(3)}`));
-      card.appendChild(svgSpark(hist, color));
+      if (hist && hist.length > 1) card.appendChild(svgSpark(hist, color));
       return card;
     }
 
-    function agentBlock(tw, agent, tick) {
-      const key = `agent:${tw.id}|${agent.name}`;
+    // the metrics a component reported, matched by class name
+    function metricsFor(tw, comp) {
+      return Object.entries(tw.metrics || {})
+        .filter(([, m]) => m && m.component === comp.component);
+    }
+
+    function investigatorCard(tw, comp, color) {
+      const card = el('div', 'dtd-inv');
+      card.style.borderColor = color;
+      const head = el('div', 'dtd-inv-head');
+      head.appendChild(el('span', 'dtd-inv-name',
+                          `Inv: ${comp.component}`));
+      head.appendChild(el('span', 'dtd-inv-model', modelText(comp)));
+      card.appendChild(head);
+      card.appendChild(el('div', 'dtd-inv-rmse',
+        `${comp.input_dtype} → ${comp.output_dtype}`));
+      for (const [name, m] of metricsFor(tw, comp)) {
+        card.appendChild(metricCard(name, m, tw.spark.get(name), color));
+      }
+      return card;
+    }
+
+    function agentBlock(tw, comp, index) {
+      const key = `agent:${tw.id}|${comp.component}`;
       const closed = collapsed.has(key);
+      const isAgent = comp.kind === 'agent';
+      const invs = comp.investigators || [];
 
       const block = el('div', 'dtd-agent');
       const head = el('div', 'dtd-agent-head');
       head.setAttribute('data-key', key);
       head.appendChild(el('span', 'dtd-agent-name',
-                          `${closed ? '\u25b8' : '\u25be'} Agent: ${agent.name}`));
-      const selIdx = Math.abs(fnv1a(`sel|${tw.id}|${agent.name}`))
-                   % FAKE_INVESTIGATORS.length;
-      const selInv = FAKE_INVESTIGATORS[selIdx];
+        `${closed ? '\u25b8' : '\u25be'} `
+        + `${isAgent ? 'Agent' : 'Investigator'}: ${comp.component}`));
       head.appendChild(el('span', 'dtd-agent-sel',
-        `Selected: ${selInv}. Model: `
-        + fakeModelName(fnv1a(`${tw.id}|${agent.name}|${selInv}`), tick)));
+        isAgent ? `${invs.length} investigator${invs.length === 1 ? '' : 's'}`
+                : modelText(comp)));
       block.appendChild(head);
       block.appendChild(el('div', 'dtd-agent-io',
-                           `IN ${agent.inD}  \u2192  OUT ${agent.outD}`));
+        `IN ${comp.input_dtype}  \u2192  OUT ${comp.output_dtype}`
+        + (comp.is_persistent ? '   (persistent)' : '')));
 
       if (!closed) {
-        for (const invName of FAKE_INVESTIGATORS) {
-          block.appendChild(investigatorCard(tw.id, agent.name, invName, tick));
+        if (isAgent) {
+          invs.forEach((inv, i) => block.appendChild(
+            investigatorCard(tw, inv,
+                             BLOCK_COLORS[(index + i) % BLOCK_COLORS.length])));
+        } else {
+          const color = BLOCK_COLORS[index % BLOCK_COLORS.length];
+          for (const [name, m] of metricsFor(tw, comp)) {
+            block.appendChild(metricCard(name, m, tw.spark.get(name), color));
+          }
         }
       }
       return block;
@@ -1000,8 +1047,9 @@
                        `${closed ? '\u25b8' : '\u25be'} DT: ${short(tw.id)}`);
       title.title = tw.id;               // the full id, selectable via tooltip
       head.appendChild(title);
-      if (!closed) {
-        const keys = fakeAgents().map(a => `agent:${tw.id}|${a.name}`);
+      const blocks = blocksOf(tw);
+      if (!closed && blocks.length) {
+        const keys = blocks.map(b => `agent:${tw.id}|${b.component}`);
         const anyOpen = keys.some(k => !collapsed.has(k));
         const chip = el('span', 'dtd-chip dtd-mini',
                         anyOpen ? 'agents \u25b8' : 'agents \u25be');
@@ -1015,19 +1063,23 @@
       head.appendChild(pill);
       card.appendChild(head);
 
-      // visible even collapsed, same as before.  Placeholder counts
-      // (`fakeUtility`) until the service reports them.
-      const util = fakeUtility(tw.id);
-      card.appendChild(el('div', 'dtd-card-util',
-        `Utility Tasks ${util.total} (Persist: ${util.persist})`));
+      // visible even collapsed, so a rolled-up card still reports what
+      // it holds -- real counts, straight off `components`
+      if (tw.components) {
+        const utils = tw.components.filter(c => c.kind === 'utility');
+        const persist = utils.filter(c => c.is_persistent).length;
+        card.appendChild(el('div', 'dtd-card-util',
+          `Utility Tasks ${utils.length} (Persist: ${persist})`));
+      } else {
+        card.appendChild(el('div', 'dtd-card-util',
+          'no component data (pre-0.9 service or recording)'));
+      }
 
       if (!closed) {
         if (state === 'failed' && tw.last_error) {
           card.appendChild(el('div', 'dtd-card-error', tw.last_error));
         }
-        for (const agent of fakeAgents()) {
-          card.appendChild(agentBlock(tw, agent, tick));
-        }
+        blocks.forEach((b, i) => card.appendChild(agentBlock(tw, b, i)));
       }
 
       if (gone) {
@@ -1050,8 +1102,13 @@
       const keys = [...collapsed].sort().join(',');
       const twins = [...w.twins.values()].map(tw => {
         const mark = w.markers.filter(m => m.twinId === tw.id).pop();
+        const comps = (tw.components || [])
+          .map(c => `${c.component}${c.kind}${c.model_published ? 1 : 0}`)
+          .join('.');
+        const mvals = Object.entries(tw.metrics || {})
+          .map(([k, m]) => `${k}:${m && m.value}`).join(',');
         return `${tw.id}|${tw.state}|${tw.gone !== null}|${tw.last_error || ''}`
-             + `|${mark ? mark.label : ''}`;
+             + `|${mark ? mark.label : ''}|${comps}|${mvals}`;
       }).join(';');
       return `${tick}#${keys}#${twins}`;
     }
@@ -1070,9 +1127,12 @@
         if (!seenTwins.has(tw.id)) {
           seenTwins.add(tw.id);
           collapsed.add(`dt:${tw.id}`);
-          for (const a of fakeAgents()) {
-            collapsed.add(`agent:${tw.id}|${a.name}`);
-          }
+        }
+        // blocks start collapsed too, and can appear later than the twin
+        // (add_investigator is a separate verb) -- seed per block
+        for (const b of blocksOf(tw)) {
+          const k = `agent:${tw.id}|${b.component}`;
+          if (!seenBlocks.has(k)) { seenBlocks.add(k); collapsed.add(k); }
         }
         const card = twinCard(tw, w, tick);
         cards.set(tw.id, card);
@@ -1707,61 +1767,6 @@
 
   // Placeholder card content: the wire does not carry per-twin
   // components, utility-task counts or per-investigator RMSE yet, so all
-  // three are synthesised here.  The agent roster is fixed (every twin
-  // runs the same two, each carrying an ANN and an RNN investigator),
-  // and the utility counts / RMSE traces are deterministic from a seed
-  // so they stay stable across frames and replays.  Swap `fakeAgents` /
-  // `fakeUtility` / `fakeSpark` the day the service starts serialising
-  // `runtime.components`.
-  const FAKE_AGENTS = [
-    { name: 'Gravity Estimator',  inD: 'SENSOR', outD: 'GRAVITY'  },
-    { name: 'Velocity Estimator', inD: 'SENSOR', outD: 'VELOCITY' },
-  ];
-
-  const FAKE_INVESTIGATORS = ['ANN', 'RNN'];
-
-  // A per-investigator model name that ticks up once a second, offset by
-  // the seed so investigators don't all read the same version.
-  function fakeModelName(seed, tick) {
-    const start = 1 + (Math.abs(seed) % 30);
-    return `model-v${start + tick}`;
-  }
-
-  function fakeAgents() { return FAKE_AGENTS; }
-
-  function fnv1a(s) {
-    let h = 2166136261;
-    for (let i = 0; i < s.length; i++) {
-      h ^= s.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return h;
-  }
-
-  function fakeUtility(id) {
-    const h = fnv1a(id);
-    const total   = 2 + (Math.abs(h) % 5);                          // 2-6
-    const persist = 1 + (Math.abs(h >>> 5) % Math.min(3, total));   // 1..min(3,total)
-    return { total, persist };
-  }
-
-  // A per-investigator RMSE trace, sampled to the model clock so it
-  // slides as `w.t` advances.  Starts high, decays with mild oscillation
-  // -- looks like a learner converging.  Nothing here reads real state.
-  function fakeSpark(seed, t) {
-    const N = 28, step = 0.5;
-    const out = [];
-    const t0 = t - N * step;
-    for (let i = 0; i < N; i++) {
-      const tt = t0 + i * step;
-      const decay = Math.exp(-Math.max(0, tt) / 40);
-      const noise = Math.sin(tt * 0.9 + seed * 1.31) * 0.08
-                  + Math.cos(tt * 0.31 + seed * 0.71) * 0.05;
-      out.push(Math.max(0.01, 0.10 + 0.9 * decay + noise * decay));
-    }
-    return out;
-  }
-
   // ---- header ------------------------------------------------------------
 
   function drawHeader(ctx, L, w, ui) {
@@ -2199,7 +2204,7 @@
   }
 
   // Recent-tasks table, capped at `POOL_TABLE_ROWS` newest.  DT hash and
-  // lane are real; Kind / Inv / Task are faked from the uid because the
+  // lane are real; component attribution needs per-task metadata the
   // wire does not carry per-task metadata.
   function drawTaskTable(ctx, x, y, wd, ht, rowH, w, lane, border, S) {
     // border + subtle background so the table reads as its own block
@@ -2286,27 +2291,6 @@
         ctx.fillText(clip(ctx, cell, w2), colX[j], ry);
       });
     });
-  }
-
-  // Placeholder task attribution: 60% Agent / 40% Utility, with an
-  // investigator for the agent tasks and one of a handful of typical
-  // task names for both.
-  const FAKE_TASK_NAMES = [
-    'infer', 'predict', 'train_window', 'active_learn', 'criterion',
-    'checkpoint', 'validate', 'bootstrap', 'preprocess', 'stream_hop',
-  ];
-  function fakeTaskAttr(uid) {
-    const h = fnv1a(uid);
-    const isAgent = (Math.abs(h) % 5) < 3;          // 3/5 agent, 2/5 utility
-    const kind = isAgent ? 'Agent' : 'Utility';
-    const agent = isAgent
-      ? FAKE_AGENTS[Math.abs(h >>> 11) % FAKE_AGENTS.length].name
-      : '—';
-    const inv  = isAgent
-      ? FAKE_INVESTIGATORS[Math.abs(h >>> 3) % FAKE_INVESTIGATORS.length]
-      : '—';
-    const name = FAKE_TASK_NAMES[Math.abs(h >>> 7) % FAKE_TASK_NAMES.length];
-    return { kind, agent, inv, name };
   }
 
   // ---- flights: the inferred verbs, and spawned tasks -------------------

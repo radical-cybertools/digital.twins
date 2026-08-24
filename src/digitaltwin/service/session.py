@@ -178,6 +178,11 @@ class TwinInstance:
             # task belongs to; bounded, newest last, and a uid that has aged
             # out is unattributed rather than wrong.
             "tasks": [] if self.runtime is None else self.runtime.task_uids(),
+            # The graph itself: what the dashboard draws its twin cards
+            # from.  Class names, kinds, dtypes and model-parameter names
+            # only -- never a model, so the entry stays poll-sized.
+            "components": ([] if self.runtime is None
+                           else self.runtime.describe()["components"]),
         }
 
     def ready(self, runtime: DTRuntime, stream: PubSubClient) -> None:
