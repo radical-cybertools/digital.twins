@@ -473,12 +473,18 @@ async def test_describe_is_serializable(stream_clients):
             "input_dtype": "TRUE",
             "output_dtype": "tick",
             "is_persistent": True,
+            "is_join": False,
+            "is_split": False,
+            "split_outputs": [],
         },
         {
             "component": "Forever",
             "input_dtype": "inference",
             "output_dtype": "NULL",
             "is_persistent": False,
+            "is_join": False,
+            "is_split": False,
+            "split_outputs": [],
         },
     ]
 

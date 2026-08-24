@@ -6,6 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "digitaltwin"
 version = "0.0.1"
 description = "Experimental digital twin framework"
+# FIXME(review): this floor is not real.  `streaming.py` uses
+# `async with asyncio.timeout(...)`, which is 3.11+, so an actual 3.10
+# interpreter fails at import of the first connect.  Either replace it with
+# `asyncio.wait_for` (and audit `except TimeoutError`, which is only an alias
+# of `asyncio.TimeoutError` from 3.11 on) or put the floor back to 3.11 and
+# drop the `backports.strenum` dependency and the `py310` tox env with it.
 requires-python = ">=3.10"
 dependencies = [
     "radical.asyncflow>=0.5.0",

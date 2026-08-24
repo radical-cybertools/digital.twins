@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from dataclasses import dataclass
+
 import json
 import logging
 import multiprocessing
@@ -261,9 +261,6 @@ class PubSubBackend(ABC):
         """Release all resources.  Idempotent."""
         pass
 
-    def get_config(self) -> dict:
-        return {}
-
     def __str__(self):
         return f"{self.kind}"
 
@@ -434,13 +431,17 @@ class ZMQ_BrokerProcess:
 
 class ZMQ_PS_Client(PubSubBackend):
     """Pub/Sub client that talks to a ZMQ broker.
-    kind = "zmq"
 
     The client manages a pair of asynchronous sockets (PUB/SUB) and
     keeps a mapping from topics to user callbacks.
     """
 
     label: str = "local"
+
+    # names this backend in a PubSubConfig (see `PubSubBackend.kind`).  Without
+    # it the class inherits "generic", and every config which travels to
+    # another process names a backend nothing can reopen.
+    kind = "zmq"
 
     def __init__(
         self, pub_addr: Optional[str] = None, sub_addr: Optional[str] = None
@@ -457,9 +458,6 @@ class ZMQ_PS_Client(PubSubBackend):
             self._ctx.socket(zmq.SUB) if sub_addr is not None else None
         )
 
-
-    def get_config(self) -> dict:
-        return {"pub_addr": self.pub_addr, "sub_addr": self.sub_addr}
 
     async def _connect_socket(self, sock, addr):
         """Connect `sock` and wait until the connection is established.
@@ -770,7 +768,6 @@ class PubSubClient:
             backend_params = {}
 
         self.subscriptions.add(dtype)
-        self.subscriptions.add(dtype)
 
         # add message to queue
         async def receive_data(message: Any) -> None:
@@ -888,7 +885,10 @@ class PubSubConfig:
 
     async def connect(self, timeout: Optional[float] = None) -> PubSubClient:
         """Open a connected, namespaced client for this endpoint."""
-        assert self.namespace is not None
+
+        if self.namespace is None:
+            raise ValueError("backend is None!")
+
         return PubSubClient(await self.connect_backend(timeout), self.namespace)
 
 
