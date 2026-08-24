@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital Twin Service — dashboard</title>
+<!--
+  The standalone host for dt_dash.js.  Two ways to open it:
+
+  REPLAY (offline, no stack): open this file directly (file://) or from any
+  static server.  The bundled sample recording, dt_sample.js, plays on load
+  and loops; drop another recording onto the canvas to replay that instead.
+
+  LIVE: open it from the broker itself, at
+      https://<broker>/broker/dt/ui
+  and it connects same-origin.  That path matters: the gateway's CORS
+  allow-list holds a handful of localhost origins only, and the
+  `orbit_broker_token` cookie the EventSource rides is SameSite=Strict --
+  so a page served from anywhere else cannot reach a live broker even with
+  the right token.  Same-origin has neither problem.
+
+  The broker's certificate is self-signed: visit https://<broker>/ once and
+  accept it (that page is also where the token is entered, which mints the
+  cookie this page then reuses).
+
+  Query parameters, all optional:
+      ?live=1                 connect on load instead of replaying
+      &broker=https://host:p  broker origin ('' = same origin, the default)
+      &dt=/broker/dt          the dt plugin's proxy path
+      &token=<token>          POSTed to /auth once, to mint the cookie
+
+  Prefer the token *field* over `&token=`: a URL is remembered by the
+  browser's history, quoted in a Referer, and printed in access logs, and
+  the broker token is the whole trust domain.  The parameter is there for
+  a scripted local demo, not for a token anyone cares about.
+-->
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #050518;
+    color: #e0e6f0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 Roboto, sans-serif;
+    font-size: 13px;
+  }
+  #dash {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 10px;
+  }
+  #boot {
+    padding: 24px;
+    color: #e8a040;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+</style>
+</head>
+<body>
+<div id="dash"><div id="boot">dt_dash.js did not load — is it next to this page?</div></div>
+
+<!-- Classic scripts, deliberately: they load from file:// as well, which is
+     what lets the bundled recording self-demo without any server.
+
+     The `?v=` is a cache-buster, and it earns its keep: a browser keeps a
+     file:// script well past the edit that changed it, and a dashboard drawn
+     by an older dt_dash.js than the recording beside it is a bug report
+     nobody can reproduce.  Bump it with `VERSION` in dt_dash.js, which the
+     header draws -- if the two disagree, the page is stale.  The plugin
+     serves these by path and ignores the query, so the live host is
+     unaffected. -->
+<script src="dt_dash.js?v=0.5.0"></script>
+<script src="dt_sample.js?v=0.5.0"></script>
+<script>
+(() => {
+  const host = document.getElementById('dash');
+  if (!window.DTDash) return;
+  host.innerHTML = '';
+
+  const q = new URLSearchParams(location.search);
+
+  DTDash.mount(host, {
+    brokerUrl: q.get('broker') || '',
+    dtPath:    q.get('dt')     || '/broker/dt',
+    token:     q.get('token')  || '',
+    live:      q.get('live') === '1',
+    sample:    window.DT_SAMPLE || null,
+  });
+})();
+</script>
+</body>
+</html>

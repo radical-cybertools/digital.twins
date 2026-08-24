@@ -228,6 +228,188 @@ no filesystem with the service; `as_executable=False` sends them as
 cloudpickled function tasks instead (the component warns if it finds
 executable ones).  `test/10-learner/` is a complete worked example.
 
+### Watching it run: the dashboard
+
+`src/digitaltwin/service/ui/` holds a dependency-free canvas dashboard
+(one JS file, no build step) that draws the service as role lanes: the
+**client** with a sub-lane per session, the **sensors** below it, the
+**broker** with one card per twin -- short uuid, colour-coded state,
+namespace, stream-backend badge, and a convergence bar per learner metric
+-- and, grouped under an *HPC resources* frame, the **task** and
+**ex-situ endpoint** lanes where the twins' simulation tasks appear as
+tiles.  The lanes are roles, not hosts: a single-endpoint deployment
+still gets both endpoint lanes, and the ex-situ one is labelled
+`aliases task`.
+
+The sensors lane is observed, not declared: every `dt_stream` topic names
+a twin and a dtype, and only a twin's own persistent components publish,
+so one tile per `(twin, dtype)` *is* the set of sensors.  It sits outside
+the broker frame because that is where a reader looks for where data
+comes from, and it says `in the plugin host`, because in v1 that is where
+those components run.
+
+Three ways to open it, in increasing order of what they need:
+
+```sh
+# 1 - offline: replay the recording bundled in the repo, no stack at all
+xdg-open src/digitaltwin/service/ui/index.html
+
+# 2 - live, served by the broker itself (the only way live works -- see below)
+xdg-open https://<broker>/broker/dt/ui
+
+# 3 - live, inside the ORBIT Explorer: open https://<broker>/ and pick the
+#     'Digital Twins' plugin.  The plugin ships the page as its `ui_module`;
+#     nothing to install
+```
+
+**Live mode has to be same-origin with the broker.** The gateway's CORS
+allow-list holds a handful of `localhost` origins, and the
+`orbit_broker_token` cookie that the `EventSource` rides is
+`SameSite=Strict` -- so a page opened from anywhere else cannot reach a
+live broker even with the right token.  Served from the broker there is
+no cross-origin request at all.  The broker's certificate is self-signed:
+visit `https://<broker>/` once and accept it, which is also where the
+token is entered (that mints the cookie the dashboard then reuses).
+Everything else -- replaying a recording, loading one by drag-and-drop --
+works from `file://` with no server.
+
+The data layer treats live and replayed input identically: a stream of
+timestamped frames, either an `admin/sessions` poll at 1 Hz plus the
+gateway's SSE feed, or the same frames read back from a recording.  So
+`rec` captures the live stream to a JSON file, `load…` (or a drop on the
+canvas) replays one, and the play/pause and speed controls act on the
+data rather than on an animation.  The schema is documented at the top of
+`dt_dash.js` and checked by `test/unit/test_ui_recording.py`.
+
+One thing the picture makes obvious once it is drawn: **the runtime never
+publishes a component's answer**.  An inference result goes to the next
+component on that dtype over an in-process queue, and is dropped if
+nothing is registered there.  For anything outside the service to see a
+result, a component has to publish it (`EchoSink` in the demos does
+exactly that, which is why the sensors lane shows a twin's results as
+well as its readings), and the client then subscribes to the twin's
+stream with the `PubSubConfig` the twin reports.  A client's own
+`get_inference` is the other path, and the only one that answers the
+caller directly.
+
+The bundled recording was captured against a **`DT_STREAM_BACKEND=orbit`**
+deployment, so it carries the twins' own stream traffic (~300 events, two
+dtypes) and the pulses that are drawn from it.  **A live dashboard will
+not show those pulses yet, and this is an upstream gap, not a bug here**:
+`Gateway._sse_frame` in radical.orbit is a bare `json.dumps`, a DT stream
+payload is `bytes`, and every one of those events is therefore dropped
+with `TypeError: Object of type bytes is not JSON serializable` (the
+broker logs one `tap callback failed` per event -- 292 of them in a 45 s
+run).  Adding a `default=` to that one call is enough; with it the events
+flow and the pulses appear, which is how the bundled capture was taken.
+Everything else in the dashboard works against an unpatched broker.
+
+Four things the dashboard reads that nothing else needed.  `twin_list`
+and `admin/sessions` now carry a per-twin `metrics` dict -- a filtered,
+read-only view of a learner's per-window criterion (`value`, `threshold`,
+`operator`, `should_stop`, window count and a bounded history), never the
+model itself -- a per-twin `calls` count per verb, a per-twin `tasks` list
+of the uids that twin most recently submitted, and a per-session
+`endpoints` map naming the hardware behind each engine role.
+
+**Most of what an arc says is inferred**, because in v1 almost nothing on
+the wire announces it -- the exception is the task arcs, which are now
+joined on a uid the service records -- and the drawing says which is which:
+
+- a solid arc **client to broker** is a `create`, and back a `destroy`:
+  a twin that appeared in this poll and was not in the last one, or the
+  reverse;
+- a dim dashed arc **broker to a session sub-lane** is a state
+  *transition* seen between two polls (`initializing`, `ready`,
+  `running`, `failed`, `stopped`).  Nothing is pushed to a client in v1 --
+  the arc stands for the `twin_list` response that would carry the new
+  state, which is also what the tick on each session card marks, once per
+  poll;
+- a green hop **sensor tile to twin card** is one stream message.  Green
+  is the data plane's colour and only the stream pulses in it: the hop
+  back out of an endpoint lane is violet, the colour the deck gives the
+  AsyncFlow engine a task result returns through (red when it failed);
+- an arc **session sub-lane to twin card** is one client call that was
+  answered.  `get_inference` is amber, the request a client is actually
+  waiting on, and so is the answer that comes back to it; the other verbs
+  are cyan and carry no answer arc, because what they return is a state
+  nobody waits for.  The service counts the verbs it answered per twin
+  (`calls` in the twin summary) and the arcs are drawn from the difference
+  between two polls, so what you see is completed round trips, never a
+  call in flight;
+- an arc **into an endpoint lane** is a task, and it leaves the card of the
+  twin that submitted it -- low on that card's centre line (`CARD_ANCHOR`),
+  because a point inside the card belongs to exactly one of them while an
+  edge is shared with whatever sits next to it, and low is where a curve
+  bowing downward is out from under the card at once.  The card grid is
+  top-aligned in its lane, so those curves bow into the space below it
+  rather than across the cards between their ends.  That is known rather than guessed, and it took
+  the service to know it: a `task_status` notification carries a uid and an
+  endpoint and nothing else, so ownership is recorded where the submission
+  happens.  asyncflow assigns each task a uid (`task.NNNNNN`) in the
+  component description and rhapsody's backend keeps it, which is the same
+  uid the notification carries -- so the twin remembers the uids it
+  submitted (`DTRuntime.note_task`, a ring of the newest `TASK_UID_RING`),
+  `twin_list` carries them as `tasks`, and the dashboard joins on them.
+  Two paths reach that ring: the runtime records the future it is about to
+  await, and -- because a real inference task is usually a plain coroutine
+  that awaits a flow task the runtime never sees -- the engine's own
+  component registration is wrapped, with the owning twin carried in a
+  `ContextVar` that asyncio copies into every task underneath.  ROSE's
+  ex-situ tasks are the third case: `Learner._register_task` is wrapped per
+  instance in `StreamingLearnerInvestigator.main_loop`, where the runtime is
+  in hand, so training, active learning and the criterion are the twin's too
+  without ROSE changing.
+
+  A notification beats the 1 Hz poll that explains it, so a task's arcs wait
+  up to `OWNER_WAIT` for the join and only then leave the broker lane's
+  edge, which claims nothing.  A failed or closed twin keeps the arcs it
+  really did submit -- its card is on the canvas for a while yet, and the
+  truth is better than tidiness.  The endpoint no longer picks the lane by
+  itself either: the role is a per-session answer (one endpoint can be one
+  session's task engine and another's ex-situ engine), and an endpoint no
+  session of ours declared is another deployment's, so its tasks are drawn
+  on neither lane.  No arc ever leaves the client lane: no task is
+  submitted from there.
+
+A twin that leaves `twin_list` keeps its card for nine seconds, dimmed,
+with the last state pill the service reported and a `closed` mark, then
+fades.  The `destroy` arc still fires when it goes; the card is what is
+left to read afterwards, and a run that ends by closing its twins used to
+erase the evidence a second later.  A lingering card yields its grid slot
+to a live twin if the lane runs out of room, and it keeps the arcs of the
+tasks it submitted while it was alive.
+
+`get_inference` and the ex-situ lane, since the pairing invites the wrong
+conclusion.  A probe is answered by running the investigator's inference
+task on the **task** engine; the ex-situ engine only ever receives
+training windows.  In the bundled 56 s capture the service counted 24
+`get_inference` round trips, and every one of the 17 poll windows that
+held a probe also held new task-endpoint tasks -- but it held five to
+seven of them, because the twin's streaming pipeline is submitting there
+continuously, and a `task_status` carries no verb to tell them apart.  So
+the task lane shows a dim amber `inference` pill for the beat in which a
+probe was served: the *when*, on the lane that could have run it, and no
+claim about which tile it was.  Ex-situ traffic in that capture ran at
+2.25 tasks per probe and also in windows with no probe at all, which is
+what training windows look like.
+
+If the dashboard does not look like this, check the version the header
+draws next to the stream pill against `VERSION` in `dt_dash.js`.  A
+browser keeps a `file://` script well past the edit that changed it (hence
+the `?v=` on the page's script tags), and the copy the broker serves is
+the *installed* one -- as new as the last `pip install .`, no newer.  An
+older build attributed nothing: every task arc left the broker frame's
+right edge, which is the symptom to recognise.
+
+The Explorer integration is broker-hosted only.  ORBIT reads `ui_module`
+in `BrokerPluginHost.get_ui_modules()` and nowhere else, so an
+endpoint-hosted `dt` plugin gets the declarative `ui_config` tile and no
+dashboard page; `{namespace}/ui` still serves it directly.  The gateway
+also caches a plugin's JS for the life of the broker process, so editing
+`dt_explorer.js` needs a restart -- `{namespace}/ui/dt_dash.js`, which
+the plugin serves itself, does not.
+
 ### When an endpoint disappears (R8)
 
 `OrbitExecutionBackend` does not reconnect and components bind their

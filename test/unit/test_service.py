@@ -16,9 +16,9 @@ pytest.importorskip("radical.orbit")
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from digitaltwin.components import UtilityTask  # noqa: E402
+from digitaltwin.components import TRUTHY, DataType, UtilityTask  # noqa: E402
 from digitaltwin.runtime import DTRuntime  # noqa: E402
-from digitaltwin.service.plugin import PluginDT  # noqa: E402
+from digitaltwin.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
 from digitaltwin.service.session import DTSession, TwinInstance  # noqa: E402
 from digitaltwin.service.wire import (  # noqa: E402
     MAX_PAYLOAD,
@@ -642,3 +642,141 @@ async def test_shutdown_stops_the_broker_and_the_supervisor(plugin):
     assert not broker.is_alive()
     assert supervisor.done()
     assert plugin._stream_broker is None
+
+
+# ---------------------------------------------------------------------------
+# the observation surface the dashboard reads
+# ---------------------------------------------------------------------------
+
+class _Metered(UtilityTask):
+    """A component reporting a convergence metric, the way a
+    `StreamingLearnerInvestigator` does -- duck-typed, so this needs no
+    ROSE."""
+
+    metrics = {"rmse": {"value": 0.4, "threshold": 0.25, "operator": "<",
+                        "should_stop": False, "windows": 3,
+                        "history": [0.9, 0.6, 0.4]}}
+
+
+async def test_a_twin_summary_carries_its_metrics():
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    twin.runtime.add_task(_Metered(_FakeFlow()), TRUTHY, DataType("x"))
+
+    summary = twin.summary()
+
+    assert summary["metrics"]["rmse"]["value"] == 0.4
+    assert summary["metrics"]["rmse"]["component"] == "_Metered"
+
+    await twin.close()
+    # a closed twin has no graph left to ask
+    assert twin.summary()["metrics"] == {}
+
+
+async def test_a_twin_counts_the_verbs_it_answered():
+    """The only trace a synchronous verb leaves: what the dashboard's
+    client-ward arcs are inferred from."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+
+    assert twin.summary()["calls"] == {}
+
+    for _ in range(3):
+        await session.twin_call("t1", "describe", stamp=version_stamp())
+
+    assert twin.summary()["calls"] == {"describe": 3}
+
+    await twin.close()
+
+
+async def test_a_verb_that_failed_is_not_counted():
+    """A round trip that was never answered is not one."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    await twin.runtime.stop()
+
+    with pytest.raises(HTTPException) as raised:
+        await session.twin_call("t1", "start", stamp=version_stamp())
+
+    assert raised.value.status_code == 409
+    assert "start" not in twin.summary()["calls"]
+
+    await twin.close()
+
+
+async def test_the_session_summary_names_the_engine_endpoints():
+    """The dashboard draws one lane per engine *role*; `None` for
+    `'exsitu'` is the documented alias of `'task'`, not an omission."""
+
+    single = DTSession("s1", _dual(task="ep1"))
+    assert single.summary()["endpoints"] == {"task": "ep1", "exsitu": None}
+
+    dual = DTSession("s2", _dual(task="ep1", exsitu="hpc1"))
+    assert dual.summary()["endpoints"] == {"task": "ep1", "exsitu": "hpc1"}
+
+
+def test_admin_sessions_carries_endpoints_and_metrics(client):
+    sid = client.post("/dt/register_session",
+                      json={"config": _dual(task="ep1")}).json()["sid"]
+    entry = next(s for s in client.get("/dt/admin/sessions").json()["sessions"]
+                 if s["sid"] == sid)
+
+    assert entry["endpoints"] == {"task": "ep1", "exsitu": None}
+
+
+# ---------------------------------------------------------------------------
+# the dashboard's assets
+# ---------------------------------------------------------------------------
+
+def test_the_ui_route_serves_the_standalone_page(client):
+    """Served by the plugin so a browser can reach a live broker
+    same-origin: the gateway's CORS allow-list and the SameSite=Strict
+    auth cookie rule out every other origin."""
+
+    resp = client.get("/dt/ui")
+
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("text/html")
+    assert "dt_dash.js" in resp.text
+
+
+@pytest.mark.parametrize("asset", ["dt_dash.js", "dt_sample.js",
+                                   "dt_explorer.js"])
+def test_the_ui_assets_are_served_as_javascript(client, asset):
+    resp = client.get(f"/dt/ui/{asset}")
+
+    assert resp.status_code == 200
+    assert "javascript" in resp.headers["content-type"]
+
+
+@pytest.mark.parametrize("asset", [
+    "passwd", "plugin.py", ".env",
+    # a percent-encoded separator survives the route's `[^/]+` segment, so
+    # the allow-list is what has to refuse it -- not the router
+    "..%2f..%2fplugin.py", "%2e%2e%2f%2e%2e%2fplugin.py",
+    "dt_dash.js%00.png",
+])
+def test_an_unlisted_ui_asset_is_404(client, asset):
+    """An allow-list, not a directory walk: the asset name comes from the
+    client."""
+
+    resp = client.get(f"/dt/ui/{asset}")
+
+    assert resp.status_code == 404
+    assert "plugin" not in resp.text or "no such asset" in resp.text
+
+
+def test_the_explorer_module_is_the_one_the_plugin_declares():
+    """ORBIT reads `ui_module` off the class and serves its content at
+    `/plugins/dt.js` -- so the path has to exist in the installed
+    package."""
+
+    from pathlib import Path
+
+    module = Path(PluginDT.ui_module)
+
+    assert module.is_file()
+    assert module.name in UI_ASSETS
+    assert "window.DTDash.mount" in module.read_text()

@@ -48,6 +48,11 @@ dt = "digitaltwin.service.plugin:PluginDT"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+# the dashboard: the Explorer reads `ui_module` off the installed package,
+# and the plugin serves the rest from `{namespace}/ui`
+[tool.setuptools.package-data]
+"digitaltwin.service" = ["ui/*.html", "ui/*.js"]
+
 [tool.pytest.ini_options]
 testpaths = ["test/unit", "test/integration"]
 asyncio_mode = "auto"

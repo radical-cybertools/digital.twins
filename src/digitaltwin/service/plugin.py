@@ -29,12 +29,14 @@ import logging
 import os
 import time
 
+from pathlib import Path
 from typing import Any, Optional
 
 from fastapi import FastAPI
 from radical.orbit.errors import http_exception
 from radical.orbit.plugin_base import Plugin
 from starlette.requests import Request
+from starlette.responses import Response
 
 from ..config import (
     BACKEND_ORBIT,
@@ -59,6 +61,22 @@ ROUTE_TWIN_LIST = "twin_list/{sid}"
 ROUTE_TWIN_CLOSE = "twin_close/{sid}/{twin_id}"
 ROUTE_TWIN_CALL = "twin_call/{sid}/{twin_id}"
 ROUTE_ADMIN_SESSIONS = "admin/sessions"
+ROUTE_UI = "ui"
+ROUTE_UI_ASSET = "ui/{asset}"
+
+# The dashboard.  `dt_explorer.js` is the ORBIT Explorer's UI module (see
+# `ui_module`); `index.html` is the standalone host, which the plugin
+# serves so that a browser can reach a live broker *same-origin* -- the
+# gateway's CORS allow-list and the `SameSite=Strict` auth cookie rule out
+# every other origin.  An allow-list, not a directory walk: `{asset}` is a
+# client-supplied path segment.
+UI_DIR = Path(__file__).parent / "ui"
+UI_ASSETS = {
+    "index.html": "text/html; charset=utf-8",
+    "dt_dash.js": "application/javascript",
+    "dt_sample.js": "application/javascript",
+    "dt_explorer.js": "application/javascript",
+}
 
 # how often the supervisor checks that the stream broker is still alive
 BROKER_WATCH_INTERVAL = 5.0
@@ -77,6 +95,7 @@ class PluginDT(Plugin):
     - POST `/dt/twin_close/{sid}/{twin_id}`  -- stop and forget one twin
     - POST `/dt/twin_call/{sid}/{twin_id}`   -- exactly one graph verb
     - GET  `/dt/admin/sessions`              -- every session, twin and error
+    - GET  `/dt/ui`, `/dt/ui/{asset}`        -- the live dashboard
 
     Every call is short except `get_inference`.  No notifications, no
     request ids: `twin_list` polling is the observation mechanism.
@@ -92,6 +111,14 @@ class PluginDT(Plugin):
         "title": "Digital Twins",
         "description": "Host long-running digital twins (in-situ inference).",
     }
+
+    # The Explorer's per-plugin JS module, served by the gateway at
+    # `/plugins/dt.js`.  Honoured for broker-hosted plugins only
+    # (`BrokerPluginHost.get_ui_modules` is its single reader), which is
+    # this plugin's default deployment; endpoint-hosted, the Explorer falls
+    # back on `ui_config` above and the dashboard is reached at
+    # `{namespace}/ui` instead.
+    ui_module = str(UI_DIR / "dt_explorer.js")
 
     def __init__(self, app: FastAPI, instance_name: str = "dt"):
         super().__init__(app, instance_name)
@@ -115,6 +142,16 @@ class PluginDT(Plugin):
         self.add_route_post(ROUTE_TWIN_CLOSE, self.twin_close)
         self.add_route_post(ROUTE_TWIN_CALL, self.twin_call)
         self.add_route_get(ROUTE_ADMIN_SESSIONS, self.admin_sessions)
+        self.add_route_get(ROUTE_UI, self.ui_index)
+        self.add_route_get(ROUTE_UI_ASSET, self.ui_asset)
+
+        # the page references its script relative to itself, and a browser
+        # at `{namespace}/ui` (no trailing slash) resolves that against the
+        # *parent* -- so the assets answer there as well, and both spellings
+        # of the page work
+        for asset in UI_ASSETS:
+            if asset != "index.html":
+                self.add_route_get(asset, self._root_asset(asset))
 
     # -- session policy -----------------------------------------------------
 
@@ -276,6 +313,58 @@ class PluginDT(Plugin):
             sessions.append(entry)
 
         return {"sessions": sessions, "stream_broker": self.stream_summary()}
+
+    # -- the dashboard ------------------------------------------------------
+
+    async def ui_index(self, request: Request) -> Response:
+        """The standalone dashboard page, same-origin with the broker."""
+
+        return self._ui_asset("index.html")
+
+    async def ui_asset(self, request: Request) -> Response:
+        """One dashboard asset, from the allow-list."""
+
+        return self._ui_asset(request.path_params["asset"])
+
+    def _root_asset(self, asset: str):
+        """The same assets, next to `ui` instead of under it (see routes).
+
+        The name is bound per route: the broker-hosted dispatch hands a
+        request shim, so the handler must not introspect the request.
+        """
+
+        async def handler(request: Request) -> Response:
+            return self._ui_asset(asset)
+
+        return handler
+
+    @staticmethod
+    def _ui_asset(asset: str) -> Response:
+        """A `Response`, not a dict -- which every dispatch path handles.
+
+        Checked, because it is the only route in this plugin that does not
+        return JSON: all three normalize on `status_code` and forward the
+        raw body.  `Plugin._wrap_handler` for the ASGI/Explorer path,
+        `BrokerPluginHost.handle_request` for a broker-hosted call
+        (`Broker._dispatch_to_host` then packs `bytes(result.body)` into
+        the wire response), and `EndpointRuntime._dispatch_served` for an
+        endpoint-hosted one.
+        """
+
+        media = UI_ASSETS.get(asset)
+        if media is None:
+            raise http_exception(FileNotFoundError(f"no such asset: {asset}"))
+
+        try:
+            body = (UI_DIR / asset).read_bytes()
+        except OSError as exc:
+            raise http_exception(FileNotFoundError(str(exc))) from exc
+
+        # read per request rather than cached: these are a handful of KiB,
+        # asked for once per page load, and editing one should not need a
+        # broker restart (the gateway's own `ui_module` cache does)
+        return Response(body, media_type=media,
+                        headers={"cache-control": "no-store"})
 
     # -- observability ------------------------------------------------------
 

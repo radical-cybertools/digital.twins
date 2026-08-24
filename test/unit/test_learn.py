@@ -8,6 +8,7 @@ import asyncio
 import logging
 
 from concurrent.futures import ThreadPoolExecutor
+from types import SimpleNamespace
 
 import pytest
 
@@ -24,7 +25,11 @@ from digitaltwin import (  # noqa: E402
     TypedData,
     UtilityTask,
 )
-from digitaltwin.learn import StreamingLearnerInvestigator  # noqa: E402
+from digitaltwin.learn import (  # noqa: E402
+    METRIC_HISTORY,
+    StreamingLearnerInvestigator,
+    _number,
+)
 
 X = DataType("x")
 Y = DataType("y")
@@ -168,6 +173,111 @@ async def test_the_learner_uses_the_engine_it_was_given(flow, engines):
     assert learner.learn_flow is exsitu
     assert learner.learner.asyncflow is exsitu
     assert learner.flow is flow
+
+
+async def test_the_criterion_state_shows_up_in_the_twins_metrics(
+        flow, stream_clients):
+    """Per window, the learner mirrors its criterion into `metrics`, and
+    the runtime collects it for `twin_list` -- the only observation
+    mechanism v1 has, so convergence has to ride on it."""
+
+    runtime, learner = await _twin(flow, await stream_clients("twin-metrics"))
+
+    try:
+        await _await_learned(runtime)
+
+        assert learner.windows >= 1
+        metric = learner.metrics["fit_error"]
+
+        assert metric["threshold"] == 1e-6
+        assert metric["operator"] == "<"
+        assert metric["should_stop"] is True
+        assert metric["windows"] == learner.windows
+        assert metric["history"][-1] == metric["value"]
+        # filtered: the model itself never travels in a metric
+        assert set(metric) == {"value", "threshold", "operator",
+                               "should_stop", "windows", "history"}
+
+        collected = runtime.metrics()
+        assert collected["fit_error"]["component"] == "LinearLearner"
+        assert collected["fit_error"]["value"] == metric["value"]
+
+    finally:
+        await runtime.stop()
+
+
+@pytest.mark.parametrize("value, expected", [
+    # significant figures, not decimal places: a 1e-8 criterion threshold
+    # is an ordinary target, and decimal rounding would wire it as 0.0
+    (1e-8, 1e-8),
+    (2.5e-11, 2.5e-11),
+    (0.12345678901, 0.123457),
+    (1234567.0, 1234570.0),
+    (0.0, 0.0),
+    (7, 7.0),
+    # not numbers, or not JSON-safe
+    (True, None),
+    (False, None),
+    (None, None),
+    ("0.5", None),
+    (float("inf"), None),
+    (float("nan"), None),
+])
+def test_a_metric_number_keeps_its_magnitude(value, expected):
+    assert _number(value) == expected
+
+
+def test_a_tiny_threshold_survives_the_wire(flow):
+    """The whole point of `metrics`: what the dashboard draws as the target
+    tick has to be the target the learner is comparing against."""
+
+    class Tiny(LinearLearner):
+        def __init__(self, flow, learn_flow=None):
+            super().__init__(flow, learn_flow)
+
+            @self.learner.as_stop_criterion(
+                metric_name="fit_error", threshold=1e-8, operator="<",
+                as_executable=False)
+            async def criterion(*args):
+                return 3e-9
+
+    learner = Tiny(flow)
+    learner._record_metrics(SimpleNamespace(
+        iteration=0, metric_name="fit_error", metric_value=3.14159e-9,
+        metric_threshold=1e-8, metric_history=[2e-8, 3.14159e-9],
+        should_stop=True))
+
+    metric = learner.metrics["fit_error"]
+
+    assert metric["threshold"] == 1e-8
+    assert metric["value"] == 3.14159e-9
+    assert metric["history"] == [2e-8, 3.14159e-9]
+
+
+def test_the_metric_history_is_bounded(flow):
+    """A days-long twin accumulates one value per window forever; only the
+    tail the sparkline draws travels."""
+
+    learner = LinearLearner(flow)
+    learner._record_metrics(SimpleNamespace(
+        iteration=99, metric_name="fit_error", metric_value=1.0,
+        metric_threshold=1.0, metric_history=list(range(1, 200)),
+        should_stop=False))
+
+    history = learner.metrics["fit_error"]["history"]
+
+    assert len(history) == METRIC_HISTORY
+    assert history[-1] == 199.0
+
+
+async def test_a_twin_without_a_learner_reports_no_metrics(flow,
+                                                           stream_clients):
+    runtime = DTRuntime(flow, await stream_clients("twin-nometrics"))
+    runtime.add_task(Counter(flow), TRUTHY, X, is_persistent=True)
+
+    assert runtime.metrics() == {}
+
+    await runtime.stop()
 
 
 async def test_an_absent_exsitu_engine_falls_back_to_the_twins(flow):

@@ -28,6 +28,7 @@ import contextlib
 import json
 import logging
 import multiprocessing
+import uuid
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -868,7 +869,16 @@ class PubSubConfig:
             # extra, and a plain ZMQ install must not need it
             from .streaming_orbit import OrbitPubSubBackend
 
-            backend = OrbitPubSubBackend(self.broker_url)
+            # named after the twin it serves, so a topology view can match
+            # the participant to a dashboard card.  A short random suffix
+            # keeps two clients on one namespace apart (the twin's own,
+            # plus any consumer which opened the twin's config).
+            name = None
+            if self.namespace:
+                name = (f"dt_stream.{self.namespace.split('-')[0]}"
+                        f".{uuid.uuid4().hex[:4]}")
+
+            backend = OrbitPubSubBackend(self.broker_url, name=name)
 
         elif self.kind == ZMQ_PS_Client.kind:
             backend = ZMQ_PS_Client(self.pub_addr, self.sub_addr)

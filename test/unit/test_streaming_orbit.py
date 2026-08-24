@@ -154,7 +154,7 @@ async def orbit_backends(loopback, monkeypatch):
 
     monkeypatch.setattr(
         "digitaltwin.streaming_orbit.EndpointRuntime",
-        lambda broker_url=None, name=None: loopback.runtime(name),
+        lambda broker_url=None, name=None, **kw: loopback.runtime(name),
     )
 
     backends = []
@@ -464,7 +464,7 @@ async def test_a_runtime_which_cannot_register_is_not_left_behind(
 
     made = []
 
-    def build(broker_url=None, name=None):
+    def build(broker_url=None, name=None, **kw):
         runtime = loopback.runtime(name, registers=False)
         made.append(runtime)
         return runtime

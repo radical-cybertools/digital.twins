@@ -51,6 +51,7 @@ package imports it.
 import asyncio
 import contextlib
 import logging
+import math
 
 from typing import Any, Callable, Optional
 
@@ -58,7 +59,7 @@ from radical.asyncflow import WorkflowEngine  # type: ignore
 from rose.al.streaming_learner import StreamingActiveLearner  # type: ignore
 
 from .components import ModelInvestigator, TypedData
-from .runtime import RuntimeAPI
+from .runtime import RuntimeAPI, hook_engine, note_flow_task
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,30 @@ LEARNER_TASKS = ("training", "active_learn", "criterion")
 
 # ROSE's own per-window bookkeeping -- state, but not model parameters
 _ROSE_STATE_KEYS = ("window_size",)
+
+# how much of the criterion's metric history travels in `metrics`.  A
+# days-long twin accumulates one value per window forever; the dashboard
+# only ever draws a sparkline of the recent tail, and it keeps 24 points
+# (`SPARK_MAX` in `service/ui/dt_dash.js`) -- so sending more is paying
+# for something nothing reads.
+METRIC_HISTORY = 24
+
+
+def _number(value: Any) -> Optional[float]:
+    """A JSON-safe float, or `None` -- a criterion may not have run yet.
+
+    Six *significant* figures, not six decimal places: a criterion
+    threshold of 1e-8 is an ordinary target, and rounding it by decimals
+    would put 0.0 on the wire.  Infinities and NaN are dropped rather
+    than emitted, because neither survives JSON.
+    """
+
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+
+    number = float(f"{value:.6g}")
+
+    return number if math.isfinite(number) else None
 
 
 class StreamingLearnerInvestigator(ModelInvestigator):
@@ -112,6 +137,13 @@ class StreamingLearnerInvestigator(ModelInvestigator):
 
         # set by the subclass; the in-situ half of the pair
         self.inference_task: Optional[Callable] = None
+
+        # Read-only observation surface, refreshed once per window and
+        # carried by `twin_list` (see `_record_metrics`).  Nothing in the
+        # framework reads these -- they exist so an operator can see a
+        # learner converging without a second channel.
+        self.metrics: dict = {}
+        self.windows: int = 0
 
         self._started = False
         self._finished = asyncio.Event()
@@ -169,6 +201,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
             )
 
         self._warn_local_learner_tasks()
+        self._own_learner_tasks(runtime)
 
         runtime.set_inference_task(self.inference_task)
         runtime.subscribe_to_topic(RuntimeAPI.ON_INPUT, self._feed)
@@ -184,12 +217,82 @@ class StreamingLearnerInvestigator(ModelInvestigator):
 
         try:
             async for state in self.learner.start():
+                self._record_metrics(state)
                 self.on_window(state)
 
         finally:
             # the failure path too: no learner outlives its twin
             self.learner.stop()
             self._finished.set()
+
+    def _own_learner_tasks(self, runtime: RuntimeAPI) -> None:
+        """Record the ex-situ tasks as this twin's, as ROSE submits them.
+
+        Every training / active-learning / criterion task goes out through
+        `Learner._register_task`, which returns the asyncflow future -- so an
+        instance-attribute wrapper here sees all three without ROSE knowing.
+        The engine is hooked as well, because the uid is minted a tick after
+        the future is handed back; the wrapper's own reading catches the case
+        where the hook cannot (an engine ROSE replaced), and both write to the
+        same bounded ring, which ignores a uid it already has.
+
+        Best-effort by construction: a ROSE that stops routing through
+        `_register_task` loses the attribution, not the learning.
+        """
+
+        owner = getattr(runtime, "_runtime", None)
+        if owner is None:
+            return
+
+        hook_engine(self.learn_flow, owner)
+
+        inner = getattr(self.learner, "_register_task", None)
+        if inner is None or getattr(self.learner, "_dt_owned", False):
+            return
+
+        def registered(*args, **kwargs):
+            future = inner(*args, **kwargs)
+            try:
+                note_flow_task(future, owner)
+            except Exception as exc:
+                logger.debug("learner uid capture failed: %s", exc)
+
+            return future
+
+        self.learner._register_task = registered
+        self.learner._dt_owned = True
+
+    def _record_metrics(self, state: Any) -> None:
+        """Mirror the window's criterion state into `self.metrics`.
+
+        A filtered, JSON-safe view -- the value, the target it is compared
+        against, the operator doing the comparing and whether this window
+        met it -- and never the model, which can be megabytes.  This is
+        what `twin_list` and `admin/sessions` carry per twin.
+        """
+
+        self.windows = state.iteration + 1
+        name = state.metric_name
+        if not name:
+            return
+
+        window = (state.metric_history or [])[-METRIC_HISTORY:]
+        history = [value for value in map(_number, window)
+                   if value is not None]
+
+        self.metrics = {
+            name: {
+                "value": _number(state.metric_value),
+                "threshold": _number(state.metric_threshold),
+                # '' for a standard metric, whose operator ROSE knows
+                # itself; the consumer then falls back on `should_stop`
+                "operator": (self.learner.criterion_function
+                             or {}).get("operator") or None,
+                "should_stop": bool(state.should_stop),
+                "windows": self.windows,
+                "history": history,
+            }
+        }
 
     async def _feed(self, in_data: TypedData) -> None:
         """`ON_INPUT`: everything the twin sees also feeds the learner."""
