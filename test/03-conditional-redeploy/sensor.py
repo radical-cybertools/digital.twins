@@ -4,6 +4,8 @@ import sys
 
 from radical.asyncflow import WorkflowEngine
 from digitaltwin.components import UtilityTask
+from digitaltwin.runtime import RuntimeAPI
+from digitaltwin.streaming import PubSubClient, PubSubConfig
 from dtypes import *
 import random
 
@@ -17,9 +19,16 @@ class MySensor(UtilityTask):
         super().__init__(flow)
         self.flow = flow
 
-    async def main_loop(self, runtime, in_data):
-        while True:
-            await asyncio.sleep(1)
-            val = random.random()
-            print(f"Sensor val: {val}")
-            await runtime.stream.publish(SENSOR_DTYPE, val)
+        @self.flow.function_task
+        async def test(ps_config: PubSubConfig):
+            ps = await ps_config.connect()
+            for i in range(30):
+                val = random.random()
+                print(f"Sensor val: {val} - {i}")
+                await ps.publish(SENSOR_DTYPE, val)
+                await asyncio.sleep(1)
+
+        self.task = test
+
+    async def main_loop(self, runtime: RuntimeAPI, in_data):
+        await self.task(runtime.stream_config)

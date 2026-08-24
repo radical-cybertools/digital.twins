@@ -1,6 +1,6 @@
 # Experimental Digital Twin Framework
 
-Currently implemented:
+Main set of features implemented:
 - Model Investigator
 - Utility Tasks
 - Persistent Tasks
@@ -12,17 +12,15 @@ Currently implemented:
 - Science Agents
 - Request inference API on runtime
 - Barrier
+- Split
+- Join
+- Shared SIM / subtasks running on agent, accessible by all investigators
 - Ex-situ learning (ROSE streaming learner on a second engine)
 
 Not yet implemented:
-- Split
-- Join
-- Repo cleanup
-- - Check async defs if async is needed
-- - Nice task cleanup 
-- - Commenting
-- - Docs
-- - Type Annotation 
+- Barrier working on remote
+- Split working on remote
+- Join working on remote
 
 ## Running the unit tests:
 

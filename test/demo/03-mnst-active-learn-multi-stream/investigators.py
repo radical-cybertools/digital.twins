@@ -15,6 +15,10 @@ from al.sim import do_simulation
 from al.train import do_train
 from al.active import do_active
 
+from al_fashion.sim import do_simulation as f_do_simulation
+from al_fashion.train import do_train as f_do_train
+from al_fashion.active import do_active as f_do_active
+
 from dtypes import *
 import random
 
@@ -60,6 +64,7 @@ class HandwritingInvestigator(ModelInvestigator):
 
         async def pipeline(target_labels, version_start):
             # do sim
+            rng = np.random.default_rng(42)
             version = version_start
             while True:
                 sample, labels = await simulation(target_labels, 256)
@@ -152,18 +157,19 @@ class FashionInvestigator(ModelInvestigator):
 
         @self.acl.simulation_task(as_executable=False)
         async def simulation(*args):
-            return do_simulation(*args)
+            return f_do_simulation(*args)
 
         @self.acl.training_task(as_executable=False)
         async def training(*args):
-            return do_train(*args)
+            return f_do_train(*args)
 
         @self.acl.active_learn_task(as_executable=False)
         async def active_learn(*args):
-            return do_active(*args)
+            return f_do_active(*args)
 
         async def pipeline(target_labels, version_start):
             # do sim
+            rng = np.random.default_rng(42)
             version = version_start
             while True:
                 sample, labels = await simulation(target_labels, 256)
@@ -184,7 +190,7 @@ class FashionInvestigator(ModelInvestigator):
         @self.flow.function_task
         async def do_inference(in_data: TypedData, v_no=0):
             img = np.expand_dims(in_data.data["img"], axis=0)
-            model = tf.keras.models.load_model(f"al/mnist_model.v{v_no}.keras")
+            model = tf.keras.models.load_model(f"al_fashion/mnist_model.v{v_no}.keras")
             prediction = model.predict(img)
             p_label = np.argmax(prediction, axis=1)
 
