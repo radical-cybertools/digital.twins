@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.8.0';
+  const VERSION = '0.8.1';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -849,11 +849,47 @@
     const pane = el('div', 'dtd-twinpane');
     stage.appendChild(pane);
 
+    // non-scrolling companions: the all-twins toggle in the panel header,
+    // and two gradient cues that say "there is more" at either edge
+    const bar = el('div', 'dtd-panebar');
+    const allChip = el('span', 'dtd-chip');
+    bar.appendChild(allChip);
+    stage.appendChild(bar);
+    const fadeTop = el('div', 'dtd-fade dtd-fade-top');
+    const fadeBot = el('div', 'dtd-fade dtd-fade-bottom');
+    stage.appendChild(fadeTop);
+    stage.appendChild(fadeBot);
+
+    allChip.addEventListener('click', () => {
+      const w = lastWorld;
+      if (!w) return;
+      const ids = [...w.twins.keys()];
+      const anyOpen = ids.some(id => !collapsed.has(`dt:${id}`));
+      for (const id of ids) {
+        if (anyOpen) collapsed.add(`dt:${id}`);
+        else collapsed.delete(`dt:${id}`);
+      }
+      lastSig = null;
+    });
+
     let lastSig = null;
     let lastWorld = null;
     const cards = new Map();   // twin id -> card element
 
     pane.addEventListener('click', e => {
+      const act = e.target.closest('[data-action]');
+      if (act && pane.contains(act)) {
+        // per-twin: expand / collapse every agent of that twin at once
+        const id = act.getAttribute('data-action');
+        const keys = fakeAgents().map(a => `agent:${id}|${a.name}`);
+        const anyOpen = keys.some(k => !collapsed.has(k));
+        for (const k of keys) {
+          if (anyOpen) collapsed.add(k);
+          else collapsed.delete(k);
+        }
+        lastSig = null;
+        return;
+      }
       const hit = e.target.closest('[data-key]');
       if (!hit || !pane.contains(hit)) return;
       const key = hit.getAttribute('data-key');
@@ -946,6 +982,15 @@
                        `${closed ? '\u25b8' : '\u25be'} DT: ${short(tw.id)}`);
       title.title = tw.id;               // the full id, selectable via tooltip
       head.appendChild(title);
+      if (!closed) {
+        const keys = fakeAgents().map(a => `agent:${tw.id}|${a.name}`);
+        const anyOpen = keys.some(k => !collapsed.has(k));
+        const chip = el('span', 'dtd-chip dtd-mini',
+                        anyOpen ? 'agents \u25b8' : 'agents \u25be');
+        chip.title = anyOpen ? 'collapse all agents' : 'expand all agents';
+        chip.setAttribute('data-action', tw.id);
+        head.appendChild(chip);
+      }
       const pill = el('span', 'dtd-pill', state);
       pill.style.color = STATE_TEXT[state] || C.text_dim;
       pill.style.borderColor = STATE_TEXT[state] || C.text_dim;
@@ -1007,6 +1052,9 @@
         if (!seenTwins.has(tw.id)) {
           seenTwins.add(tw.id);
           collapsed.add(`dt:${tw.id}`);
+          for (const a of fakeAgents()) {
+            collapsed.add(`agent:${tw.id}|${a.name}`);
+          }
         }
         const card = twinCard(tw, w, tick);
         cards.set(tw.id, card);
@@ -1015,14 +1063,44 @@
       pane.scrollTop = scroll;           // no jumping, whatever changed
     }
 
-    function sync(w, rect) {
+    function sync(w, rect, headRect) {
       lastWorld = w;
-      if (!rect) { pane.style.display = 'none'; return; }
+      if (!rect) {
+        pane.style.display = 'none';
+        bar.style.display = 'none';
+        fadeTop.style.display = 'none';
+        fadeBot.style.display = 'none';
+        return;
+      }
       pane.style.display = '';
       pane.style.left   = `${rect.x}px`;
       pane.style.top    = `${rect.y}px`;
       pane.style.width  = `${rect.w}px`;
       pane.style.height = `${rect.h}px`;
+
+      if (headRect && w.twins.size) {
+        bar.style.display = '';
+        bar.style.left   = `${headRect.x}px`;
+        bar.style.top    = `${headRect.y}px`;
+        bar.style.width  = `${headRect.w}px`;
+        bar.style.height = `${headRect.h}px`;
+        const anyOpen = [...w.twins.keys()]
+          .some(id => !collapsed.has(`dt:${id}`));
+        allChip.textContent = anyOpen ? 'collapse all' : 'expand all';
+      } else bar.style.display = 'none';
+
+      // the cues only when there is actually more in that direction
+      const more = pane.scrollHeight - pane.clientHeight;
+      const below = more > 1 && pane.scrollTop < more - 1;
+      const above = more > 1 && pane.scrollTop > 1;
+      fadeBot.style.display = below ? '' : 'none';
+      fadeTop.style.display = above ? '' : 'none';
+      for (const [f, y] of [[fadeTop, rect.y],
+                            [fadeBot, rect.y + rect.h - 16]]) {
+        f.style.left  = `${rect.x}px`;
+        f.style.top   = `${y}px`;
+        f.style.width = `${rect.w}px`;
+      }
 
       const tick = Math.floor(w.t);
       const sig = signature(w, tick);
@@ -1064,7 +1142,9 @@
       }
     });
 
-    return { sync, destroy: () => pane.remove() };
+    return { sync, destroy: () => {
+      pane.remove(); bar.remove(); fadeTop.remove(); fadeBot.remove();
+    } };
   }
 
   // =========================================================================
@@ -1335,6 +1415,14 @@
       const x = e.clientX - r.left, y = e.clientY - r.top;
       for (const h of hits) {
         if (x >= h.x && x <= h.x + h.w && y >= h.y && y <= h.y + h.h) {
+          if (h.key.startsWith('link:')) {
+            // sibling plugin surfaces live next to ours on the broker:
+            // '/broker/dt' -> '/broker/<target>'
+            const base = (opts.dtPath || '/broker/dt')
+              .replace(/\/dt\/?$/, '/');
+            window.location.href = base + h.key.slice(5);
+            return;
+          }
           if (collapsed.has(h.key)) collapsed.delete(h.key);
           else collapsed.add(h.key);
           return;
@@ -1378,7 +1466,7 @@
       hits = [];
       const uiArg = { status, hover, probe, collapsed, seenTwins, hits };
       render(ctx, W, H, world, uiArg);
-      pane.sync(world, uiArg.twinPaneRect);
+      pane.sync(world, uiArg.twinPaneRect, uiArg.twinPaneHead);
       raf = requestAnimationFrame(frame);
     }
 
@@ -1427,7 +1515,7 @@
     drawHeader(ctx, L, w, ui);
     drawSensorLane(ctx, L, w);
     drawBrokerLane(ctx, L, w, ui);
-    drawHpcLanes(ctx, L, w);
+    drawHpcLanes(ctx, L, w, ui);
     drawFlights(ctx, L, w, ui);
     drawTooltip(ctx, L, w, ui);
   }
@@ -1820,6 +1908,9 @@
     // the placeholder, which shows through the pane while it is empty.
     ui.twinPaneRect = { x: r.x + pad, y: r.y + head,
                         w: r.w - 2 * pad, h: r.h - head - pad };
+    // the header band, for the pane's own controls (expand/collapse all)
+    ui.twinPaneHead = { x: r.x + pad, y: r.y + Math.round(5 * S),
+                        w: r.w - 2 * pad, h: head - Math.round(8 * S) };
 
     if (!w.twins.size) placeholder(ctx, r, 'no twins', S);
   }
@@ -1838,9 +1929,9 @@
   const POOL_STEP        = 0.5;    // bucket width, and the graph's tick
   const POOL_TABLE_ROWS  = 5;
 
-  function drawHpcLanes(ctx, L, w) {
+  function drawHpcLanes(ctx, L, w, ui) {
     const S = L.S;
-    panel(ctx, L.hpc, C.frame_border, 'Endpoint Pools', C.frame_label, S,
+    panel(ctx, L.hpc, C.frame_border, 'Resource Pools', C.frame_label, S,
           C.panel_deep);
 
     // Two pool cards, one per role.  Colour keeps them apart at a glance:
@@ -1850,11 +1941,11 @@
     // is a per-session answer and two sessions need not agree.
     drawEndpointLane(ctx, L.inference, 'Pool: inference',
                      w.endpoints.inference.join(', '), 'inference',
-                     w, S, C.cyan_dim, null);
+                     w, S, C.cyan_dim, null, ui);
     drawEndpointLane(ctx, L.learning, 'Pool: learning',
                      w.endpoints.learning.join(', '), 'learning', w, S,
                      C.amber_dim,
-                     w.endpoints.alias ? 'aliases inference' : null);
+                     w.endpoints.alias ? 'aliases inference' : null, ui);
   }
 
   // Tile geometry, shared by the renderer and the spawn arcs so a task
@@ -1879,8 +1970,20 @@
     };
   }
 
-  function drawEndpointLane(ctx, r, title, endpoint, lane, w, S, border, note) {
+  function drawEndpointLane(ctx, r, title, endpoint, lane, w, S, border, note,
+                            ui) {
     panel(ctx, r, border, title, C.frame_label, S);
+
+    // the pool title is a link: pools are the task dispatcher's, so the
+    // title leads to its surface (REST for now; its Explorer page when
+    // one exists).  `link:` hits navigate instead of toggling.
+    if (ui) {
+      ctx.font = `600 ${Math.round(10 * S)}px ${FONT}`;
+      const tw2 = ctx.measureText(title.toUpperCase()).width + 22 * S;
+      ui.hits.push({ key: 'link:task_dispatcher/pools',
+                     x: r.x, y: r.y, w: Math.min(tw2, r.w * 0.5),
+                     h: Math.round(24 * S) });
+    }
 
     // endpoint name (or 'aliases task' note) on the title row, right-aligned
     ctx.textAlign = 'right';
@@ -2528,6 +2631,24 @@
 .dtd-inv-model { font: 400 8.5px ${FONT_MONO}; color: ${C.text_dim}; }
 .dtd-inv-rmse { font: 400 8.5px ${FONT_MONO}; color: ${C.text_dim}; }
 .dtd-spark { display: block; width: 100%; height: 22px; margin-top: 2px; }
+.dtd-twinpane::-webkit-scrollbar { width: 6px; }
+.dtd-twinpane::-webkit-scrollbar-thumb { background: ${C.unused_brd};
+                                         border-radius: 3px; }
+.dtd-twinpane::-webkit-scrollbar-track { background: transparent; }
+.dtd-panebar { position: absolute; display: flex; align-items: center;
+               justify-content: flex-end; gap: 6px; pointer-events: none;
+               z-index: 3; }
+.dtd-chip { pointer-events: auto; font: 600 8.5px ${FONT};
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: ${C.text_dim}; background: #0e1626;
+            border: 1px solid ${C.unused_brd}; border-radius: 3px;
+            padding: 2px 7px; cursor: pointer; user-select: none; }
+.dtd-chip:hover { color: ${C.text}; border-color: ${C.frame_border}; }
+.dtd-chip.dtd-mini { font-size: 8px; padding: 1px 6px; }
+.dtd-fade { position: absolute; height: 16px; pointer-events: none;
+            z-index: 2; }
+.dtd-fade-top { background: linear-gradient(${C.bg}, transparent); }
+.dtd-fade-bottom { background: linear-gradient(transparent, ${C.bg}); }
 `;
 
   function injectCss() {
