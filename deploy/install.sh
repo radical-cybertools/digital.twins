@@ -26,11 +26,13 @@ REF="4b3defd30c9c9d2376fee2e728e4d106eae54447"   # feature/dtaas-viz, post devel
 
 # The radical dependencies must NOT come from naive PyPI resolution: PyPI's
 # rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit` (the
-# OrbitExecutionBackend the whole service runs on), and PyPI's asyncflow
-# 0.5.0 lacks the non-main-thread engine fix the broker-hosted plugin
-# needs.  These pins are the exact commits the verified laptop stack was
-# built from -- all pushed to public radical-cybertools repos.
-ASYNCFLOW="radical.asyncflow @ git+https://github.com/radical-cybertools/radical.asyncflow@d9f7ca084769a2b72845f069fa141c13177a0800"
+# OrbitExecutionBackend the whole service runs on).  These pins are the
+# exact commits the verified laptop stack was built from -- all pushed to
+# public radical-cybertools repos.
+
+# asyncflow: the 0.5.1 RELEASE carries the non-main-thread engine fix the
+# broker-hosted plugin needs (it contains d9f7ca0) -- PyPI is fine
+ASYNCFLOW="radical.asyncflow==0.5.1"
 # rhapsody's [telemetry] extra is required, not optional, at this commit:
 # the ORBIT plugin calls `session.start_telemetry()` whenever it exists, and
 # that path hard-imports opentelemetry -- an endpoint without it fails every
