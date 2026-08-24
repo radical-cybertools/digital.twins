@@ -137,7 +137,7 @@ radical-orbit-broker.py --plugins default,dt
 
 # 2 - a rhapsody endpoint: where the twins' tasks execute.  The notify
 #     window costs 250 ms on every sequential prediction at its default
-radical-orbit-endpoint.py -n dt_task_ep
+radical-orbit-endpoint.py -n dt_inference_ep
 #     ... started with:
 #     RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW=0
 #     RADICAL_ORBIT_RHAPSODY_BACKEND=concurrent
@@ -158,7 +158,7 @@ rt.start(wait=True)
 
 # 'broker' is the participant hosting dt; engine wiring is explicit
 dt = rt.get_plugin('broker', 'dt', config={
-    'engines': {'task': {'endpoint_name': 'dt_task_ep',
+    'engines': {'inference': {'endpoint_name': 'dt_inference_ep',
                          'backends': ['concurrent']}}})
 
 twin = dt.create_twin()                    # polls until the twin is ready
@@ -207,17 +207,18 @@ inference task runs with.
 
 That class is the *only* thing that selects an engine in v1 -- there is
 no `engine=` argument.  The service recognises it by subclass check and
-hands it two engines: its learner tasks run on `'exsitu'`, its inference
+hands it two role backends: its learner tasks carry the `'learning'`
+label, its inference
 stays on `'task'`.
 
 ```python
 dt = rt.get_plugin('broker', 'dt', config={'engines': {
-    'task':   {'endpoint_name': 'dt_task_ep',   'backends': ['concurrent']},
-    'exsitu': {'endpoint_name': 'dt_exsitu_ep', 'backends': ['concurrent']},
+    'inference': {'endpoint_name': 'dt_inference_ep', 'backends': ['concurrent']},
+    'learning':  {'endpoint_name': 'dt_learning_ep',  'backends': ['concurrent']},
 }})
 ```
 
-`'exsitu'` is optional: left out, it aliases `'task'` and one endpoint
+`'learning'` is optional: left out, it aliases `'inference'` and one endpoint
 serves both.  Both engines are session-shared and built once, in the
 background phase of `twin_create`.
 

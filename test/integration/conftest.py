@@ -7,7 +7,7 @@ Session-scoped fixtures bring up, on loopback:
   notification window at 0 (P2 -- otherwise every sequential task pays
   250 ms),
 - a second rhapsody endpoint standing in for remote HPC hardware, which
-  is where the `'exsitu'` engine sends learner tasks,
+  is where the `'learning'`-labeled learner tasks go,
 - a consumer runtime the tests get `DTClient`s from.
 
 Plus a *second, independent* stack on the next port whose `dt` plugin
@@ -56,8 +56,8 @@ BROKER_URL = f"https://{BROKER_HOST}:{BROKER_PORT}"
 ORBIT_BROKER_PORT = BROKER_PORT + 1
 ORBIT_BROKER_URL = f"https://{BROKER_HOST}:{ORBIT_BROKER_PORT}"
 
-TASK_ENDPOINT = "dt_test_task_ep"
-EXSITU_ENDPOINT = "dt_test_exsitu_ep"  # stands in for remote HPC hardware
+TASK_ENDPOINT = "dt_test_inference_ep"
+EXSITU_ENDPOINT = "dt_test_learning_ep"  # stands in for remote HPC hardware
 DOOMED_ENDPOINT = "dt_test_doomed_ep"  # started to be killed (R8)
 DT_ENDPOINT = "dt_test_dt_ep"  # endpoint-hosted `dt`, for the smoke test
 ORBIT_TASK_ENDPOINT = "dt_test_orbit_task_ep"  # on the M3 stack
@@ -78,16 +78,16 @@ def engines(**endpoints: str) -> dict:
 
 
 # the single-engine wiring most tests use: the co-located endpoint only
-ENGINES = engines(task=TASK_ENDPOINT)
+ENGINES = engines(inference=TASK_ENDPOINT)
 
 # dual-engine wiring: learner tasks ex-situ, everything else co-located
-ENGINES_DUAL = engines(task=TASK_ENDPOINT, exsitu=EXSITU_ENDPOINT)
+ENGINES_DUAL = engines(inference=TASK_ENDPOINT, learning=EXSITU_ENDPOINT)
 
 # same, but with an ex-situ engine on an endpoint the test will kill
-ENGINES_DOOMED = engines(task=TASK_ENDPOINT, exsitu=DOOMED_ENDPOINT)
+ENGINES_DOOMED = engines(inference=TASK_ENDPOINT, learning=DOOMED_ENDPOINT)
 
 # the M3 stack's single engine
-ENGINES_ORBIT = engines(task=ORBIT_TASK_ENDPOINT)
+ENGINES_ORBIT = engines(inference=ORBIT_TASK_ENDPOINT)
 
 
 def _port_free(port: int) -> bool:
@@ -272,7 +272,7 @@ def _rhapsody_endpoint(name: str, broker, **env: str):
 
 
 @pytest.fixture(scope="session")
-def task_endpoint(broker):
+def inference_endpoint(broker):
     """A co-located rhapsody endpoint: where the twins' tasks execute."""
 
     # notify window 0 (P2): every sequential in-situ prediction would
@@ -283,11 +283,11 @@ def task_endpoint(broker):
 
 
 @pytest.fixture(scope="session")
-def exsitu_endpoint(broker):
+def learning_endpoint(broker):
     """A second rhapsody endpoint: where learner tasks execute.
 
-    Distinct from `task_endpoint` on purpose -- that is the whole point
-    of the `'exsitu'` engine.  It keeps the default notify window: 250 ms
+    Distinct from `inference_endpoint` on purpose -- that is the whole point
+    of the `'learning'` role.  It keeps the default notify window: 250 ms
     is noise under a training task.
     """
 
@@ -313,7 +313,7 @@ def dt_endpoint(broker):
     """An endpoint hosting the `dt` plugin itself (endpoint-hosted mode).
 
     It deliberately does *not* load rhapsody: its twins' tasks go to
-    `task_endpoint`, exactly as in the broker-hosted deployment.
+    `inference_endpoint`, exactly as in the broker-hosted deployment.
     """
 
     argv = _orbit_script("radical-orbit-endpoint.py") + [
@@ -355,7 +355,7 @@ def _await_plugin(endpoint: str, plugin: str, proc: subprocess.Popen,
 
 
 @pytest.fixture(scope="session")
-def stack(broker, task_endpoint):
+def stack(broker, inference_endpoint):
     """The full broker + endpoint stack; returns the broker URL."""
 
     return broker.url

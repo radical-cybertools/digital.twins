@@ -1,8 +1,9 @@
 """Service-side session and twin instances.
 
 A `DTSession` belongs to one client and hosts many independent twins.
-It owns the session-shared execution engines, keyed by name: `'task'`
-(twin components, typically a co-located endpoint) and `'exsitu'` (ROSE
+It owns the session-shared execution engine and its role backends:
+`'inference'` (twin components, typically a co-located endpoint) and
+`'learning'` (ROSE
 learners, typically remote HPC hardware).  Each `TwinInstance` owns a
 `DTRuntime` plus its own namespaced stream client.  Twin teardown never
 disturbs its siblings or the engines.
@@ -40,10 +41,13 @@ except ImportError as _exc:  # the 'learn' extra (ROSE) is optional
              " extra to host StreamingLearnerInvestigator twins", _exc)
     StreamingLearnerInvestigator = None
 
-# every twin component runs on 'task'; only a StreamingLearnerInvestigator
-# also gets 'exsitu', and only when the session configured one
-TASK_ENGINE = "task"
-EXSITU_ENGINE = "exsitu"
+# The two reserved roles.  They name function, not placement: every twin
+# component's tasks run on 'inference'; only a StreamingLearnerInvestigator
+# labels its learner tasks 'learning', and only when the session configured
+# a backend for that role.  One engine per session carries both backends;
+# asyncflow routes per task on the label.
+ROLE_INFERENCE = "inference"
+ROLE_LEARNING = "learning"
 
 # co-located-demo default -- 'dragon_v3' (the rhapsody default) would
 # break every demo on a laptop
@@ -81,7 +85,7 @@ VERBS = (
 
 
 def _is_learner(cls: Any) -> bool:
-    """Does this shipped class want the ex-situ engine as well?
+    """Does this shipped class want the learning backend as well?
 
     False whenever ROSE is not installed on the service -- such a class
     could not have been unpickled here in the first place.
@@ -124,7 +128,7 @@ class TwinInstance:
         # which session engines this twin's components actually bound to.
         # Engines are session-shared, so losing one endpoint must fail the
         # twins that use it and leave the others alone (R8).
-        self.engines: set[str] = {TASK_ENGINE}
+        self.engines: set[str] = {ROLE_INFERENCE}
 
         self._state = STATE_INITIALIZING
         self._last_error: Optional[str] = None
@@ -242,12 +246,14 @@ class DTSession(PluginSession):
         self.created = time.time()
 
         self.twins: dict[str, TwinInstance] = {}
-        self._engines: dict[str, WorkflowEngine] = {}
-        # engine name -> the endpoint it resolved to; the R8 lookup
+        # the one session-shared engine; role backends attach to it
+        self._flow: Optional[WorkflowEngine] = None
+        self._backends: dict[str, Any] = {}
+        # role -> the endpoint it resolved to; the R8 lookup
         self._endpoints: dict[str, str] = {}
         # in-flight builds, owned by the session rather than by whichever
-        # twin asked first (see `engine`).  Both dicts are keyed by engine
-        # name: a slow 'exsitu' init must not hold up a 'task' build.
+        # twin asked first (see `engine`).  Both dicts are keyed by role:
+        # a slow 'learning' init must not hold up an 'inference' build.
         self._engine_tasks: dict[str, asyncio.Task] = {}
         self._engine_locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
         # endpoints this session's engines ran on and that ORBIT declared
@@ -461,22 +467,23 @@ class DTSession(PluginSession):
     # -- engines ------------------------------------------------------------
 
     def _engine_config(self, name: str) -> dict:
-        """The configuration block for engine `name` (possibly empty)."""
+        """The configuration block for role `name` (possibly empty)."""
 
         return (self.config.get("engines") or {}).get(name) or {}
 
     def configured(self, name: str) -> bool:
-        """Is engine `name` configured for this session?
+        """Is role `name` configured for this session?
 
-        An unconfigured engine other than `'task'` is not built: it
-        aliases `'task'` instead, so adding `'exsitu'` stays a config-only
-        change and a single-endpoint deployment keeps working unchanged.
+        An unconfigured role other than `'inference'` is not built: it
+        aliases `'inference'` instead, so adding `'learning'` stays a
+        config-only change and a single-endpoint deployment keeps working
+        unchanged.
         """
 
         return bool(self._engine_config(name))
 
     def _engine_endpoint(self, name: str) -> Optional[str]:
-        """The endpoint engine `name` runs on.
+        """The endpoint role `name` runs on.
 
         The one the backend settled on once it has been built, the
         configured one before that (`None` when neither: an auto-selecting
@@ -487,11 +494,12 @@ class DTSession(PluginSession):
             "endpoint_name"
         )
 
-    async def engine(self, name: str = TASK_ENGINE) -> WorkflowEngine:
-        """The session-shared engine `name`, created on first use.
+    async def engine(self, name: str = ROLE_INFERENCE) -> WorkflowEngine:
+        """The session-shared engine, with role `name` built and attached.
 
-        One engine per name per session, never per twin.  An unconfigured
-        name falls back to `'task'` (see `configured`).
+        One engine per session, never per twin; one backend per role,
+        attached to that engine, routed to by task label.  An unconfigured
+        role falls back to `'inference'` (see `configured`).
 
         The build is a *session-owned* task that callers only ever
         `shield`-await: a twin whose initialization is cancelled halfway
@@ -504,7 +512,7 @@ class DTSession(PluginSession):
         """
 
         if not self.configured(name):
-            name = TASK_ENGINE
+            name = ROLE_INFERENCE
 
         # R8 arrives exactly once, but its consequences do not expire: the
         # dead engine stays cached here, so without this a twin created
@@ -517,12 +525,11 @@ class DTSession(PluginSession):
                 f" recreate the session"
             )
 
-        # per-name lock: a 150 s 'exsitu' backend init must not serialize
-        # ahead of a 'task' build that another twin is waiting on
+        # per-role lock: a 150 s 'learning' backend init must not serialize
+        # ahead of an 'inference' build that another twin is waiting on
         async with self._engine_locks[name]:
-            flow = self._engines.get(name)
-            if flow is not None:
-                return flow
+            if name in self._backends and self._flow is not None:
+                return self._flow
 
             task = self._engine_tasks.get(name)
             if task is None or task.done():  # first build, or a retry
@@ -534,21 +541,38 @@ class DTSession(PluginSession):
         return await asyncio.shield(task)
 
     async def _build_engine(self, name: str) -> WorkflowEngine:
-        flow = await self._create_engine(name)
+        backend = await self._create_backend(name)
+
+        try:
+            if name == ROLE_INFERENCE:
+                flow = await WorkflowEngine.create(backend=backend)
+            else:
+                # the engine exists once the 'inference' role is built; a
+                # role-only build rides on it and attaches its backend.
+                # (`_attach_backend` is asyncflow-private for now; the
+                # public spelling is an upstream ask.)
+                flow = await self.engine(ROLE_INFERENCE)
+                flow._attach_backend(backend)
+        except BaseException:
+            with contextlib.suppress(Exception):
+                await backend.shutdown()
+            raise
 
         if not self.is_active:
-            # every twin that wanted this engine is gone; nothing will
-            # ever own it, so it must not outlive its own construction
-            await self._shutdown_engine(name, flow)
+            # every twin that wanted this role is gone; nothing will ever
+            # own it, so it must not outlive its own construction
+            await self._shutdown_engine(flow)
             raise RuntimeError(
-                f"session {self.sid} closed while engine {name!r} was building")
+                f"session {self.sid} closed while role {name!r} was building")
 
-        self._engines[name] = flow
+        self._backends[name] = backend
+        if name == ROLE_INFERENCE:
+            self._flow = flow
 
         return flow
 
-    async def _shutdown_engine(self, name: str, flow: WorkflowEngine) -> None:
-        """Bounded engine teardown.
+    async def _shutdown_engine(self, flow: WorkflowEngine) -> None:
+        """Bounded engine teardown (all attached backends included).
 
         asyncflow's own shutdown is an unbounded gather, so a bare await
         could park the host loop.
@@ -557,14 +581,14 @@ class DTSession(PluginSession):
         try:
             await asyncio.wait_for(flow.shutdown(), ENGINE_SHUTDOWN_TIMEOUT)
         except Exception as exc:
-            log.warning("[dt] session %s: engine %r shutdown: %s",
-                        self.sid, name, exc)
+            log.warning("[dt] session %s: engine shutdown: %s",
+                        self.sid, exc)
 
-    async def _create_engine(self, name: str) -> WorkflowEngine:
+    async def _create_backend(self, name: str):
         cfg = self._engine_config(name)
 
         log.info(
-            "[dt] session %s building engine %r on endpoint %s",
+            "[dt] session %s building %r backend on endpoint %s",
             self.sid,
             name,
             cfg.get("endpoint_name") or "<auto>",
@@ -574,7 +598,8 @@ class DTSession(PluginSession):
             broker_url=self.broker_url,
             endpoint_name=cfg.get("endpoint_name"),
             backends=cfg.get("backends") or DEFAULT_BACKENDS,
-            batch_window=0,  # per-call latency beats batching for in-situ
+            batch_window=0,  # per-call latency beats batching for inference
+            name=name,       # the asyncflow routing label: task backend=<role>
         )
 
         # name the backend's broker participant after what it is for, so a
@@ -595,7 +620,7 @@ class DTSession(PluginSession):
             getattr(backend, "_endpoint_name", None) or cfg.get("endpoint_name")
         )
 
-        return await WorkflowEngine.create(backend=backend)
+        return backend
 
     def endpoints_lost(self, lost: set[str]) -> tuple[str, ...]:
         """Fail every twin bound to an engine on a lost endpoint (R8).
@@ -666,31 +691,32 @@ class DTSession(PluginSession):
             await asyncio.wait(builds, timeout=ENGINE_BUILD_DRAIN_TIMEOUT)
         self._engine_tasks.clear()
 
-        for name, flow in self._engines.items():
-            await self._shutdown_engine(name, flow)
-        self._engines.clear()
+        if self._flow is not None:
+            await self._shutdown_engine(self._flow)
+        self._flow = None
+        self._backends.clear()
 
         return await super().close()
 
     def summary(self) -> dict:
         """This session's entry in the `admin/sessions` listing.
 
-        `endpoints` names the hardware behind each engine role -- the
-        endpoint the backend settled on, the configured one before that,
-        `None` for an engine that is not configured (`'exsitu'` then
-        aliases `'task'`, and an observer can say so).
+        `endpoints` names the hardware behind each role -- the endpoint
+        the backend settled on, the configured one before that, `None`
+        for a role that is not configured (`'learning'` then aliases
+        `'inference'`, and an observer can say so).
         """
 
         return {
             "sid": self.sid,
             "active": self.is_active,
             "age": round(time.time() - self.created, 3),
-            "engines": sorted(self._engines),
+            "engines": sorted(self._backends),
             "endpoints": {
-                TASK_ENGINE: self._engine_endpoint(TASK_ENGINE),
-                EXSITU_ENGINE: (
-                    self._engine_endpoint(EXSITU_ENGINE)
-                    if self.configured(EXSITU_ENGINE) else None
+                ROLE_INFERENCE: self._engine_endpoint(ROLE_INFERENCE),
+                ROLE_LEARNING: (
+                    self._engine_endpoint(ROLE_LEARNING)
+                    if self.configured(ROLE_LEARNING) else None
                 ),
             },
             "twins": [twin.summary() for twin in self.twins.values()],
@@ -710,13 +736,13 @@ class DTSession(PluginSession):
                 raise RuntimeError("session is not attached to a dt plugin")
 
             async with asyncio.timeout(TWIN_INIT_TIMEOUT):
-                # A configured 'exsitu' engine is built here as well, and
-                # concurrently: a learner twin must not pay a two-minute
-                # backend init inside `add_investigator`, which is a short
-                # verb like every other one.
-                names = [TASK_ENGINE]
-                if self.configured(EXSITU_ENGINE):
-                    names.append(EXSITU_ENGINE)
+                # A configured 'learning' backend is built here as well,
+                # and concurrently: a learner twin must not pay a
+                # two-minute backend init inside `add_investigator`, which
+                # is a short verb like every other one.
+                names = [ROLE_INFERENCE]
+                if self.configured(ROLE_LEARNING):
+                    names.append(ROLE_LEARNING)
 
                 flow, *_ = await asyncio.gather(*map(self.engine, names))
 
@@ -762,11 +788,12 @@ class DTSession(PluginSession):
     ) -> Any:
         """Build a component from a shipped class, injecting the engine(s).
 
-        Dual-engine injection lives here: a `StreamingLearnerInvestigator`
-        additionally receives the `'exsitu'` engine as `learn_flow`, so its
-        learner tasks run on remote hardware while its inference stays on
-        `'task'`.  The class *is* the marker -- there is no user-facing
-        engine selector in v1.
+        Role injection lives here: a `StreamingLearnerInvestigator`
+        additionally receives the `'learning'` backend name as
+        `learn_backend`, so its learner tasks carry that label and run on
+        the learning hardware while its inference stays on `'inference'`.
+        The class *is* the marker -- there is no user-facing role selector
+        in v1.
 
         Also the home of the persistent-component guard: a persistent
         `main_loop` runs inline on the host loop, so any `function_task`
@@ -786,11 +813,12 @@ class DTSession(PluginSession):
         extra = {}
 
         if _is_learner(package.cls):
-            learn_flow = self._engines.get(EXSITU_ENGINE)
-            # no 'exsitu' engine configured: one engine serves both roles
-            extra["learn_flow"] = learn_flow or flow
-            if learn_flow is not None:
-                twin.engines.add(EXSITU_ENGINE)
+            # no 'learning' backend configured: the label is omitted and
+            # the learner's tasks ride the default ('inference') backend
+            has_learning = ROLE_LEARNING in self._backends
+            extra["learn_backend"] = ROLE_LEARNING if has_learning else None
+            if has_learning:
+                twin.engines.add(ROLE_LEARNING)
 
         registered = 0
         original = flow.function_task

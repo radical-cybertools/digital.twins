@@ -177,7 +177,7 @@ def test_a_learner_twin_learns_off_the_orbit_stream(orbit_dt, twin_id):
     """The ex-situ learner is fed from the twin's input stream, so it is
     the component that depends most on the data plane.
 
-    One engine here: `'exsitu'` aliases `'task'` when it is not
+    One backend here: `'learning'` aliases `'inference'` when it is not
     configured, and which endpoint the learner tasks land on is M2's
     question, not this one.
     """

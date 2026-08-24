@@ -4,8 +4,9 @@
 
 One stream drives both halves.  Every reading feeds the ROSE streaming
 learner, whose training / active-learning / criterion tasks run on the
-`'exsitu'` engine; every reading is also served by the inference task,
-which runs on the co-located `'task'` engine.  When a window's model
+`'learning'` backend; every reading is also served by the inference
+task, which rides the co-located `'inference'` backend.  When a
+window's model
 beats the criterion it is published, and the very next prediction uses
 it -- which is what the before/after inference below shows.
 
@@ -40,27 +41,27 @@ logger = logging.getLogger(__name__)
 # where the `dt` plugin is hosted ('broker', or an endpoint name)
 DT_HOST = os.environ.get("DT_SERVICE_HOST", "broker")
 
-# the two endpoints.  `DT_TASK_ENDPOINT` unset: ORBIT picks one
+# the two endpoints.  `DT_INFERENCE_ENDPOINT` unset: ORBIT picks one
 # advertising rhapsody.
-TASK_ENDPOINT = os.environ.get("DT_TASK_ENDPOINT") or None
-EXSITU_ENDPOINT = os.environ.get("DT_EXSITU_ENDPOINT") or None
+TASK_ENDPOINT = os.environ.get("DT_INFERENCE_ENDPOINT") or None
+EXSITU_ENDPOINT = os.environ.get("DT_LEARNING_ENDPOINT") or None
 
-# Engine wiring, stated explicitly.  'task' runs the twin's components
-# (co-located: it is in the per-reading critical path); 'exsitu' runs the
+# Role wiring, stated explicitly.  'inference' runs the twin's components
+# (co-located: it is in the per-reading critical path); 'learning' runs the
 # learner's tasks (typically remote HPC hardware).  One engine of each
 # per session, shared by every twin in it.
 ENGINES = {
     "engines": {
-        "task": {"endpoint_name": TASK_ENDPOINT, "backends": ["concurrent"]},
+        "inference": {"endpoint_name": TASK_ENDPOINT, "backends": ["concurrent"]},
     }
 }
 
-# Without `DT_EXSITU_ENDPOINT` the key is left out entirely rather than
+# Without `DT_LEARNING_ENDPOINT` the key is left out entirely rather than
 # configured with a `None` endpoint: that takes the documented alias path
-# ('exsitu' resolves to 'task') instead of quietly building a second
+# ('learning' resolves to 'inference') instead of quietly building a second
 # backend against whichever endpoint ORBIT happens to pick.
 if EXSITU_ENDPOINT:
-    ENGINES["engines"]["exsitu"] = {
+    ENGINES["engines"]["learning"] = {
         "endpoint_name": EXSITU_ENDPOINT, "backends": ["concurrent"]
     }
 

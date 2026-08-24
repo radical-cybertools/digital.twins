@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 #
 # A rhapsody endpoint: this is where a twin's compute actually runs.
-# The demo wants two, so the dashboard's `task` and `exsitu` lanes are
+# The demo wants two, so the dashboard's `inference` and `learning` lanes are
 # distinct hardware rather than one endpoint aliased twice.
 #
 #   ./run-endpoint.sh <name> <broker-host> [venv-dir]
 #
-#   ./run-endpoint.sh dt_task_ep   radical.3
-#   ./run-endpoint.sh dt_exsitu_ep radical.3
+#   ./run-endpoint.sh dt_inference_ep radical.3
+#   ./run-endpoint.sh dt_learning_ep  radical.3
 #
 set -euo pipefail
 NAME="${1:?usage: $0 <name> <broker-host> [venv-dir]}"

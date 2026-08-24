@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.5.0';
+  const VERSION = '0.6.0';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -177,14 +177,14 @@
       stream:    null,      // the stream_broker summary, verbatim
       sessions:  [],        // [{sid, owner, age, engines, twins, _rect}]
       twins:     new Map(), // twin_id -> twin
-      endpoints: { task: [], exsitu: [], alias: true },
-      roles:     new Map(), // endpoint -> Set('task'|'exsitu'), all sessions
+      endpoints: { inference: [], learning: [], alias: true },
+      roles:     new Map(), // endpoint -> Set('inference'|'learning')
       tasks:     new Map(), // uid -> {uid, lane, state, t0, tEnd, slot}
       // task uid -> twin_id, straight off the twins' own `tasks` lists: the
       // service records what it submitted, so this is the whole of the
       // dashboard's task attribution -- nothing here guesses any more
       owners:    new Map(),
-      counts:    { task: zeroCount(), exsitu: zeroCount() },
+      counts:    { inference: zeroCount(), learning: zeroCount() },
       flights:   [],
       markers:   [],
       snapshots: 0,
@@ -241,23 +241,24 @@
     // deployment that configured no ex-situ engine still gets two lanes --
     // the ex-situ one then says it aliases the task one, which is the truth
     // on the wire.
-    const task = [], exsitu = [];
-    let sawExsitu = false;
+    const inference = [], learning = [];
+    let sawLearning = false;
     w.roles = new Map();
 
     for (const s of sessions) {
       const eps = s.endpoints || {};
-      for (const role of ['task', 'exsitu']) {
+      for (const role of ['inference', 'learning']) {
         const name = eps[role];
         if (!name) continue;
-        if (role === 'exsitu') sawExsitu = true;
-        const into = role === 'task' ? task : exsitu;
+        if (role === 'learning') sawLearning = true;
+        const into = role === 'inference' ? inference : learning;
         if (!into.includes(name)) into.push(name);
         if (!w.roles.has(name)) w.roles.set(name, new Set());
         w.roles.get(name).add(role);
       }
     }
-    w.endpoints = { task, exsitu, alias: sessions.length > 0 && !sawExsitu };
+    w.endpoints = { inference, learning,
+                    alias: sessions.length > 0 && !sawLearning };
 
     for (const s of sessions) {
       for (const t of (s.twins || [])) {
@@ -432,14 +433,14 @@
 
     if (own) {
       const eps = own.endpoints || {};
-      if (eps.exsitu === endpoint) return 'exsitu';
-      if (eps.task === endpoint) return 'task';
+      if (eps.learning === endpoint) return 'learning';
+      if (eps.inference === endpoint) return 'inference';
     }
 
     const roles = w.roles.get(endpoint);
     if (!roles) return null;
 
-    return roles.has('task') ? 'task' : 'exsitu';
+    return roles.has('inference') ? 'inference' : 'learning';
   }
 
   function applyTask(w, endpoint, t) {
@@ -1168,11 +1169,13 @@
     // the HPC super-frame holds the two endpoint role lanes, stacked
     const head = Math.round(26 * S);
     const subH = Math.floor((hpc.h - head - G - Math.round(7 * S)) / 2);
-    const task = { x: hpc.x + Math.round(8 * S), y: hpc.y + head,
-                   w: hpc.w - Math.round(16 * S), h: subH };
-    const exsitu = { x: task.x, y: task.y + subH + G, w: task.w, h: subH };
+    const inference = { x: hpc.x + Math.round(8 * S), y: hpc.y + head,
+                        w: hpc.w - Math.round(16 * S), h: subH };
+    const learning = { x: inference.x, y: inference.y + subH + G,
+                       w: inference.w, h: subH };
 
-    return { S, M, G, hd, W, H, client, sensors, broker, hpc, task, exsitu };
+    return { S, M, G, hd, W, H, client, sensors, broker, hpc,
+             inference, learning };
   }
 
   // ---- primitives (the reference's idioms) -------------------------------
@@ -1845,12 +1848,13 @@
 
     // every endpoint any session put in that role, because the role is a
     // per-session answer and two sessions need not agree
-    drawEndpointLane(ctx, L.task, 'task endpoint',
-                     w.endpoints.task.join(', '), 'task',
+    drawEndpointLane(ctx, L.inference, 'inference endpoint',
+                     w.endpoints.inference.join(', '), 'inference',
                      w, S, C.cyan_dim, null);
-    drawEndpointLane(ctx, L.exsitu, 'exsitu endpoint',
-                     w.endpoints.exsitu.join(', '), 'exsitu', w, S,
-                     C.amber_dim, w.endpoints.alias ? 'aliases task' : null);
+    drawEndpointLane(ctx, L.learning, 'learning endpoint',
+                     w.endpoints.learning.join(', '), 'learning', w, S,
+                     C.amber_dim,
+                     w.endpoints.alias ? 'aliases inference' : null);
   }
 
   // Tile geometry, shared by the renderer and the spawn arcs so a task
@@ -1903,7 +1907,7 @@
     // known -- a `task_status` carries no verb -- so this marks the when and
     // nothing else, dim like the other inferred marks, and only on the lane
     // that could have run it.
-    if (lane === 'task' && w.probe) {
+    if (lane === 'inference' && w.probe) {
       const age = w.t - w.probe.t;
       const span = FLIGHT * 1.6;
       if (age >= 0 && age < span) {
@@ -2075,11 +2079,11 @@
     // a spawned simulation task: its origin -> the endpoint lane's own slot
     // and, on completion, the same hop back
     if ((f.kind === 'spawn' || f.kind === 'result') && f.task) {
-      const r = f.task.lane === 'exsitu' ? L.exsitu : L.task;
+      const r = f.task.lane === 'learning' ? L.learning : L.inference;
       const g = laneGeom(r, S);
       const p = tilePos(r, g, f.task.slot);
       const home = originRect(L, w, f.task.uid);
-      const color = f.task.lane === 'exsitu' ? C.amber : C.cyan;
+      const color = f.task.lane === 'learning' ? C.amber : C.cyan;
 
       const at = { x: p.x + g.tile / 2, y: p.y + g.tile / 2 };
       // an unattributed task leaves the broker lane's edge instead: that rect

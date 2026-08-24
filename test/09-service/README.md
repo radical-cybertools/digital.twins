@@ -27,7 +27,7 @@ radical-orbit-endpoint.py -n dt_task_ep
 cd test/09-service && python run_me.py
 ```
 
-`DT_TASK_ENDPOINT` names the endpoint the twin's tasks go to (unset:
+`DT_INFERENCE_ENDPOINT` names the endpoint the twin's tasks go to (unset:
 ORBIT picks the first endpoint advertising rhapsody).  `DT_SERVICE_HOST`
 names the participant hosting the `dt` plugin (default `broker`; set it
 to an endpoint name for the endpoint-hosted deployment).
