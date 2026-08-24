@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.7.0';
+  const VERSION = '0.7.1';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -1567,7 +1567,7 @@
 
   // The demo runs two digital twins.  The bundled sample recording holds
   // more; anything past the cap gets `+N more` at the bottom of the lane.
-  const DEMO_TWIN_CAP = 2;
+  const DEMO_TWIN_CAP = 12;
 
   function drawBrokerLane(ctx, L, w, ui) {
     const S = L.S, r = L.broker;
@@ -1605,17 +1605,32 @@
     const top    = r.y + head;
     const bottom = r.y + r.h - pad;
 
+    // Every twin keeps at least its collapsed strip: an expanded card is
+    // clamped to the height that leaves the strips below it room, and its
+    // content clips inside the card.  Expanding one twin must never make
+    // a sibling vanish.
+    const stripH = Math.round(
+      (DT_TOP_PAD + DT_HEAD_H + DT_UTIL_H + DT_BOT_PAD) * S);
+
     let cursor = top;
     let shown  = 0;
-    for (const tw of twins) {
-      const cardH = twinCardHeight(tw, ui, S);
-      if (cursor + cardH > bottom) break;
+    twins.forEach((tw, i) => {
+      const below = twins.length - 1 - i;
+      const reserve = below * (stripH + gap);
+      const maxH = bottom - cursor - reserve;
+      const cardH = Math.min(twinCardHeight(tw, ui, S),
+                             Math.max(stripH, maxH));
+      if (cursor + stripH > bottom) { tw._rect = null; return; }
       const box = { x: r.x + pad, y: cursor, w: cardW, h: cardH };
       tw._rect = box;
+      ctx.save();
+      rr(ctx, box.x, box.y, box.w, box.h, 6 * S);
+      ctx.clip();
       drawTwinCard(ctx, box, tw, w, S, ui);
+      ctx.restore();
       cursor += cardH + gap;
       shown++;
-    }
+    });
     for (let i = shown; i < allTwins.length; i++) allTwins[i]._rect = null;
 
     const hidden = allTwins.length - shown;
