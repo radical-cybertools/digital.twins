@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.6.0';
+  const VERSION = '0.8.4';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -135,13 +135,6 @@
   // rhapsody task states that actually reach a browser.  There is no
   // QUEUED: the only non-terminal state any backend pushes is RUNNING.
   const TASK_TERMINAL = new Set(['DONE', 'FAILED', 'CANCELED', 'COMPLETED']);
-  const TASK_COLOR = {
-    RUNNING:   C.cyan,
-    DONE:      C.green,
-    COMPLETED: C.green,
-    FAILED:    C.red,
-    CANCELED:  C.grey,
-  };
 
   // -------------------------------------------------------------------------
   //  Timings, in seconds of *model* time (the replay speed scales them all)
@@ -194,6 +187,18 @@
       // '<twin>|<dtype>' -> {twin, dtype, t, count}: every stream
       // publisher we have seen, which is what the sensors lane draws
       publishers: new Map(),
+      // Per-pool event log for the task-manager graph.  A sequence of
+      // `{t, running}` samples pushed whenever the concurrent count
+      // changes -- so between events the value is exactly the running
+      // count that held over that interval, and the graph reads the
+      // true concurrent count at every instant of the visible window.
+      poolHistory: { inference: [], learning: [] },
+      // every task ever observed this session -- the header counts it
+      taskTotal: 0,
+      // rolling per-pool history for the recent-tasks table.  Holds the
+      // task objects themselves, so a row keeps its final state after
+      // `expire` drops the live entry; capped, newest last.
+      recent: [],
     };
   }
 
@@ -459,7 +464,11 @@
                // both wait for the poll that says whose task this is
                armed: null, due: null };
       w.tasks.set(uid, task);
+      w.taskTotal++;
+      w.recent.push(task);
+      if (w.recent.length > 64) w.recent.shift();
       w.counts[lane].running++;
+      recordPoolEvent(w, lane);
       armTasks(w);
     }
 
@@ -479,9 +488,26 @@
         // the compute coming back: a real observed transition, and the
         // only half of the round trip that was missing
         task.due = w.t;
+        recordPoolEvent(w, task.lane);
         armTasks(w);
       }
     }
+  }
+
+  // Event-driven graph record.  Called whenever the running count for a
+  // pool actually changes.  Old entries beyond the visible window are
+  // pruned lazily on each push, keeping the newest one older than the
+  // cutoff so the left edge of the graph knows what value to start at.
+  function recordPoolEvent(w, lane) {
+    const hist = w.poolHistory[lane];
+    hist.push({ t: w.t, running: w.counts[lane].running });
+    const cutoff = w.t - POOL_WINDOW - 2;
+    let keepFrom = -1;
+    for (let i = 0; i < hist.length; i++) {
+      if (hist[i].t <= cutoff) keepFrom = i;
+      else break;
+    }
+    if (keepFrom > 0) hist.splice(0, keepFrom);
   }
 
   // A task's arcs wait for the poll that says whose it is.  The notification
@@ -532,17 +558,19 @@
 
     tw.pulse = { t: w.t, label: dtype };
 
-    // one publisher per (twin, dtype).  A twin's own persistent
-    // components are the only things that publish, so this *is* the set
-    // of sensors -- observed, never declared.
-    const key = `${id}|${dtype}`;
+    // One publisher per dtype: multiple twins that emit the same channel
+    // share a row.  Counts and last-seen aggregate across them; `twin`
+    // records whichever twin last pulsed so the (now-muted) sample arc
+    // still resolves an origin twin if anything asks.
+    const key = dtype;
     let pub = w.publishers.get(key);
     if (!pub) {
-      pub = { key, twin: id, dtype, count: 0, t: w.t };
+      pub = { key, dtype, count: 0, t: w.t, twin: id };
       w.publishers.set(key, pub);
     }
+    pub.twin  = id;
     pub.count++;
-    pub.t = w.t;
+    pub.t     = w.t;
 
     // the message travelling from the publisher to its twin
     flight(w, 'sample', { twin: id, from: pub.key, dur: PULSE_FLIGHT });
@@ -802,6 +830,355 @@
     };
   }
 
+
+  // =========================================================================
+  //  THE TWIN PANE -- DOM, scrollable
+  //
+  //  The one part of the page that is a variable-height nested tree with
+  //  per-node collapse -- exactly what a browser already knows how to lay
+  //  out, scroll and hit-test.  Everything else stays canvas.  Contract
+  //  with the canvas: `drawBrokerLane` publishes the interior rect, the
+  //  pane publishes each visible card's rect back onto `tw._rect` (canvas
+  //  coordinates, `null` when scrolled out), which is what keeps the
+  //  probe geometry and any future arcs honest about visibility.
+  // =========================================================================
+
+  const INV_COLOR = { ANN: C.cyan, RNN: C.violet };
+
+  function newTwinPane(stage, collapsed, seenTwins) {
+    const pane = el('div', 'dtd-twinpane');
+    stage.appendChild(pane);
+
+    // non-scrolling companions: the all-twins toggle in the panel header,
+    // and two gradient cues that say "there is more" at either edge
+    const bar = el('div', 'dtd-panebar');
+    const allChip = el('span', 'dtd-chip');
+    bar.appendChild(allChip);
+    stage.appendChild(bar);
+    const fadeTop = el('div', 'dtd-fade dtd-fade-top');
+    const fadeBot = el('div', 'dtd-fade dtd-fade-bottom');
+    stage.appendChild(fadeTop);
+    stage.appendChild(fadeBot);
+
+    // The scroll-position indicator.  Native scrollbars are overlay-style
+    // on most desktops now and hide themselves; this one is always there
+    // when the pane overflows, and it drags.
+    const thumb = el('div', 'dtd-thumb');
+    stage.appendChild(thumb);
+    let dragging = null;
+    thumb.addEventListener('pointerdown', e => {
+      dragging = { y: e.clientY, top: pane.scrollTop };
+      thumb.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    thumb.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const scale = pane.scrollHeight / pane.clientHeight;
+      pane.scrollTop = dragging.top + (e.clientY - dragging.y) * scale;
+    });
+    thumb.addEventListener('pointerup', () => { dragging = null; });
+
+    allChip.addEventListener('click', () => {
+      const w = lastWorld;
+      if (!w) return;
+      const ids = [...w.twins.keys()];
+      const anyOpen = ids.some(id => !collapsed.has(`dt:${id}`));
+      for (const id of ids) {
+        if (anyOpen) collapsed.add(`dt:${id}`);
+        else collapsed.delete(`dt:${id}`);
+      }
+      lastSig = null;
+    });
+
+    let lastSig = null;
+    let lastWorld = null;
+    const cards = new Map();   // twin id -> card element
+
+    pane.addEventListener('click', e => {
+      const act = e.target.closest('[data-action]');
+      if (act && pane.contains(act)) {
+        // per-twin: expand / collapse every agent of that twin at once
+        const id = act.getAttribute('data-action');
+        const keys = fakeAgents().map(a => `agent:${id}|${a.name}`);
+        const anyOpen = keys.some(k => !collapsed.has(k));
+        for (const k of keys) {
+          if (anyOpen) collapsed.add(k);
+          else collapsed.delete(k);
+        }
+        lastSig = null;
+        return;
+      }
+      const hit = e.target.closest('[data-key]');
+      if (!hit || !pane.contains(hit)) return;
+      const key = hit.getAttribute('data-key');
+      if (collapsed.has(key)) collapsed.delete(key);
+      else collapsed.add(key);
+      lastSig = null;                    // rebuild on the next sync
+    });
+
+    // ---- markup builders --------------------------------------------------
+
+    function svgSpark(hist, color) {
+      let lo = Infinity, hi = -Infinity;
+      for (const v of hist) { if (v < lo) lo = v; if (v > hi) hi = v; }
+      const span = Math.max(hi - lo, 1e-6);
+      const pts = hist.map((v, i) =>
+        `${(i / (hist.length - 1)) * 100},${28 - ((v - lo) / span) * 26 - 1}`)
+        .join(' ');
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 100 28');
+      svg.setAttribute('preserveAspectRatio', 'none');
+      svg.classList.add('dtd-spark');
+      const line = document.createElementNS(svg.namespaceURI, 'polyline');
+      line.setAttribute('points', pts);
+      line.setAttribute('fill', 'none');
+      line.setAttribute('stroke', color);
+      line.setAttribute('stroke-width', '1.2');
+      line.setAttribute('vector-effect', 'non-scaling-stroke');
+      svg.appendChild(line);
+      return svg;
+    }
+
+    function investigatorCard(twinId, agentName, invName, tick) {
+      const seed  = fnv1a(`${twinId}|${agentName}|${invName}`);
+      const hist  = fakeSpark(seed, tick);
+      const color = INV_COLOR[invName] || C.text_dim;
+
+      const card = el('div', 'dtd-inv');
+      card.style.borderColor = color;
+      const head = el('div', 'dtd-inv-head');
+      head.appendChild(el('span', 'dtd-inv-name', `Inv: ${invName}`));
+      head.appendChild(el('span', 'dtd-inv-model',
+                          `Model: ${fakeModelName(seed, tick)}`));
+      card.appendChild(head);
+      card.appendChild(el('div', 'dtd-inv-rmse',
+                          `rmse ${hist[hist.length - 1].toFixed(3)}`));
+      card.appendChild(svgSpark(hist, color));
+      return card;
+    }
+
+    function agentBlock(tw, agent, tick) {
+      const key = `agent:${tw.id}|${agent.name}`;
+      const closed = collapsed.has(key);
+
+      const block = el('div', 'dtd-agent');
+      const head = el('div', 'dtd-agent-head');
+      head.setAttribute('data-key', key);
+      head.appendChild(el('span', 'dtd-agent-name',
+                          `${closed ? '\u25b8' : '\u25be'} Agent: ${agent.name}`));
+      const selIdx = Math.abs(fnv1a(`sel|${tw.id}|${agent.name}`))
+                   % FAKE_INVESTIGATORS.length;
+      const selInv = FAKE_INVESTIGATORS[selIdx];
+      head.appendChild(el('span', 'dtd-agent-sel',
+        `Selected: ${selInv}. Model: `
+        + fakeModelName(fnv1a(`${tw.id}|${agent.name}|${selInv}`), tick)));
+      block.appendChild(head);
+      block.appendChild(el('div', 'dtd-agent-io',
+                           `IN ${agent.inD}  \u2192  OUT ${agent.outD}`));
+
+      if (!closed) {
+        for (const invName of FAKE_INVESTIGATORS) {
+          block.appendChild(investigatorCard(tw.id, agent.name, invName, tick));
+        }
+      }
+      return block;
+    }
+
+    function twinCard(tw, w, tick) {
+      const state = tw.state || 'initializing';
+      const key = `dt:${tw.id}`;
+      const closed = collapsed.has(key);
+      const gone = tw.gone !== null;
+
+      const card = el('div', 'dtd-card');
+      card.style.borderColor = STATE_COLOR[state] || C.grey;
+      if (state === 'initializing') card.classList.add('dtd-init');
+
+      const head = el('div', 'dtd-card-head');
+      head.setAttribute('data-key', key);
+      const title = el('span', 'dtd-card-title',
+                       `${closed ? '\u25b8' : '\u25be'} DT: ${short(tw.id)}`);
+      title.title = tw.id;               // the full id, selectable via tooltip
+      head.appendChild(title);
+      if (!closed) {
+        const keys = fakeAgents().map(a => `agent:${tw.id}|${a.name}`);
+        const anyOpen = keys.some(k => !collapsed.has(k));
+        const chip = el('span', 'dtd-chip dtd-mini',
+                        anyOpen ? 'agents \u25b8' : 'agents \u25be');
+        chip.title = anyOpen ? 'collapse all agents' : 'expand all agents';
+        chip.setAttribute('data-action', tw.id);
+        head.appendChild(chip);
+      }
+      const pill = el('span', 'dtd-pill', state);
+      pill.style.color = STATE_TEXT[state] || C.text_dim;
+      pill.style.borderColor = STATE_TEXT[state] || C.text_dim;
+      head.appendChild(pill);
+      card.appendChild(head);
+
+      // visible even collapsed, same as before.  Placeholder counts
+      // (`fakeUtility`) until the service reports them.
+      const util = fakeUtility(tw.id);
+      card.appendChild(el('div', 'dtd-card-util',
+        `Utility Tasks ${util.total} (Persist: ${util.persist})`));
+
+      if (!closed) {
+        if (state === 'failed' && tw.last_error) {
+          card.appendChild(el('div', 'dtd-card-error', tw.last_error));
+        }
+        for (const agent of fakeAgents()) {
+          card.appendChild(agentBlock(tw, agent, tick));
+        }
+      }
+
+      if (gone) {
+        card.appendChild(el('div', 'dtd-card-mark', '\u25b8 closed'));
+      } else {
+        const marks = w.markers.filter(m => m.twinId === tw.id);
+        if (marks.length) {
+          const m = marks[marks.length - 1];
+          const mark = el('div', 'dtd-card-mark', `\u25b8 ${m.label}`);
+          mark.style.color = m.color;
+          card.appendChild(mark);
+        }
+      }
+      return card;
+    }
+
+    // ---- rebuild + per-frame sync ----------------------------------------
+
+    function signature(w, tick) {
+      const keys = [...collapsed].sort().join(',');
+      const twins = [...w.twins.values()].map(tw => {
+        const mark = w.markers.filter(m => m.twinId === tw.id).pop();
+        return `${tw.id}|${tw.state}|${tw.gone !== null}|${tw.last_error || ''}`
+             + `|${mark ? mark.label : ''}`;
+      }).join(';');
+      return `${tick}#${keys}#${twins}`;
+    }
+
+    function rebuild(w, tick) {
+      const scroll = pane.scrollTop;
+      pane.textContent = '';
+      cards.clear();
+      // plain birth order, gone twins in place: with a scrollbar there is
+      // no slot to yield, and a card that stops moving is one that can be
+      // read while it fades
+      const twins = [...w.twins.values()].sort((a, b) => a.born - b.born);
+      for (const tw of twins) {
+        // newly-observed twins start collapsed; `seenTwins` gates this so
+        // a user's expand click on a fresh twin sticks
+        if (!seenTwins.has(tw.id)) {
+          seenTwins.add(tw.id);
+          collapsed.add(`dt:${tw.id}`);
+          for (const a of fakeAgents()) {
+            collapsed.add(`agent:${tw.id}|${a.name}`);
+          }
+        }
+        const card = twinCard(tw, w, tick);
+        cards.set(tw.id, card);
+        pane.appendChild(card);
+      }
+      pane.scrollTop = scroll;           // no jumping, whatever changed
+    }
+
+    function sync(w, rect, headRect) {
+      lastWorld = w;
+      if (!rect) {
+        pane.style.display = 'none';
+        bar.style.display = 'none';
+        fadeTop.style.display = 'none';
+        fadeBot.style.display = 'none';
+        return;
+      }
+      pane.style.display = '';
+      pane.style.left   = `${rect.x}px`;
+      pane.style.top    = `${rect.y}px`;
+      pane.style.width  = `${rect.w}px`;
+      pane.style.height = `${rect.h}px`;
+
+      if (headRect && w.twins.size) {
+        bar.style.display = '';
+        bar.style.left   = `${headRect.x}px`;
+        bar.style.top    = `${headRect.y}px`;
+        bar.style.width  = `${headRect.w}px`;
+        bar.style.height = `${headRect.h}px`;
+        const anyOpen = [...w.twins.keys()]
+          .some(id => !collapsed.has(`dt:${id}`));
+        allChip.textContent = anyOpen ? 'twins \u25b8' : 'twins \u25be';
+        allChip.title = anyOpen ? 'collapse all twins' : 'expand all twins';
+      } else bar.style.display = 'none';
+
+      // the cues only when there is actually more in that direction
+      const more = pane.scrollHeight - pane.clientHeight;
+      const below = more > 1 && pane.scrollTop < more - 1;
+      const above = more > 1 && pane.scrollTop > 1;
+      fadeBot.style.display = below ? '' : 'none';
+      fadeTop.style.display = above ? '' : 'none';
+      for (const [f, y] of [[fadeTop, rect.y],
+                            [fadeBot, rect.y + rect.h - 16]]) {
+        f.style.left  = `${rect.x}px`;
+        f.style.top   = `${y}px`;
+        f.style.width = `${rect.w}px`;
+      }
+
+      if (more > 1) {
+        const h = Math.max(24, rect.h * pane.clientHeight
+                                       / pane.scrollHeight);
+        const top = (rect.h - h) * pane.scrollTop / more;
+        thumb.style.display = '';
+        // in the gutter between the cards and the panel frame, so it
+        // reads against the panel, not against a card border
+        thumb.style.left   = `${rect.x + rect.w + 3}px`;
+        thumb.style.top    = `${rect.y + top}px`;
+        thumb.style.height = `${h}px`;
+      } else thumb.style.display = 'none';
+
+      const tick = Math.floor(w.t);
+      const sig = signature(w, tick);
+      if (sig !== lastSig) { rebuild(w, tick); lastSig = sig; }
+
+      // dynamic pass, every frame: fades and the visibility contract
+      for (const [id, card] of cards) {
+        const tw = w.twins.get(id);
+        if (!tw) { card.remove(); cards.delete(id); continue; }
+
+        let alpha = 1;
+        if (tw.gone !== null) {
+          const left = GONE_LINGER - (w.t - tw.gone);
+          alpha = 0.7 * Math.max(0, Math.min(1, left / GONE_FADE));
+        } else if (w.t - tw.fresh < 0.4) alpha = (w.t - tw.fresh) / 0.4;
+        card.style.opacity = alpha.toFixed(3);
+
+        card.classList.toggle('dtd-pulse',
+          !!(tw.pulse && w.t - tw.pulse.t < PULSE_TTL));
+
+        // the card's rect in canvas coordinates; null when scrolled out --
+        // the same contract the canvas layout used to keep
+        const top = card.offsetTop - pane.scrollTop;
+        const bot = top + card.offsetHeight;
+        if (bot < 0 || top > rect.h) tw._rect = null;
+        else tw._rect = { x: rect.x + card.offsetLeft, y: rect.y + top,
+                          w: card.offsetWidth, h: card.offsetHeight };
+      }
+    }
+
+    pane.addEventListener('scroll', () => {
+      if (lastWorld) {
+        // rects follow the scroll on the next frame anyway; this only
+        // keeps them exact for a probe read between frames
+        for (const tw of lastWorld.twins.values()) {
+          const card = cards.get(tw.id);
+          if (card === undefined) tw._rect = null;
+        }
+      }
+    });
+
+    return { sync, destroy: () => {
+      pane.remove(); bar.remove(); fadeTop.remove(); fadeBot.remove();
+      thumb.remove();
+    } };
+  }
+
   // =========================================================================
   //  THE DASHBOARD -- DOM, controls, frame loop
   // =========================================================================
@@ -829,6 +1206,17 @@
     let status  = { text: 'no data', ok: false };
     let hover   = null;        // {x, y} in canvas coordinates
     let capture = null;        // {t0, iso, broker, frames} while recording
+    // per-card collapse state (`dt:<twinId>`, `agent:<twinId>|<name>`);
+    // hits is rebuilt by the renderer each frame so the click handler
+    // can hit-test against exactly the clickable header regions.
+    // `seenTwins` records ids already inserted into `collapsed` by the
+    // default-collapsed rule, so a user's expand click on a freshly-seen
+    // twin sticks instead of being re-collapsed on the next frame.
+    const collapsed = new Set();
+    const seenTwins = new Set();
+    // the scrollable DOM pane that owns the twin cards (see `newTwinPane`)
+    const pane = newTwinPane(stage, collapsed, seenTwins);
+    let hits = [];
     // what the last frame drew, for `frame()`: the layout and every arc the
     // renderer resolved, so a test (or a console) sees the real geometry
     const probe = { t: 0, L: null, arcs: [] };
@@ -1045,8 +1433,38 @@
     cv.addEventListener('mousemove', e => {
       const r = cv.getBoundingClientRect();
       hover = { x: e.clientX - r.left, y: e.clientY - r.top };
+      // cheap cursor cue: show the pointer when over a clickable header
+      let overHit = false;
+      for (const h of hits) {
+        if (hover.x >= h.x && hover.x <= h.x + h.w
+            && hover.y >= h.y && hover.y <= h.y + h.h) { overHit = true; break; }
+      }
+      cv.style.cursor = overHit ? 'pointer' : '';
     });
     cv.addEventListener('mouseleave', () => { hover = null; });
+    cv.addEventListener('click', e => {
+      const r = cv.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      for (const h of hits) {
+        if (x >= h.x && x <= h.x + h.w && y >= h.y && y <= h.y + h.h) {
+          if (h.key.startsWith('link:')) {
+            // Explorer deep link (`#plugin/<endpoint>/<name>`).  Inside
+            // the Explorer the hash change navigates in place; from the
+            // standalone page it is a plain redirect to the Explorer.
+            const target = h.key.slice(5);
+            if (window.location.pathname === '/') {
+              window.location.hash = target;
+            } else {
+              window.location.href = '/' + target;
+            }
+            return;
+          }
+          if (collapsed.has(h.key)) collapsed.delete(h.key);
+          else collapsed.add(h.key);
+          return;
+        }
+      }
+    });
 
     // ---- frame loop -------------------------------------------------------
 
@@ -1081,12 +1499,16 @@
       }
 
       probe.arcs = [];
-      render(ctx, W, H, world, { status, hover, probe });
+      hits = [];
+      const uiArg = { status, hover, probe, collapsed, seenTwins, hits };
+      render(ctx, W, H, world, uiArg);
+      pane.sync(world, uiArg.twinPaneRect, uiArg.twinPaneHead);
       raf = requestAnimationFrame(frame);
     }
 
     function destroy() {
       cancelAnimationFrame(raf);
+      pane.destroy();
       ro.disconnect();
       if (dprQuery) dprQuery.removeEventListener('change', onDpr);
       dprQuery = null;
@@ -1116,7 +1538,7 @@
   // =========================================================================
 
   function render(ctx, W, H, w, ui) {
-    const L = layout(W, H, w.sessions.length);
+    const L = layout(W, H);
 
     // the probe carries this frame's geometry back out to `frame()`: a test
     // then reads the arcs the renderer resolved, on the code path a browser
@@ -1127,17 +1549,16 @@
     ctx.fillRect(0, 0, W, H);
 
     drawHeader(ctx, L, w, ui);
-    drawClientLane(ctx, L, w);
     drawSensorLane(ctx, L, w);
-    drawBrokerLane(ctx, L, w);
-    drawHpcLanes(ctx, L, w);
+    drawBrokerLane(ctx, L, w, ui);
+    drawHpcLanes(ctx, L, w, ui);
     drawFlights(ctx, L, w, ui);
     drawTooltip(ctx, L, w, ui);
   }
 
   // ---- layout: everything derived from the container's size --------------
 
-  function layout(W, H, sessions) {
+  function layout(W, H) {
     const S  = Math.max(0.7, Math.min(1.35, W / 1280));
     const M  = Math.round(13 * S);
     const G  = Math.round(11 * S);
@@ -1147,24 +1568,21 @@
     const height = H - top - M;
     const inner  = W - 2 * M - 2 * G;
 
-    const cw = Math.max(Math.round(140 * S), Math.round(inner * 0.20));
+    const cw = Math.max(Math.round(96 * S), Math.round(inner * 0.11));
     const hw = Math.max(Math.round(230 * S), Math.round(inner * 0.33));
     const bw = inner - cw - hw;
 
-    // The left column carries two frames: the client, sized to its
-    // sessions rather than to the column, and the sensors underneath it.
-    // header + one card per session + a line for the arc caption
-    const clientH = Math.max(
-      Math.round(96 * S),
-      Math.min(Math.round(height * 0.52),
-               Math.round(46 * S)
-               + Math.max(1, sessions) * Math.round(68 * S)));
-
-    const client  = { x: M, y: top, w: cw, h: clientH };
-    const sensors = { x: M, y: top + clientH + G, w: cw,
-                      h: height - clientH - G };
+    // The left column is now the sensors lane, full height.  The client
+    // frame is gone -- but the create / destroy / call arcs still need an
+    // origin, and `client` here is that virtual anchor: a 1x1 rect on the
+    // broker's left edge, off-canvas from anything drawn.  Arcs then read
+    // as coming in from outside the visible layout, which is where the
+    // client is now (see the note in `flightPath`).
+    const sensors = { x: M, y: top, w: cw, h: height };
     const broker  = { x: M + cw + G,          y: top, w: bw, h: height };
     const hpc     = { x: M + cw + G + bw + G, y: top, w: hw, h: height };
+    const client  = { x: broker.x - 1, y: broker.y + Math.round(20 * S),
+                      w: 1, h: 1 };
 
     // the HPC super-frame holds the two endpoint role lanes, stacked
     const head = Math.round(26 * S);
@@ -1287,6 +1705,63 @@
     return `${(sec / 86400).toFixed(1)}d`;
   }
 
+  // Placeholder card content: the wire does not carry per-twin
+  // components, utility-task counts or per-investigator RMSE yet, so all
+  // three are synthesised here.  The agent roster is fixed (every twin
+  // runs the same two, each carrying an ANN and an RNN investigator),
+  // and the utility counts / RMSE traces are deterministic from a seed
+  // so they stay stable across frames and replays.  Swap `fakeAgents` /
+  // `fakeUtility` / `fakeSpark` the day the service starts serialising
+  // `runtime.components`.
+  const FAKE_AGENTS = [
+    { name: 'Gravity Estimator',  inD: 'SENSOR', outD: 'GRAVITY'  },
+    { name: 'Velocity Estimator', inD: 'SENSOR', outD: 'VELOCITY' },
+  ];
+
+  const FAKE_INVESTIGATORS = ['ANN', 'RNN'];
+
+  // A per-investigator model name that ticks up once a second, offset by
+  // the seed so investigators don't all read the same version.
+  function fakeModelName(seed, tick) {
+    const start = 1 + (Math.abs(seed) % 30);
+    return `model-v${start + tick}`;
+  }
+
+  function fakeAgents() { return FAKE_AGENTS; }
+
+  function fnv1a(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h;
+  }
+
+  function fakeUtility(id) {
+    const h = fnv1a(id);
+    const total   = 2 + (Math.abs(h) % 5);                          // 2-6
+    const persist = 1 + (Math.abs(h >>> 5) % Math.min(3, total));   // 1..min(3,total)
+    return { total, persist };
+  }
+
+  // A per-investigator RMSE trace, sampled to the model clock so it
+  // slides as `w.t` advances.  Starts high, decays with mild oscillation
+  // -- looks like a learner converging.  Nothing here reads real state.
+  function fakeSpark(seed, t) {
+    const N = 28, step = 0.5;
+    const out = [];
+    const t0 = t - N * step;
+    for (let i = 0; i < N; i++) {
+      const tt = t0 + i * step;
+      const decay = Math.exp(-Math.max(0, tt) / 40);
+      const noise = Math.sin(tt * 0.9 + seed * 1.31) * 0.08
+                  + Math.cos(tt * 0.31 + seed * 0.71) * 0.05;
+      out.push(Math.max(0.01, 0.10 + 0.9 * decay + noise * decay));
+    }
+    return out;
+  }
+
   // ---- header ------------------------------------------------------------
 
   function drawHeader(ctx, L, w, ui) {
@@ -1337,98 +1812,9 @@
     ctx.font = `400 ${Math.round(10.5 * S)}px ${FONT_MONO}`;
     ctx.fillStyle = ui.status.ok ? C.text_dim : C.amber;
     ctx.fillText(clip(ctx,
-      `${ui.status.text}   |   ${live} twins · ${w.tasks.size} tasks`
+      `${ui.status.text}   |   ${live} twins · ${w.taskTotal} tasks`
       + `   |   t = ${w.t.toFixed(1)} s`, L.W * 0.55),
       L.W - L.M, cy);
-  }
-
-  // ---- CLIENT lane: one sub-frame per session ----------------------------
-
-  function drawClientLane(ctx, L, w) {
-    const S = L.S, r = L.client;
-    panel(ctx, r, C.frame_border, 'client', C.frame_label, S);
-
-    if (!w.sessions.length) {
-      placeholder(ctx, r, 'no sessions', S);
-      return;
-    }
-
-    const head = Math.round(26 * S);
-    const pad  = Math.round(8 * S);
-    const n    = w.sessions.length;
-    const room = r.h - head - pad;
-    const cardH = Math.min(Math.round(62 * S),
-                           Math.floor((room - (n - 1) * 6 * S) / n));
-
-    w.sessions.forEach((s, i) => {
-      const y = r.y + head + i * (cardH + 6 * S);
-      if (cardH < 22 * S || y + cardH > r.y + r.h - pad * 0.5) return;
-
-      const box = { x: r.x + pad, y, w: r.w - 2 * pad, h: cardH };
-      s._rect = box;
-      panel(ctx, box, s.active ? C.cyan_dim : C.grey_dim, null, null, S,
-            C.panel_deep);
-
-      const px = box.x + 8 * S, maxW = box.w - 16 * S;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-
-      ctx.fillStyle = C.text;
-      ctx.font = `600 ${Math.round(11 * S)}px ${FONT_MONO}`;
-      ctx.fillText(clip(ctx, short(s.sid), maxW), px, box.y + 6 * S);
-
-      ctx.fillStyle = C.text_dim;
-      ctx.font = `400 ${Math.round(9.5 * S)}px ${FONT}`;
-      ctx.fillText(clip(ctx, s.owner ? `owner ${s.owner}` : 'owner unknown',
-                        maxW), px, box.y + 22 * S);
-
-      const age = s.age === null ? '' : `age ${humanAge(s.age)}  ·  `;
-      ctx.fillText(clip(ctx, `${age}${s.twins.length} twin`
-                        + `${s.twins.length === 1 ? '' : 's'}`, maxW),
-                   px, box.y + 34 * S);
-
-      if (cardH > 54 * S && s.engines.length) {
-        ctx.fillStyle = C.frame_label;
-        ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
-        ctx.fillText(clip(ctx, `engines ${s.engines.join(', ')}`, maxW),
-                     px, box.y + 46 * S);
-      }
-
-      drawReportTick(ctx, box, w, S);
-    });
-
-    // Label the dashed arcs and the ticks, once, where they land.  They
-    // are not a channel of their own: the client learns a twin's state by
-    // polling `twin_list`, and that is all these two marks stand for.
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'bottom';
-    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT}`;
-    ctx.fillStyle = C.text_dim;
-    ctx.globalAlpha = 0.75;
-    ctx.fillText(clip(ctx, '┆ twin_list state reports', r.w - 2 * pad),
-                 r.x + pad, r.y + r.h - 6 * S);
-    ctx.globalAlpha = 1;
-  }
-
-  // The steady-state counterpart of the dashed arcs: a tick on the right
-  // edge of each session card, brightening once per poll.  A transition is
-  // an event and gets an arc; *being told the state at all* is continuous,
-  // and this is what it looks like.
-  function drawReportTick(ctx, box, w, S) {
-    if (w.reported === null) return;
-
-    const age = w.t - w.reported;
-    const k = Math.max(0, 1 - age / (POLL_INTERVAL * 0.9));
-    const h = Math.round(9 * S);
-    const x = box.x + box.w - Math.round(3.5 * S);
-    const y = box.y + box.h / 2 - h / 2;
-
-    ctx.save();
-    ctx.globalAlpha = 0.22 + 0.68 * k;
-    ctx.fillStyle = C.cyan;
-    rr(ctx, x, y, Math.max(2, Math.round(2 * S)), h, 1);
-    ctx.fill();
-    ctx.restore();
   }
 
   // ---- SENSORS lane: the twins' own publishers, as observed ------------
@@ -1444,7 +1830,7 @@
     const S = L.S, r = L.sensors;
     if (r.h < 46 * S) return;
 
-    panel(ctx, r, C.frame_border, 'sensors', C.frame_label, S);
+    panel(ctx, r, C.frame_border, 'Channels', C.frame_label, S);
 
     const pubs = [...w.publishers.values()]
       .sort((a, b) => a.key < b.key ? -1 : 1);
@@ -1453,8 +1839,12 @@
     ctx.textBaseline = 'top';
     ctx.font = `400 ${Math.round(8 * S)}px ${FONT}`;
     ctx.fillStyle = C.text_dim;
-    ctx.fillText(clip(ctx, 'in the plugin host', r.w * 0.6),
-                 r.x + r.w - 9 * S, r.y + 12 * S);
+    // to the right of the panel title, only when there is room for it
+    const subAvail = r.w - 110 * S;
+    if (subAvail > 46 * S) {
+      ctx.fillText(clip(ctx, 'visible to broker', subAvail),
+                   r.x + r.w - 9 * S, r.y + 12 * S);
+    }
 
     if (!pubs.length) {
       placeholder(ctx, r, 'no stream traffic seen', S);
@@ -1502,8 +1892,7 @@
       ctx.textAlign = 'right';
       ctx.fillStyle = C.text_dim;
       ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
-      ctx.fillText(`${short(pub.twin)} ${pub.count}`, box.x + box.w,
-                   box.y + 1 * S);
+      ctx.fillText(`${pub.count}`, box.x + box.w, box.y + 1 * S);
     });
 
     if (pubs.length > rows) {
@@ -1541,320 +1930,58 @@
 
   // ---- BROKER lane: the twin cards are the centrepiece -------------------
 
-  function drawBrokerLane(ctx, L, w) {
+  // The demo runs two digital twins.  The bundled sample recording holds
+  function drawBrokerLane(ctx, L, w, ui) {
     const S = L.S, r = L.broker;
-    panel(ctx, r, C.cyan_dim, 'broker · dt plugin', C.frame_label, S);
-
-    // Birth order, except that a twin which has gone yields its slot: its
-    // card is a memento, and a live twin pushed behind `+N more` by one is
-    // a worse trade than a memento moving.
-    const twins = [...w.twins.values()].sort((a, b) =>
-      (a.gone === null ? 0 : 1) - (b.gone === null ? 0 : 1) || a.born - b.born);
-    if (!twins.length) {
-      placeholder(ctx, r, 'no twins', S);
-      return;
-    }
+    panel(ctx, r, C.cyan_dim, 'Digital Twins', C.frame_label, S);
 
     const head = Math.round(28 * S);
     const pad  = Math.round(9 * S);
-    const gap  = Math.round(8 * S);
 
-    const cols = Math.max(1, Math.min(3,
-      Math.floor((r.w - 2 * pad + gap) / (178 * S + gap))));
-    // as many rows as the twins need, capped by what fits: a handful of
-    // twins then get tall cards (room for their metrics) rather than short
-    // ones with an empty lane underneath
-    const fits = Math.max(1,
-      Math.floor((r.h - head - pad + gap) / (104 * S + gap)));
-    const rows = Math.min(fits, Math.ceil(twins.length / cols));
-    const cardW = Math.floor((r.w - 2 * pad - (cols - 1) * gap) / cols);
-    const cardH = Math.min(Math.round(150 * S),
-      Math.floor((r.h - head - pad - (rows - 1) * gap) / rows));
+    // The DOM pane (`newTwinPane`) owns everything inside the frame: it
+    // scrolls, so no twin can vanish behind a bottom edge again.  The
+    // canvas hands it the interior rect and draws only the frame -- and
+    // the placeholder, which shows through the pane while it is empty.
+    ui.twinPaneRect = { x: r.x + pad, y: r.y + head,
+                        w: r.w - 2 * pad, h: r.h - head - pad };
+    // the header band, for the pane's own controls (expand/collapse all)
+    ui.twinPaneHead = { x: r.x + pad, y: r.y + Math.round(5 * S),
+                        w: r.w - 2 * pad, h: head - Math.round(8 * S) };
 
-    // The grid starts at the top of the lane and grows downward, so a card
-    // stays where it was when the next twin arrives; centring moved every
-    // card -- and every arc anchored on one -- each time the count changed.
-    // What is left over stays empty, below.
-    const top = r.y + head;
-
-    const shown = Math.min(twins.length, cols * rows);
-    for (let i = 0; i < shown; i++) {
-      const box = {
-        x: r.x + pad + (i % cols) * (cardW + gap),
-        y: top + Math.floor(i / cols) * (cardH + gap),
-        w: cardW, h: cardH,
-      };
-      twins[i]._rect = box;
-      drawTwinCard(ctx, box, twins[i], w, S);
-    }
-    for (let i = shown; i < twins.length; i++) twins[i]._rect = null;
-
-    if (twins.length > shown) {
-      ctx.fillStyle = C.text_dim;
-      ctx.font = `400 ${Math.round(10 * S)}px ${FONT}`;
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(`+${twins.length - shown} more`,
-                   r.x + r.w - pad, r.y + r.h - 4 * S);
-    }
-  }
-
-  function drawTwinCard(ctx, box, tw, w, S) {
-    const state = tw.state || 'initializing';
-    const closing = tw.gone !== null;
-
-    // A card that has gone stays up for the whole grace period at a dimmed
-    // but readable strength, then fades over the last of it; what it keeps
-    // is the last thing the service said about the twin.
-    let alpha = 1;
-    if (closing) {
-      const left = GONE_LINGER - (w.t - tw.gone);
-      alpha = 0.7 * Math.max(0, Math.min(1, left / GONE_FADE));
-    } else if (w.t - tw.fresh < 0.4) alpha = (w.t - tw.fresh) / 0.4;
-    ctx.globalAlpha = alpha;
-
-    // `initializing` pulses: the twin is busy with something slow (engine
-    // build + stream connect, up to minutes) and has no runtime yet
-    const border = STATE_COLOR[state] || C.grey;
-    if (state === 'initializing') {
-      ctx.globalAlpha = alpha
-        * (0.45 + 0.55 * (0.5 + 0.5 * Math.sin((w.t - tw.born) * 3.2)));
-    }
-    panel(ctx, box, border, null, null, S, C.panel_deep);
-    ctx.globalAlpha = alpha;
-
-    // a stream pulse: an expanding ring on the twin that published
-    if (tw.pulse && w.t - tw.pulse.t < PULSE_TTL) {
-      const k = 1 - (w.t - tw.pulse.t) / PULSE_TTL;
-      ctx.save();
-      ctx.globalAlpha = alpha * k * 0.85;
-      ctx.strokeStyle = C.green;
-      ctx.lineWidth = 1.5;
-      const g = 3 * S * (1 - k);
-      rr(ctx, box.x - g, box.y - g, box.w + 2 * g, box.h + 2 * g, 9 * S);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    const px = box.x + 9 * S;
-    const maxW = box.w - 18 * S;
-    let y = box.y + 7 * S;
-
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = C.text;
-    ctx.font = `600 ${Math.round(12 * S)}px ${FONT_MONO}`;
-    ctx.fillText(short(tw.id), px, y);
-
-    pill(ctx, box.x + box.w - 9 * S - pillWidth(ctx, state, S), y - 1,
-         state, STATE_TEXT[state] || C.text_dim, S);
-    y += 20 * S;
-
-    ctx.fillStyle = C.text_dim;
-    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
-    const badge = w.backend ? `  [${w.backend}]` : '';
-    ctx.fillText(clip(ctx, `ns dt/${short(tw.id)}/…${badge}`, maxW), px, y);
-    y += 12 * S;
-
-    if (tw.age !== null) {
-      ctx.fillStyle = C.frame_label;
-      ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
-      let line = `age ${humanAge(tw.age)}`;
-      if (tw.pulse && w.t - tw.pulse.t < PULSE_TTL * 3) {
-        line += `  ·  stream ${tw.pulse.label}`;
-      }
-      ctx.fillText(clip(ctx, line, maxW), px, y);
-      y += 13 * S;
-    }
-
-    if (state === 'failed' && tw.last_error) {
-      ctx.fillStyle = C.red;
-      ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
-      ctx.fillText(clip(ctx, tw.last_error, maxW), px, y);
-      y += 13 * S;
-    }
-
-    // convergence criteria: one block per learner metric
-    for (const [name, m] of Object.entries(tw.metrics || {})) {
-      const h = Math.round(34 * S);
-      if (y + h > box.y + box.h - 4 * S) break;
-      drawMetric(ctx, px, y, maxW, h, name, m, tw.spark.get(name) || [], S);
-      y += h + 4 * S;
-    }
-
-    // A card that has gone says so for as long as it is up: the `closed`
-    // marker below outlives its own TTL by a beat only, and the state pill
-    // still reads whatever the twin was doing when it left the listing.
-    if (closing) {
-      ctx.fillStyle = C.grey;
-      ctx.font = `600 ${Math.round(8.5 * S)}px ${FONT}`;
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText('▸ closed', box.x + box.w - 8 * S, box.y + box.h - 6 * S);
-      ctx.globalAlpha = 1;
-      return;
-    }
-
-    // the newest inferred verb / transition, bottom-right of the card
-    const marks = w.markers.filter(m => m.twinId === tw.id);
-    if (marks.length) {
-      const m = marks[marks.length - 1];
-      ctx.globalAlpha = alpha
-        * Math.max(0, Math.min(1, 2 * (1 - (w.t - m.t0) / MARKER_TTL)));
-      ctx.fillStyle = m.color;
-      ctx.font = `600 ${Math.round(8.5 * S)}px ${FONT}`;
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(`▸ ${m.label}`, box.x + box.w - 8 * S,
-                   box.y + box.h - 6 * S);
-    }
-
-    ctx.globalAlpha = 1;
-  }
-
-  // A criterion metric: a value bar with the target tick on it, the name,
-  // the value, and a sparkline.  Which side of the target is *good* comes
-  // from the learner's own comparison operator -- nothing here guesses.
-  function drawMetric(ctx, x, y, wd, ht, name, m, hist, S) {
-    const good  = metricGood(m);
-    const color = good ? C.green : C.amber;
-    const barW  = Math.round(7 * S);
-    const scale = metricScale(m, hist);
-
-    ctx.fillStyle = C.unused;
-    rr(ctx, x, y, barW, ht, 2 * S);
-    ctx.fill();
-    ctx.strokeStyle = C.unused_brd;
-    ctx.lineWidth = 1;
-    rr(ctx, x + 0.5, y + 0.5, barW - 1, ht - 1, 2 * S);
-    ctx.stroke();
-
-    // the value, rising from the bottom
-    if (typeof m.value === 'number') {
-      const fh = Math.max(1, Math.min(ht, (m.value / scale) * ht));
-      ctx.globalAlpha *= 0.5;
-      ctx.fillStyle = color;
-      rr(ctx, x, y + ht - fh, barW, fh, 2 * S);
-      ctx.fill();
-      ctx.globalAlpha /= 0.5;
-      ctx.fillStyle = color;
-      rr(ctx, x - 1 * S, y + ht - fh - 1, barW + 2 * S, 2, 1);
-      ctx.fill();
-    }
-
-    // the target
-    if (typeof m.threshold === 'number') {
-      const th = Math.max(0, Math.min(ht, (m.threshold / scale) * ht));
-      ctx.save();
-      ctx.globalAlpha *= 0.75;
-      ctx.strokeStyle = C.text;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x - 2 * S, y + ht - th + 0.5);
-      ctx.lineTo(x + barW + 2 * S, y + ht - th + 0.5);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    const tx = x + barW + 7 * S;
-    const tw = wd - barW - 7 * S;
-
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = C.text_label;
-    ctx.font = `600 ${Math.round(9.5 * S)}px ${FONT}`;
-    ctx.fillText(clip(ctx, name, tw * 0.55), tx, y);
-
-    ctx.fillStyle = color;
-    ctx.font = `400 ${Math.round(9.5 * S)}px ${FONT_MONO}`;
-    ctx.textAlign = 'right';
-    ctx.fillText(fmt(m.value), x + wd, y);
-
-    ctx.textAlign = 'left';
-    ctx.fillStyle = C.text_dim;
-    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
-    ctx.fillText(clip(ctx, `${m.operator || ''} ${fmt(m.threshold)}`
-      + (m.windows ? `  ${m.windows}w` : ''), tw), tx, y + 11 * S);
-
-    drawSpark(ctx, tx, y + 22 * S, tw, ht - 23 * S, hist, color,
-              m.threshold, scale);
-  }
-
-  function metricGood(m) {
-    if (typeof m.should_stop === 'boolean') return m.should_stop;
-    if (typeof m.value !== 'number' || typeof m.threshold !== 'number') {
-      return false;
-    }
-    switch (m.operator) {
-      case '<':  return m.value <  m.threshold;
-      case '<=': return m.value <= m.threshold;
-      case '>':  return m.value >  m.threshold;
-      case '>=': return m.value >= m.threshold;
-      case '==': return m.value === m.threshold;
-      default:   return false;
-    }
-  }
-
-  // One scale for bar, tick and sparkline: the largest thing any of them
-  // has to show, with the target kept comfortably inside the track.
-  function metricScale(m, hist) {
-    let top = 0;
-    for (const v of hist) if (typeof v === 'number') top = Math.max(top, v);
-    if (typeof m.value === 'number') top = Math.max(top, m.value);
-    if (typeof m.threshold === 'number') top = Math.max(top, m.threshold * 1.6);
-    return top > 0 ? top * 1.08 : 1;
-  }
-
-  function drawSpark(ctx, x, y, wd, ht, hist, color, threshold, scale) {
-    if (wd < 12 || ht < 5) return;
-
-    if (typeof threshold === 'number') {
-      const ty = y + ht - Math.min(ht, (threshold / scale) * ht);
-      ctx.save();
-      ctx.globalAlpha *= 0.4;
-      ctx.strokeStyle = C.text_dim;
-      ctx.setLineDash([2, 2]);
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, ty + 0.5);
-      ctx.lineTo(x + wd, ty + 0.5);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    if (hist.length < 2) return;
-
-    const step = wd / (hist.length - 1);
-    ctx.save();
-    ctx.globalAlpha *= 0.9;
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    hist.forEach((v, i) => {
-      const py = y + ht - Math.max(0, Math.min(ht, (v / scale) * ht));
-      if (i === 0) ctx.moveTo(x, py);
-      else ctx.lineTo(x + i * step, py);
-    });
-    ctx.stroke();
-    ctx.restore();
+    if (!w.twins.size) placeholder(ctx, r, 'no twins', S);
   }
 
   // ---- HPC lanes: one per endpoint role ----------------------------------
 
-  function drawHpcLanes(ctx, L, w) {
+  // Task-manager graph: seconds on the x-axis (rightmost point is `now`
+  // snapped to the previous half-second, so the graph only shifts once
+  // every 0.5s and the buckets sit on a stable time grid), pool's
+  // running-task count on the y-axis.  Data comes from `recordPoolEvent`,
+  // called whenever the pool's running count actually changes; each
+  // `POOL_STEP`-second bucket plots the *max* concurrent count seen
+  // during that interval, so a spike lasting less than a bucket is
+  // preserved as that bucket's height rather than lost between samples.
+  const POOL_WINDOW      = 60;     // seconds shown on the x-axis
+  const POOL_STEP        = 0.5;    // bucket width, and the graph's tick
+  const POOL_TABLE_ROWS  = 5;
+
+  function drawHpcLanes(ctx, L, w, ui) {
     const S = L.S;
-    panel(ctx, L.hpc, C.frame_border, 'hpc resources', C.frame_label, S,
+    panel(ctx, L.hpc, C.frame_border, 'Resource Pools', C.frame_label, S,
           C.panel_deep);
 
-    // every endpoint any session put in that role, because the role is a
-    // per-session answer and two sessions need not agree
-    drawEndpointLane(ctx, L.inference, 'inference endpoint',
+    // Two pool cards, one per role.  Colour keeps them apart at a glance:
+    // inference = cyan, learning = amber -- the same convention already
+    // used for task-result arcs on the broker lane.  A pool card also
+    // lists every endpoint any session put in that role, because the role
+    // is a per-session answer and two sessions need not agree.
+    drawEndpointLane(ctx, L.inference, 'Pool: inference',
                      w.endpoints.inference.join(', '), 'inference',
-                     w, S, C.cyan_dim, null);
-    drawEndpointLane(ctx, L.learning, 'learning endpoint',
+                     w, S, C.cyan_dim, null, ui);
+    drawEndpointLane(ctx, L.learning, 'Pool: learning',
                      w.endpoints.learning.join(', '), 'learning', w, S,
                      C.amber_dim,
-                     w.endpoints.alias ? 'aliases inference' : null);
+                     w.endpoints.alias ? 'aliases inference' : null, ui);
   }
 
   // Tile geometry, shared by the renderer and the spawn arcs so a task
@@ -1879,11 +2006,22 @@
     };
   }
 
-  function drawEndpointLane(ctx, r, title, endpoint, lane, w, S, border, note) {
+  function drawEndpointLane(ctx, r, title, endpoint, lane, w, S, border, note,
+                            ui) {
     panel(ctx, r, border, title, C.frame_label, S);
 
-    const g = laneGeom(r, S);
+    // the pool title is a link: pools are the task dispatcher's, so the
+    // title leads to its surface (REST for now; its Explorer page when
+    // one exists).  `link:` hits navigate instead of toggling.
+    if (ui) {
+      ctx.font = `600 ${Math.round(10 * S)}px ${FONT}`;
+      const tw2 = ctx.measureText(title.toUpperCase()).width + 22 * S;
+      ui.hits.push({ key: 'link:#plugin/broker/task_dispatcher',
+                     x: r.x, y: r.y, w: Math.min(tw2, r.w * 0.5),
+                     h: Math.round(24 * S) });
+    }
 
+    // endpoint name (or 'aliases task' note) on the title row, right-aligned
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
     ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
@@ -1892,77 +2030,294 @@
     ctx.fillText(clip(ctx, note ? `${name} ${note}` : name, r.w * 0.62),
                  r.x + r.w - 9 * S, r.y + 11 * S);
 
-    for (const t of w.tasks.values()) {
-      if (t.lane !== lane) continue;
-      // still in the air, or still waiting for the poll that owns it
-      if (t.armed === null || w.t - t.armed < FLIGHT) continue;
-      const p = tilePos(r, g, t.slot);
-      drawTaskTile(ctx, p.x, p.y, g.tile, t, w, S);
-    }
+    // content area beneath the title
+    const head = Math.round(28 * S);
+    const padS = Math.round(9 * S);
+    const gap  = Math.round(6 * S);
+    const cx   = r.x + padS;
+    const cy   = r.y + head;
+    const cw   = r.w - 2 * padS;
+    const ch   = r.h - head - Math.round(6 * S);
 
-    // The beat in which a client's `get_inference` was being served.  It is
-    // served *here*: a twin answers a probe by running its investigator's
-    // inference task on the task engine, and the ex-situ engine only ever
-    // receives training windows.  Which of the tiles above it was cannot be
-    // known -- a `task_status` carries no verb -- so this marks the when and
-    // nothing else, dim like the other inferred marks, and only on the lane
-    // that could have run it.
-    if (lane === 'inference' && w.probe) {
-      const age = w.t - w.probe.t;
-      const span = FLIGHT * 1.6;
-      if (age >= 0 && age < span) {
-        ctx.save();
-        ctx.globalAlpha = 0.28 + 0.42 * Math.max(0, 1 - age / span);
-        const pw = pillWidth(ctx, 'inference', S);
-        pill(ctx, r.x + r.w - pw - 9 * S, r.y + r.h - 20 * S,
-             'inference', C.amber, S);
-        ctx.restore();
-      }
-    }
+    // Split: table height fits 1 header + N rows; the rest is graph.
+    const rowH = Math.round(13 * S);
+    const wantTable = (POOL_TABLE_ROWS + 1) * rowH + Math.round(6 * S);
+    const tableH = Math.min(wantTable, Math.max(0, Math.floor(ch * 0.5)));
+    const graphH = Math.max(0, ch - tableH - gap);
 
-    const c = w.counts[lane];
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'bottom';
-    ctx.font = `400 ${Math.round(9 * S)}px ${FONT_MONO}`;
-    ctx.fillStyle = C.text_dim;
-    ctx.fillText(clip(ctx, `${c.running} running · ${c.done} done`
-      + (c.failed ? ` · ${c.failed} failed` : ''), r.w - 2 * g.pad),
-      r.x + g.pad, r.y + r.h - 6 * S);
+    const color = lane === 'learning' ? C.amber : C.cyan;
+    // Match the learning pool card's own outer border colour (`C.amber_dim`,
+    // set by the caller in `drawHpcLanes`) so the graph plot and the
+    // recent-tasks table read as one dark-orange unit inside it.  The
+    // task pool keeps the neutral frame border.
+    const inner = lane === 'learning' ? C.amber_dim : C.frame_border;
+
+    if (graphH > Math.round(30 * S)) {
+      drawTaskGraph(ctx, cx, cy, cw, graphH,
+                    w.poolHistory[lane] || [],
+                    w.t, w.counts[lane].running, color, inner, S);
+    }
+    if (tableH > rowH) {
+      drawTaskTable(ctx, cx, cy + graphH + gap, cw, tableH, rowH,
+                    w, lane, inner, S);
+    }
   }
 
-  function drawTaskTile(ctx, x, y, size, t, w, S) {
-    const color = TASK_COLOR[t.state] || C.cyan;
-    const age = w.t - (t.armed === null ? t.t0 : t.armed) - FLIGHT;
+  // The task-manager graph: y-axis labelled "tasks", x-axis is time
+  // (rightmost point = now), sliding window of `POOL_WINDOW` seconds.
+  // Y at each x = number of concurrent tasks running at that instant,
+  // drawn as the step function that comes straight out of `poolHistory`.
+  function drawTaskGraph(ctx, x, y, wd, ht, hist,
+                         nowT, nowRunning, color, border, S) {
+    const yLabelW = Math.round(22 * S);
+    const xTickH  = Math.round(12 * S);
+    const plotX = x + yLabelW;
+    const plotY = y + Math.round(3 * S);
+    const plotW = wd - yLabelW - Math.round(4 * S);
+    const plotH = ht - xTickH - Math.round(4 * S);
+    if (plotW < 20 || plotH < 12) return;
 
-    let alpha = 1;
-    if (t.tEnd !== null) alpha = Math.max(0, 1 - (w.t - t.tEnd) / FADE);
+    // plot background
+    ctx.fillStyle = C.panel_deep;
+    rr(ctx, plotX, plotY, plotW, plotH, 2 * S);
+    ctx.fill();
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1;
+    rr(ctx, plotX + 0.5, plotY + 0.5, plotW - 1, plotH - 1, 2 * S);
+    ctx.stroke();
 
-    // on-landing halo, then a gentle running pulse
-    if (age < GLOW && t.tEnd === null) {
-      const k = 1 - age / GLOW;
-      ctx.save();
-      ctx.shadowBlur = 14 * k * S;
-      ctx.shadowColor = color;
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = color;
-      rr(ctx, x, y, size, size, 2);
-      ctx.fill();
-      ctx.fill();
-      ctx.restore();
+    // rotated y-axis label
+    ctx.save();
+    ctx.translate(x + Math.round(9 * S), plotY + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.frame_label;
+    ctx.font = `600 ${Math.round(9 * S)}px ${FONT}`;
+    ctx.fillText('tasks', 0, 0);
+    ctx.restore();
+
+    // -------- data prep -----------------------------------------------
+    // Snap the right edge back to the previous `POOL_STEP` boundary so
+    // the graph only shifts one bucket every half-second instead of
+    // scrolling continuously.
+    const nBuckets = Math.round(POOL_WINDOW / POOL_STEP);
+    const rightT   = Math.floor(nowT / POOL_STEP) * POOL_STEP;
+    const tMin     = rightT - POOL_WINDOW;
+
+    // Left-edge value: the running count in effect at `tMin`.  Any event
+    // at or before tMin sets the value that held going into the window.
+    let running = 0;
+    let hi = 0;
+    while (hi < hist.length && hist[hi].t <= tMin) {
+      running = hist[hi].running;
+      hi++;
     }
 
-    ctx.globalAlpha = alpha * (t.tEnd === null
-      ? 0.8 + 0.2 * (0.5 + 0.5 * Math.sin(age * 3.0)) : 1);
+    // Per-bucket max concurrent value.  Between events the value is
+    // constant, so the bucket peak is max(value_at_start, event values
+    // that landed in the bucket).
+    const values = new Array(nBuckets).fill(0);
+    for (let b = 0; b < nBuckets; b++) {
+      const bEnd = tMin + (b + 1) * POOL_STEP;
+      let peakB = running;
+      while (hi < hist.length && hist[hi].t < bEnd) {
+        running = hist[hi].running;
+        if (running > peakB) peakB = running;
+        hi++;
+      }
+      values[b] = peakB;
+    }
+    // The rightmost bucket is the one still in progress: fold in the
+    // live `nowRunning` too, so a spike happening right now doesn't wait
+    // for the next boundary to appear.
+    if (nowRunning > values[nBuckets - 1]) values[nBuckets - 1] = nowRunning;
+
+    // -------- axes ---------------------------------------------------
+    let peak = Math.max(1, nowRunning);
+    for (const v of values) if (v > peak) peak = v;
+    const yTop = Math.max(1, Math.ceil(peak * 1.25));
+
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.text_dim;
+    ctx.font = `400 ${Math.round(8 * S)}px ${FONT_MONO}`;
+    ctx.fillText(String(yTop), plotX - 3 * S, plotY + Math.round(5 * S));
+    ctx.fillText('0', plotX - 3 * S, plotY + plotH - Math.round(4 * S));
+
+    // -------- draw stepped bars --------------------------------------
+    const bucketPx = plotW / nBuckets;
+    const toY = v => plotY + plotH - (v / yTop) * plotH;
+
+    // filled area under the step
+    ctx.save();
+    ctx.globalAlpha = 0.20;
     ctx.fillStyle = color;
-    rr(ctx, x, y, size, size, 2);
+    ctx.beginPath();
+    ctx.moveTo(plotX, plotY + plotH);
+    for (let b = 0; b < nBuckets; b++) {
+      const bx0 = plotX + b * bucketPx;
+      const bx1 = plotX + (b + 1) * bucketPx;
+      const by  = toY(values[b]);
+      ctx.lineTo(bx0, by);
+      ctx.lineTo(bx1, by);
+    }
+    ctx.lineTo(plotX + plotW, plotY + plotH);
+    ctx.closePath();
     ctx.fill();
-    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    // step outline on top
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (let b = 0; b < nBuckets; b++) {
+      const bx0 = plotX + b * bucketPx;
+      const bx1 = plotX + (b + 1) * bucketPx;
+      const by  = toY(values[b]);
+      if (b === 0) ctx.moveTo(bx0, by);
+      else {
+        const pby = toY(values[b - 1]);
+        if (pby !== by) ctx.lineTo(bx0, by);
+      }
+      ctx.lineTo(bx1, by);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // x-axis ticks
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = C.text_dim;
+    ctx.font = `400 ${Math.round(8 * S)}px ${FONT_MONO}`;
+    ctx.fillText(`-${POOL_WINDOW}s`, plotX,
+                 plotY + plotH + Math.round(2 * S));
+    ctx.textAlign = 'right';
+    ctx.fillText('now', plotX + plotW,
+                 plotY + plotH + Math.round(2 * S));
+  }
+
+  // Recent-tasks table, capped at `POOL_TABLE_ROWS` newest.  DT hash and
+  // lane are real; Kind / Inv / Task are faked from the uid because the
+  // wire does not carry per-task metadata.
+  function drawTaskTable(ctx, x, y, wd, ht, rowH, w, lane, border, S) {
+    // border + subtle background so the table reads as its own block
+    ctx.fillStyle = C.panel_deep;
+    rr(ctx, x, y, wd, ht, 2 * S);
+    ctx.fill();
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1;
+    rr(ctx, x + 0.5, y + 0.5, wd - 1, ht - 1, 2 * S);
+    ctx.stroke();
+
+    const padS = Math.round(6 * S);
+    const cx = x + padS;
+    const cw = wd - 2 * padS;
+
+    // What the wire actually carries per task: uid, owner twin, state,
+    // timing.  Component attribution (agent / investigator names) needs
+    // per-task metadata the service does not send yet -- #8.
+    const cols = [
+      { label: 'DT',    frac: 0.16 },
+      { label: 'Task',  frac: 0.34 },
+      { label: 'State', frac: 0.26 },
+      { label: 'Age',   frac: 0.24 },
+    ];
+    const colX = [];
+    let cur = cx;
+    for (const c of cols) { colX.push(cur); cur += Math.round(c.frac * cw); }
+    colX.push(cx + cw);   // sentinel for last-column width
+
+    // header row
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.frame_label;
+    ctx.font = `600 ${Math.round(8 * S)}px ${FONT}`;
+    const hy = y + rowH / 2 + Math.round(2 * S);
+    cols.forEach((c, i) => {
+      spaced(ctx, c.label.toUpperCase(), colX[i], hy, 0.6);
+    });
+
+    // header underline (matches the outer table border colour)
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + padS, y + rowH + 0.5);
+    ctx.lineTo(x + wd - padS, y + rowH + 0.5);
+    ctx.stroke();
+
+    // Newest first, cap to POOL_TABLE_ROWS.  From the rolling list, so
+    // a finished task keeps its row instead of vanishing on expiry.
+    const tasks = [...w.recent]
+      .filter(t => t.lane === lane)
+      .sort((a, b) => b.t0 - a.t0)
+      .slice(0, POOL_TABLE_ROWS);
+
+    if (!tasks.length) {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = C.text_dim;
+      ctx.font = `400 ${Math.round(9 * S)}px ${FONT}`;
+      ctx.fillText('no tasks yet', x + wd / 2,
+                   y + rowH + (ht - rowH) / 2);
+      return;
+    }
+
+    ctx.font = `400 ${Math.round(8.5 * S)}px ${FONT_MONO}`;
+    tasks.forEach((t, i) => {
+      const ry = y + rowH + i * rowH + rowH / 2;
+      if (ry + rowH / 2 > y + ht - 2) return;
+
+      const owner = w.owners.get(t.uid);
+      const ended = t.tEnd !== null;
+      const age = Math.max(0, (ended ? t.tEnd : w.t) - t.t0);
+      const cells = [
+        owner ? short(owner) : '—',
+        t.uid,
+        t.state.toLowerCase(),
+        `${age.toFixed(1)}s${ended ? '' : ' …'}`,
+      ];
+      // faded once the task has ended; running tasks stay full brightness
+      ctx.fillStyle = t.tEnd === null ? C.text_label : C.text_dim;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      cells.forEach((cell, j) => {
+        const w2 = colX[j + 1] - colX[j] - 4 * S;
+        ctx.fillText(clip(ctx, cell, w2), colX[j], ry);
+      });
+    });
+  }
+
+  // Placeholder task attribution: 60% Agent / 40% Utility, with an
+  // investigator for the agent tasks and one of a handful of typical
+  // task names for both.
+  const FAKE_TASK_NAMES = [
+    'infer', 'predict', 'train_window', 'active_learn', 'criterion',
+    'checkpoint', 'validate', 'bootstrap', 'preprocess', 'stream_hop',
+  ];
+  function fakeTaskAttr(uid) {
+    const h = fnv1a(uid);
+    const isAgent = (Math.abs(h) % 5) < 3;          // 3/5 agent, 2/5 utility
+    const kind = isAgent ? 'Agent' : 'Utility';
+    const agent = isAgent
+      ? FAKE_AGENTS[Math.abs(h >>> 11) % FAKE_AGENTS.length].name
+      : '—';
+    const inv  = isAgent
+      ? FAKE_INVESTIGATORS[Math.abs(h >>> 3) % FAKE_INVESTIGATORS.length]
+      : '—';
+    const name = FAKE_TASK_NAMES[Math.abs(h >>> 7) % FAKE_TASK_NAMES.length];
+    return { kind, agent, inv, name };
   }
 
   // ---- flights: the inferred verbs, and spawned tasks -------------------
 
+  // Arcs are no longer drawn.  Twin lifecycle, calls and results all
+  // read on the cards in place (state pill, agent rows, pool graph and
+  // recent-task table), so the flying animations added noise for no new
+  // information.  The probe still records the resolved arc geometry so
+  // headless tests keep their assertions.
   function drawFlights(ctx, L, w, ui) {
-    const S = L.S;
+    if (!ui || !ui.probe) return;
 
     for (const f of w.flights) {
       const k = (w.t - f.t0) / f.dur;
@@ -1971,70 +2326,14 @@
       const seg = flightPath(L, w, f);
       if (!seg) continue;
 
-      if (ui && ui.probe) {
-        ui.probe.arcs.push({
-          kind: f.kind, label: f.label, twin: f.twinId,
-          uid:  f.task ? f.task.uid : null,
-          lane: f.task ? f.task.lane : null,
-          owner: f.task ? (w.owners.get(f.task.uid) || null) : null,
-          x0: seg.x0, y0: seg.y0, x1: seg.x1, y1: seg.y1,
-          color: seg.color, k,
-        });
-      }
-
-      const e = 1 - Math.pow(1 - k, 3);
-      const mx = (seg.x0 + seg.x1) / 2;
-      // The lift, which is what makes a centre anchor legible: a fixed one
-      // left a long arc lying flat across the cards between its ends, and an
-      // arc that starts *inside* a card has to climb out of it to be read as
-      // leaving it at all.  Proportional to the span, so the short client
-      // hops stay gentle and the long ones to the endpoint lanes clear the
-      // grid instead of crossing it.
-      const span = Math.hypot(seg.x1 - seg.x0, seg.y1 - seg.y0);
-      const lift = Math.min(96 * S, (20 + 0.20 * span) * S);
-      const midY = (seg.y0 + seg.y1) / 2;
-      // Bowed away from whichever side has the room.  The card grid sits at
-      // the top of its lane, so for most arcs that is downward, into the
-      // empty part of the lane: a curve with no room above flattens into a
-      // line that runs through the cards between its ends, which is the one
-      // thing a centre anchor cannot afford.
-      const my = !seg.onCard && midY - lift > L.hd + 10 * S
-        ? midY - lift : midY + lift;
-      const dim = seg.dim || 1;
-
-      // the trail
-      ctx.save();
-      ctx.globalAlpha = 0.22 * dim * (1 - k);
-      ctx.strokeStyle = seg.color;
-      ctx.lineWidth = 1;
-      if (seg.dash) ctx.setLineDash([3 * S, 3 * S]);
-      ctx.beginPath();
-      ctx.moveTo(seg.x0, seg.y0);
-      ctx.quadraticCurveTo(mx, my, seg.x1, seg.y1);
-      ctx.stroke();
-      ctx.restore();
-
-      // the tile, along the same quadratic
-      const u = 1 - e;
-      const x = u * u * seg.x0 + 2 * u * e * mx + e * e * seg.x1;
-      const y = u * u * seg.y0 + 2 * u * e * my + e * e * seg.y1;
-      const size = seg.size * (0.65 + 0.35 * e);
-
-      ctx.save();
-      ctx.globalAlpha = 0.95 * dim;
-      ctx.fillStyle = seg.color;
-      rr(ctx, x - size / 2, y - size / 2, size, size, 2);
-      ctx.fill();
-
-      if (seg.label && k < 0.7) {
-        ctx.globalAlpha = 0.85 * dim * (1 - k / 0.7);
-        ctx.fillStyle = seg.color;
-        ctx.font = `600 ${Math.round(8.5 * S)}px ${FONT}`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.fillText(seg.label, x, y - size / 2 - 2 * S);
-      }
-      ctx.restore();
+      ui.probe.arcs.push({
+        kind: f.kind, label: f.label, twin: f.twinId,
+        uid:  f.task ? f.task.uid : null,
+        lane: f.task ? f.task.lane : null,
+        owner: f.task ? (w.owners.get(f.task.uid) || null) : null,
+        x0: seg.x0, y0: seg.y0, x1: seg.x1, y1: seg.y1,
+        color: seg.color, k,
+      });
     }
   }
 
@@ -2115,7 +2414,11 @@
       };
     }
 
-    // a create / destroy verb, inferred from the poll delta
+    // a create / destroy verb, inferred from the poll delta.  The client
+    // frame is no longer drawn (sessions are data-only now), so `sess._rect`
+    // is never set and `L.client` is a 1x1 virtual anchor on the broker's
+    // left edge -- see `layout`.  Arcs therefore emerge at the broker
+    // boundary as if arriving from off-canvas.
     const tw   = w.twins.get(f.twinId);
     const sess = tw && w.sessions.find(s => s.sid === tw.sid);
     const from = (sess && sess._rect) || L.client;
@@ -2323,6 +2626,67 @@
 .dtd-in { background: #0b1220; color: ${C.text};
           border: 1px solid ${C.unused_brd}; border-radius: 4px;
           padding: 5px 8px; font-family: ${FONT_MONO}; font-size: 11px; }
+.dtd-twinpane { position: absolute; overflow-y: auto; overflow-x: hidden;
+                display: flex; flex-direction: column; gap: 8px;
+                scrollbar-width: thin;
+                scrollbar-color: ${C.unused_brd} transparent; }
+.dtd-card { flex: none; border: 1px solid ${C.grey}; border-radius: 6px;
+            background: ${C.panel_deep}; padding: 7px 9px 8px;
+            position: relative; }
+.dtd-card.dtd-init { animation: dtd-breathe 1.9s ease-in-out infinite; }
+.dtd-card.dtd-pulse { box-shadow: 0 0 0 1.5px ${C.green}; }
+@keyframes dtd-breathe { 50% { opacity: 0.45; } }
+.dtd-card-head { display: flex; align-items: baseline; gap: 8px;
+                 cursor: pointer; user-select: none; }
+.dtd-card-title { font: 600 12px ${FONT_MONO}; color: ${C.text};
+                  flex: 1; overflow: hidden; text-overflow: ellipsis;
+                  white-space: nowrap; }
+.dtd-pill { font: 600 9px ${FONT}; letter-spacing: 0.09em;
+            text-transform: uppercase; border: 1px solid;
+            border-radius: 9px; padding: 2px 8px; }
+.dtd-card-util { font: 400 9.5px ${FONT}; color: ${C.text_dim};
+                 margin-top: 2px; }
+.dtd-card-error { font: 400 9px ${FONT}; color: ${C.red}; margin-top: 4px; }
+.dtd-card-mark { position: absolute; right: 8px; bottom: 5px;
+                 font: 600 8.5px ${FONT}; color: ${C.grey}; }
+.dtd-agent { border: 1px solid ${C.frame_border}; border-radius: 4px;
+             background: ${C.panel_deep}; margin: 6px 0 0 4px;
+             padding: 6px 10px 6px; }
+.dtd-agent-head { display: flex; align-items: baseline; gap: 8px;
+                  cursor: pointer; user-select: none; }
+.dtd-agent-name { font: 600 11px ${FONT}; color: ${C.text}; flex: 1; }
+.dtd-agent-sel { font: 400 9px ${FONT_MONO}; color: ${C.text_dim};
+                 overflow: hidden; text-overflow: ellipsis;
+                 white-space: nowrap; max-width: 60%; }
+.dtd-agent-io { font: 400 9px ${FONT_MONO}; color: ${C.text_dim};
+                margin: 2px 0 4px; }
+.dtd-inv { border: 1px solid; border-radius: 3px; margin: 4px 0 0 14px;
+           padding: 4px 7px 5px; opacity: 0.92; }
+.dtd-inv-head { display: flex; align-items: baseline; gap: 8px; }
+.dtd-inv-name { font: 700 9.5px ${FONT}; color: ${C.text}; flex: 1; }
+.dtd-inv-model { font: 400 8.5px ${FONT_MONO}; color: ${C.text_dim}; }
+.dtd-inv-rmse { font: 400 8.5px ${FONT_MONO}; color: ${C.text_dim}; }
+.dtd-spark { display: block; width: 100%; height: 22px; margin-top: 2px; }
+.dtd-twinpane { scrollbar-width: none; }
+.dtd-twinpane::-webkit-scrollbar { display: none; }
+.dtd-thumb { position: absolute; width: 3px; border-radius: 2px;
+             background: ${C.text_dim}; opacity: 0.7; z-index: 3;
+             cursor: grab; touch-action: none; }
+.dtd-thumb:hover { opacity: 1; width: 5px; }
+.dtd-panebar { position: absolute; display: flex; align-items: center;
+               justify-content: flex-end; gap: 6px; pointer-events: none;
+               z-index: 3; }
+.dtd-chip { pointer-events: auto; font: 600 8.5px ${FONT};
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: ${C.text_dim}; background: #0e1626;
+            border: 1px solid ${C.unused_brd}; border-radius: 3px;
+            padding: 2px 7px; cursor: pointer; user-select: none; }
+.dtd-chip:hover { color: ${C.text}; border-color: ${C.frame_border}; }
+.dtd-chip.dtd-mini { font-size: 8px; padding: 1px 6px; }
+.dtd-fade { position: absolute; height: 16px; pointer-events: none;
+            z-index: 2; }
+.dtd-fade-top { background: linear-gradient(${C.bg}, transparent); }
+.dtd-fade-bottom { background: linear-gradient(transparent, ${C.bg}); }
 `;
 
   function injectCss() {
