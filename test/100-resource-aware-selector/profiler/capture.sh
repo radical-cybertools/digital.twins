@@ -2,7 +2,7 @@
 
 # Repeat 100 times
 
-output_file="data_orange.csv"
+output_file=$1
 
 echo "t_seconds,cpu_seconds,disk_read,disk_write,sys_read,sys_write,memory_bytes" > $output_file
 

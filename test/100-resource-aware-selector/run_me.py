@@ -47,7 +47,7 @@ async def main():
     data_sink = MySink(flow)
 
     # Add profiling agents
-    base_profiler = ProfilerInvestigator(flow, "./profile/nersc_profiler")
+    base_profiler = ProfilerInvestigator(flow, "./profiler/nersc_profiler")
     pi_profiler = EndpointInvestigator(flow, "pi", "./profiler/pi_profiler")
 
     # add profiling tasks

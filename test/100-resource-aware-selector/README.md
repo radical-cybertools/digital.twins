@@ -1,6 +1,6 @@
 
 
-# Resource aware model selection
+# Resource aware model selection for inference.
 
 One of the requirements of the digital twin is to dynamically select the
 appropriate endpoints to run an inference task, balancing predicted accuracy
@@ -36,13 +36,23 @@ Sensor --> | Agent                 |  ---> Sink
            |     - Negative Model  |
            +-----------------------+
                 |          ^
-    request profile       Time prediction
-                V          |
-            +-----------------------+
-            | Profile Agent         |
-            |  Investigators:       |
-            |     Lin Regression    |
-            +-----------------------+
+    request profile       Time prediction -----+
+                V                              |
+            +-----------------------+          |
+            | Profile Investigator  |          |
+            |  Profiler on          |          |
+            |  dedicated machine    |          |
+            +-----------------------+          |
+                |                              |
+    request endpoint-adjusted       +----------+
+            profile                 |
+                |                  Time Prediction
+                V                   |
+            +-------------------------+
+            | Endpoint Investigator   |
+            |  Sim: endpoint profiler |
+            |  Train: XGBRegressor    |
+            +-------------------------+       
 ```
 
 Now: this assumes there is only one set of endpoints to profile against. One can
@@ -53,18 +63,38 @@ have an agent per endpoint to profile.
 > We also want to be able to change the DT Graph as it is running.
 
 
-### Actual profiler:
+## How to run:
+1. For demo, copy `profiler/pi_profiler/data.csv.sample` to just
+`profiler/pi_profiler/data.csv`
+2. Ensure pip packages are installed (example uses xgboost and sklearn)
+3. Start a local_broker.py in a separate terminal
+4. Run `run_me.py` in this directory.
 
-I really only need for a single task:
-- wall time
-- cpu time
-- memory
-- disk read
-- disk write
-- net send
-- net recv
+## Structure:
+
+The files in `profiler/` consist of the profiler itself, a surrogate predictor,
+and the investigators. The "simulation" in this case is an actual task profiler.
+
+The profiler is in:
+- `profiler.py` <-- runs the measurements
+- `executor.py` <-- runs the python function
+
+The prediction model is an XGBRegressor
+- `endpoint_eval.py` <-- inference
+- `endpoint_trainer.py` <-- train
+- `profiling.ipynb` <-- visualizations
+
+Now, for the model to work effectively, it needs a prior dataset to train on.
+- `pi_profiler/data.csv.sample` is a sample dataset
+- `capture.sh` allows for conducting your own profiling. 
+- `stress_tests` is a repository consisting of multiple stress tests. These were
+  used to create the sample dataset. (See README inside it).
+
+To build your own dataset manually:
+1. Run `capture.sh dedicated.csv` on the dedicated profiling instance.
+2. Run `capture.sh endpoint.csv` on the endpoint you want to build a prediction model for.
+3. Copy the "t_seconds" `endpoint.csv` into a new column named "pi_seconds" in
+   the dedicated.csv. This is the new dataset.
 
 
-Options:
-- Use AsyncFlow telemetry... (combines metrics of all tasks!)
-- Use stand alone profiler exe. Called by executable func.
+
