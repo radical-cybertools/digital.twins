@@ -40,8 +40,8 @@ ASYNCFLOW="radical.asyncflow==0.5.1"
 # the proper fix is an ImportError guard in orbit's plugin_rhapsody.)
 RHAPSODY="rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"   # f479c75 + participant_name + engine role
 
-# orbit: unpinned since 0.7.0 (dispatcher rhapsody dialect, #117) -- PyPI is fine
-ORBIT="radical.orbit"
+# orbit: 0.7.0 carries the dispatcher rhapsody dialect (#117) -- PyPI is fine
+ORBIT="radical.orbit==0.7.0"
 
 # ROSE: PyPI's `rose` is an UNRELATED project (a version-string helper) which
 # pip will happily install for the `learn` extra -- and the learner then dies
