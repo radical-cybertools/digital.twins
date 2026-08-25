@@ -313,6 +313,9 @@ class RuntimeAPI:
         # rest of the runtime can hold: `_run_component` splats these into
         # the inference task, and `**None` raises.  Normalised here, the
         # same way the callback below already normalises them.
+
+        logger.info(f"New surrogate available: {type(self._ant.component).__name__}")
+
         self._ant.model_kwargs = model_kwargs or {}
         self._ant.accuracy_kwargs = acc_kwargs or {}
         self._ant.has_published_model.set()
@@ -336,6 +339,15 @@ class RuntimeAPI:
 
         assert self.cmp_type in ["INVESTIGATOR"]
         self._ant.inference_task = task
+
+    def get_inference_tasks(self) -> dict[int, Callable]:
+        """Return a dictionary of the inference tasks keyed by investigator ID"""
+
+        assert self.cmp_type in ["AGENT"]
+        out = {}
+        for key, val in self._ant.investigators.items():
+            out[key] = val.inference_task
+        return out
 
     def start_investigator(self, investigator: ModelInvestigator):
         """Begin monitoring an investigator from a ``SciAgent``.
