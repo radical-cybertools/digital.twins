@@ -428,6 +428,15 @@ class RuntimeAPI:
         assert self.cmp_type in ["INVESTIGATOR"]
         self._ant.inference_task = task
 
+    def get_inference_tasks(self) -> dict[int, Callable]:
+        """Return a dictionary of the inference tasks keyed by investigator ID"""
+
+        assert self.cmp_type in ["AGENT"]
+        out = {}
+        for key, val in self._ant.investigators.items():
+            out[key] = val.inference_task
+        return out
+
     def start_investigator(self, investigator: ModelInvestigator):
         """Begin monitoring an investigator from a ``SciAgent``.
 
