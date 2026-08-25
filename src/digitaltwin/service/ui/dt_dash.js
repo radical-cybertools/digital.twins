@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.10.0';
+  const VERSION = '0.10.2';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -2040,13 +2040,31 @@
     // used for task-result arcs on the broker lane.  A pool card also
     // lists every endpoint any session put in that role, because the role
     // is a per-session answer and two sessions need not agree.
-    drawEndpointLane(ctx, L.inference, 'Pool: inference',
-                     w.endpoints.inference.join(', '), 'inference',
+    drawEndpointLane(ctx, L.inference, 'inference',
+                     w.endpoints.inference.join(', '),
                      w, S, C.cyan_dim, null, ui);
-    drawEndpointLane(ctx, L.learning, 'Pool: learning',
-                     w.endpoints.learning.join(', '), 'learning', w, S,
+    drawEndpointLane(ctx, L.learning, 'learning',
+                     w.endpoints.learning.join(', '), w, S,
                      C.amber_dim,
                      w.endpoints.alias ? 'aliases inference' : null, ui);
+  }
+
+  // What serves a lane, and therefore what its title says and where its
+  // title links: a dispatcher-managed pool (`pool:<name>` in the session's
+  // endpoints map) or a plain endpoint's own rhapsody.  An aliasing
+  // learning lane follows the inference lane's answer; with nothing known
+  // yet the dispatcher is the default.
+  function laneTarget(w, lane) {
+    let eps = w.endpoints[lane] || [];
+    if (!eps.length && lane === 'learning' && w.endpoints.alias) {
+      eps = w.endpoints.inference || [];
+    }
+    const pooled = eps.some(n => String(n).startsWith('pool:'));
+    const plain  = eps.filter(n => n && !String(n).startsWith('pool:'));
+    if (pooled || !plain.length) {
+      return { kind: 'Pool', link: '#plugin/broker/task_dispatcher' };
+    }
+    return { kind: 'Endpoint', link: `#plugin/${plain[0]}/rhapsody` };
   }
 
   // Tile geometry, shared by the renderer and the spawn arcs so a task
@@ -2071,17 +2089,21 @@
     };
   }
 
-  function drawEndpointLane(ctx, r, title, endpoint, lane, w, S, border, note,
+  function drawEndpointLane(ctx, r, lane, endpoint, w, S, border, note,
                             ui) {
+    // title and link both come from what actually serves the lane
+    // (`laneTarget`): a pool titles the panel 'Pool: <role>' and links to
+    // the task dispatcher's Explorer page, a plain endpoint titles it
+    // 'Endpoint: <role>' and links to that endpoint's own rhapsody page.
+    // `link:` hits navigate instead of toggling.
+    const serve = laneTarget(w, lane);
+    const title = `${serve.kind}: ${lane}`;
     panel(ctx, r, border, title, C.frame_label, S);
 
-    // the pool title is a link: pools are the task dispatcher's, so the
-    // title leads to its surface (REST for now; its Explorer page when
-    // one exists).  `link:` hits navigate instead of toggling.
     if (ui) {
       ctx.font = `600 ${Math.round(10 * S)}px ${FONT}`;
       const tw2 = ctx.measureText(title.toUpperCase()).width + 22 * S;
-      ui.hits.push({ key: 'link:#plugin/broker/task_dispatcher',
+      ui.hits.push({ key: 'link:' + serve.link,
                      x: r.x, y: r.y, w: Math.min(tw2, r.w * 0.5),
                      h: Math.round(24 * S) });
     }
