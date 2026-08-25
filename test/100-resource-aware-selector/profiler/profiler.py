@@ -277,7 +277,7 @@ def main():
     # stdout is reserved exclusively for the result.
 
     if args.csv:
-        print(",".join([str(f) for f in result.values()])[:-1])
+        print(",".join([str(f) for f in result.values()]))
     else:
         print(json.dumps(result))
 

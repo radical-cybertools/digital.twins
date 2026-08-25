@@ -1,24 +1,27 @@
 import asyncio
 import json
+import random
 
 
+import numpy as np
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import DataType, ModelInvestigator, TypedData, SciAgent
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split
+from digitaltwin.components import DataType, ModelInvestigator, TypedData
 from digitaltwin.runtime import RuntimeAPI
-from digitaltwin.lru import LRUCache
+from digitaltwin.lru import LRUCache, freeze
 from rose import Learner
 
-from positive_model import PositiveModel
-from negative_model import NegativeModel
 import logging
 import pandas as pd
+
 
 from profiler import export_inference_function
 
 logger = logging.getLogger(__name__)
 
-TASK_DESCRIPTION_DTYPE = DataType("task_description_for_profiler")
-PROFILE_RESULTS = DataType("profiler_results")
+TASK_DESCRIPTION_DTYPE = DataType("TASK_INFO")
+PROFILE_RESULTS = DataType("PROFILE_RESULT")
 
 
 class ProfilerInvestigator(ModelInvestigator):
@@ -26,118 +29,250 @@ class ProfilerInvestigator(ModelInvestigator):
         super().__init__(flow)
         self.flow = flow
 
-        @self.flow.executable_task(capture_stdio=True)
+        @self.flow.executable_task
         async def exec_profiler(task, example_data: TypedData, model_kwargs: dict):
             if model_kwargs is None:
                 model_kwargs = {}
-
+            print("Exec profiler request")
             # fix to use a unique file name.
             export_inference_function("test.pkl", task, example_data, **model_kwargs)
 
             # call profiler
-            return f"python3 profiler.py test.pkl"
+            return "python3 profiler.py test.pkl"
 
         sim_lock = asyncio.Lock()
         sim_lru = LRUCache(128)  # store 128 different sims
 
         async def do_inference(in_data: TypedData):
-            # for inference, just run the simulation.
+            # # for inference, just run the simulation.
             async with sim_lock:
                 # for now, key only the task code.
                 task, example_data, model_kwargs = in_data.data
-                if sim_lru.exists(task):
-                    return TypedData(PROFILE_RESULTS, sim_lru.fetch_item(task))
+                if await sim_lru.exists(task):
+                    profile = await sim_lru.fetch_item(task)
+                    task_data = in_data.data
+                    out = {"profile": profile, "task": task_data}
+                    return TypedData(PROFILE_RESULTS, out)
 
                 result = await exec_profiler(task, example_data, model_kwargs)
                 r = json.loads(result)
-                sim_lru.put_item(task, r)
-                return TypedData(PROFILE_RESULTS, r)
+                await sim_lru.put_item(task, r)
+
+                task_data = in_data.data
+                out = {"profile": r, "task": task_data}
+                return TypedData(PROFILE_RESULTS, out)
 
         self.inference_task = do_inference
 
     async def main_loop(self, runtime: RuntimeAPI):
         # runtime
         runtime.set_inference_task(self.inference_task)
+        runtime.publish_new_model()
 
 
-class ProfilerAgent(SciAgent):
-    def __init__(self, flow: WorkflowEngine):
+# on inference, return predicted time given NERSC time
+#
+# for simulation, run the inference and add to data set.
+def safe_log(r):
+    mask = r > 0
+    result = np.zeros_like(r, dtype=np.float64)
+    result[mask] = np.log2(r[mask])
+    return result
+
+
+PI_CPUS = 4
+
+
+class EndpointInvestigator(ModelInvestigator):
+    def __init__(self, flow: WorkflowEngine, name: str):
         super().__init__(flow)
         self.flow = flow
+        self.name = name
 
-        # no learning. Simple investigator
-        self.plus_inv = PositiveModel(flow)
-        self.neg_inv = NegativeModel(flow)
+        self.callback_jobs: asyncio.Queue = asyncio.Queue()
+        self.done_jobs: set = set()
 
-        @self.flow.function_task
-        async def model_select(in_data: TypedData, i_id, model_kwargs={}):
-            return i_id  # default to latest model
+        self.learner = Learner(flow)
 
-        self.model_selector = model_select
+        @self.flow.executable_task
+        async def exec_profiler(task_data):
+            task, example_data, model_kwargs = task_data
+
+            # fix to use a unique file name.
+            export_inference_function(
+                f"test-{name}.pkl", task, example_data, **model_kwargs
+            )
+
+            # call profiler
+            print("endpoint profiler request")
+            return f"python3 profiler.py --csv test-{name}.pkl"
+
+        self.exec_profiler = exec_profiler
+
+        @self.learner.training_task
+        async def train_model():
+            return f"python3 endpoint_trainer.py {self.name}"
+
+        self.train_task = train_model
+
+        @self.flow.executable_task
+        async def call_inference(in_data: TypedData, model=None, name=""):
+            # for inference, just run the simulation.
+            pf = in_data.data["profile"]
+            with open(f"{name}-inf.json", "w") as f:
+                json.dump(pf, f)
+            return f"python3 endpoint_eval.py {model} {name}-inf.json"
+
+        # inference de-duplication
+        inf_cache = LRUCache()
+        inf_lock = asyncio.Lock()
+
+        async def do_inference(in_data: TypedData, model=None, name=""):
+            async with inf_lock:
+                key = freeze(in_data.data["profile"])
+                if await inf_cache.exists(key):
+                    return await inf_cache.fetch_item(key)
+
+                # call inference
+                result = await call_inference(in_data, model)
+                out = TypedData(DataType(f"{self.name}_PREDICT_RUNTIME"), float(result))
+                await inf_cache.put_item(key, out)
+                return out
+
+        self.inference_task = do_inference
+
+    # inference callback
+
+    async def input_callback(self, in_data: TypedData):
+        # add nersc output to input_callback
+
+        # only 10% of the time, run the actual inference task and add to csv
+        if random.random() > 0.1:
+            return
+
+        # hold on.... check if already done!
+        key = freeze(in_data.data["profile"])
+        if key in self.done_jobs:
+            return
+        self.done_jobs.add(key)
+        await self.callback_jobs.put(in_data.data)
 
     async def main_loop(self, runtime: RuntimeAPI):
-        # Start up the investigator
-        runtime.start_investigator(self.plus_inv)
-        runtime.start_investigator(self.neg_inv)
+        # runtime
+        runtime.set_inference_task(self.inference_task)
+        runtime.subscribe_to_topic(runtime.ON_INPUT, self.input_callback)
+        # create first model
+        out = json.loads(await self.train_task())
+        model = out["model"]
+        mae = out["mae"]
+        runtime.publish_new_model({"model": model, "name": self.name}, {"mae": mae})
+        print(f"Baseline endpoint model MAE: {mae}, {model}")
 
-        runtime.set_model_selection_task(self.model_selector)
-        # set the investigator for primary inference
-
-        alternate = False
         while True:
-            if alternate:
-                runtime.update_model_selector(i_id=self.plus_inv.get_id())
-            else:
-                runtime.update_model_selector(i_id=self.neg_inv.get_id())
-            alternate = not (alternate)
-            await asyncio.sleep(3)
+            item = await self.callback_jobs.get()
+            pi_out = await self.exec_profiler(item["task"])
+            # I only want the first column
+            pi_time = pi_out.split(",", 1)[0]
+
+            # label the endpoint_time as "pi_seconds"
+            nersc_profile = item["profile"]
+            out = ",".join([str(f) for f in nersc_profile.values()]) + ","
+            out += pi_time
+
+            with open("pi-data.csv", "a") as f:
+                f.write(out + "\n")
+
+            out = json.loads(await self.train_task())
+            model = out["model"]
+            mae = out["mae"]
+            runtime.publish_new_model({"model": model, "name": self.name}, {"mae": mae})
+            print(f"New endpoint model MAE: {mae}")
 
 
-class EndpointInvestigator:
-    def __init__(self, flow: WorkflowEngine):
-        super().__init__(flow)
-        self.flow = flow
+if __name__ == "__main__":
+    # profiler tester
+    from radical.asyncflow.logging import init_default_logger
+    from rhapsody.backends import ConcurrentExecutionBackend
+    from concurrent.futures import ProcessPoolExecutor
+    from digitaltwin.streaming import connect_stream_client
+    from digitaltwin.runtime import DTRuntime
+    from digitaltwin.components import UtilityTask, TRUTHY, NULL_DTYPE
+    from digitaltwin.streaming import PubSubConfig
+    import time
+    import cloudpickle
 
-        self.learner = Learner()
+    class TestUtility(UtilityTask):
+        def __init__(self, flow: WorkflowEngine):
+            super().__init__(flow)
+            self.flow = flow
 
-        @self.learner.simulation_task(as_executable=False)
-        async def sim_database():
+            # @self.flow.function_task
+            async def test(ps_config: PubSubConfig):
+                ps = await ps_config.connect()
+                for i in range(30):
 
-            # a CSV with all entries.
-            pd.read_csv("data.csv")
+                    def sample_task(in_data, a=0):
+                        pass  # time.sleep(1)
 
-            pass
+                    task_description = (
+                        cloudpickle.dumps(sample_task),
+                        TypedData(DataType("A"), 1),
+                        {"a": 2},
+                    )
+                    await ps.publish(TASK_DESCRIPTION_DTYPE, task_description)
+                    await asyncio.sleep(5)
 
-        @self.learner.train
-        async def train_model(task, example_data: TypedData, model_kwargs: dict):
-            if model_kwargs is None:
-                model_kwargs = {}
+            self.task = test
 
-            # fix to use a unique file name.
-            export_inference_function("test.pkl", task, example_data, **model_kwargs)
+        async def main_loop(self, runtime: RuntimeAPI, in_data):
+            await self.task(runtime.stream_config)
 
-            # call profiler
-            return f"python3 profiler.py test.pkl"
+    class TestSink(UtilityTask):
+        def __init__(self, flow: WorkflowEngine):
+            super().__init__(flow)
+            self.flow = flow
 
-        sim_lock = asyncio.Lock()
-        sim_lru = LRUCache(128)  # store 128 different sims
+            @self.flow.function_task
+            async def echo(in_data):
+                print(f"Received Inference: {in_data.dtype}: {in_data.data}")
 
-        async def do_inference(in_data: TypedData):
-            # for inference, just run the simulation.
+            self.echo = echo
 
-            async with sim_lock:
-                # for now, key only the task code.
-                task, example_data, model_kwargs = in_data.data
-                if sim_lru.exists(task):
-                    return TypedData(PROFILE_RESULTS, sim_lru.fetch_item(task))
+        async def main_loop(self, runtime, in_data):
+            await self.echo(in_data)
 
-                result = await exec_profiler(task, example_data, model_kwargs)
-                r = json.loads(result)
-                sim_lru.put_item(task, r)
-                return TypedData(PROFILE_RESULTS, r)
+    async def main():
+        init_default_logger(logging.INFO)
 
-        self.inference_task = do_inference
+        # create engine
+        exe = await ConcurrentExecutionBackend(ProcessPoolExecutor())
+        flow = await WorkflowEngine.create(backend=exe)
 
-    async def main_loop(self, runtime: RuntimeAPI):
-        # runtime
-        runtime.set_inference_task(self.inference_task)
+        # create the twin's namespaced stream client
+        pubsub_client = await connect_stream_client("test_profiler")
+
+        runtime = DTRuntime(flow, pubsub_client)
+
+        prof = ProfilerInvestigator(flow)
+        pi_endpoint = EndpointInvestigator(flow, "pi")
+        src = TestUtility(flow)
+        dst = TestSink(flow)
+
+        runtime.add_task(src, TRUTHY, TASK_DESCRIPTION_DTYPE, True)
+        runtime.add_investigator(prof, TASK_DESCRIPTION_DTYPE, PROFILE_RESULTS)
+        runtime.add_investigator(
+            pi_endpoint, PROFILE_RESULTS, DataType("pi_PREDICT_RUNTIME")
+        )
+        runtime.add_task(dst, DataType("pi_PREDICT_RUNTIME"), NULL_DTYPE)
+        # runtime.add_task(dst, PROFILE_RESULTS, NULL_DTYPE)
+
+        runtime.print_graph()
+
+        runtime.start()
+
+        await asyncio.sleep(30)
+
+        await runtime.stop()
+        await flow.shutdown()
+
+    asyncio.run(main())

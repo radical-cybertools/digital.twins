@@ -10,7 +10,7 @@ async def execute(payload_path: str):
     with open(payload_path, "rb") as f:
         payload = cloudpickle.load(f)
 
-    func = payload["func"]
+    func = cloudpickle.load(payload["func"])
     if inspect.iscoroutinefunction(func):
         await func(
             payload["in_data"],
