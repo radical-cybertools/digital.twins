@@ -26,11 +26,11 @@ jobs:
       # -- the backend `digitaltwin.service` imports -- which was the
       # collection-blocking ModuleNotFoundError this workflow documented.
       # Pre-installed pinned, so resolving digitaltwin's requirements
-      # keeps them.  asyncflow 0.5.1 and orbit 0.5.0 are the releases
-      # carrying the non-main-thread and SSE-bytes fixes respectively.
+      # keeps them.  asyncflow 0.5.1 carries the non-main-thread fix;
+      # orbit is unpinned since 0.7.0 (dispatcher rhapsody dialect).
       - name: Install pinned radical dependencies
         run: >-
-          pip install "radical.asyncflow==0.5.1" "radical.orbit==0.5.0"
+          pip install "radical.asyncflow==0.5.1" "radical.orbit"
           "rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"
           "rose @ git+https://github.com/radical-cybertools/ROSE@64330d9cb43c3e13ca67daf0d8ae84a2ae6c3f17"
 
@@ -66,11 +66,11 @@ jobs:
       # -- the backend `digitaltwin.service` imports -- which was the
       # collection-blocking ModuleNotFoundError this workflow documented.
       # Pre-installed pinned, so resolving digitaltwin's requirements
-      # keeps them.  asyncflow 0.5.1 and orbit 0.5.0 are the releases
-      # carrying the non-main-thread and SSE-bytes fixes respectively.
+      # keeps them.  asyncflow 0.5.1 carries the non-main-thread fix;
+      # orbit is unpinned since 0.7.0 (dispatcher rhapsody dialect).
       - name: Install pinned radical dependencies
         run: >-
-          pip install "radical.asyncflow==0.5.1" "radical.orbit==0.5.0"
+          pip install "radical.asyncflow==0.5.1" "radical.orbit"
           "rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"
           "rose @ git+https://github.com/radical-cybertools/ROSE@64330d9cb43c3e13ca67daf0d8ae84a2ae6c3f17"
 
