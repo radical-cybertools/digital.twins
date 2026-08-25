@@ -1,33 +1,39 @@
 import asyncio
 import json
+import os
 import random
+import shlex
+from typing import Optional
 
 
 import numpy as np
 from radical.asyncflow import WorkflowEngine
-from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split
 from digitaltwin.components import DataType, ModelInvestigator, TypedData
 from digitaltwin.runtime import RuntimeAPI
 from digitaltwin.lru import LRUCache, freeze
 from rose import Learner
 
 import logging
-import pandas as pd
 
-
-from profiler import export_inference_function
+try:
+    from .profiler import export_inference_function
+except:
+    from profiler import export_inference_function
 
 logger = logging.getLogger(__name__)
 
 TASK_DESCRIPTION_DTYPE = DataType("TASK_INFO")
 PROFILE_RESULTS = DataType("PROFILE_RESULT")
 
+script_path = os.path.dirname(os.path.realpath(__file__))
+
 
 class ProfilerInvestigator(ModelInvestigator):
-    def __init__(self, flow: WorkflowEngine):
+    def __init__(self, flow: WorkflowEngine, workdir: str = "."):
         super().__init__(flow)
         self.flow = flow
+        self.workdir = workdir
+        os.makedirs(self.workdir, exist_ok=True)
 
         @self.flow.executable_task
         async def exec_profiler(task, example_data: TypedData, model_kwargs: dict):
@@ -35,10 +41,18 @@ class ProfilerInvestigator(ModelInvestigator):
                 model_kwargs = {}
             print("Exec profiler request")
             # fix to use a unique file name.
-            export_inference_function("test.pkl", task, example_data, **model_kwargs)
+            export_inference_function(
+                f"{self.workdir}/meta-profiler.pkl", task, example_data, **model_kwargs
+            )
 
             # call profiler
-            return "python3 profiler.py test.pkl"
+            return shlex.join(
+                [
+                    "python3",
+                    f"{script_path}/profiler.py",
+                    f"{self.workdir}/meta-profiler.pkl",
+                ]
+            )
 
         sim_lock = asyncio.Lock()
         sim_lru = LRUCache(128)  # store 128 different sims
@@ -84,10 +98,18 @@ PI_CPUS = 4
 
 
 class EndpointInvestigator(ModelInvestigator):
-    def __init__(self, flow: WorkflowEngine, name: str):
+    def __init__(
+        self, flow: WorkflowEngine, name: str, datastore_path: Optional[str] = None
+    ):
         super().__init__(flow)
         self.flow = flow
         self.name = name
+        if datastore_path is None:
+            self.datastore = f"./{name}"
+        else:
+            self.datastore = datastore_path
+
+        os.makedirs(self.datastore, exist_ok=True)
 
         self.callback_jobs: asyncio.Queue = asyncio.Queue()
         self.done_jobs: set = set()
@@ -100,18 +122,32 @@ class EndpointInvestigator(ModelInvestigator):
 
             # fix to use a unique file name.
             export_inference_function(
-                f"test-{name}.pkl", task, example_data, **model_kwargs
+                f"{self.datastore}/profile.pkl", task, example_data, **model_kwargs
             )
 
             # call profiler
             print("endpoint profiler request")
-            return f"python3 profiler.py --csv test-{name}.pkl"
+            return shlex.join(
+                [
+                    "python3",
+                    f"{script_path}/profiler.py",
+                    "--csv",
+                    f"{self.datastore}/profile.pkl",
+                ]
+            )
 
         self.exec_profiler = exec_profiler
 
         @self.learner.training_task
         async def train_model():
-            return f"python3 endpoint_trainer.py {self.name}"
+            return shlex.join(
+                [
+                    "python3",
+                    f"{script_path}/endpoint_trainer.py",
+                    f"{self.datastore}/data.csv",
+                    f"{self.datastore}/model.json",
+                ]
+            )
 
         self.train_task = train_model
 
@@ -119,9 +155,16 @@ class EndpointInvestigator(ModelInvestigator):
         async def call_inference(in_data: TypedData, model=None, name=""):
             # for inference, just run the simulation.
             pf = in_data.data["profile"]
-            with open(f"{name}-inf.json", "w") as f:
+            with open(f"{self.datastore}/inf.json", "w") as f:
                 json.dump(pf, f)
-            return f"python3 endpoint_eval.py {model} {name}-inf.json"
+            return shlex.join(
+                [
+                    "python3",
+                    f"{script_path}/endpoint_eval.py",
+                    model,
+                    f"{self.datastore}/inf.json",
+                ]
+            )
 
         # inference de-duplication
         inf_cache = LRUCache()
@@ -179,7 +222,7 @@ class EndpointInvestigator(ModelInvestigator):
             out = ",".join([str(f) for f in nersc_profile.values()]) + ","
             out += pi_time
 
-            with open("pi-data.csv", "a") as f:
+            with open(f"{self.datastore}/data.csv", "a") as f:
                 f.write(out + "\n")
 
             out = json.loads(await self.train_task())
@@ -253,8 +296,8 @@ if __name__ == "__main__":
 
         runtime = DTRuntime(flow, pubsub_client)
 
-        prof = ProfilerInvestigator(flow)
-        pi_endpoint = EndpointInvestigator(flow, "pi")
+        prof = ProfilerInvestigator(flow, "./nersc_profiler")
+        pi_endpoint = EndpointInvestigator(flow, "pi", "./pi_profiler")
         src = TestUtility(flow)
         dst = TestSink(flow)
 

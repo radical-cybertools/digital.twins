@@ -20,7 +20,7 @@ PI_CPUS = 4
 
 def sim():
     # a CSV with all entries.
-    data = pd.read_csv(f"{sys.argv[1]}-data.csv")
+    data = pd.read_csv(sys.argv[1])
     data["avg_cpu"] = data["cpu_seconds"] / data["total_seconds"]
     data["avg_log_mem"] = safe_log(data["memory_bytes"]) / data["total_seconds"]
     data["avg_log_sys_write_bytes"] = (
@@ -82,11 +82,11 @@ def train(data):
 
     y_pred_final = t_sec_test * y_pred
 
-    model.save_model(f"{sys.argv[1]}-runtime.json")
+    model.save_model(sys.argv[2])
 
     return json.dumps(
         {
-            "model": f"{sys.argv[1]}-runtime.json",
+            "model": sys.argv[2],
             "mae": mean_absolute_error(final_test, y_pred_final),
         }
     )
