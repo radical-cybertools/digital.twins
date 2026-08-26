@@ -1624,6 +1624,7 @@ class DTRuntime:
         if (
             t_data.dtype not in self.dtype_queues
             and t_data.dtype not in self.components
+            and t_data.dtype not in self.barriers
         ):
             return
 

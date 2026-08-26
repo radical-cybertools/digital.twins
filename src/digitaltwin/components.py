@@ -407,6 +407,11 @@ class Barrier:
         """
         if hard is None:
             hard = self.is_hard_barrier
+
+        if dtype in self.dtypes:
+            # already exists!
+            raise ValueError(f"Dtype {dtype} already added!")
+
         self.dtypes[dtype] = hard
         self.version_numbers[dtype] = self.global_version - 1
         self.output_queues[dtype] = asyncio.Queue()
