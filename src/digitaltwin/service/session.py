@@ -551,7 +551,7 @@ class DTSession(PluginSession):
                 # (`_attach_backend` is asyncflow-private for now; the
                 # public spelling is an upstream ask.)
                 flow = await self.engine(ROLE_LEARNING)
-                # flow._attach_backend(backend)
+                flow._attach_backend(backend)
         except BaseException:
             with contextlib.suppress(Exception):
                 await backend.shutdown()
