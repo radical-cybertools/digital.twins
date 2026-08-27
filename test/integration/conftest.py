@@ -56,8 +56,8 @@ BROKER_URL = f"https://{BROKER_HOST}:{BROKER_PORT}"
 ORBIT_BROKER_PORT = BROKER_PORT + 1
 ORBIT_BROKER_URL = f"https://{BROKER_HOST}:{ORBIT_BROKER_PORT}"
 
-TASK_ENDPOINT = "dt_test_inference_ep"
-EXSITU_ENDPOINT = "dt_test_learning_ep"  # stands in for remote HPC hardware
+LEARNING_ENDPOINT = "dt_test_learning_ep"
+INFERENCE_ENDPOINT = "dt_test_inference_ep"  # stands in for remote HPC hardware
 DOOMED_ENDPOINT = "dt_test_doomed_ep"  # started to be killed (R8)
 DT_ENDPOINT = "dt_test_dt_ep"  # endpoint-hosted `dt`, for the smoke test
 ORBIT_TASK_ENDPOINT = "dt_test_orbit_task_ep"  # on the M3 stack
@@ -78,13 +78,13 @@ def engines(**endpoints: str) -> dict:
 
 
 # the single-engine wiring most tests use: the co-located endpoint only
-ENGINES = engines(inference=TASK_ENDPOINT)
+ENGINES = engines(learning=LEARNING_ENDPOINT)
 
 # dual-engine wiring: learner tasks ex-situ, everything else co-located
-ENGINES_DUAL = engines(inference=TASK_ENDPOINT, learning=EXSITU_ENDPOINT)
+ENGINES_DUAL = engines(inference=LEARNING_ENDPOINT, learning=INFERENCE_ENDPOINT)
 
 # same, but with an ex-situ engine on an endpoint the test will kill
-ENGINES_DOOMED = engines(inference=TASK_ENDPOINT, learning=DOOMED_ENDPOINT)
+ENGINES_DOOMED = engines(inference=LEARNING_ENDPOINT, learning=DOOMED_ENDPOINT)
 
 # the M3 stack's single engine
 ENGINES_ORBIT = engines(inference=ORBIT_TASK_ENDPOINT)
@@ -192,9 +192,12 @@ def _dt_broker(label: str, port: int, url: str, **env: str):
         pytest.skip(f"port {port} is busy")
 
     argv = _orbit_script("radical-orbit-broker.py") + [
-        "--host", BROKER_HOST,
-        "--port", str(port),
-        "--plugins", "default,dt",
+        "--host",
+        BROKER_HOST,
+        "--port",
+        str(port),
+        "--plugins",
+        "default,dt",
     ]
     proc = _spawn(label, argv, RADICAL_ORBIT_BROKER_URL=url, **env)
 
@@ -222,8 +225,9 @@ def orbit_broker():
     can ask for it.
     """
 
-    with _dt_broker("orbit-broker", ORBIT_BROKER_PORT, ORBIT_BROKER_URL,
-                    DT_STREAM_BACKEND="orbit") as running:
+    with _dt_broker(
+        "orbit-broker", ORBIT_BROKER_PORT, ORBIT_BROKER_URL, DT_STREAM_BACKEND="orbit"
+    ) as running:
         yield running
 
 
@@ -253,7 +257,12 @@ def _rhapsody_endpoint(name: str, broker, **env: str):
     """
 
     argv = _orbit_script("radical-orbit-endpoint.py") + [
-        "-n", name, "-u", broker.url, "-p", "default",
+        "-n",
+        name,
+        "-u",
+        broker.url,
+        "-p",
+        "default",
     ]
     proc = _spawn(
         name,
@@ -272,27 +281,23 @@ def _rhapsody_endpoint(name: str, broker, **env: str):
 
 
 @pytest.fixture(scope="session")
-def inference_endpoint(broker):
+def learning_endpoint(broker):
     """A co-located rhapsody endpoint: where the twins' tasks execute."""
 
     # notify window 0 (P2): every sequential in-situ prediction would
     # otherwise pay 250 ms
-    with _rhapsody_endpoint(TASK_ENDPOINT, broker,
-                            RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0"):
-        yield TASK_ENDPOINT
+    with _rhapsody_endpoint(
+        LEARNING_ENDPOINT, broker, RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0"
+    ):
+        yield LEARNING_ENDPOINT
 
 
 @pytest.fixture(scope="session")
-def learning_endpoint(broker):
-    """A second rhapsody endpoint: where learner tasks execute.
+def inference_endpoint(broker):
+    """A second rhapsody endpoint: where inference tasks execute."""
 
-    Distinct from `inference_endpoint` on purpose -- that is the whole point
-    of the `'learning'` role.  It keeps the default notify window: 250 ms
-    is noise under a training task.
-    """
-
-    with _rhapsody_endpoint(EXSITU_ENDPOINT, broker):
-        yield EXSITU_ENDPOINT
+    with _rhapsody_endpoint(INFERENCE_ENDPOINT, broker):
+        yield INFERENCE_ENDPOINT
 
 
 @pytest.fixture
@@ -317,7 +322,12 @@ def dt_endpoint(broker):
     """
 
     argv = _orbit_script("radical-orbit-endpoint.py") + [
-        "-n", DT_ENDPOINT, "-u", broker.url, "-p", "dt",
+        "-n",
+        DT_ENDPOINT,
+        "-u",
+        broker.url,
+        "-p",
+        "dt",
     ]
     proc = _spawn(DT_ENDPOINT, argv)
 
@@ -328,8 +338,9 @@ def dt_endpoint(broker):
         _terminate(proc)
 
 
-def _await_plugin(endpoint: str, plugin: str, proc: subprocess.Popen,
-                  broker_url: str = BROKER_URL) -> None:
+def _await_plugin(
+    endpoint: str, plugin: str, proc: subprocess.Popen, broker_url: str = BROKER_URL
+) -> None:
     """Wait until `endpoint` advertises `plugin` in the broker topology."""
 
     runtime = EndpointRuntime(broker_url=broker_url)
@@ -431,12 +442,14 @@ def twin_id():
 # the M3 stack: the same shape, with the ORBIT data plane
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="session")
 def orbit_task_endpoint(orbit_broker):
     """The M3 stack's co-located rhapsody endpoint."""
 
-    with _rhapsody_endpoint(ORBIT_TASK_ENDPOINT, orbit_broker,
-                            RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0"):
+    with _rhapsody_endpoint(
+        ORBIT_TASK_ENDPOINT, orbit_broker, RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0"
+    ):
         yield ORBIT_TASK_ENDPOINT
 
 
