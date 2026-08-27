@@ -284,11 +284,7 @@ def _rhapsody_endpoint(name: str, broker, **env: str):
 def learning_endpoint(broker):
     """A co-located rhapsody endpoint: where the twins' tasks execute."""
 
-    # notify window 0 (P2): every sequential in-situ prediction would
-    # otherwise pay 250 ms
-    with _rhapsody_endpoint(
-        LEARNING_ENDPOINT, broker, RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0"
-    ):
+    with _rhapsody_endpoint(LEARNING_ENDPOINT, broker):
         yield LEARNING_ENDPOINT
 
 
@@ -296,7 +292,11 @@ def learning_endpoint(broker):
 def inference_endpoint(broker):
     """A second rhapsody endpoint: where inference tasks execute."""
 
-    with _rhapsody_endpoint(INFERENCE_ENDPOINT, broker):
+    # notify window 0 (P2): every sequential in-situ prediction would
+    # otherwise pay 250 ms
+    with _rhapsody_endpoint(
+        INFERENCE_ENDPOINT, broker, RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW="0"
+    ):
         yield INFERENCE_ENDPOINT
 
 
@@ -318,7 +318,7 @@ def dt_endpoint(broker):
     """An endpoint hosting the `dt` plugin itself (endpoint-hosted mode).
 
     It deliberately does *not* load rhapsody: its twins' tasks go to
-    `inference_endpoint`, exactly as in the broker-hosted deployment.
+    `learner_endpoint`, exactly as in the broker-hosted deployment.
     """
 
     argv = _orbit_script("radical-orbit-endpoint.py") + [
@@ -366,7 +366,7 @@ def _await_plugin(
 
 
 @pytest.fixture(scope="session")
-def stack(broker, inference_endpoint):
+def stack(broker, learner_endpoint):
     """The full broker + endpoint stack; returns the broker URL."""
 
     return broker.url

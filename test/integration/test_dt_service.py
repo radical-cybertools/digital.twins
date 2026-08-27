@@ -50,13 +50,16 @@ POLL_TIMEOUT = 60.0
 # helpers
 # ---------------------------------------------------------------------------
 
+
 def build_pipeline(dt, twin, offset=100):
     """sensor -> investigator -> echo sink, the standard test twin."""
 
-    dt.add_task(twin, dt.package(CountingSensor), TRUTHY, SENSOR_DTYPE,
-                is_persistent=True)
-    dt.add_investigator(twin, dt.package(OffsetModel, offset=offset),
-                        SENSOR_DTYPE, INFERENCE_DTYPE)
+    dt.add_task(
+        twin, dt.package(CountingSensor), TRUTHY, SENSOR_DTYPE, is_persistent=True
+    )
+    dt.add_investigator(
+        twin, dt.package(OffsetModel, offset=offset), SENSOR_DTYPE, INFERENCE_DTYPE
+    )
     dt.add_task(twin, dt.package(EchoSink), INFERENCE_DTYPE, NULL_DTYPE)
 
 
@@ -96,8 +99,7 @@ async def collect(dt, twin, dtype, count, timeout=POLL_TIMEOUT):
     try:
         await client.subscribe_to_dtype(dtype, queue)
         return [
-            (await asyncio.wait_for(queue.get(), timeout)).data
-            for _ in range(count)
+            (await asyncio.wait_for(queue.get(), timeout)).data for _ in range(count)
         ]
     finally:
         await client.close()
@@ -125,16 +127,19 @@ def broker_fds(pid):
 # the happy path
 # ---------------------------------------------------------------------------
 
+
 def test_inference_roundtrip(dt, twin_id):
     """A twin computes on the endpoint and answers a client's query."""
 
     dt.create_twin(twin_id)
-    dt.add_investigator(twin_id, dt.package(OffsetModel, offset=7),
-                        SENSOR_DTYPE, INFERENCE_DTYPE)
+    dt.add_investigator(
+        twin_id, dt.package(OffsetModel, offset=7), SENSOR_DTYPE, INFERENCE_DTYPE
+    )
     assert dt.start(twin_id) == "running"
 
-    answer = dt.get_inference(twin_id, TypedData(SENSOR_DTYPE, 5),
-                              INFERENCE_DTYPE, timeout=120)
+    answer = dt.get_inference(
+        twin_id, TypedData(SENSOR_DTYPE, 5), INFERENCE_DTYPE, timeout=120
+    )
 
     assert isinstance(answer, TypedData)
     assert answer.data == 12
@@ -182,6 +187,7 @@ def test_two_twins_one_session_are_independent(dt):
 # lifecycle
 # ---------------------------------------------------------------------------
 
+
 def test_twin_churn_leaks_nothing(dt, broker_pid):
     """Create/close cycles must not accumulate twins, engines or fds."""
 
@@ -201,8 +207,7 @@ def test_twin_churn_leaks_nothing(dt, broker_pid):
 
     assert dt.twin_list() == []
 
-    session = next(s for s in dt.admin_sessions()["sessions"]
-                   if s["sid"] == dt.sid)
+    session = next(s for s in dt.admin_sessions()["sessions"] if s["sid"] == dt.sid)
     # one engine per session, never one per twin
     assert session["engines"] == ["learning"]
     assert session["twins"] == []
@@ -211,8 +216,9 @@ def test_twin_churn_leaks_nothing(dt, broker_pid):
     assert after <= before + 8, f"broker fds {before} -> {after}"
 
 
-@pytest.mark.parametrize("model", [SlowModel, SlowTaskModel],
-                         ids=["local-wait", "backend-task"])
+@pytest.mark.parametrize(
+    "model", [SlowModel, SlowTaskModel], ids=["local-wait", "backend-task"]
+)
 def test_twin_close_with_inference_in_flight(dt, twin_id, model):
     """A `twin_close` must not be held up by -- nor strand -- a call in
     flight; the caller gets a prompt, clear error.
@@ -222,8 +228,7 @@ def test_twin_close_with_inference_in_flight(dt, twin_id, model):
     """
 
     dt.create_twin(twin_id)
-    dt.add_investigator(twin_id, dt.package(model), SENSOR_DTYPE,
-                        INFERENCE_DTYPE)
+    dt.add_investigator(twin_id, dt.package(model), SENSOR_DTYPE, INFERENCE_DTYPE)
     dt.start(twin_id)
 
     failure = {}
@@ -232,8 +237,9 @@ def test_twin_close_with_inference_in_flight(dt, twin_id, model):
     def infer():
         started.set()
         try:
-            dt.get_inference(twin_id, TypedData(SENSOR_DTYPE, 1),
-                             INFERENCE_DTYPE, timeout=300)
+            dt.get_inference(
+                twin_id, TypedData(SENSOR_DTYPE, 1), INFERENCE_DTYPE, timeout=300
+            )
             failure["result"] = "returned unexpectedly"
         except Exception as exc:
             failure["error"] = str(exc)
@@ -261,8 +267,7 @@ def test_idempotent_retries(dt, twin_id):
     dt.create_twin(twin_id)
     assert len(dt.twin_list()) == 1
 
-    dt.add_investigator(twin_id, dt.package(OffsetModel), SENSOR_DTYPE,
-                        INFERENCE_DTYPE)
+    dt.add_investigator(twin_id, dt.package(OffsetModel), SENSOR_DTYPE, INFERENCE_DTYPE)
 
     assert dt.start(twin_id) == "running"
     assert dt.start(twin_id) == "running"
@@ -294,16 +299,18 @@ def test_graph_verb_after_stop_is_a_clear_error(dt, twin_id):
     dt.stop(twin_id)
 
     with pytest.raises(RuntimeError, match="graph cannot be changed"):
-        dt.add_investigator(twin_id, dt.package(OffsetModel), SENSOR_DTYPE,
-                            INFERENCE_DTYPE)
+        dt.add_investigator(
+            twin_id, dt.package(OffsetModel), SENSOR_DTYPE, INFERENCE_DTYPE
+        )
 
 
 def test_component_crash_surfaces_as_failed(dt, twin_id):
     """A dying component lands in the twin state, not in the log."""
 
     dt.create_twin(twin_id)
-    dt.add_task(twin_id, dt.package(CrashingTask), TRUTHY, NULL_DTYPE,
-                is_persistent=True)
+    dt.add_task(
+        twin_id, dt.package(CrashingTask), TRUTHY, NULL_DTYPE, is_persistent=True
+    )
     dt.start(twin_id)
 
     entry = await_state(dt, twin_id, "failed")
@@ -318,6 +325,7 @@ def test_unknown_twin_and_verb_are_rejected(dt):
 # ---------------------------------------------------------------------------
 # sessions
 # ---------------------------------------------------------------------------
+
 
 def test_client_disconnect_then_reattach_by_sid(stack, twin_id):
     """Twins survive their client, and the sid gets them back."""
@@ -356,8 +364,9 @@ def test_client_disconnect_then_reattach_by_sid(stack, twin_id):
 
 def test_admin_sessions_lists_twins_and_errors(dt, twin_id):
     dt.create_twin(twin_id)
-    dt.add_task(twin_id, dt.package(CrashingTask), TRUTHY, NULL_DTYPE,
-                is_persistent=True)
+    dt.add_task(
+        twin_id, dt.package(CrashingTask), TRUTHY, NULL_DTYPE, is_persistent=True
+    )
     dt.start(twin_id)
     await_state(dt, twin_id, "failed")
 
@@ -393,17 +402,26 @@ def test_twin_ids_are_globally_unique(dt, runtime, twin_id):
 # guards
 # ---------------------------------------------------------------------------
 
+
 def test_persistent_function_task_warns(dt, twin_id):
     """The service-side guard for the actual migration mistake."""
 
     dt.create_twin(twin_id)
-    dt.add_task(twin_id, dt.package(MisplacedFunctionTask), TRUTHY,
-                NULL_DTYPE, is_persistent=True)
+    dt.add_task(
+        twin_id,
+        dt.package(MisplacedFunctionTask),
+        TRUTHY,
+        NULL_DTYPE,
+        is_persistent=True,
+    )
 
     # scoped to this twin: the log accumulates across the whole session,
     # so an unscoped match would pass on a previous test's warning
-    warnings = [line for line in (LOGS / "broker.log").read_text().splitlines()
-                if twin_id in line and "function_task" in line]
+    warnings = [
+        line
+        for line in (LOGS / "broker.log").read_text().splitlines()
+        if twin_id in line and "function_task" in line
+    ]
 
     assert len(warnings) == 1, warnings
     assert "MisplacedFunctionTask registered 1 function_task" in warnings[0]
@@ -417,8 +435,11 @@ def test_version_skew_is_rejected(dt, twin_id):
     resp = dt._request(
         "POST",
         dt._url(f"twin_call/{dt.sid}/{twin_id}"),
-        json={"verb": "start", "payload": "", "client": {
-            "python": "2.7", "cloudpickle": "0.1"}},
+        json={
+            "verb": "start",
+            "payload": "",
+            "client": {"python": "2.7", "cloudpickle": "0.1"},
+        },
     )
 
     assert resp.status_code == 400, resp.text
@@ -429,7 +450,8 @@ def test_version_skew_is_rejected(dt, twin_id):
 # endpoint-hosted deployment
 # ---------------------------------------------------------------------------
 
-def test_endpoint_hosted_smoke(dt_endpoint, inference_endpoint, runtime):
+
+def test_endpoint_hosted_smoke(dt_endpoint, learning_endpoint, runtime):
     """The endpoint-hosted mode must not silently rot.
 
     Create / list / close only -- `get_inference` is the one verb the
@@ -443,8 +465,9 @@ def test_endpoint_hosted_smoke(dt_endpoint, inference_endpoint, runtime):
         dt.create_twin(twin)
         assert [t["twin_id"] for t in dt.twin_list()] == [twin]
 
-        dt.add_investigator(twin, dt.package(OffsetModel), SENSOR_DTYPE,
-                            INFERENCE_DTYPE)
+        dt.add_investigator(
+            twin, dt.package(OffsetModel), SENSOR_DTYPE, INFERENCE_DTYPE
+        )
         assert dt.start(twin) == "running"
 
         assert dt.twin_close(twin) == "closed"
