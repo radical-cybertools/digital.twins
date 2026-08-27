@@ -81,13 +81,13 @@ def engines(**endpoints: str) -> dict:
 ENGINES = engines(learning=LEARNING_ENDPOINT)
 
 # dual-engine wiring: learner tasks ex-situ, everything else co-located
-ENGINES_DUAL = engines(inference=LEARNING_ENDPOINT, learning=INFERENCE_ENDPOINT)
+ENGINES_DUAL = engines(learning=LEARNING_ENDPOINT, inference=INFERENCE_ENDPOINT)
 
-# same, but with an ex-situ engine on an endpoint the test will kill
-ENGINES_DOOMED = engines(inference=LEARNING_ENDPOINT, learning=DOOMED_ENDPOINT)
+# same, but with an inference engine on an endpoint the test will kill
+ENGINES_DOOMED = engines(learning=LEARNING_ENDPOINT, inference=DOOMED_ENDPOINT)
 
 # the M3 stack's single engine
-ENGINES_ORBIT = engines(inference=ORBIT_TASK_ENDPOINT)
+ENGINES_ORBIT = engines(learning=ORBIT_TASK_ENDPOINT)
 
 
 def _port_free(port: int) -> bool:
