@@ -82,7 +82,7 @@ def main():
         print(json.dumps(dt.describe(twin), indent=2))
 
         dt.start(twin)
-        time.sleep(15)
+        time.sleep(30)
 
         print(json.dumps(dt.twin(twin), indent=2))
 

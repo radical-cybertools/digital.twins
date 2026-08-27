@@ -29,7 +29,8 @@ class MyModel(ModelInvestigator):
         @self.flow.function_task
         async def compute():
             print("\n RUNNING SIM ............ \n")
-            return time.sleep(5)
+            time.sleep(5)
+            return
 
         self.compute = compute
 
