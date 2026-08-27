@@ -189,7 +189,7 @@ class PluginDT(Plugin):
                          "learning":  {"endpoint_name": "hpc1",
                                     "backends": ["concurrent"]}}}
 
-        `'learning'` is optional: unconfigured, it aliases `'inference'`.
+        `'inference'` is optional: unconfigured, it aliases `'learning'`.
 
         A role may name a dispatcher-managed pool instead of an endpoint
         (`{"pool": "exsitu"}`), with the pool configs declared once at the
@@ -391,6 +391,8 @@ class PluginDT(Plugin):
         afterwards would inherit it.  `unregister_session`, then build
         the session and its twins again.
         """
+
+        # TODO: send message to runtime to inform sci agents on topo change.
 
         await super().on_topology_change(participants)
 

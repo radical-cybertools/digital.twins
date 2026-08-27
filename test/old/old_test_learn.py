@@ -4,6 +4,8 @@ Against a real (local, thread-backed) engine: ROSE typechecks its
 `WorkflowEngine` argument, so there is no useful fake to substitute.
 """
 
+exit()
+
 import asyncio
 import logging
 

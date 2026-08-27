@@ -8,7 +8,7 @@ it without patching ORBIT.
 
 from .client import DTClient
 from .plugin import PluginDT
-from .session import DTSession, TwinInstance
+from .session import DTSession, TwinInstance, ROLE_INFERENCE, ROLE_LEARNING
 from .wire import Package, register_user_modules
 
 __all__ = [
@@ -18,4 +18,6 @@ __all__ = [
     "PluginDT",
     "TwinInstance",
     "register_user_modules",
+    ROLE_INFERENCE,
+    ROLE_LEARNING
 ]

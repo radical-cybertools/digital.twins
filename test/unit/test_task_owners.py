@@ -29,7 +29,7 @@ from digitaltwin import (  # noqa: E402
     TypedData,
     UtilityTask,
 )
-from digitaltwin.learn import StreamingLearnerInvestigator  # noqa: E402
+
 from digitaltwin.runtime import TASK_UID_RING  # noqa: E402
 
 X = DataType("x")
@@ -94,46 +94,48 @@ class Wrapped(ModelInvestigator):
         runtime.publish_new_model({"k": 3.0}, {})
 
 
-class Learner(StreamingLearnerInvestigator):
-    """Windows of one, so a single item drives a whole ROSE iteration."""
+# class Learner(ModelInvestigator):
+#     """Windows of one, so a single item drives a whole ROSE iteration."""
 
-    def __init__(self, flow, learn_backend=None):
-        super().__init__(flow, learn_backend, batch_size=1, max_wait=1.0)
+#     def __init__(self, flow, learn_backend=None):
+#         super().__init__(flow)
 
-        @self.learner.training_task(as_executable=False)
-        async def training(window, *args):
-            return {"k": 2.0}
+#         self.learner = SequentialActiveLearner()
 
-        @self.learner.active_learn_task(as_executable=False)
-        async def active_learn(model, *args):
-            return model
+#         @self.learner.training_task(as_executable=False)
+#         async def training(window, *args):
+#             return {"k": 2.0}
 
-        @self.learner.as_stop_criterion(
-            metric_name="err", threshold=1e-9, operator="<",
-            as_executable=False)
-        async def criterion(*args):
-            return 1.0
+#         @self.learner.active_learn_task(as_executable=False)
+#         async def active_learn(model, *args):
+#             return model
 
-        @flow.function_task
-        async def predict(in_data, k=0.0):
-            return k * in_data.data
+#         @self.learner.as_stop_criterion(
+#             metric_name="err", threshold=1e-9, operator="<",
+#             as_executable=False)
+#         async def criterion(*args):
+#             return 1.0
 
-        async def infer(in_data, k=0.0):
-            return TypedData(Y, await predict(in_data, k=k))
+#         @flow.function_task
+#         async def predict(in_data, k=0.0):
+#             return k * in_data.data
 
-        self.inference_task = infer
+#         async def infer(in_data, k=0.0):
+#             return TypedData(Y, await predict(in_data, k=k))
 
-    def bootstrap_model(self):
-        return {"k": 0.0}, {}
+#         self.inference_task = infer
+
+#     def bootstrap_model(self):
+#         return {"k": 0.0}, {}
 
 
-class Feeder(UtilityTask):
-    """One item per tick, into the twin's stream."""
+# class Feeder(UtilityTask):
+#     """One item per tick, into the twin's stream."""
 
-    async def main_loop(self, runtime, in_data):
-        for value in range(1000):
-            await runtime.stream.publish(X, float(value))
-            await asyncio.sleep(0.1)
+#     async def main_loop(self, runtime, in_data):
+#         for value in range(1000):
+#             await runtime.stream.publish(X, float(value))
+#             await asyncio.sleep(0.1)
 
 
 # ---------------------------------------------------------------------------
@@ -200,34 +202,34 @@ async def test_the_ring_is_bounded_and_keeps_the_newest(engines,
 # ROSE's submissions
 # ---------------------------------------------------------------------------
 
-async def test_the_learners_own_tasks_are_recorded_too(engines,
-                                                       stream_clients):
-    """Training / active learning / criterion carry the learning label and
-    never pass through the runtime; the wrapper in `main_loop` is what makes
-    them the twin's (`_own_learner_tasks`)."""
+# async def test_the_learners_own_tasks_are_recorded_too(engines,
+#                                                        stream_clients):
+#     """Training / active learning / criterion carry the learning label and
+#     never pass through the runtime; the wrapper in `main_loop` is what makes
+#     them the twin's (`_own_learner_tasks`)."""
 
-    flow = await engines()
+#     flow = await engines()
 
-    runtime = DTRuntime(flow, await stream_clients("own-learner"))
-    learner = Learner(flow)
+#     runtime = DTRuntime(flow, await stream_clients("own-learner"))
+#     learner = Learner(flow)
 
-    runtime.add_task(Feeder(flow), TRUTHY, X, is_persistent=True)
-    runtime.add_investigator(learner, X, Y)
-    runtime.start()
+#     runtime.add_task(Feeder(flow), TRUTHY, X, is_persistent=True)
+#     runtime.add_investigator(learner, X, Y)
+#     runtime.start()
 
-    # the learner is wrapped as soon as its main loop runs
-    deadline = asyncio.get_running_loop().time() + 30.0
-    while len(runtime.task_uids()) < 3:
-        if asyncio.get_running_loop().time() > deadline:
-            pytest.fail(f"only {runtime.task_uids()} recorded"
-                        f" ({runtime.state} {runtime.last_error})")
-        await asyncio.sleep(0.25)
+#     # the learner is wrapped as soon as its main loop runs
+#     deadline = asyncio.get_running_loop().time() + 30.0
+#     while len(runtime.task_uids()) < 3:
+#         if asyncio.get_running_loop().time() > deadline:
+#             pytest.fail(f"only {runtime.task_uids()} recorded"
+#                         f" ({runtime.state} {runtime.last_error})")
+#         await asyncio.sleep(0.25)
 
-    assert getattr(learner.learner, "_dt_owned", False)
-    assert all(uid.startswith("task.") for uid in runtime.task_uids())
-    # every recorded task is the learner's, and says so
-    assert set(runtime.task_components().values()) == {"Learner"}
-    # every window is three learner tasks, so a handful arrive quickly
-    assert len(set(runtime.task_uids())) == len(runtime.task_uids())
+#     assert getattr(learner.learner, "_dt_owned", False)
+#     assert all(uid.startswith("task.") for uid in runtime.task_uids())
+#     # every recorded task is the learner's, and says so
+#     assert set(runtime.task_components().values()) == {"Learner"}
+#     # every window is three learner tasks, so a handful arrive quickly
+#     assert len(set(runtime.task_uids())) == len(runtime.task_uids())
 
-    await runtime.stop()
+#     await runtime.stop()

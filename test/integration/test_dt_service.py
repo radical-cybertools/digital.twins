@@ -204,7 +204,7 @@ def test_twin_churn_leaks_nothing(dt, broker_pid):
     session = next(s for s in dt.admin_sessions()["sessions"]
                    if s["sid"] == dt.sid)
     # one engine per session, never one per twin
-    assert session["engines"] == ["inference"]
+    assert session["engines"] == ["learning"]
     assert session["twins"] == []
 
     after = broker_fds(broker_pid)

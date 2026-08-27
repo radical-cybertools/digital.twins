@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 
 from radical.asyncflow import WorkflowEngine
 from digitaltwin.components import ModelInvestigator, TypedData
@@ -26,20 +27,27 @@ class MyModel(ModelInvestigator):
         self.flow = flow
 
         @self.flow.function_task
-        async def compute(in_data: TypedData, offset=1):
-            return offset - in_data.data
+        async def compute():
+            print("\n RUNNING SIM ............ \n")
+            return time.sleep(5)
 
         self.compute = compute
 
-    async def main_loop(self, runtime: RuntimeAPI):
-        async def do_inference(in_data: TypedData, offset=1):
-            return TypedData(INFERENCE_DTYPE, await self.compute(in_data,
-                                                                 offset=offset))
+        @self.flow.function_task(backend="inference")
+        async def do_inference(in_data: TypedData, offset=1):     
+            print("\n RUNNING INFERENCE............ \n")      
+            return TypedData(INFERENCE_DTYPE, offset - in_data.data)
+        
+        self.do_inference = do_inference
 
-        runtime.set_inference_task(do_inference)
+    async def main_loop(self, runtime: RuntimeAPI):
+        
+
+        runtime.set_inference_task(self.do_inference)
 
         offset = 2
         while True:
             runtime.publish_new_model({"offset": offset})
             offset += 1
-            await asyncio.sleep(5)
+            # simulate a long sim
+            await self.compute()

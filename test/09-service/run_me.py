@@ -41,10 +41,20 @@ TASK_ENDPOINT = os.environ.get("DT_INFERENCE_ENDPOINT") or None
 
 # engine wiring, stated explicitly: one 'inference' backend per session, on a
 # co-located endpoint, with the concurrent backend
+# ENGINES = {
+#     "engines": {
+#         "inference": {"endpoint_name": TASK_ENDPOINT, "backends": ["concurrent"]}
+#     }
+# }
+
+# "pools": [{"name": "exsitu", "endpoint_name": "hpc"},
+#           {"name": "insitu", "endpoint_name": "pi"}],
+
 ENGINES = {
-    "engines": {
-        "inference": {"endpoint_name": TASK_ENDPOINT, "backends": ["concurrent"]}
-    }
+        "engines": {
+            "inference" : {"endpoint_name": "pi", "backends": ["concurrent"]},
+            "learning" : {"endpoint_name": "hpc", "backends": ["dragon"]},
+        }
 }
 
 

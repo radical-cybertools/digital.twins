@@ -30,22 +30,8 @@ from .wire import Package, check_versions, decode, encode
 
 log = logging.getLogger("radical.orbit")
 
-try:
-    from ..learn import StreamingLearnerInvestigator
-
-except ImportError as _exc:  # the 'learn' extra (ROSE) is optional
-    # logged, not swallowed: without this, a service built *with* the
-    # extra but with a broken ROSE looks identical to one built without
-    # it -- the learner twins just quietly get one engine
-    log.info("[dt] ex-situ learning unavailable (%s); install the 'learn'"
-             " extra to host StreamingLearnerInvestigator twins", _exc)
-    StreamingLearnerInvestigator = None
-
-# The two reserved roles.  They name function, not placement: every twin
-# component's tasks run on 'inference'; only a StreamingLearnerInvestigator
-# labels its learner tasks 'learning', and only when the session configured
-# a backend for that role.  One engine per session carries both backends;
-# asyncflow routes per task on the label.
+# default is learning. 
+# user must pick inference 
 ROLE_INFERENCE = "inference"
 ROLE_LEARNING = "learning"
 
@@ -128,7 +114,7 @@ class TwinInstance:
         # which session engines this twin's components actually bound to.
         # Engines are session-shared, so losing one endpoint must fail the
         # twins that use it and leave the others alone (R8).
-        self.engines: set[str] = {ROLE_INFERENCE}
+        self.engines: set[str] = {ROLE_LEARNING}
 
         self._state = STATE_INITIALIZING
         self._last_error: Optional[str] = None
@@ -484,8 +470,8 @@ class DTSession(PluginSession):
     def configured(self, name: str) -> bool:
         """Is role `name` configured for this session?
 
-        An unconfigured role other than `'inference'` is not built: it
-        aliases `'inference'` instead, so adding `'learning'` stays a
+        An unconfigured role other than `'learning'` is not built: it
+        aliases `'learning'` instead, so adding `'inference'` stays a
         config-only change and a single-endpoint deployment keeps working
         unchanged.
         """
@@ -504,12 +490,12 @@ class DTSession(PluginSession):
             "endpoint_name"
         )
 
-    async def engine(self, name: str = ROLE_INFERENCE) -> WorkflowEngine:
+    async def engine(self, name: str = ROLE_LEARNING) -> WorkflowEngine:
         """The session-shared engine, with role `name` built and attached.
 
         One engine per session, never per twin; one backend per role,
         attached to that engine, routed to by task label.  An unconfigured
-        role falls back to `'inference'` (see `configured`).
+        role falls back to `'learning'` (see `configured`).
 
         The build is a *session-owned* task that callers only ever
         `shield`-await: a twin whose initialization is cancelled halfway
@@ -522,7 +508,7 @@ class DTSession(PluginSession):
         """
 
         if not self.configured(name):
-            name = ROLE_INFERENCE
+            name = ROLE_LEARNING
 
         # R8 arrives exactly once, but its consequences do not expire: the
         # dead engine stays cached here, so without this a twin created
@@ -535,8 +521,11 @@ class DTSession(PluginSession):
                 f" recreate the session"
             )
 
-        # per-role lock: a 150 s 'learning' backend init must not serialize
-        # ahead of an 'inference' build that another twin is waiting on
+        # default to learning actually, not inference.
+        # (as learning is the higher-performance one out of the two)
+        # 
+        # per-role lock: a 150 s 'inference' backend init must not serialize
+        # ahead of an 'learning' build that another twin is waiting on
         async with self._engine_locks[name]:
             if name in self._backends and self._flow is not None:
                 return self._flow
@@ -554,15 +543,15 @@ class DTSession(PluginSession):
         backend = await self._create_backend(name)
 
         try:
-            if name == ROLE_INFERENCE:
+            if name == ROLE_LEARNING:
                 flow = await WorkflowEngine.create(backend=backend)
             else:
-                # the engine exists once the 'inference' role is built; a
+                # the engine exists once the 'learning' role is built; a
                 # role-only build rides on it and attaches its backend.
                 # (`_attach_backend` is asyncflow-private for now; the
                 # public spelling is an upstream ask.)
-                flow = await self.engine(ROLE_INFERENCE)
-                flow._attach_backend(backend)
+                flow = await self.engine(ROLE_LEARNING)
+                # flow._attach_backend(backend)
         except BaseException:
             with contextlib.suppress(Exception):
                 await backend.shutdown()
@@ -576,7 +565,7 @@ class DTSession(PluginSession):
                 f"session {self.sid} closed while role {name!r} was building")
 
         self._backends[name] = backend
-        if name == ROLE_INFERENCE:
+        if name == ROLE_LEARNING:
             self._flow = flow
 
         return flow
@@ -765,11 +754,8 @@ class DTSession(PluginSession):
             "age": round(time.time() - self.created, 3),
             "engines": sorted(self._backends),
             "endpoints": {
-                ROLE_INFERENCE: self._engine_endpoint(ROLE_INFERENCE),
-                ROLE_LEARNING: (
-                    self._engine_endpoint(ROLE_LEARNING)
-                    if self.configured(ROLE_LEARNING) else None
-                ),
+                ROLE_INFERENCE: self._engine_endpoint(ROLE_INFERENCE) if self.configured(ROLE_INFERENCE) else None,
+                ROLE_LEARNING: self._engine_endpoint(ROLE_LEARNING)
             },
             "twins": [twin.summary() for twin in self.twins.values()],
         }
@@ -792,9 +778,9 @@ class DTSession(PluginSession):
                 # and concurrently: a learner twin must not pay a
                 # two-minute backend init inside `add_investigator`, which
                 # is a short verb like every other one.
-                names = [ROLE_INFERENCE]
-                if self.configured(ROLE_LEARNING):
-                    names.append(ROLE_LEARNING)
+                names = [ROLE_LEARNING]
+                if self.configured(ROLE_INFERENCE):
+                    names.append(ROLE_INFERENCE)
 
                 flow, *_ = await asyncio.gather(*map(self.engine, names))
 
@@ -862,15 +848,15 @@ class DTSession(PluginSession):
             )
 
         flow = twin.runtime.flow
-        extra = {}
 
-        if _is_learner(package.cls):
-            # no 'learning' backend configured: the label is omitted and
-            # the learner's tasks ride the default ('inference') backend
-            has_learning = ROLE_LEARNING in self._backends
-            extra["learn_backend"] = ROLE_LEARNING if has_learning else None
-            if has_learning:
-                twin.engines.add(ROLE_LEARNING)
+
+        # if _is_learner(package.cls):
+        #     # no 'learning' backend configured: the label is omitted and
+        #     # the learner's tasks ride the default ('inference') backend
+        #     has_learning = ROLE_LEARNING in self._backends
+        #     extra["learn_backend"] = ROLE_LEARNING if has_learning else None
+        #     if has_learning:
+        #         twin.engines.add(ROLE_LEARNING)
 
         registered = 0
         original = flow.function_task
@@ -882,7 +868,7 @@ class DTSession(PluginSession):
 
         flow.function_task = counting
         try:
-            component = package.instantiate(flow, **extra)
+            component = package.instantiate(flow)
         finally:
             flow.function_task = original
 

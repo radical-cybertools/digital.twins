@@ -186,18 +186,6 @@ class _JoinComponent(_TwinComponent):
     """
 
     def __init__(self, join_dtype: JoinDataType, submit_event_fn: Callable) -> None:
-        # FIXME(review): the depth-1 queues below plus the blocking `put` in
-        # `update()` make a join a *non-local* operator.  `update` is awaited
-        # from `_run_component`, which is gathered by `_dtype_consumer`, which
-        # is awaited in `_launch_consumer`'s loop -- so while one input waits
-        # for its partner, the whole consumer for that dtype is stalled,
-        # including components which have nothing to do with the join.  The
-        # existing `Barrier` deliberately does the opposite (unbounded output
-        # queues, plus a soft mode).  Having two synchronisation primitives
-        # with opposite back-pressure semantics and no stated distinction is
-        # the actual problem; it needs a policy decision, not a patch.
-        # Invisible in `08-data-join` because both sensors tick at 1 Hz.
-
         # need a queue for each input.
         self.input_queues: dict[DataType, asyncio.Queue] = {}
         self.submit_event_fn = submit_event_fn

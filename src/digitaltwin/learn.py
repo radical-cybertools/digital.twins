@@ -1,4 +1,7 @@
-"""Ex-situ learning: a ROSE streaming learner inside a twin component.
+"""OLD. Replaced by direct "backend" label on tasks on the user side.
+
+
+ Ex-situ learning: a ROSE streaming learner inside a twin component.
 
 `StreamingLearnerInvestigator` packages the wiring `test/rose_streaming`
 spells out by hand -- a `StreamingActiveLearner` fed from `ON_INPUT`, a
@@ -57,7 +60,7 @@ import math
 from typing import Any, Callable, Optional
 
 from radical.asyncflow import WorkflowEngine  # type: ignore
-from rose.al.streaming_learner import StreamingActiveLearner  # type: ignore
+# from rose.al.streaming_learner import StreamingActiveLearner  # type: ignore
 
 from .components import ModelInvestigator, TypedData
 from .runtime import RuntimeAPI, hook_engine, note_flow_task
