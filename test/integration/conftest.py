@@ -366,7 +366,7 @@ def _await_plugin(
 
 
 @pytest.fixture(scope="session")
-def stack(broker, learner_endpoint):
+def stack(broker, learning_endpoint):
     """The full broker + endpoint stack; returns the broker URL."""
 
     return broker.url
