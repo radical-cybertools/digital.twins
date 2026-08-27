@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "digitaltwin"
-version = "0.0.1"
+version = "0.1.0"
 description = "Experimental digital twin framework"
 # FIXME(review): this floor is not real.  `streaming.py` uses
 # `async with asyncio.timeout(...)`, which is 3.11+, so an actual 3.10
