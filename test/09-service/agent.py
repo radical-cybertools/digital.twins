@@ -23,10 +23,11 @@ class MyAgent(SciAgent):
         # no learning. Simple investigator
         self.investigator = MyModel(flow)
 
-        @self.flow.function_task
+        @self.flow.function_task(backend="inference")
         async def model_select(
             in_data: TypedData, i_id=self.investigator.get_id(), model_kwargs={}
         ):
+            print("\n RUNNING SELECTOR............ \n")
             return i_id  # default to latest model
 
         self.model_selector = model_select
