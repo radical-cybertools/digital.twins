@@ -16,7 +16,12 @@ pytest.importorskip("radical.orbit")
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from digitaltwin.components import TRUTHY, DataType, UtilityTask  # noqa: E402
+from digitaltwin.components import (  # noqa: E402
+    TRUTHY,
+    DataType,
+    JoinDataType,
+    UtilityTask,
+)
 from digitaltwin.runtime import DTRuntime  # noqa: E402
 from digitaltwin.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
 from digitaltwin.service.session import DTSession, TwinInstance  # noqa: E402
@@ -902,3 +907,106 @@ async def test_endpoint_loss_spares_pool_backed_roles():
 
     assert session.endpoints_lost({"hpc1", "exsitu", "pool"}) == ()
     assert not session._lost
+
+
+# ---------------------------------------------------------------------------
+# graph verbs: external inputs and joins (#30)
+# ---------------------------------------------------------------------------
+
+class _BindingStream(_FakeStream):
+    """A `_FakeStream` that also accepts channel subscriptions."""
+
+    def __init__(self):
+        self.subscribed = []
+
+    async def subscribe_to_channel(self, channel, dtype, queue, codec):
+        self.subscribed.append((channel, dtype, codec))
+
+
+async def test_add_input_binds_a_channel_through_the_verb():
+    """`add_input` carries data only -- dtype, channel, codec -- and the
+    binding lands in the runtime exactly as a direct call would leave it."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    twin.runtime.streamer = _BindingStream()
+
+    x = DataType("x")
+    await session.twin_call(
+        "t1", "add_input",
+        encode({"args": (x, "lab/raw")}), version_stamp())
+
+    binding = twin.runtime.inputs[0]
+    assert (binding.dtype, binding.channel, binding.codec) == (x, "lab/raw",
+                                                               "json")
+    # the verb answered, so the subscription is already live -- no settling
+    assert twin.runtime.streamer.subscribed == [("lab/raw", x, "json")]
+    assert twin.summary()["calls"] == {"add_input": 1}
+
+    await twin.close()
+
+
+async def test_add_input_rejects_a_bad_channel_as_client_error():
+    """The runtime's own refusal (reserved prefix) surfaces as a 409,
+    the same contract every other graph verb has."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    twin.runtime.streamer = _BindingStream()
+
+    with pytest.raises(HTTPException) as raised:
+        await session.twin_call(
+            "t1", "add_input",
+            encode({"args": (DataType("x"), "dt/oops")}), version_stamp())
+
+    assert raised.value.status_code == 409
+    assert twin.runtime.inputs == []
+
+    await twin.close()
+
+
+async def test_add_data_join_registers_through_the_verb():
+    """One joined dtype, consumable downstream like any other."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+
+    a, b = DataType("a"), DataType("b")
+    joined = JoinDataType([a, b])
+    await session.twin_call(
+        "t1", "add_data_join", encode({"args": (joined,)}), version_stamp())
+
+    assert joined in twin.runtime.join_components
+    assert twin.summary()["calls"] == {"add_data_join": 1}
+
+    await twin.close()
+
+
+async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
+    """The stream client dedupes on (channel, dtype): a re-bind with a
+    different codec would be recorded yet never applied, so it is
+    refused instead of silently decoding with the old codec forever."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    twin.runtime.streamer = _BindingStream()
+
+    x = DataType("x")
+    await session.twin_call(
+        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp())
+
+    # the identical re-bind is an idempotent no-op
+    await session.twin_call(
+        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp())
+    assert len(twin.runtime.inputs) == 1
+
+    with pytest.raises(HTTPException) as raised:
+        await session.twin_call(
+            "t1", "add_input",
+            encode({"args": (x, "lab/raw", "raw")}), version_stamp())
+
+    assert raised.value.status_code == 409
+    assert "codec" in raised.value.detail
+    assert len(twin.runtime.inputs) == 1
+
+    await twin.close()

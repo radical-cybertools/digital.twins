@@ -926,12 +926,15 @@ class ChannelPublisher:
         channel: str,
         codec: str = CODEC_JSON,
         config: Optional[PubSubConfig] = None,
-        timeout: Optional[float] = None,
+        timeout: Optional[float] = CLIENT_CONNECT_TIMEOUT,
     ) -> "ChannelPublisher":
         """Connect to a broker and publish to `channel` on it.
 
         `config` defaults to the configured broker (environment, else the
         loopback defaults); its namespace, if it has one, is ignored.
+
+        The connect is bounded by `timeout` -- an external producer
+        pointed at an unreachable broker should fail fast, not hang.
         """
 
         config = config or PubSubConfig.resolve()

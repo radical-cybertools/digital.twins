@@ -1053,7 +1053,8 @@ class DTRuntime:
 
         return self.dtype_queues[dtype]
 
-    def add_input(self, dtype: DataType, channel: str, codec: str = CODEC_JSON):
+    def add_input(self, dtype: DataType, channel: str,
+                  codec: str = CODEC_JSON) -> Optional[asyncio.Task]:
         """Open the graph at its input edge: bind an external channel.
 
         Sensors and other producers live outside the framework.  They
@@ -1070,6 +1071,10 @@ class DTRuntime:
 
         Internal producers keep their own path: a persistent component
         publishes through `RuntimeAPI.stream`.
+
+        Returns the subscription task (`None` for an idempotent re-bind,
+        or when the twin is tearing down): a caller that needs the
+        binding live before producers publish awaits it.
         """
 
         self._check_mutable()
@@ -1077,15 +1082,24 @@ class DTRuntime:
         PubSubClient.check_channel(channel)
         check_codec(codec)
 
-        binding = _InputBinding(dtype, channel, codec)
-        if binding in self.inputs:
-            return
-        self.inputs.append(binding)
+        for existing in self.inputs:
+            if (existing.dtype, existing.channel) == (dtype, channel):
+                if existing.codec == codec:
+                    return None
+                # the stream client dedupes on (channel, dtype), so a
+                # changed codec would be recorded here yet never applied
+                # -- refuse it rather than decode with the old one forever
+                raise ValueError(
+                    f"channel {channel!r} is already bound to {dtype} with"
+                    f" codec {existing.codec!r}; a binding cannot change"
+                    " its codec"
+                )
+        self.inputs.append(_InputBinding(dtype, channel, codec))
 
         # subscribe now, so nothing published before start() is lost: the
         # queue buffers it and the consumers wait for start anyway
         logger.info(f"Bind channel {channel!r} ({codec}) to dtype: {dtype}")
-        self._to_asyncio_task(
+        return self._to_asyncio_task(
             self.streamer.subscribe_to_channel,
             channel,
             dtype,
