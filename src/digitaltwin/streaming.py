@@ -849,9 +849,15 @@ class PubSubConfig:
         sub_addr: Optional[str] = None,
     ) -> "PubSubConfig":
         """Describe the configured broker: explicit addresses, else the
-        environment, else the loopback defaults (see `config`)."""
+        environment, else the loopback defaults (see `config`).
 
-        return cls(namespace, *stream_addresses(pub_addr, sub_addr))
+        The backend kind comes from `DT_STREAM_BACKEND` like everywhere
+        else -- an external producer on an orbit deployment needs only
+        the same environment the deployment itself runs with.
+        """
+
+        return cls(namespace, *stream_addresses(pub_addr, sub_addr),
+                   kind=stream_backend())
 
     async def connect_backend(self, timeout: Optional[float] = None) -> PubSubBackend:
         """Open the transport alone, without namespace semantics.

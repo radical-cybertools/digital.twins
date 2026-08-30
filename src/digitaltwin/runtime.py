@@ -1516,8 +1516,12 @@ class DTRuntime:
             note_flow_task(selecting)
             answer_ms = await selecting
 
-            # answer is an investigator id.
-            if isinstance(answer_ms, tuple) and len(answer_ms) == 2:
+            # answer is an investigator id.  A selector that ran as a
+            # remote function task gets its (id, kwargs) pair back as a
+            # JSON list -- the wire has no tuples -- so both spellings
+            # mean the pair.
+            if (isinstance(answer_ms, (tuple, list))
+                    and len(answer_ms) == 2):
                 i_select, model_kwargs = answer_ms
             else:
                 i_select = answer_ms
