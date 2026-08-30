@@ -23,9 +23,9 @@ from radical.asyncflow import WorkflowEngine  # type: ignore
 from radical.orbit.plugin_session_base import PluginSession
 from rhapsody.backends.execution.orbit import OrbitExecutionBackend  # type: ignore
 
-from ..components import DataType, TypedData
+from ..components import DataType, JoinDataType, TypedData
 from ..runtime import DTRuntime, RuntimeState
-from ..streaming import PubSubClient
+from ..streaming import CODEC_JSON, PubSubClient
 from .wire import Package, check_versions, decode, encode
 
 log = logging.getLogger("radical.orbit")
@@ -77,6 +77,8 @@ VERBS = (
     "add_task",
     "add_investigator",
     "add_agent",
+    "add_input",
+    "add_data_join",
     "start",
     "stop",
     "describe",
@@ -442,6 +444,23 @@ class DTSession(PluginSession):
     ) -> None:
         component = self._instantiate(package, twin)
         twin.runtime.add_agent(component, input_dtype, output_dtype, *args, **kwargs)
+
+    async def _verb_add_input(
+        self,
+        twin: TwinInstance,
+        dtype: DataType,
+        channel: str,
+        codec: str = CODEC_JSON,
+    ) -> None:
+        # data-only arguments, no Package: the producer lives outside the
+        # framework, only the binding crosses the wire.  The runtime
+        # validates channel and codec and subscribes at bind time.
+        twin.runtime.add_input(dtype, channel, codec)
+
+    async def _verb_add_data_join(
+        self, twin: TwinInstance, join_dtype: JoinDataType
+    ) -> None:
+        twin.runtime.add_data_join(join_dtype)
 
     async def _verb_start(self, twin: TwinInstance) -> None:
         # a running twin is left running: an idempotent retry, not an error

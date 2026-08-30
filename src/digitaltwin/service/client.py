@@ -27,7 +27,8 @@ from typing import Any, Optional
 
 from radical.orbit.client import PluginClient
 
-from ..components import DataType, TypedData
+from ..components import DataType, JoinDataType, TypedData
+from ..streaming import CODEC_JSON
 from .wire import (
     Package,
     decode,
@@ -238,6 +239,32 @@ class DTClient(PluginClient):
         return self._verb(
             twin_id, "add_agent", package, input_dtype, output_dtype, *args, **kwargs
         )["state"]
+
+    def add_input(
+        self,
+        twin_id: str,
+        dtype: DataType,
+        channel: str,
+        codec: str = CODEC_JSON,
+    ) -> str:
+        """Bind an external channel to one of the twin's input dtypes.
+
+        The producer lives outside the framework and publishes to
+        `channel`; the twin receives every message on it, decoded by
+        `codec` (`json` for plain scripts and instruments, `raw` for
+        bytes, `cloudpickle` only inside one trust domain).
+        """
+
+        return self._verb(twin_id, "add_input", dtype, channel, codec)["state"]
+
+    def add_data_join(self, twin_id: str, join_dtype: JoinDataType) -> str:
+        """Register a join: one output event per complete set of inputs.
+
+        `join_dtype` names the member dtypes; components downstream
+        consume the joined dtype like any other.
+        """
+
+        return self._verb(twin_id, "add_data_join", join_dtype)["state"]
 
     def start(self, twin_id: str) -> str:
         """Start a twin.  Starting a running twin is a no-op."""

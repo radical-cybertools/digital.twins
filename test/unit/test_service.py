@@ -902,3 +902,83 @@ async def test_endpoint_loss_spares_pool_backed_roles():
 
     assert session.endpoints_lost({"hpc1", "exsitu", "pool"}) == ()
     assert not session._lost
+
+
+# ---------------------------------------------------------------------------
+# graph verbs: external inputs and joins (#30)
+# ---------------------------------------------------------------------------
+
+class _BindingStream(_FakeStream):
+    """A `_FakeStream` that also accepts channel subscriptions."""
+
+    def __init__(self):
+        self.subscribed = []
+
+    async def subscribe_to_channel(self, channel, dtype, queue, codec):
+        self.subscribed.append((channel, dtype, codec))
+
+
+async def test_add_input_binds_a_channel_through_the_verb():
+    """`add_input` carries data only -- dtype, channel, codec -- and the
+    binding lands in the runtime exactly as a direct call would leave it."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    twin.runtime.streamer = _BindingStream()
+
+    x = DataType("x")
+    await session.twin_call(
+        "t1", "add_input",
+        encode({"args": (x, "lab/raw")}), version_stamp())
+
+    binding = twin.runtime.inputs[0]
+    assert (binding.dtype, binding.channel, binding.codec) == (x, "lab/raw",
+                                                               "json")
+    # subscribed at bind time, so nothing published before start() is lost
+    await asyncio.sleep(0)
+    assert twin.runtime.streamer.subscribed == [("lab/raw", x, "json")]
+    assert twin.summary()["calls"] == {"add_input": 1}
+
+    await twin.close()
+
+
+async def test_add_input_rejects_a_bad_channel_as_client_error():
+    """The runtime's own refusal (reserved prefix) surfaces as a 409,
+    the same contract every other graph verb has."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    twin.runtime.streamer = _BindingStream()
+
+    with pytest.raises(HTTPException) as raised:
+        await session.twin_call(
+            "t1", "add_input",
+            encode({"args": (DataType("x"), "dt/oops")}), version_stamp())
+
+    assert raised.value.status_code == 409
+    assert twin.runtime.inputs == []
+
+    await twin.close()
+
+
+async def test_add_data_join_registers_through_the_verb():
+    """One joined dtype, consumable downstream like any other."""
+
+    from digitaltwin.components import JoinDataType
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+
+    a, b = DataType("a"), DataType("b")
+    joined = JoinDataType([a, b])
+    await session.twin_call(
+        "t1", "add_data_join", encode({"args": (joined,)}), version_stamp())
+
+    registered = [ant.component.out_dtype
+                  for ants in twin.runtime.components.values()
+                  for ant in ants
+                  if getattr(ant.component, "out_dtype", None) == joined]
+    assert registered, "join component not registered"
+    assert twin.summary()["calls"] == {"add_data_join": 1}
+
+    await twin.close()
