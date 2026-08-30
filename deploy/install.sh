@@ -22,7 +22,7 @@ ROLE="${1:-}"
 VENV="${2:-$PWD/ve.demo}"
 
 REPO="https://github.com/radical-cybertools/digital.twins"
-REF="665b22a6f4903abb14ed8ad697e8182e5638f05c"   # devel: dashboard 0.10.0, task attribution (#15)
+REF="3f828bca3c0ad7752ccec2ad3f5a8dd051bce83c"   # devel: graph verbs (#31), demo wire fixes (#33)
 
 # The radical dependencies must NOT come from naive PyPI resolution: PyPI's
 # rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit` (the
