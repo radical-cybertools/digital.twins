@@ -16,7 +16,12 @@ pytest.importorskip("radical.orbit")
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from digitaltwin.components import TRUTHY, DataType, UtilityTask  # noqa: E402
+from digitaltwin.components import (  # noqa: E402
+    TRUTHY,
+    DataType,
+    JoinDataType,
+    UtilityTask,
+)
 from digitaltwin.runtime import DTRuntime  # noqa: E402
 from digitaltwin.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
 from digitaltwin.service.session import DTSession, TwinInstance  # noqa: E402
@@ -934,8 +939,7 @@ async def test_add_input_binds_a_channel_through_the_verb():
     binding = twin.runtime.inputs[0]
     assert (binding.dtype, binding.channel, binding.codec) == (x, "lab/raw",
                                                                "json")
-    # subscribed at bind time, so nothing published before start() is lost
-    await asyncio.sleep(0)
+    # the verb answered, so the subscription is already live -- no settling
     assert twin.runtime.streamer.subscribed == [("lab/raw", x, "json")]
     assert twin.summary()["calls"] == {"add_input": 1}
 
@@ -963,8 +967,6 @@ async def test_add_input_rejects_a_bad_channel_as_client_error():
 
 async def test_add_data_join_registers_through_the_verb():
     """One joined dtype, consumable downstream like any other."""
-
-    from digitaltwin.components import JoinDataType
 
     session = DTSession("s1")
     twin = _running_twin(session, "t1")

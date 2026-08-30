@@ -34,6 +34,7 @@ from twin_components import (
     ECHO_DTYPE,
     INFERENCE_DTYPE,
     SENSOR_DTYPE,
+    JoinSink,
     OffsetModel,
 )
 
@@ -302,8 +303,6 @@ def test_external_channels_join_through_the_client_verbs(orbit_dt, twin_id):
     producers are plain `ChannelPublisher`s -- outside the framework,
     knowing nothing about twins."""
 
-    from twin_components import JoinSink
-
     a = DataType("chan-a")
     b = DataType("chan-b")
     joined = JoinDataType([a, b])
@@ -318,7 +317,7 @@ def test_external_channels_join_through_the_client_verbs(orbit_dt, twin_id):
     orbit_dt.add_task(twin_id, orbit_dt.package(JoinSink), joined, NULL_DTYPE)
     assert orbit_dt.start(twin_id) == "running"
 
-    async def feed_and_collect(count=3):
+    async def feed_and_collect():
         config = PubSubConfig(kind=BACKEND_ORBIT, broker_url=ORBIT_BROKER_URL)
         collector = await connect_stream_client(
             twin_id, backend=BACKEND_ORBIT, broker_url=ORBIT_BROKER_URL)
@@ -328,12 +327,12 @@ def test_external_channels_join_through_the_client_verbs(orbit_dt, twin_id):
 
         try:
             await collector.subscribe_to_dtype(ECHO_DTYPE, queue)
-            for value in range(count):
+            for value in range(3):
                 await pub_a.publish(value)
                 await pub_b.publish(value * 10)
             return [
                 (await asyncio.wait_for(queue.get(), COLLECT_TIMEOUT)).data
-                for _ in range(count)
+                for _ in range(3)
             ]
         finally:
             await pub_a.close()

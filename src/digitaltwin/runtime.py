@@ -1053,7 +1053,8 @@ class DTRuntime:
 
         return self.dtype_queues[dtype]
 
-    def add_input(self, dtype: DataType, channel: str, codec: str = CODEC_JSON):
+    def add_input(self, dtype: DataType, channel: str,
+                  codec: str = CODEC_JSON) -> Optional[asyncio.Task]:
         """Open the graph at its input edge: bind an external channel.
 
         Sensors and other producers live outside the framework.  They

@@ -529,8 +529,6 @@ def test_a_none_connect_timeout_reaches_orbit_as_a_finite_deadline(
     recorded = {}
 
     class _Recording:
-        broker_url = "loopback://broker"
-
         def __init__(self, broker_url=None, name=None, role=None):
             pass
 
