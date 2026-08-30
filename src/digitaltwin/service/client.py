@@ -250,9 +250,11 @@ class DTClient(PluginClient):
         """Bind an external channel to one of the twin's input dtypes.
 
         The producer lives outside the framework and publishes to
-        `channel`; the twin receives every message on it, decoded by
+        `channel`; the twin receives the channel's traffic, decoded by
         `codec` (`json` for plain scripts and instruments, `raw` for
-        bytes, `cloudpickle` only inside one trust domain).
+        bytes, `cloudpickle` only inside one trust domain).  Delivery is
+        the stream's contract: at most once, newest kept under pressure.
+        The call returns once the binding is live.
         """
 
         return self._verb(twin_id, "add_input", dtype, channel, codec)["state"]

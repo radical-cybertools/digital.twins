@@ -974,11 +974,37 @@ async def test_add_data_join_registers_through_the_verb():
     await session.twin_call(
         "t1", "add_data_join", encode({"args": (joined,)}), version_stamp())
 
-    registered = [ant.component.out_dtype
-                  for ants in twin.runtime.components.values()
-                  for ant in ants
-                  if getattr(ant.component, "out_dtype", None) == joined]
-    assert registered, "join component not registered"
+    assert joined in twin.runtime.join_components
     assert twin.summary()["calls"] == {"add_data_join": 1}
+
+    await twin.close()
+
+
+async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
+    """The stream client dedupes on (channel, dtype): a re-bind with a
+    different codec would be recorded yet never applied, so it is
+    refused instead of silently decoding with the old codec forever."""
+
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+    twin.runtime.streamer = _BindingStream()
+
+    x = DataType("x")
+    await session.twin_call(
+        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp())
+
+    # the identical re-bind is an idempotent no-op
+    await session.twin_call(
+        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp())
+    assert len(twin.runtime.inputs) == 1
+
+    with pytest.raises(HTTPException) as raised:
+        await session.twin_call(
+            "t1", "add_input",
+            encode({"args": (x, "lab/raw", "raw")}), version_stamp())
+
+    assert raised.value.status_code == 409
+    assert "codec" in raised.value.detail
+    assert len(twin.runtime.inputs) == 1
 
     await twin.close()

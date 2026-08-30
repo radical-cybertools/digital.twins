@@ -164,13 +164,14 @@ class OrbitPubSubBackend(PubSubBackend):
         runtime = EndpointRuntime(broker_url=self.broker_url, name=self.name,
                                   role="stream")
 
+        # ORBIT's start() takes a finite deadline only; the streaming
+        # contract's "None waits forever" is approximated by a day -- a
+        # participant that cannot register within that is stuck, not
+        # waiting.
+        effective = 86400.0 if timeout is None else timeout
+
         try:
-            # ORBIT's start() takes a finite deadline only; the streaming
-            # contract's "None waits forever" is approximated by a day -- a
-            # participant that cannot register within that is stuck, not
-            # waiting.
-            runtime.start(wait=True,
-                          timeout=86400.0 if timeout is None else timeout)
+            runtime.start(wait=True, timeout=effective)
 
             # start() returns *silently* when it merely timed out, so the
             # registration has to be checked explicitly -- otherwise an
@@ -179,7 +180,7 @@ class OrbitPubSubBackend(PubSubBackend):
             if not runtime.wait_registered(timeout=0):
                 raise TimeoutError(
                     f"ORBIT broker at {runtime.broker_url} did not register"
-                    f" {self.name} within {timeout}s"
+                    f" {self.name} within {effective}s"
                 )
 
         except BaseException:

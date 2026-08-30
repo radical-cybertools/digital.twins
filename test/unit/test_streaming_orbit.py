@@ -518,3 +518,35 @@ async def test_participant_names_are_unique():
 
     # ... unless the caller insists
     assert OrbitPubSubBackend(name="fixed").name == "fixed"
+
+
+def test_a_none_connect_timeout_reaches_orbit_as_a_finite_deadline(
+        monkeypatch):
+    """ORBIT's `start()` takes a finite float only; the streaming
+    contract's `None` ("wait forever") must arrive as the documented
+    day-long approximation, not as `None` (`monotonic() + None` dies)."""
+
+    recorded = {}
+
+    class _Recording:
+        broker_url = "loopback://broker"
+
+        def __init__(self, broker_url=None, name=None, role=None):
+            pass
+
+        def start(self, wait=True, timeout=None):
+            recorded["timeout"] = timeout
+
+        def wait_registered(self, timeout=0):
+            return True
+
+    monkeypatch.setattr(
+        "digitaltwin.streaming_orbit.EndpointRuntime", _Recording)
+
+    backend = OrbitPubSubBackend()
+    backend._start_runtime(None)
+
+    assert recorded["timeout"] == 86400.0
+
+    backend._start_runtime(5.0)
+    assert recorded["timeout"] == 5.0

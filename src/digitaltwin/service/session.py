@@ -455,7 +455,14 @@ class DTSession(PluginSession):
         # data-only arguments, no Package: the producer lives outside the
         # framework, only the binding crosses the wire.  The runtime
         # validates channel and codec and subscribes at bind time.
-        twin.runtime.add_input(dtype, channel, codec)
+        subscribed = twin.runtime.add_input(dtype, channel, codec)
+
+        # the verb answers only once the binding is live: a producer
+        # publishing right after the call must not race the broker
+        # registration, and a subscribe failure belongs to the caller,
+        # not to a server-side log alone
+        if subscribed is not None:
+            await subscribed
 
     async def _verb_add_data_join(
         self, twin: TwinInstance, join_dtype: JoinDataType
