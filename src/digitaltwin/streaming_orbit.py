@@ -165,7 +165,12 @@ class OrbitPubSubBackend(PubSubBackend):
                                   role="stream")
 
         try:
-            runtime.start(wait=True, timeout=timeout)
+            # ORBIT's start() takes a finite deadline only; the streaming
+            # contract's "None waits forever" is approximated by a day -- a
+            # participant that cannot register within that is stuck, not
+            # waiting.
+            runtime.start(wait=True,
+                          timeout=86400.0 if timeout is None else timeout)
 
             # start() returns *silently* when it merely timed out, so the
             # registration has to be checked explicitly -- otherwise an
