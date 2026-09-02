@@ -1,13 +1,22 @@
 from concurrent.futures import ProcessPoolExecutor
 from radical.asyncflow import WorkflowEngine, NoopExecutionBackend
-from rhapsody.backends import ConcurrentExecutionBackend
+from rhapsody.backends import ConcurrentExecutionBackend, DragonExecutionBackend
 import time
 import asyncio
 
 if __name__ == "__main__":
 
     async def main():
-        exe = await ConcurrentExecutionBackend(ProcessPoolExecutor())
+
+        # exe = await DragonExecutionBackend(
+        #     # defaults to full number of nodes
+        #     batch_kwargs={
+        #         "scheduler_workers": 1 * 128 // 32,
+        #         "num_nodes": 1,
+        #     }
+        # )
+
+        exe = await ConcurrentExecutionBackend(ProcessPoolExecutor(128))
         # exe = NoopExecutionBackend()
         flow = await WorkflowEngine.create(backend=exe)
 
@@ -52,31 +61,41 @@ if __name__ == "__main__":
             elapsed = time.monotonic() - start
             return elapsed
 
-        print("Function Tasks: ")
+        print("Function Tasks: ", flush=True)
         for count in range(1_000, 10_000 + 1, 1_000):
             create_time = await pipeline(count)
             create_per_second = count / create_time
-            print(f"{count:,} function tasks \t {create_per_second:0,.0f} tasks per/s")
+            print(
+                f"{count:,} function tasks \t {create_per_second:0,.0f} tasks per/s",
+                flush=True,
+            )
 
-        print("Blocks: ")
+        print("Blocks: ", flush=True)
         for count in range(1_000, 10_000 + 1, 1_000):
             create_time = await pipeline_block(count)
             create_per_second = count / create_time
-            print(f"{count:,} blocks \t {create_per_second:0,.0f} blocks per/s")
+            print(
+                f"{count:,} blocks \t {create_per_second:0,.0f} blocks per/s",
+                flush=True,
+            )
 
-        print("Plain Async: ")
+        print("Plain Async: ", flush=True)
         for count in range(1_000, 10_000 + 1, 1_000):
             create_time = await pipeline_plain(count)
             create_per_second = count / create_time
             print(
-                f"{count:,} plain async tasks \t {create_per_second:0,.0f} plain async tasks per/s"
+                f"{count:,} plain async tasks \t {create_per_second:0,.0f} plain async tasks per/s",
+                flush=True,
             )
 
-        print("Sequential: ")
+        print("Sequential: ", flush=True)
         for count in range(1_000, 10_000 + 1, 1_000):
             create_time = sequential(count)
             create_per_second = count / create_time
-            print(f"{count:,} strait def \t {create_per_second:0,.0f} func per/s")
+            print(
+                f"{count:,} straight def \t {create_per_second:0,.0f} func per/s",
+                flush=True,
+            )
 
         await flow.shutdown()
 
