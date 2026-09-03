@@ -22,8 +22,10 @@ from digitaltwin.components import UtilityTask
 from digitaltwin.streaming import ChannelPublisher
 
 from dtypes import (
+    FAST4_SENSOR_DTYPE,
     PERSIST_SENSOR_DTYPE,
     FAST_SENSOR_DTYPE,
+    SLOW4_SENSOR_DTYPE,
     SLOW_SENSOR_DTYPE,
     FAST2_SENSOR_DTYPE,
     SLOW2_SENSOR_DTYPE,
@@ -77,7 +79,7 @@ class Fast_Sensor(UtilityTask):
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
-                value = {"sensor": random.random(), "sensor_time": time.monotonic()}
+                value = {"sensor": i, "sensor_time": time.monotonic()}
                 # print(f"Fast_Sensor val: {value} - {i}")
                 await ps.publish(FAST_SENSOR_DTYPE, value)
                 await asyncio.sleep(self.delay)
@@ -94,7 +96,7 @@ class Slow_Sensor(UtilityTask):
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
-                value = {"sensor": random.random(), "sensor_time": time.monotonic()}
+                value = {"sensor": i, "sensor_time": time.monotonic()}
                 # print(f"Slow_Sensor val: {value} - {i}")
                 await ps.publish(SLOW_SENSOR_DTYPE, value)
                 await asyncio.sleep(self.delay)
@@ -111,7 +113,7 @@ class Fast2_Sensor(UtilityTask):
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
-                value = {"sensor": random.random(), "sensor_time": time.monotonic()}
+                value = {"sensor": i, "sensor_time": time.monotonic()}
                 # print(f"Fast2_Sensor val: {value} - {i}")
                 await ps.publish(FAST2_SENSOR_DTYPE, value)
                 await asyncio.sleep(self.delay)
@@ -128,7 +130,7 @@ class Slow2_Sensor(UtilityTask):
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
-                value = {"sensor": random.random(), "sensor_time": time.monotonic()}
+                value = {"sensor": i, "sensor_time": time.monotonic()}
                 # print(f"Slow2_Sensor val: {value} - {i}")
                 await ps.publish(SLOW2_SENSOR_DTYPE, value)
                 await asyncio.sleep(self.delay)
@@ -145,7 +147,7 @@ class Fast3_Sensor(UtilityTask):
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
-                value = {"sensor": random.random(), "sensor_time": time.monotonic()}
+                value = {"sensor": i, "sensor_time": time.monotonic()}
                 # print(f"Fast3_Sensor val: {value} - {i}")
                 await ps.publish(FAST3_SENSOR_DTYPE, value)
                 await asyncio.sleep(self.delay)
@@ -162,7 +164,7 @@ class Slow3_Sensor(UtilityTask):
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
-                value = {"sensor": random.random(), "sensor_time": time.monotonic()}
+                value = {"sensor": i, "sensor_time": time.monotonic()}
                 # print(f"Slow3_Sensor val: {value} - {i}")
                 await ps.publish(SLOW3_SENSOR_DTYPE, value)
                 await asyncio.sleep(self.delay)
@@ -170,10 +172,42 @@ class Slow3_Sensor(UtilityTask):
             await ps.close()
 
 
+class Fast4_Sensor(UtilityTask):
+    def __init__(self, flow: WorkflowEngine, delay: float = 0.5):
+        super().__init__(flow)
+        self.delay = delay
+
+    async def main_loop(self, runtime, in_data):
+        ps = await runtime.stream_config.connect()
+        try:
+            for i in range(N_ITERS):
+                value = {"sensor": i, "sensor_time": time.monotonic()}
+                # print(f"Fast4_Sensor val: {value} - {i}")
+                await ps.publish(FAST4_SENSOR_DTYPE, value)
+                await asyncio.sleep(self.delay)
+        finally:
+            await ps.close()
+
+
+class Slow4_Sensor(UtilityTask):
+    def __init__(self, flow: WorkflowEngine, delay: float = 1):
+        super().__init__(flow)
+        self.delay = delay
+
+    async def main_loop(self, runtime, in_data):
+        ps = await runtime.stream_config.connect()
+        try:
+            for i in range(N_ITERS):
+                value = {"sensor": i, "sensor_time": time.monotonic()}
+                # print(f"Slow4_Sensor val: {value} - {i}")
+                await ps.publish(SLOW4_SENSOR_DTYPE, value)
+                await asyncio.sleep(self.delay)
+        finally:
+            await ps.close()
+
+
 class Rand_Sensor(UtilityTask):
-    def __init__(
-        self, flow: WorkflowEngine, delay_range: tuple[float, float] = (0.1, 1.0)
-    ):
+    def __init__(self, flow, delay_range: tuple[float, float] = (0.1, 1.0)):
         super().__init__(flow)
         self.delay_range = delay_range
 
@@ -181,7 +215,7 @@ class Rand_Sensor(UtilityTask):
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
-                value = {"sensor": random.random(), "sensor_time": time.monotonic()}
+                value = {"sensor": i * ((-1) ** i), "sensor_time": time.monotonic()}
                 # print(f"Rand_Sensor val: {value} - {i}")
                 await ps.publish(RAND_SENSOR_DTYPE, value)
                 await asyncio.sleep(random.uniform(*self.delay_range))

@@ -12,6 +12,7 @@ import random
 import string
 import time
 
+from digitaltwin import SplitTask
 from radical.asyncflow import WorkflowEngine
 from digitaltwin.components import ModelInvestigator, SciAgent, TypedData
 from digitaltwin.runtime import RuntimeAPI
@@ -21,6 +22,8 @@ from dtypes import (
     FLIP_AGENT_OUT,
     INVESTIGATOR_OUT_DTYPE,
     AGENT_OUT_DTYPE,
+    NEG_NUM,
+    POS_NUM,
 )
 
 UPDATE_EVERY = 2
@@ -110,14 +113,12 @@ class LetterInvestigator(ModelInvestigator):
         self.version += 1
 
     async def on_filtered_input(self, in_data: TypedData):
-        print(f"F_IN: {self.upper}")
         self.filter_count += 1
         self.count += 1
         if self.count % UPDATE_EVERY == 0:
             self.to_publish.set()
 
     async def on_filtered_output(self, in_data: TypedData):
-        print(f"F_OUT: {self.upper}")
         self.filter_out_count += 1
 
     async def on_output(self, in_data: TypedData):
@@ -139,7 +140,6 @@ class LetterInvestigator(ModelInvestigator):
                 "out_count": self.out_count,
             }
             runtime.publish_new_model(m_arg)
-            print(f"PUB: {m_arg}")
             self.to_publish.clear()
 
 
@@ -197,7 +197,6 @@ class AgentTest(SciAgent):
             val = await runtime.get_inference(
                 TypedData(FLIP_AGENT_IN, code), FLIP_AGENT_OUT
             )
-            print(val)
             assert val is not None
             marg["flip"] = val.data
 
@@ -209,7 +208,6 @@ class FlipInvestigator(ModelInvestigator):
     def __init__(self):
         super().__init__(None)
         self.version = 0
-        print("HERE")
 
         async def do_inference(
             in_data: TypedData,
@@ -241,14 +239,12 @@ class FlipInvestigator(ModelInvestigator):
         self.version += 1
 
     async def on_filtered_input(self, in_data: TypedData):
-        print(f"2F_IN")
         self.filter_count += 1
         self.count += 1
         if self.count % UPDATE_EVERY == 0:
             self.to_publish.set()
 
     async def on_filtered_output(self, in_data: TypedData):
-        print(f"2F_OUT")
         self.filter_out_count += 1
 
     async def on_output(self, in_data: TypedData):
@@ -271,7 +267,6 @@ class FlipInvestigator(ModelInvestigator):
                 "out_count": self.out_count,
             }
             runtime.publish_new_model(m_arg)
-            print(f"2PUB: {m_arg}")
             self.to_publish.clear()
 
 
@@ -292,3 +287,15 @@ class FlipAgent(SciAgent):
 
         runtime.set_model_selection_task(self.model_selector)
         runtime.update_model_selector(i_id=self.flip.get_id())
+
+
+class SplitTest(SplitTask):
+    def __init__(self):
+        super().__init__(None)
+
+    async def main_loop(self, runtime: RuntimeAPI, in_data: TypedData):
+        # runtime
+        if in_data.data["sensor"] >= 0:
+            return TypedData(POS_NUM, in_data.data), None
+
+        return None, TypedData(NEG_NUM, in_data.data)
