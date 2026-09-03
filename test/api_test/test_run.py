@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import time
 
 from digitaltwin import NULL_DTYPE
@@ -131,9 +132,14 @@ async def setup(stream_clients):
 async def test_setup(stream_clients, no_task_leaks, input_sensor_task):
     runtime, _, _, _, _ = await setup(stream_clients)
 
-    with open("expected_graph.json", "r") as f:
-        # json.dump(runtime.describe(), f, indent=4)
-        answer = json.load(f)
+    if os.path.exists("expected_graph.json"):
+        with open("expected_graph.json", "r") as f:
+            # json.dump(runtime.describe(), f, indent=4)
+            answer = json.load(f)
+    else:
+        with open("test/api_test/expected_graph.json", "r") as f:
+            # json.dump(runtime.describe(), f, indent=4)
+            answer = json.load(f)
 
     assert answer == runtime.describe()
 
