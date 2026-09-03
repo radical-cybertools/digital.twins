@@ -57,6 +57,7 @@ async def broker():
     proc = ZMQ_BrokerProcess()
     await proc.start()
     try:
+        await asyncio.sleep(1)
         yield proc
     finally:
         await proc.stop()

@@ -1,0 +1,231 @@
+{
+    "namespace": "api_test",
+    "state": "ready",
+    "last_error": null,
+    "inputs": [
+        {
+            "dtype": "input_sensor_dtype",
+            "channel": "test_input",
+            "codec": "json"
+        }
+    ],
+    "components": [
+        {
+            "component": "Persist_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "persist_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Fast_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "fast_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Slow_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "slow_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Fast2_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "fast2_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Slow2_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "slow2_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Fast3_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "fast3_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Slow3_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "slow3_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Fast4_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "fast4_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Slow4_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "slow4_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "Rand_Sensor",
+            "input_dtype": "TRUE",
+            "output_dtype": "rand_sensor",
+            "is_persistent": true,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "InvestigatorTest",
+            "input_dtype": "persist_sensor",
+            "output_dtype": "investigator_output",
+            "is_persistent": false,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "FlipAgent",
+            "input_dtype": "flip_agent_in",
+            "output_dtype": "flip_agent_out",
+            "is_persistent": false,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "AgentTest",
+            "input_dtype": "input_sensor_dtype",
+            "output_dtype": "agent_output",
+            "is_persistent": false,
+            "is_join": false,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "_JoinComponent",
+            "input_dtype": "investigator_output",
+            "output_dtype": "JOIN[investigator_output,agent_output]",
+            "is_persistent": false,
+            "is_join": true,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "_JoinComponent",
+            "input_dtype": "agent_output",
+            "output_dtype": "JOIN[investigator_output,agent_output]",
+            "is_persistent": false,
+            "is_join": true,
+            "is_split": false,
+            "split_outputs": []
+        },
+        {
+            "component": "SplitTest",
+            "input_dtype": "rand_sensor",
+            "output_dtype": "NULL",
+            "is_persistent": false,
+            "is_join": false,
+            "is_split": true,
+            "split_outputs": [
+                "pos",
+                "neg"
+            ]
+        }
+    ],
+    "dtypes": [
+        "JOIN[investigator_output,agent_output]",
+        "NULL",
+        "TRUE",
+        "agent_output",
+        "fast2_sensor",
+        "fast3_sensor",
+        "fast4_sensor",
+        "fast_sensor",
+        "flip_agent_in",
+        "flip_agent_out",
+        "input_sensor_dtype",
+        "investigator_output",
+        "persist_sensor",
+        "rand_sensor",
+        "slow2_sensor",
+        "slow3_sensor",
+        "slow4_sensor",
+        "slow_sensor"
+    ],
+    "barriers": {
+        "fast_sensor": [
+            {
+                "name": "HARD_ONLY",
+                "hard": true
+            }
+        ],
+        "slow_sensor": [
+            {
+                "name": "HARD_ONLY",
+                "hard": true
+            }
+        ],
+        "fast2_sensor": [
+            {
+                "name": "FAST SOFT",
+                "hard": false
+            }
+        ],
+        "slow2_sensor": [
+            {
+                "name": "FAST SOFT",
+                "hard": true
+            }
+        ],
+        "fast3_sensor": [
+            {
+                "name": "SLOW SOFT",
+                "hard": true
+            }
+        ],
+        "slow3_sensor": [
+            {
+                "name": "SLOW SOFT",
+                "hard": false
+            }
+        ],
+        "fast4_sensor": [
+            {
+                "name": "SOFT ONLY",
+                "hard": false
+            }
+        ],
+        "slow4_sensor": [
+            {
+                "name": "SOFT ONLY",
+                "hard": false
+            }
+        ]
+    }
+}

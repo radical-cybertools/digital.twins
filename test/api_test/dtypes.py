@@ -8,6 +8,9 @@ FAST2_SENSOR_DTYPE = DataType("fast2_sensor")
 SLOW2_SENSOR_DTYPE = DataType("slow2_sensor")
 FAST3_SENSOR_DTYPE = DataType("fast3_sensor")
 SLOW3_SENSOR_DTYPE = DataType("slow3_sensor")
+FAST4_SENSOR_DTYPE = DataType("fast4_sensor")
+SLOW4_SENSOR_DTYPE = DataType("slow4_sensor")
+
 RAND_SENSOR_DTYPE = DataType("rand_sensor")
 
 # input channel and dtype
@@ -33,3 +36,8 @@ FLIP_AGENT_OUT = DataType("flip_agent_out")
 # Data Join Type
 
 DATA_JOIN = JoinDataType([INVESTIGATOR_OUT_DTYPE, AGENT_OUT_DTYPE])
+
+# DATA SPLIT DTYPES
+
+POS_NUM = DataType("pos")
+NEG_NUM = DataType("neg")

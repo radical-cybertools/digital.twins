@@ -379,6 +379,7 @@ class Barrier:
         self.count_hard = 0
         self.count_soft = 0
         self.set_soft = False
+        self.recv_soft = 0
 
     def __str__(self) -> str:
         return self.name
@@ -413,15 +414,18 @@ class Barrier:
         dtype = in_data.dtype
         if not (self.dtypes[dtype]):
             # soft. just store the result
+            if len(self.previous[dtype]) == 0:
+                self.recv_soft += 1
+
             if self.previous_retain.get(dtype, True):
                 self.previous[dtype] = [in_data.data]
                 self.previous_retain[dtype] = False
             else:
                 self.previous[dtype].append(in_data.data)
-            if not self.set_soft:
+
+            if self.count_hard == 0 and not self.set_soft:
                 self.set_soft = True
-                for _ in range(self.count_soft):
-                    self._update.release()
+                self._update.release()
             return
 
         def predicate():
@@ -477,7 +481,16 @@ class Barrier:
             self.condition.notify_all()
             self.condition.release()
 
-            for i in range(self.count_hard + self.count_soft):
+            # The update will only fire until ALL the soft items gets something.
+            if self.recv_soft < self.count_soft:
+                await asyncio.sleep(0.01)
+                continue
+
+            # did all hard vals update.
+            for i in range(self.count_hard):
+                await self._update.acquire()
+
+            if self.count_hard == 0:
                 await self._update.acquire()
 
             self.set_soft = False
@@ -485,7 +498,6 @@ class Barrier:
                 if self.dtypes[dtype]:
                     continue
                 # emit on any soft barriers
-
                 # drain previous in reverse append order
                 self.output_queues[dtype].put_nowait(
                     WindowedTypeData(
