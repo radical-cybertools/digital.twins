@@ -59,6 +59,7 @@ class Persist_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -76,6 +77,7 @@ class Fast_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -93,6 +95,7 @@ class Slow_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -110,6 +113,7 @@ class Fast2_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -127,6 +131,7 @@ class Slow2_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -144,6 +149,7 @@ class Fast3_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -161,6 +167,7 @@ class Slow3_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -178,6 +185,7 @@ class Fast4_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -195,6 +203,7 @@ class Slow4_Sensor(UtilityTask):
         self.delay = delay
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):
@@ -212,6 +221,7 @@ class Rand_Sensor(UtilityTask):
         self.delay_range = delay_range
 
     async def main_loop(self, runtime, in_data):
+        await asyncio.sleep(2)
         ps = await runtime.stream_config.connect()
         try:
             for i in range(N_ITERS):

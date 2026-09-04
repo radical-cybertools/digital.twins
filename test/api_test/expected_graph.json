@@ -12,6 +12,7 @@
     "components": [
         {
             "component": "Persist_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "persist_sensor",
             "is_persistent": true,
@@ -21,6 +22,7 @@
         },
         {
             "component": "Fast_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "fast_sensor",
             "is_persistent": true,
@@ -30,6 +32,7 @@
         },
         {
             "component": "Slow_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "slow_sensor",
             "is_persistent": true,
@@ -39,6 +42,7 @@
         },
         {
             "component": "Fast2_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "fast2_sensor",
             "is_persistent": true,
@@ -48,6 +52,7 @@
         },
         {
             "component": "Slow2_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "slow2_sensor",
             "is_persistent": true,
@@ -57,6 +62,7 @@
         },
         {
             "component": "Fast3_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "fast3_sensor",
             "is_persistent": true,
@@ -66,6 +72,7 @@
         },
         {
             "component": "Slow3_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "slow3_sensor",
             "is_persistent": true,
@@ -75,6 +82,7 @@
         },
         {
             "component": "Fast4_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "fast4_sensor",
             "is_persistent": true,
@@ -84,6 +92,7 @@
         },
         {
             "component": "Slow4_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "slow4_sensor",
             "is_persistent": true,
@@ -93,6 +102,7 @@
         },
         {
             "component": "Rand_Sensor",
+            "kind": "utility",
             "input_dtype": "TRUE",
             "output_dtype": "rand_sensor",
             "is_persistent": true,
@@ -102,15 +112,19 @@
         },
         {
             "component": "InvestigatorTest",
+            "kind": "investigator",
             "input_dtype": "persist_sensor",
             "output_dtype": "investigator_output",
             "is_persistent": false,
+            "model_published": false,
+            "model_keys": [],
             "is_join": false,
             "is_split": false,
             "split_outputs": []
         },
         {
             "component": "FlipAgent",
+            "kind": "agent",
             "input_dtype": "flip_agent_in",
             "output_dtype": "flip_agent_out",
             "is_persistent": false,
@@ -120,6 +134,7 @@
         },
         {
             "component": "AgentTest",
+            "kind": "agent",
             "input_dtype": "input_sensor_dtype",
             "output_dtype": "agent_output",
             "is_persistent": false,
@@ -129,6 +144,7 @@
         },
         {
             "component": "_JoinComponent",
+            "kind": "join",
             "input_dtype": "investigator_output",
             "output_dtype": "JOIN[investigator_output,agent_output]",
             "is_persistent": false,
@@ -138,6 +154,7 @@
         },
         {
             "component": "_JoinComponent",
+            "kind": "join",
             "input_dtype": "agent_output",
             "output_dtype": "JOIN[investigator_output,agent_output]",
             "is_persistent": false,
@@ -147,6 +164,7 @@
         },
         {
             "component": "SplitTest",
+            "kind": "split",
             "input_dtype": "rand_sensor",
             "output_dtype": "NULL",
             "is_persistent": false,
