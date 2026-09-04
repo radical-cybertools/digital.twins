@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.10.2';
+  const VERSION = '0.11.0';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -324,6 +324,21 @@
     if (Array.isArray(t.components)) tw.components = t.components;
     applyCalls(w, tw, t.calls);
     applyTasks(w, id, t.tasks, t.task_components);
+    applyOutputs(tw, t.outputs);
+  }
+
+  // The twin resends only its LATEST output each poll, id-tagged; keep a
+  // bounded gallery here, appending when a new id arrives.
+  const OUTPUT_GALLERY_MAX = 8;
+  function applyOutputs(tw, outputs) {
+    if (!outputs || !outputs.latest || !outputs.latest.dataurl) return;
+    if (!tw.gallery) tw.gallery = [];
+    const latest = outputs.latest;
+    const last = tw.gallery[tw.gallery.length - 1];
+    if (last && last.id === latest.id) return;   // already have it
+    tw.gallery.push(latest);
+    if (tw.gallery.length > OUTPUT_GALLERY_MAX) tw.gallery.shift();
+    tw.outputCount = outputs.count;
   }
 
   // The twin's own record of what it submitted (`TASK_UID_RING` in the
@@ -1025,6 +1040,41 @@
       return card;
     }
 
+    // The twin's rendered outputs (e.g. heatmaps) as they arrive: the
+    // newest large, a strip of recent thumbnails behind it.  Fed from
+    // `tw.gallery` (see applyOutputs).
+    function outputsBlock(tw) {
+      const block = el('div', 'dtd-agent');
+      const head = el('div', 'dtd-agent-head');
+      const latest = tw.gallery[tw.gallery.length - 1];
+      head.appendChild(el('span', 'dtd-agent-name', '▾ Outputs'));
+      head.appendChild(el('span', 'dtd-agent-sel',
+        `${tw.outputCount || tw.gallery.length} total · ${latest.name}`));
+      block.appendChild(head);
+
+      const big = document.createElement('img');
+      big.className = 'dtd-output-latest';
+      big.src = latest.dataurl;
+      big.alt = latest.name;
+      big.title = `${latest.name} (${latest.component || ''})`;
+      block.appendChild(big);
+
+      if (tw.gallery.length > 1) {
+        const strip = el('div', 'dtd-output-strip');
+        // newest first, skip the one already shown big
+        for (let i = tw.gallery.length - 2; i >= 0; i--) {
+          const g = tw.gallery[i];
+          const t = document.createElement('img');
+          t.className = 'dtd-output-thumb';
+          t.src = g.dataurl;
+          t.title = `${g.name} (${g.component || ''})`;
+          strip.appendChild(t);
+        }
+        block.appendChild(strip);
+      }
+      return block;
+    }
+
     function agentBlock(tw, comp, index) {
       const key = `agent:${tw.id}|${comp.component}`;
       const closed = collapsed.has(key);
@@ -1109,6 +1159,9 @@
           card.appendChild(el('div', 'dtd-card-error', tw.last_error));
         }
         blocks.forEach((b, i) => card.appendChild(agentBlock(tw, b, i)));
+        if (tw.gallery && tw.gallery.length) {
+          card.appendChild(outputsBlock(tw));
+        }
       }
 
       if (gone) {
@@ -1136,8 +1189,10 @@
           .join('.');
         const mvals = Object.entries(tw.metrics || {})
           .map(([k, m]) => `${k}:${m && m.value}`).join(',');
+        const gal = tw.gallery && tw.gallery.length
+          ? tw.gallery[tw.gallery.length - 1].id : '';
         return `${tw.id}|${tw.state}|${tw.gone !== null}|${tw.last_error || ''}`
-             + `|${mark ? mark.label : ''}|${comps}|${mvals}`;
+             + `|${mark ? mark.label : ''}|${comps}|${mvals}|${gal}`;
       }).join(';');
       return `${tick}#${keys}#${twins}`;
     }
@@ -2725,6 +2780,11 @@
                  white-space: nowrap; max-width: 60%; }
 .dtd-agent-io { font: 400 9px ${FONT_MONO}; color: ${C.text_dim};
                 margin: 2px 0 4px; }
+.dtd-output-latest { display: block; max-width: 100%; border-radius: 3px;
+                     margin: 4px 0 3px; background: ${C.panel_deep}; }
+.dtd-output-strip { display: flex; gap: 3px; flex-wrap: wrap; }
+.dtd-output-thumb { width: 40px; height: 40px; object-fit: cover;
+                    border-radius: 2px; opacity: 0.8; background: ${C.panel_deep}; }
 .dtd-inv { border: 1px solid; border-radius: 3px; margin: 4px 0 0 14px;
            padding: 4px 7px 5px; opacity: 0.92; }
 .dtd-inv-head { display: flex; align-items: baseline; gap: 8px; }

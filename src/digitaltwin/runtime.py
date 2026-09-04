@@ -428,6 +428,17 @@ class RuntimeAPI:
         assert self.cmp_type in ["INVESTIGATOR"]
         self._ant.inference_task = task
 
+    def record_output(self, name: str, dataurl: str) -> None:
+        """Publish the twin's latest visual output for the dashboard.
+
+        Any component may call this with a small `data:` URI (typically a
+        downscaled PNG it rendered).  Only the most recent is kept and it
+        rides in every `twin_list` poll, so keep the payload small.
+        """
+
+        self._runtime.record_output(name, dataurl,
+                                    type(self._ant.component).__name__)
+
     def get_inference_tasks(self) -> dict[int, Callable]:
         """Return a dictionary of the inference tasks keyed by investigator ID"""
 
@@ -725,6 +736,13 @@ class DTRuntime:
         # uids above; a uid submitted with no component stays unattributed
         self._task_comp: dict[str, str] = {}
 
+        # The twin's most recent visual output (e.g. a small rendered image
+        # a component produced), as a data-URI.  Only the LATEST rides in
+        # `outputs()` -- one image per poll under the frame cap -- with a
+        # monotonic id the dashboard dedups on to build its own gallery.
+        self._output_latest: Optional[dict] = None
+        self._output_count: int = 0
+
         hook_engine(flow)
 
         # a stalled stream is a twin failure, not a log line
@@ -764,6 +782,37 @@ class DTRuntime:
         """
 
         return dict(self._task_comp)
+
+    def record_output(self, name: str, dataurl: str,
+                      component: Optional[str] = None) -> None:
+        """Record the twin's latest visual output (a small data-URI).
+
+        A component publishes a rendered result -- typically a downscaled
+        image it produced -- for the dashboard to show.  Only the most
+        recent is kept: it carries a monotonic id so the consumer builds
+        its own history instead of the twin resending one each poll.  Keep
+        the payload small (the whole `outputs()` rides in every poll, under
+        the frame cap).
+        """
+
+        self._output_count += 1
+        self._output_latest = {
+            "id": self._output_count,
+            "name": name,
+            "dataurl": dataurl,
+            "component": component,
+        }
+
+    def outputs(self) -> Optional[dict]:
+        """The twin's latest output plus a running count, or `None`.
+
+        `{"latest": {id, name, dataurl, component}, "count": n}` -- one
+        image, id-tagged for dedup; the dashboard accumulates the gallery.
+        """
+
+        if self._output_latest is None:
+            return None
+        return {"latest": self._output_latest, "count": self._output_count}
 
     @property
     def stream_config(self) -> PubSubConfig:
