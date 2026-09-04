@@ -190,6 +190,10 @@ class TwinInstance:
             # only -- never a model, so the entry stays poll-sized.
             "components": ([] if self.runtime is None
                            else self.runtime.describe()["components"]),
+            # The twin's latest visual output (a small data-URI image a
+            # component rendered), id-tagged so the dashboard dedups and
+            # builds its own gallery.  `None` until something is recorded.
+            "outputs": None if self.runtime is None else self.runtime.outputs(),
         }
 
     def ready(self, runtime: DTRuntime, stream: PubSubClient) -> None:
