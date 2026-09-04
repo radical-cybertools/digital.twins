@@ -1223,6 +1223,17 @@
         pane.appendChild(card);
       }
       pane.scrollTop = scroll;           // no jumping, whatever changed
+      // output images (base64 heatmaps) have no reserved height until they
+      // decode, so at this point the pane can be too short and the restore
+      // above clamps near the top; re-pin once each finishes loading and the
+      // layout has its real height back
+      for (const img of pane.querySelectorAll(
+             '.dtd-output-latest, .dtd-output-thumb')) {
+        if (!img.complete) {
+          img.addEventListener('load', () => { pane.scrollTop = scroll; },
+                               { once: true });
+        }
+      }
     }
 
     function sync(w, rect, headRect) {
