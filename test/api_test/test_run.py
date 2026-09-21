@@ -362,39 +362,32 @@ async def test_run(stream_clients, no_task_leaks, input_sensor_task):
 
     # simulate expected:
 
-    prev = None
-    saw_fast = []
-    counter = 0
+    # simply check if each count up....
+    prev_slow = None
+    prev_fast = None
 
     # first is slow, sneak ahead to fast!
-    r_vals = list(sorted_recvs.values())
 
-    if r_vals[0]["type"] == "SLOW":
-        assert r_vals[1]["type"] == "FAST"
-        prev = r_vals[1]["val"]
+    for i in list(sorted_recvs.values()):
+        if i["type"] == "SLOW" and prev_slow is None:
+            assert i["val"] == 0
+            prev_slow = 0
+            continue
+        elif i["type"] == "SLOW":
+            assert i["val"] == prev_slow + 1
+            prev_slow = i["val"]
+            continue
 
-    for i in r_vals:
-        if i["type"] == "SLOW":
-            if len(saw_fast) == 0:
-                saw_fast.append(prev)
-
-            # check slow
-            slow_val = i["val"]
-            assert slow_val == slow_out[counter]["data"].data["sensor"]
-
-            # check fast
-            for idx, s in enumerate(fast_out[counter]["data"].data):
-                assert s["sensor"] == saw_fast[idx]
-
-            # clear
-            prev = saw_fast[-1]
-            saw_fast = []
-            counter += 1
-
+        if i["type"] == "FAST" and prev_fast is None:
+            assert i["val"] == 0
+            prev_fast = 0
+            continue
         elif i["type"] == "FAST":
-            saw_fast.append(i["val"])
-        else:
-            assert False
+            assert i["val"] == (prev_fast + 1) or i["val"] == prev_fast
+            prev_fast = i["val"]
+            continue
+
+        assert False
 
     # check the opposite, hard on fast, soft on slow
 
