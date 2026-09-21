@@ -21,16 +21,16 @@
 #  - Multi Investigators - DONE
 #
 #  ADD_BARRIER
-#  - Hard barrier
-#  - Soft default barrier
-#  - Hard (slow) soft (fast)
-#  - Soft (fast) hard (slow)
+#  - Hard barrier - DONE
+#  - Soft default barrier - DONE
+#  - Hard (slow) soft (fast) - DONE
+#  - Soft (fast) hard (slow) - DONE
 #
 #  ADD_DATA_JOIN
 #  - Data Join - DONE
 #
 #  ADD_DATA_SPLIT
-#  - Data split task
+#  - Data split task - DONE
 #  - a None
 #  - one None, one Item
 #  - both items
