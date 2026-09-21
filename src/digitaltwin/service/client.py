@@ -27,7 +27,7 @@ from typing import Any, Optional
 
 from radical.orbit.client import PluginClient
 
-from ..components import DataType, JoinDataType, TypedData
+from ..components import DataType, JoinDataType, TypedData, Barrier
 from ..streaming import CODEC_JSON
 from .wire import (
     Package,
@@ -163,9 +163,7 @@ class DTClient(PluginClient):
                     f"twin {twin_id} failed to initialize: {twin['last_error']}"
                 )
             if time.time() > deadline:
-                raise TimeoutError(
-                    f"twin {twin_id} still {state} after {timeout}s"
-                )
+                raise TimeoutError(f"twin {twin_id} still {state} after {timeout}s")
 
             time.sleep(POLL_INTERVAL)
 
@@ -268,6 +266,26 @@ class DTClient(PluginClient):
 
         return self._verb(twin_id, "add_data_join", join_dtype)["state"]
 
+    def add_barrier(self, twin_id: str, barrier: Barrier) -> str:
+        """Register a join: one output event per complete set of inputs.
+
+        `join_dtype` names the member dtypes; components downstream
+        consume the joined dtype like any other.
+        """
+
+        return self._verb(twin_id, "add_barrier", barrier.serialize())["state"]
+
+    def add_data_split_task(
+        self,
+        twin_id: str,
+        package: Package,
+        input_dtype: DataType,
+        output_dtypes: tuple[DataType],
+    ) -> str:
+        return self._verb(
+            twin_id, "add_data_split_task", package, input_dtype, tuple(output_dtypes)
+        )["state"]
+
     def start(self, twin_id: str) -> str:
         """Start a twin.  Starting a running twin is a no-op."""
 
@@ -310,8 +328,9 @@ class DTClient(PluginClient):
 
         payload = {
             "verb": verb,
-            "payload": encode_checked({"args": args, "kwargs": kwargs},
-                                      f"{verb} payload"),
+            "payload": encode_checked(
+                {"args": args, "kwargs": kwargs}, f"{verb} payload"
+            ),
             "client": version_stamp(),
         }
 

@@ -23,7 +23,7 @@ from radical.asyncflow import WorkflowEngine  # type: ignore
 from radical.orbit.plugin_session_base import PluginSession
 from rhapsody.backends.execution.orbit import OrbitExecutionBackend  # type: ignore
 
-from ..components import DataType, JoinDataType, TypedData
+from ..components import DataType, JoinDataType, TypedData, Barrier
 from ..runtime import DTRuntime, RuntimeState
 from ..streaming import CODEC_JSON, PubSubClient
 from .wire import Package, check_versions, decode, encode
@@ -79,6 +79,8 @@ VERBS = (
     "add_agent",
     "add_input",
     "add_data_join",
+    "add_barrier",
+    "add_data_split_task",
     "start",
     "stop",
     "describe",
@@ -472,6 +474,20 @@ class DTSession(PluginSession):
         self, twin: TwinInstance, join_dtype: JoinDataType
     ) -> None:
         twin.runtime.add_data_join(join_dtype)
+
+    async def _verb_add_data_split_task(
+        self,
+        twin: TwinInstance,
+        package: Package,
+        input_dtype: DataType,
+        output_dtypes: tuple[DataType],
+    ) -> None:
+        component = self._instantiate(package, twin)
+        twin.runtime.add_data_split_task(component, input_dtype, output_dtypes)
+
+    async def _verb_add_barrier(twin: TwinInstance, barrier_ser: str):
+        b = Barrier.deserialize(barrier_ser)
+        twin.runtime.add_barrier(b)
 
     async def _verb_start(self, twin: TwinInstance) -> None:
         # a running twin is left running: an idempotent retry, not an error

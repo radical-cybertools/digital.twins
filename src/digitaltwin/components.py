@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
 from dataclasses import dataclass, field
+import json
 from typing import Any, Callable, Optional
 
 from radical.asyncflow import WorkflowEngine
@@ -43,6 +44,17 @@ class DataType:
 
     def __str__(self) -> str:
         return self.name
+
+    def serialize(self):
+        return json.dumps({"name": self.name, "class": "DataType"})
+
+    @classmethod
+    def deserialize(cls, s: str | dict):
+        if isinstance(s, str):
+            s = json.loads(s)
+        if s["class"] != "DataType":
+            raise ValueError("Not a DataType serialization")
+        return cls(s["name"])
 
 
 TRUTHY = DataType("TRUE")
@@ -109,6 +121,23 @@ class JoinDataType(DataType):
     def __str__(self) -> str:
         return super().__str__()
 
+    def serialize(self):
+        ser_dtypes = [d.serialize() for d in self.dtypes]
+        return json.dumps({"dtypes": ser_dtypes, "class": "JoinDataType"})
+
+    @classmethod
+    def deserialize(cls, s: str | dict):
+        if isinstance(s, str):
+            s = json.loads(s)
+        if s["class"] != "JoinDataType":
+            raise ValueError("Not a JoinDataType serialization")
+
+        dtypes = []
+        for d in s["dtypes"]:
+            dtypes.append(deserialize_data_type(d))
+
+        return cls(dtypes)
+
 
 # ------------------------------------------------------------------
 
@@ -146,6 +175,7 @@ class WindowDataType(DataType):
     def __init__(self, dtype: DataType, name: str) -> None:
         super().__init__(name=f"W[{dtype} by B-{name}]")
         self.dtype = dtype
+        self.small_name = name
 
     def __hash__(self) -> int:
         return super().__hash__()
@@ -159,6 +189,25 @@ class WindowDataType(DataType):
 
     def __str__(self) -> str:
         return super().__str__()
+
+    def serialize(self):
+        return json.dumps(
+            {
+                "dtype": self.dtype.serialize(),
+                "name": self.small_name,
+                "class": "WindowDataType",
+            }
+        )
+
+    @classmethod
+    def deserialize(cls, s: str | dict):
+        if isinstance(s, str):
+            s = json.loads(s)
+        if s["class"] != "WindowDataType":
+            raise ValueError("Not a WindowDataType serialization")
+
+        dtype = deserialize_data_type(s["dtype"])
+        return cls(dtype, s["name"])
 
 
 # ------------------------------------------------------------------
@@ -179,6 +228,17 @@ class WindowedTypeData(TypedData):
     def __init__(self, dtype: WindowDataType, sequence: list[Any]) -> None:
         super().__init__(dtype=dtype, data=sequence)
         self.sequence = sequence
+
+
+def deserialize_data_type(data):
+    s = json.loads(data)
+    if s["class"] == "DataType":
+        return DataType.deserialize(s)
+    if s["class"] == "JoinDataType":
+        return JoinDataType.deserialize(s)
+    if s["class"] == "WindowDataType":
+        return WindowDataType.deserialize(s)
+    raise ValueError("Unknown class!")
 
 
 # ------------------------------------------------------------------
@@ -224,8 +284,7 @@ class _TwinComponent:
         """
         raise NotImplementedError
 
-
-# ------------------------------------------------------------------
+    # ------------------------------------------------------------------
 
     async def _on_stop(self) -> None:
         """Internal teardown hook, called by `DTRuntime.stop()` just before
@@ -393,6 +452,29 @@ class Barrier:
 
     def __str__(self) -> str:
         return self.name
+
+    def serialize(self) -> str:
+        data: dict[str, str | bool | list[str]] = {
+            "name": self.name,
+            "dtypes": [],
+            "default": self.is_hard_barrier,
+        }
+        for d, is_hard in self.dtypes.items():
+            data["dtypes"].append({"dtype": d.serialize(), "is_hard": is_hard})  # type: ignore
+        return json.dumps(data)
+
+    @classmethod
+    def deserialize(cls, s):
+        s = json.loads(s)
+
+        name = s["name"]
+        default = s["default"]
+        barrier = cls(name, default)
+        for d, is_hard in s["dtypes"]:
+            # deserialize data type
+            dtype = deserialize_data_type(d["dtype"])
+            barrier.add_dtype(dtype, is_hard)
+        return barrier
 
     def add_dtype(self, dtype: DataType, hard: Optional[bool] = None):
         """Add a typed stream for the barrier to synchronize.
@@ -574,6 +656,7 @@ if __name__ == "__main__":
         b.add_dtype(apple)
         b.add_dtype(orange)
         b.add_dtype(pear, hard=True)
+        print(b.serialize())
 
         asyncio.create_task(b.run())
 
