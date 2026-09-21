@@ -101,3 +101,42 @@ jobs:
         run: >-
           pytest test/integration -rs --continue-on-collection-errors
           --timeout=120 --timeout-method=thread
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      # The radical dependencies must not come from naive PyPI resolution:
+      # PyPI's rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit`
+      # -- the backend `digitaltwin.service` imports -- which was the
+      # collection-blocking ModuleNotFoundError this workflow documented.
+      # Pre-installed pinned, so resolving digitaltwin's requirements
+      # keeps them.  asyncflow 0.5.1 carries the non-main-thread fix;
+      # orbit is floored, not pinned, since 0.7.0 (dispatcher dialect).
+      - name: Install pinned radical dependencies
+        run: >-
+          pip install "radical.asyncflow==0.5.1" "radical.orbit>=0.7"
+          "rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"
+          "rose @ git+https://github.com/radical-cybertools/ROSE@64330d9cb43c3e13ca67daf0d8ae84a2ae6c3f17"
+
+      # src/ layout: pytest tests the *installed* package, never the
+      # working tree.  Always install before testing -- a stale install
+      # will silently pass against old code.
+      - name: Install digitaltwin (test + service extras)
+        run: pip install ".[test,service,learn]" pytest-timeout
+
+      # --continue-on-collection-errors: one broken test module (see the
+      # PR description) must not hide the rest of the suite behind an
+      # "Interrupted" abort. --timeout guards against a hanging test
+      # taking down the whole job; it turns a hang into a failed test
+      # with a traceback.
+      - name: Run api tests
+        run: >-
+          pytest test/api_test -rs --continue-on-collection-errors
+          --timeout=120 --timeout-method=thread

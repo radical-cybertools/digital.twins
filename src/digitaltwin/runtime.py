@@ -13,6 +13,7 @@ import logging
 from collections import defaultdict, deque
 from contextvars import ContextVar
 from dataclasses import dataclass, field
+import sys
 from typing import cast
 
 try:
@@ -1067,6 +1068,7 @@ class DTRuntime:
             error,
             exc_info=exc if isinstance(exc, BaseException) else None,
         )
+        print(f"twin component failed: {error}", file=sys.stderr)
 
         if self.state is RuntimeState.FAILED:
             # the cause is already recorded, and its teardown is running
@@ -1330,6 +1332,8 @@ class DTRuntime:
                 if answer is None:
                     return TypedData(NULL_DTYPE, None)
                 return answer
+
+        raise ValueError("No component found")
 
     # add a barrier
     def add_barrier(self, barrier: Barrier) -> None:
