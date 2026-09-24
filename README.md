@@ -176,7 +176,9 @@ The session outlives the client: reattach with
 `rt.get_plugin('broker', 'dt', sid=<sid>)` and the twins are still
 there.  `dt.admin_sessions()` lists every session, twin, state and last
 error on the service -- which is how orphans are found and torn down.
-`test/09-service/` is a complete worked example.
+`test/09-service/` is a complete worked example, and
+[docs/service.md](docs/service.md) is the client-side guide: twin
+lifecycle, API, session config, external inputs and reading results.
 
 Three contract notes:
 
