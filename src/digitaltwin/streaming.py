@@ -101,6 +101,12 @@ BROKER_STOP_TIMEOUT = 5.0
 # wait forever (the service turns that failure into a twin state)
 CLIENT_CONNECT_TIMEOUT = 30.0
 
+# how long `ChannelPublisher.open` waits for a subscriber to become visible
+# (#40).  A ZMQ publisher drops what it sends before the broker's
+# subscriptions reach it, so a burst right after connecting vanishes.  The
+# wait is bounded: a channel nobody has bound yet costs this once, at open.
+CHANNEL_READY_TIMEOUT = 2.0
+
 
 class PubSubBackend(ABC):
     """The transport seam: everything above this is transport-agnostic.
@@ -243,6 +249,15 @@ class PubSubBackend(ABC):
         that (see the codecs); twin-internal traffic does not, and the
         backend serializes it however it likes.
         """
+
+    async def wait_for_subscriber(self, topic: str, timeout: float) -> bool:
+        """Wait until a message published on `topic` can reach a subscriber.
+
+        True once one can, False when `timeout` passed first.  A backend
+        without a start-up gap (the default) is ready at once.
+        """
+
+        return True
 
     @abstractmethod
     async def subscribe(self, topic, callback, raw=False, **kwargs):
@@ -445,15 +460,24 @@ class ZMQ_PS_Client(PubSubBackend):
     kind = "zmq"
 
     def __init__(
-        self, pub_addr: Optional[str] = None, sub_addr: Optional[str] = None
+        self,
+        pub_addr: Optional[str] = None,
+        sub_addr: Optional[str] = None,
+        watch_subscriptions: bool = False,
     ) -> None:
         super().__init__()
         self.pub_addr = pub_addr
         self.sub_addr = sub_addr
 
+        # An XPUB sees the subscriptions the broker forwards, which is what
+        # `wait_for_subscriber` needs; it publishes exactly like a PUB.
+        self._watch = watch_subscriptions
+        self._subscriptions: set[bytes] = set()
+
         self._ctx = zmq.asyncio.Context()
         self.pub_soc: Optional[zmq.asyncio.Socket] = (
-            self._ctx.socket(zmq.PUB) if pub_addr is not None else None
+            self._ctx.socket(zmq.XPUB if watch_subscriptions else zmq.PUB)
+            if pub_addr is not None else None
         )
         self.sub_soc: Optional[zmq.asyncio.Socket] = (
             self._ctx.socket(zmq.SUB) if sub_addr is not None else None
@@ -532,6 +556,38 @@ class ZMQ_PS_Client(PubSubBackend):
         topic_b = topic.encode("utf-8")
         message_b = message if raw else cloudpickle.dumps(message)
         await self.pub_soc.send_multipart([topic_b, message_b])
+
+    async def wait_for_subscriber(self, topic: str, timeout: float) -> bool:
+        """Wait until the broker has forwarded a subscription covering
+        `topic` to this publisher (ZMQ matches topics by prefix).
+
+        Needs `watch_subscriptions`; without it there is nothing to watch
+        and the answer is True, as before.
+        """
+
+        if not self._watch or self.pub_soc is None:
+            return True
+
+        await self._await_running("wait_for_subscriber")
+
+        wanted = topic.encode("utf-8")
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + timeout
+
+        while not any(wanted.startswith(sub) for sub in self._subscriptions):
+            remaining = deadline - loop.time()
+            if remaining <= 0:
+                return False
+            if not await self.pub_soc.poll(remaining * 1000, zmq.POLLIN):
+                return False
+            frame = await self.pub_soc.recv()
+            # first byte: 1 subscribe, 0 unsubscribe; the rest is the prefix
+            if frame[:1] == b"\x01":
+                self._subscriptions.add(frame[1:])
+            elif frame[:1] == b"\x00":
+                self._subscriptions.discard(frame[1:])
+
+        return True
 
     async def subscribe(self, topic, callback, raw=False, **backend_params):
         """Subscribe *callback* to *topic*.
@@ -859,7 +915,11 @@ class PubSubConfig:
         return cls(namespace, *stream_addresses(pub_addr, sub_addr),
                    kind=stream_backend())
 
-    async def connect_backend(self, timeout: Optional[float] = None) -> PubSubBackend:
+    async def connect_backend(
+        self,
+        timeout: Optional[float] = None,
+        watch_subscriptions: bool = False,
+    ) -> PubSubBackend:
         """Open the transport alone, without namespace semantics.
 
         What an external producer needs (see `ChannelPublisher`): a channel
@@ -868,6 +928,9 @@ class PubSubConfig:
         Bounded by `timeout` (None waits forever).  A backend which fails
         to connect is closed before the error propagates, so an unreachable
         broker leaks neither sockets nor a context.
+
+        `watch_subscriptions` lets the backend answer `wait_for_subscriber`
+        (a ZMQ publisher then opens an XPUB); other backends ignore it.
         """
 
         if self.kind == BACKEND_ORBIT:
@@ -887,7 +950,8 @@ class PubSubConfig:
             backend = OrbitPubSubBackend(self.broker_url, name=name)
 
         elif self.kind == ZMQ_PS_Client.kind:
-            backend = ZMQ_PS_Client(self.pub_addr, self.sub_addr)
+            backend = ZMQ_PS_Client(self.pub_addr, self.sub_addr,
+                                    watch_subscriptions=watch_subscriptions)
 
         else:
             raise ValueError(
@@ -933,6 +997,7 @@ class ChannelPublisher:
         codec: str = CODEC_JSON,
         config: Optional[PubSubConfig] = None,
         timeout: Optional[float] = CLIENT_CONNECT_TIMEOUT,
+        ready_timeout: float = CHANNEL_READY_TIMEOUT,
     ) -> "ChannelPublisher":
         """Connect to a broker and publish to `channel` on it.
 
@@ -941,11 +1006,30 @@ class ChannelPublisher:
 
         The connect is bounded by `timeout` -- an external producer
         pointed at an unreachable broker should fail fast, not hang.
+
+        Then, for up to `ready_timeout`, it waits until a twin bound to
+        the channel can receive what is published (#40): on ZMQ the first
+        messages would otherwise be dropped.  A channel nobody has bound
+        yet costs the full `ready_timeout` once; 0 skips the wait.
         """
 
+        PubSubClient.check_channel(channel)
         config = config or PubSubConfig.resolve()
 
-        return cls(await config.connect_backend(timeout), channel, codec)
+        backend = await config.connect_backend(
+            timeout, watch_subscriptions=ready_timeout > 0)
+
+        if ready_timeout > 0:
+            try:
+                ready = await backend.wait_for_subscriber(channel, ready_timeout)
+            except BaseException:
+                await backend.close()
+                raise
+            if not ready:
+                logger.debug("channel %r: no subscriber within %.1fs",
+                             channel, ready_timeout)
+
+        return cls(backend, channel, codec)
 
     async def publish(self, message):
         """Publish one codec-encoded message on the channel."""
