@@ -13,6 +13,7 @@ import asyncio
 import inspect
 import contextlib
 import logging
+import os
 import time
 
 from collections import defaultdict
@@ -48,6 +49,14 @@ except ImportError as _exc:  # the 'learn' extra (ROSE) is optional
 # asyncflow routes per task on the label.
 ROLE_INFERENCE = "inference"
 ROLE_LEARNING = "learning"
+ROLES = (ROLE_INFERENCE, ROLE_LEARNING)
+
+# The role that tasks without a routing label run on (#27): the session
+# config's `default_engine`, else this variable (deployment-wide), else
+# 'inference'.  A learner's own label still wins, so 'learning' as the
+# default moves everything else -- the inference half included -- onto
+# the learning backend.
+ENV_DEFAULT_ENGINE = "DT_DEFAULT_ENGINE"
 
 # co-located-demo default -- 'dragon_v3' (the rhapsody default) would
 # break every demo on a laptop
@@ -534,6 +543,35 @@ class DTSession(PluginSession):
             "endpoint_name"
         )
 
+    def default_engine(self) -> str:
+        """The role that unlabeled tasks run on.
+
+        Precedence: the session config's `default_engine`, then
+        `DT_DEFAULT_ENGINE`, then `'inference'`.  An unconfigured role
+        aliases `'inference'`, as it does everywhere else.
+
+        Raises:
+            ValueError: for a name that is not a role.
+        """
+
+        name = (self.config.get("default_engine")
+                or os.environ.get(ENV_DEFAULT_ENGINE)
+                or ROLE_INFERENCE)
+
+        if name not in ROLES:
+            raise ValueError(
+                f"default_engine must be one of {ROLES}, got {name!r}")
+
+        return name if self.configured(name) else ROLE_INFERENCE
+
+    def _default_engine_or_error(self) -> str:
+        """`default_engine()` for listings, which must not raise."""
+
+        try:
+            return self.default_engine()
+        except ValueError as exc:
+            return f"invalid: {exc}"
+
     async def engine(self, name: str = ROLE_INFERENCE) -> WorkflowEngine:
         """The session-shared engine, with role `name` built and attached.
 
@@ -593,6 +631,14 @@ class DTSession(PluginSession):
                 # public spelling is an upstream ask.)
                 flow = await self.engine(ROLE_INFERENCE)
                 flow._attach_backend(backend)
+
+                # unlabeled tasks follow the configured default role.
+                # asyncflow resolves the default per submit, so switching
+                # it here covers everything submitted from now on;
+                # `_init_twin` builds all roles before any twin is ready.
+                # (`_default_backend_name` is asyncflow-private too.)
+                if self.default_engine() == name:
+                    flow._default_backend_name = name
         except BaseException:
             with contextlib.suppress(Exception):
                 await backend.shutdown()
@@ -794,6 +840,7 @@ class DTSession(PluginSession):
             "active": self.is_active,
             "age": round(time.time() - self.created, 3),
             "engines": sorted(self._backends),
+            "default_engine": self._default_engine_or_error(),
             "endpoints": {
                 ROLE_INFERENCE: self._engine_endpoint(ROLE_INFERENCE),
                 ROLE_LEARNING: (
@@ -817,6 +864,10 @@ class DTSession(PluginSession):
             if self._plugin is None:
                 raise RuntimeError("session is not attached to a dt plugin")
 
+            # a bad default fails the twin with a clear reason, before
+            # any engine is built
+            default = self.default_engine()
+
             async with asyncio.timeout(TWIN_INIT_TIMEOUT):
                 # A configured 'learning' backend is built here as well,
                 # and concurrently: a learner twin must not pay a
@@ -827,6 +878,10 @@ class DTSession(PluginSession):
                     names.append(ROLE_LEARNING)
 
                 flow, *_ = await asyncio.gather(*map(self.engine, names))
+
+                # every component's unlabeled tasks run on the default
+                # role, so losing its endpoint must fail this twin (R8)
+                twin.engines.add(default)
 
                 # the plugin owns the transport choice (zmq / orbit); the
                 # twin only ever sees a connected, namespaced client

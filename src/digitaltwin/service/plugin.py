@@ -51,7 +51,7 @@ from ..streaming import (
     connect_stream_client,
 )
 from .client import DTClient
-from .session import VERBS, DTSession
+from .session import VERBS, DTSession, ROLES
 
 log = logging.getLogger("radical.orbit")
 
@@ -197,6 +197,11 @@ class PluginDT(Plugin):
         dispatcher's own schema).  Pool-backed roles run on the pool's
         pilots, survive single-endpoint loss (tasks requeue; keep them
         idempotent), and share one dispatcher session per DT session.
+
+        `"default_engine"` names the role that tasks without a routing
+        label run on (`'inference'` unless set; the broker-wide default
+        comes from `DT_DEFAULT_ENGINE`).  A learner still labels its own
+        tasks, so `'learning'` moves everything else onto that backend.
         """
 
         self._ensure_cleanup_task()
@@ -205,6 +210,11 @@ class PluginDT(Plugin):
         config = data.get("config")
         if config is not None and not isinstance(config, dict):
             raise http_exception(ValueError("'config' must be an object"))
+
+        default = (config or {}).get("default_engine")
+        if default is not None and default not in ROLES:
+            raise http_exception(ValueError(
+                f"'default_engine' must be one of {ROLES}, got {default!r}"))
 
         owner = self._request_owner(request)
         sid, lifetime, ttl = self._normalize_session_policy(data)

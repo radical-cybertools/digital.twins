@@ -24,7 +24,11 @@ from digitaltwin.components import (  # noqa: E402
 )
 from digitaltwin.runtime import DTRuntime  # noqa: E402
 from digitaltwin.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
-from digitaltwin.service.session import DTSession, TwinInstance  # noqa: E402
+from digitaltwin.service.session import (  # noqa: E402
+    ENV_DEFAULT_ENGINE,
+    DTSession,
+    TwinInstance,
+)
 from digitaltwin.service.wire import (  # noqa: E402
     MAX_PAYLOAD,
     Package,
@@ -1010,3 +1014,49 @@ async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
     assert len(twin.runtime.inputs) == 1
 
     await twin.close()
+
+
+# -- default engine (#27) -----------------------------------------------------
+
+_DUAL = {"engines": {"inference": {"endpoint_name": "a"},
+                     "learning": {"endpoint_name": "b"}}}
+
+
+def test_default_engine_is_inference_without_config(monkeypatch):
+    monkeypatch.delenv(ENV_DEFAULT_ENGINE, raising=False)
+
+    assert DTSession("s1", _DUAL).default_engine() == "inference"
+
+
+def test_default_engine_config_beats_environment(monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "inference")
+    session = DTSession("s1", {**_DUAL, "default_engine": "learning"})
+
+    assert session.default_engine() == "learning"
+
+
+def test_default_engine_from_environment(monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "learning")
+
+    assert DTSession("s1", _DUAL).default_engine() == "learning"
+
+
+def test_default_engine_unconfigured_role_aliases_inference(monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "learning")
+
+    assert DTSession("s1").default_engine() == "inference"
+
+
+def test_default_engine_rejects_unknown_roles(monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "gpu")
+
+    with pytest.raises(ValueError, match="default_engine"):
+        DTSession("s1", _DUAL).default_engine()
+
+
+def test_register_session_rejects_a_bad_default_engine(client):
+    resp = client.post("/dt/register_session",
+                       json={"config": {"default_engine": "gpu"}})
+
+    assert resp.status_code == 400
+    assert "default_engine" in resp.text
