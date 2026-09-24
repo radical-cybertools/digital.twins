@@ -19,9 +19,9 @@ import pytest
 
 from radical.orbit import EndpointRuntime
 
-from digitaltwin.components import NULL_DTYPE, TRUTHY, TypedData
+from digitaltwin.components import NULL_DTYPE, TRUTHY, DataType, JoinDataType, TypedData
 from digitaltwin.service import register_user_modules
-from digitaltwin.streaming import connect_stream_client
+from digitaltwin.streaming import ChannelPublisher, PubSubConfig, connect_stream_client
 
 import twin_components
 
@@ -33,6 +33,7 @@ from twin_components import (
     CountingSensor,
     CrashingTask,
     EchoSink,
+    JoinSink,
     MisplacedFunctionTask,
     OffsetModel,
     SlowModel,
@@ -452,3 +453,51 @@ def test_endpoint_hosted_smoke(dt_endpoint, inference_endpoint, runtime):
 
     finally:
         dt.unregister_session()
+
+
+def test_external_channels_join_on_zmq(dt, twin_id):
+    """The ZMQ twin of the ORBIT channel test: two external channels bound
+    with `add_input`, joined, consumed downstream.  The producers publish
+    right after `open()` -- which lost the whole burst before #40."""
+
+    a = DataType("chan-a")
+    b = DataType("chan-b")
+    joined = JoinDataType([a, b])
+
+    chan_a = f"itest/{twin_id[:8]}/a"
+    chan_b = f"itest/{twin_id[:8]}/b"
+
+    dt.create_twin(twin_id)
+    dt.add_input(twin_id, a, chan_a)
+    dt.add_input(twin_id, b, chan_b)
+    dt.add_data_join(twin_id, joined)
+    dt.add_task(twin_id, dt.package(JoinSink), joined, NULL_DTYPE)
+    assert dt.start(twin_id) == "running"
+
+    pub_addr, sub_addr = stream_addresses(dt)
+
+    async def feed_and_collect():
+        config = PubSubConfig(pub_addr=pub_addr, sub_addr=sub_addr)
+        collector = await connect_stream_client(twin_id, pub_addr, sub_addr)
+        queue: asyncio.Queue = asyncio.Queue()
+        pub_a = await ChannelPublisher.open(chan_a, config=config)
+        pub_b = await ChannelPublisher.open(chan_b, config=config)
+
+        try:
+            await collector.subscribe_to_dtype(ECHO_DTYPE, queue)
+            for value in range(3):
+                await pub_a.publish(value)
+                await pub_b.publish(value * 10)
+            return [
+                (await asyncio.wait_for(queue.get(), POLL_TIMEOUT)).data
+                for _ in range(3)
+            ]
+        finally:
+            await pub_a.close()
+            await pub_b.close()
+            await collector.close()
+
+    seen = asyncio.run(feed_and_collect())
+
+    assert seen == [0, 11, 22], seen
+    assert dt.twin_close(twin_id) == "closed"

@@ -182,3 +182,54 @@ def test_unknown_codec_is_refused():
         encode_payload({}, "yaml")
     with pytest.raises(ValueError):
         decode_payload(b"{}", "yaml")
+
+
+# -- a burst right after open() is not lost (#40) ------------------------------
+
+async def test_burst_right_after_open_reaches_the_twin(broker, stream_clients,
+                                                      no_task_leaks):
+    """No settle sleep: `open()` waits until the twin's subscription has
+    reached the publisher, so the first message already arrives."""
+
+    twin, received = await _twin(stream_clients, "twin-a")
+    publisher = await _publisher(broker)
+
+    try:
+        for value in range(3):
+            await publisher.publish({"value": value})
+
+        await _wait_for(received, 3)
+        assert received == [{"value": value} for value in range(3)]
+
+    finally:
+        await publisher.close()
+        await twin.stop()
+
+
+async def test_open_without_subscriber_returns_after_ready_timeout(broker):
+    config = PubSubConfig(None, *broker.get_connection_str())
+    loop = asyncio.get_running_loop()
+
+    t0 = loop.time()
+    publisher = await ChannelPublisher.open("nobody/listens", config=config,
+                                            timeout=10.0, ready_timeout=0.3)
+    elapsed = loop.time() - t0
+
+    try:
+        assert 0.25 <= elapsed < 5.0
+        await publisher.publish({"value": 1})     # still usable
+    finally:
+        await publisher.close()
+
+
+async def test_ready_timeout_zero_skips_the_wait(broker):
+    config = PubSubConfig(None, *broker.get_connection_str())
+    loop = asyncio.get_running_loop()
+
+    t0 = loop.time()
+    publisher = await ChannelPublisher.open("nobody/listens", config=config,
+                                            timeout=10.0, ready_timeout=0)
+    try:
+        assert loop.time() - t0 < 0.25
+    finally:
+        await publisher.close()
