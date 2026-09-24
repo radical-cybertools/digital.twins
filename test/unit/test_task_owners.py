@@ -231,3 +231,81 @@ async def test_the_learners_own_tasks_are_recorded_too(engines,
     assert len(set(runtime.task_uids())) == len(runtime.task_uids())
 
     await runtime.stop()
+
+
+# ---------------------------------------------------------------------------
+# workflow ids (#36)
+# ---------------------------------------------------------------------------
+
+def _spy(flow):
+    """Keep every component description the engine registers; asyncflow
+    fills in `workflow_id` on the same dict inside the call."""
+
+    seen = []
+    inner = flow._register_component
+
+    def spy(comp_fut, comp_type, comp_desc, *args, **kwargs):
+        seen.append(comp_desc)
+        return inner(comp_fut, comp_type, comp_desc, *args, **kwargs)
+
+    flow._register_component = spy
+    return seen
+
+
+async def test_a_twin_workflow_id_tags_its_tasks(engines, stream_clients):
+    flow = await engines()
+    runtime = DTRuntime(flow, await stream_clients("wf-tagged"))
+    runtime.workflow_id = "twin-wf"
+    seen = _spy(flow)
+
+    runtime.add_investigator(Wrapped(flow), X, Y)
+    runtime.start()
+    await runtime.get_inference(TypedData(X, 1.0), Y)
+
+    tasks = [d for d in seen if str(d.get("uid", "")).startswith("task.")]
+    assert tasks and all(d["workflow_id"] == "twin-wf" for d in tasks), tasks
+
+    await runtime.stop()
+
+
+async def test_without_a_workflow_id_nothing_is_tagged(engines, stream_clients):
+    flow = await engines()
+    runtime = DTRuntime(flow, await stream_clients("wf-untagged"))
+    seen = _spy(flow)
+
+    runtime.add_investigator(Wrapped(flow), X, Y)
+    runtime.start()
+    await runtime.get_inference(TypedData(X, 1.0), Y)
+
+    assert seen and all(d["workflow_id"] is None for d in seen), seen
+
+    await runtime.stop()
+
+
+async def test_a_components_own_scope_wins(engines, stream_clients):
+    """A component that opens `workflow_scope()` itself keeps its id."""
+
+    flow = await engines()
+    runtime = DTRuntime(flow, await stream_clients("wf-own"))
+    runtime.workflow_id = "twin-wf"
+
+    class Scoped(Wrapped):
+        def __init__(self, flow):
+            super().__init__(flow)
+            inner = self._infer
+
+            async def infer(in_data, k=1.0):
+                async with flow.workflow_scope("own-wf"):
+                    return await inner(in_data, k=k)
+
+            self._infer = infer
+
+    seen = _spy(flow)
+    runtime.add_investigator(Scoped(flow), X, Y)
+    runtime.start()
+    await runtime.get_inference(TypedData(X, 1.0), Y)
+
+    tasks = [d for d in seen if str(d.get("uid", "")).startswith("task.")]
+    assert tasks and all(d["workflow_id"] == "own-wf" for d in tasks), tasks
+
+    await runtime.stop()

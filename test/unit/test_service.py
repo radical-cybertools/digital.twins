@@ -6,6 +6,7 @@ stream-broker supervisor directly.
 """
 
 import asyncio
+import uuid
 
 from typing import Optional
 
@@ -1010,3 +1011,30 @@ async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
     assert len(twin.runtime.inputs) == 1
 
     await twin.close()
+
+
+# -- engine-side telemetry and workflow scopes (#36) ---------------------------
+
+@pytest.mark.parametrize("telemetry", ["on", {"checkpoint_dir": "/tmp"}])
+def test_register_session_rejects_a_bad_telemetry_block(client, telemetry):
+    resp = client.post("/dt/register_session",
+                       json={"config": {"telemetry": telemetry}})
+
+    assert resp.status_code == 400
+    assert "telemetry" in resp.text
+
+
+def test_register_session_accepts_a_telemetry_block(client):
+    resp = client.post("/dt/register_session", json={"config": {
+        "telemetry": {"checkpoint_path": "/tmp/t", "resource_poll_interval": 1.0}}})
+
+    assert resp.status_code == 200
+
+
+def test_twin_create_rejects_a_bad_workflow_scope(client):
+    sid = client.post("/dt/register_session", json={}).json()["sid"]
+    resp = client.post(f"/dt/twin_create/{sid}", json={
+        "twin_id": str(uuid.uuid4()), "config": {"workflow_scope": 3}})
+
+    assert resp.status_code == 400
+    assert "workflow_scope" in resp.text

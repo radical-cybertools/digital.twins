@@ -452,3 +452,36 @@ def test_endpoint_hosted_smoke(dt_endpoint, inference_endpoint, runtime):
 
     finally:
         dt.unregister_session()
+
+
+def test_engine_telemetry_groups_a_twin_under_its_workflow(dt_client, twin_id,
+                                                          tmp_path):
+    """Engine-side telemetry (#36): a session with a `telemetry` block
+    writes asyncflow's task events on the service host, and a twin created
+    with `workflow_scope` stamps its id on every task it submits.  The
+    checkpoint is flushed when the session closes."""
+
+    checkpoint = tmp_path / "telemetry"
+    dt = dt_client({**ENGINES, "telemetry": {"checkpoint_path": str(checkpoint)}})
+
+    dt.create_twin(twin_id, config={"workflow_scope": True})
+    build_pipeline(dt, twin_id)
+    dt.start(twin_id)
+    answer = dt.get_inference(twin_id, TypedData(SENSOR_DTYPE, 1),
+                              INFERENCE_DTYPE)
+    assert answer.data is not None
+
+    dt.twin_close(twin_id)
+    dt.unregister_session()           # stops telemetry: the file is written
+
+    deadline = time.time() + POLL_TIMEOUT
+    while True:
+        files = list(checkpoint.glob("*.jsonl"))
+        text = "".join(f.read_text() for f in files)
+        if twin_id in text:
+            break
+        if time.time() > deadline:
+            pytest.fail(f"no telemetry tagged {twin_id} in {files}")
+        time.sleep(0.5)
+
+    assert '"asyncflow.workflow_id"' in text

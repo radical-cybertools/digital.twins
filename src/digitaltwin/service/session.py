@@ -65,6 +65,12 @@ ENGINE_BUILD_DRAIN_TIMEOUT = 5.0
 # own bound.  [P0-interim] large but finite -- see the plan's section 3.
 DEFAULT_INFERENCE_TIMEOUT = 600.0
 
+# engine-side telemetry (#36): the `telemetry` session config block is
+# passed to `WorkflowEngine.start_telemetry`, restricted to these keys
+TELEMETRY_KEYS = ("checkpoint_path", "checkpoint_interval",
+                  "resource_poll_interval")
+TELEMETRY_STOP_TIMEOUT = 10.0
+
 STATE_INITIALIZING = "initializing"
 STATE_FAILED = "failed"
 STATE_CLOSED = "closed"
@@ -586,6 +592,11 @@ class DTSession(PluginSession):
         try:
             if name == ROLE_INFERENCE:
                 flow = await WorkflowEngine.create(backend=backend)
+                telemetry = self.config.get("telemetry")
+                if telemetry is not None:
+                    # engine-side events: the only place asyncflow's own
+                    # task lifecycle and workflow ids are recorded
+                    await flow.start_telemetry(**telemetry)
             else:
                 # the engine exists once the 'inference' role is built; a
                 # role-only build rides on it and attaches its backend.
@@ -593,6 +604,13 @@ class DTSession(PluginSession):
                 # public spelling is an upstream ask.)
                 flow = await self.engine(ROLE_INFERENCE)
                 flow._attach_backend(backend)
+
+                # telemetry started before this role existed: wire it too
+                if getattr(flow, "_telemetry", None) is not None:
+                    flow._telemetry.attach_backend(
+                        backend, session_id=flow.uid, backend_name=name,
+                        interval=(self.config.get("telemetry") or {}).get(
+                            "resource_poll_interval", 5.0))
         except BaseException:
             with contextlib.suppress(Exception):
                 await backend.shutdown()
@@ -617,6 +635,16 @@ class DTSession(PluginSession):
         asyncflow's own shutdown is an unbounded gather, so a bare await
         could park the host loop.
         """
+
+        # telemetry first: its checkpoint file is written at stop, and
+        # asyncflow's shutdown does not stop it
+        telemetry = getattr(flow, "_telemetry", None)
+        if telemetry is not None:
+            try:
+                await asyncio.wait_for(telemetry.stop(), TELEMETRY_STOP_TIMEOUT)
+            except Exception as exc:
+                log.warning("[dt] session %s: telemetry stop: %s",
+                            self.sid, exc)
 
         try:
             await asyncio.wait_for(flow.shutdown(), ENGINE_SHUTDOWN_TIMEOUT)
@@ -833,7 +861,16 @@ class DTSession(PluginSession):
                 stream = await self._plugin.connect_stream(
                     twin.twin_id, STREAM_CONNECT_TIMEOUT
                 )
-                twin.ready(DTRuntime(flow, stream), stream)
+                runtime = DTRuntime(flow, stream)
+
+                # opt-in per twin (#36): `workflow_scope: true` groups the
+                # twin's tasks under its id, a string under that name
+                scope = twin.config.get("workflow_scope")
+                if scope:
+                    runtime.workflow_id = (twin.twin_id if scope is True
+                                           else str(scope))
+
+                twin.ready(runtime, stream)
 
             log.info("[dt] twin %s ready", twin.twin_id)
 

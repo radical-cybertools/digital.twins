@@ -51,7 +51,7 @@ from ..streaming import (
     connect_stream_client,
 )
 from .client import DTClient
-from .session import VERBS, DTSession
+from .session import TELEMETRY_KEYS, VERBS, DTSession
 
 log = logging.getLogger("radical.orbit")
 
@@ -197,6 +197,12 @@ class PluginDT(Plugin):
         dispatcher's own schema).  Pool-backed roles run on the pool's
         pilots, survive single-endpoint loss (tasks requeue; keep them
         idempotent), and share one dispatcher session per DT session.
+
+        `"telemetry"` turns on engine-side telemetry for the session's
+        engine (`WorkflowEngine.start_telemetry`): `checkpoint_path`
+        (directory on the service host), `checkpoint_interval`,
+        `resource_poll_interval`.  The checkpoint is flushed when the
+        session closes.
         """
 
         self._ensure_cleanup_task()
@@ -205,6 +211,13 @@ class PluginDT(Plugin):
         config = data.get("config")
         if config is not None and not isinstance(config, dict):
             raise http_exception(ValueError("'config' must be an object"))
+
+        telemetry = (config or {}).get("telemetry")
+        if telemetry is not None and (
+                not isinstance(telemetry, dict)
+                or not set(telemetry) <= set(TELEMETRY_KEYS)):
+            raise http_exception(ValueError(
+                f"'telemetry' must be an object with keys from {TELEMETRY_KEYS}"))
 
         owner = self._request_owner(request)
         sid, lifetime, ttl = self._normalize_session_policy(data)
@@ -250,6 +263,12 @@ class PluginDT(Plugin):
         config = data.get("config")
         if config is not None and not isinstance(config, dict):
             raise http_exception(ValueError("'config' must be an object"))
+
+        # `workflow_scope`: true (group under the twin id) or a name (#36)
+        scope = (config or {}).get("workflow_scope")
+        if scope is not None and not isinstance(scope, (bool, str)):
+            raise http_exception(ValueError(
+                "'workflow_scope' must be a boolean or a string"))
 
         return await self._forward(
             sid, DTSession.twin_create, twin_id=twin_id, config=config
