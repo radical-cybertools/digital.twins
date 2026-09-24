@@ -15,10 +15,14 @@ from pathlib import Path
 
 import pytest
 
-from digitaltwin.components import TRUTHY, TypedData
+from digitaltwin.components import NULL_DTYPE, TRUTHY, DataType, JoinDataType, TypedData
 from digitaltwin.config import BACKEND_ORBIT
 from digitaltwin.service import register_user_modules
-from digitaltwin.streaming import connect_stream_client
+from digitaltwin.streaming import (
+    ChannelPublisher,
+    PubSubConfig,
+    connect_stream_client,
+)
 
 import learner_components
 import twin_components
@@ -30,6 +34,7 @@ from twin_components import (
     ECHO_DTYPE,
     INFERENCE_DTYPE,
     SENSOR_DTYPE,
+    JoinSink,
     OffsetModel,
 )
 
@@ -286,3 +291,57 @@ def test_a_persistent_component_publishes_through_the_injected_client(
     assert seen == sorted(seen), seen
 
     orbit_dt.twin_close(twin_id)
+
+
+# ---------------------------------------------------------------------------
+# external channels and joins through the client verbs (#30)
+# ---------------------------------------------------------------------------
+
+def test_external_channels_join_through_the_client_verbs(orbit_dt, twin_id):
+    """The servicified demo shape: two external channels bound with
+    `add_input`, joined with `add_data_join`, consumed downstream.  The
+    producers are plain `ChannelPublisher`s -- outside the framework,
+    knowing nothing about twins."""
+
+    a = DataType("chan-a")
+    b = DataType("chan-b")
+    joined = JoinDataType([a, b])
+
+    chan_a = f"itest/{twin_id[:8]}/a"
+    chan_b = f"itest/{twin_id[:8]}/b"
+
+    orbit_dt.create_twin(twin_id)
+    orbit_dt.add_input(twin_id, a, chan_a)
+    orbit_dt.add_input(twin_id, b, chan_b)
+    orbit_dt.add_data_join(twin_id, joined)
+    orbit_dt.add_task(twin_id, orbit_dt.package(JoinSink), joined, NULL_DTYPE)
+    assert orbit_dt.start(twin_id) == "running"
+
+    async def feed_and_collect():
+        config = PubSubConfig(kind=BACKEND_ORBIT, broker_url=ORBIT_BROKER_URL)
+        collector = await connect_stream_client(
+            twin_id, backend=BACKEND_ORBIT, broker_url=ORBIT_BROKER_URL)
+        queue: asyncio.Queue = asyncio.Queue()
+        pub_a = await ChannelPublisher.open(chan_a, config=config)
+        pub_b = await ChannelPublisher.open(chan_b, config=config)
+
+        try:
+            await collector.subscribe_to_dtype(ECHO_DTYPE, queue)
+            for value in range(3):
+                await pub_a.publish(value)
+                await pub_b.publish(value * 10)
+            return [
+                (await asyncio.wait_for(queue.get(), COLLECT_TIMEOUT)).data
+                for _ in range(3)
+            ]
+        finally:
+            await pub_a.close()
+            await pub_b.close()
+            await collector.close()
+
+    seen = asyncio.run(feed_and_collect())
+
+    # every output is one complete (a, b) pair; joins arrive in order
+    assert seen == [0, 11, 22], seen
+
+    assert orbit_dt.twin_close(twin_id) == "closed"

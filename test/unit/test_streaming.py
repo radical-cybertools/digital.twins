@@ -201,3 +201,14 @@ async def test_close_releases_task_sockets_and_context(broker, no_task_leaks):
     await twin.close()
     with pytest.raises(RuntimeError):
         await twin.publish(SENSOR, "nope")
+
+
+def test_resolve_takes_the_backend_from_the_environment(monkeypatch):
+    """An external producer on an orbit deployment needs only the same
+    environment the deployment runs with (`DT_STREAM_BACKEND`)."""
+
+    monkeypatch.delenv("DT_STREAM_BACKEND", raising=False)
+    assert PubSubConfig.resolve().kind == "zmq"
+
+    monkeypatch.setenv("DT_STREAM_BACKEND", "orbit")
+    assert PubSubConfig.resolve().kind == "orbit"

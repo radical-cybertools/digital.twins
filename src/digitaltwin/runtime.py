@@ -13,6 +13,7 @@ import logging
 from collections import defaultdict, deque
 from contextvars import ContextVar
 from dataclasses import dataclass, field
+import sys
 from typing import cast
 
 try:
@@ -428,6 +429,17 @@ class RuntimeAPI:
         assert self.cmp_type in ["INVESTIGATOR"]
         self._ant.inference_task = task
 
+    def record_output(self, name: str, dataurl: str) -> None:
+        """Publish the twin's latest visual output for the dashboard.
+
+        Any component may call this with a small `data:` URI (typically a
+        downscaled PNG it rendered).  Only the most recent is kept and it
+        rides in every `twin_list` poll, so keep the payload small.
+        """
+
+        self._runtime.record_output(name, dataurl,
+                                    type(self._ant.component).__name__)
+
     def get_inference_tasks(self) -> dict[int, Callable]:
         """Return a dictionary of the inference tasks keyed by investigator ID"""
 
@@ -725,6 +737,13 @@ class DTRuntime:
         # uids above; a uid submitted with no component stays unattributed
         self._task_comp: dict[str, str] = {}
 
+        # The twin's most recent visual output (e.g. a small rendered image
+        # a component produced), as a data-URI.  Only the LATEST rides in
+        # `outputs()` -- one image per poll under the frame cap -- with a
+        # monotonic id the dashboard dedups on to build its own gallery.
+        self._output_latest: Optional[dict] = None
+        self._output_count: int = 0
+
         hook_engine(flow)
 
         # a stalled stream is a twin failure, not a log line
@@ -764,6 +783,37 @@ class DTRuntime:
         """
 
         return dict(self._task_comp)
+
+    def record_output(self, name: str, dataurl: str,
+                      component: Optional[str] = None) -> None:
+        """Record the twin's latest visual output (a small data-URI).
+
+        A component publishes a rendered result -- typically a downscaled
+        image it produced -- for the dashboard to show.  Only the most
+        recent is kept: it carries a monotonic id so the consumer builds
+        its own history instead of the twin resending one each poll.  Keep
+        the payload small (the whole `outputs()` rides in every poll, under
+        the frame cap).
+        """
+
+        self._output_count += 1
+        self._output_latest = {
+            "id": self._output_count,
+            "name": name,
+            "dataurl": dataurl,
+            "component": component,
+        }
+
+    def outputs(self) -> Optional[dict]:
+        """The twin's latest output plus a running count, or `None`.
+
+        `{"latest": {id, name, dataurl, component}, "count": n}` -- one
+        image, id-tagged for dedup; the dashboard accumulates the gallery.
+        """
+
+        if self._output_latest is None:
+            return None
+        return {"latest": self._output_latest, "count": self._output_count}
 
     @property
     def stream_config(self) -> PubSubConfig:
@@ -1018,6 +1068,7 @@ class DTRuntime:
             error,
             exc_info=exc if isinstance(exc, BaseException) else None,
         )
+        print(f"twin component failed: {error}", file=sys.stderr)
 
         if self.state is RuntimeState.FAILED:
             # the cause is already recorded, and its teardown is running
@@ -1053,7 +1104,8 @@ class DTRuntime:
 
         return self.dtype_queues[dtype]
 
-    def add_input(self, dtype: DataType, channel: str, codec: str = CODEC_JSON):
+    def add_input(self, dtype: DataType, channel: str,
+                  codec: str = CODEC_JSON) -> Optional[asyncio.Task]:
         """Open the graph at its input edge: bind an external channel.
 
         Sensors and other producers live outside the framework.  They
@@ -1070,6 +1122,10 @@ class DTRuntime:
 
         Internal producers keep their own path: a persistent component
         publishes through `RuntimeAPI.stream`.
+
+        Returns the subscription task (`None` for an idempotent re-bind,
+        or when the twin is tearing down): a caller that needs the
+        binding live before producers publish awaits it.
         """
 
         self._check_mutable()
@@ -1077,15 +1133,24 @@ class DTRuntime:
         PubSubClient.check_channel(channel)
         check_codec(codec)
 
-        binding = _InputBinding(dtype, channel, codec)
-        if binding in self.inputs:
-            return
-        self.inputs.append(binding)
+        for existing in self.inputs:
+            if (existing.dtype, existing.channel) == (dtype, channel):
+                if existing.codec == codec:
+                    return None
+                # the stream client dedupes on (channel, dtype), so a
+                # changed codec would be recorded here yet never applied
+                # -- refuse it rather than decode with the old one forever
+                raise ValueError(
+                    f"channel {channel!r} is already bound to {dtype} with"
+                    f" codec {existing.codec!r}; a binding cannot change"
+                    " its codec"
+                )
+        self.inputs.append(_InputBinding(dtype, channel, codec))
 
         # subscribe now, so nothing published before start() is lost: the
         # queue buffers it and the consumers wait for start anyway
         logger.info(f"Bind channel {channel!r} ({codec}) to dtype: {dtype}")
-        self._to_asyncio_task(
+        return self._to_asyncio_task(
             self.streamer.subscribe_to_channel,
             channel,
             dtype,
@@ -1267,6 +1332,8 @@ class DTRuntime:
                 if answer is None:
                     return TypedData(NULL_DTYPE, None)
                 return answer
+
+        raise ValueError("No component found")
 
     # add a barrier
     def add_barrier(self, barrier: Barrier) -> None:
@@ -1502,8 +1569,12 @@ class DTRuntime:
             note_flow_task(selecting)
             answer_ms = await selecting
 
-            # answer is an investigator id.
-            if isinstance(answer_ms, tuple) and len(answer_ms) == 2:
+            # answer is an investigator id.  A selector that ran as a
+            # remote function task gets its (id, kwargs) pair back as a
+            # JSON list -- the wire has no tuples -- so both spellings
+            # mean the pair.
+            if (isinstance(answer_ms, (tuple, list))
+                    and len(answer_ms) == 2):
                 i_select, model_kwargs = answer_ms
             else:
                 i_select = answer_ms
