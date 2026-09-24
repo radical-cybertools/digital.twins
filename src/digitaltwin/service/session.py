@@ -865,8 +865,11 @@ class DTSession(PluginSession):
                 raise RuntimeError("session is not attached to a dt plugin")
 
             # a bad default fails the twin with a clear reason, before
-            # any engine is built
-            default = self.default_engine()
+            # any engine is built.  Bound before the builds await, too:
+            # every component's unlabeled tasks run on the default role,
+            # so an endpoint lost while this twin initializes must fail
+            # it (R8), and `endpoints_lost` only looks at `twin.engines`
+            twin.engines.add(self.default_engine())
 
             async with asyncio.timeout(TWIN_INIT_TIMEOUT):
                 # A configured 'learning' backend is built here as well,
@@ -879,15 +882,19 @@ class DTSession(PluginSession):
 
                 flow, *_ = await asyncio.gather(*map(self.engine, names))
 
-                # every component's unlabeled tasks run on the default
-                # role, so losing its endpoint must fail this twin (R8)
-                twin.engines.add(default)
-
                 # the plugin owns the transport choice (zmq / orbit); the
                 # twin only ever sees a connected, namespaced client
                 stream = await self._plugin.connect_stream(
                     twin.twin_id, STREAM_CONNECT_TIMEOUT
                 )
+
+                # an endpoint lost while this awaited has failed the twin
+                # already (R8).  `ready` would hand the state over to a
+                # fresh runtime and mask that, on a dead engine.
+                if twin.state == STATE_FAILED:
+                    await stream.close()
+                    return
+
                 twin.ready(DTRuntime(flow, stream), stream)
 
             log.info("[dt] twin %s ready", twin.twin_id)

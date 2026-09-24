@@ -211,10 +211,12 @@ class PluginDT(Plugin):
         if config is not None and not isinstance(config, dict):
             raise http_exception(ValueError("'config' must be an object"))
 
-        default = (config or {}).get("default_engine")
-        if default is not None and default not in ROLES:
+        # by key presence: an explicit null is not "unset" -- it would
+        # silently inherit the deployment default
+        if "default_engine" in (config or {}) and config["default_engine"] not in ROLES:
             raise http_exception(ValueError(
-                f"'default_engine' must be one of {ROLES}, got {default!r}"))
+                f"'default_engine' must be one of {ROLES},"
+                f" got {config['default_engine']!r}"))
 
         owner = self._request_owner(request)
         sid, lifetime, ttl = self._normalize_session_policy(data)
