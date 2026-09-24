@@ -210,3 +210,23 @@ def test_a_lost_endpoint_fails_only_the_twins_that_used_it(
     entry = dt.twin(doomed)
     assert entry["state"] == "failed"
     assert "endpoint was lost" in entry["last_error"]
+
+
+def test_learning_as_default_engine_moves_unlabeled_tasks(
+        dt_client, inference_endpoint, learning_endpoint, twin_id):
+    """`default_engine: learning` (#27): the learner's own tasks keep
+    their label, and everything unlabeled -- here the inference half --
+    follows the default onto the learning endpoint."""
+
+    dt = dt_client({**ENGINES_DUAL, "default_engine": "learning"})
+    build_learner_twin(dt, twin_id)
+
+    answer = await_learned(dt, twin_id)
+    assert answer["served_by"] == EXSITU_ENDPOINT
+    assert answer["trained_on"] == EXSITU_ENDPOINT
+
+    session = next(s for s in dt.admin_sessions()["sessions"]
+                   if s["sid"] == dt.sid)
+    assert session["default_engine"] == "learning"
+
+    assert dt.twin_close(twin_id) == "closed"

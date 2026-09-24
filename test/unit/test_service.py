@@ -24,7 +24,11 @@ from digitaltwin.components import (  # noqa: E402
 )
 from digitaltwin.runtime import DTRuntime  # noqa: E402
 from digitaltwin.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
-from digitaltwin.service.session import DTSession, TwinInstance  # noqa: E402
+from digitaltwin.service.session import (  # noqa: E402
+    ENV_DEFAULT_ENGINE,
+    DTSession,
+    TwinInstance,
+)
 from digitaltwin.service.wire import (  # noqa: E402
     MAX_PAYLOAD,
     Package,
@@ -1010,3 +1014,83 @@ async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
     assert len(twin.runtime.inputs) == 1
 
     await twin.close()
+
+
+# -- default engine (#27) -----------------------------------------------------
+
+_DUAL = {"engines": {"inference": {"endpoint_name": "a"},
+                     "learning": {"endpoint_name": "b"}}}
+
+
+def test_default_engine_is_inference_without_config(monkeypatch):
+    monkeypatch.delenv(ENV_DEFAULT_ENGINE, raising=False)
+
+    assert DTSession("s1", _DUAL).default_engine() == "inference"
+
+
+def test_default_engine_config_beats_environment(monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "inference")
+    session = DTSession("s1", {**_DUAL, "default_engine": "learning"})
+
+    assert session.default_engine() == "learning"
+
+
+def test_default_engine_from_environment(monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "learning")
+
+    assert DTSession("s1", _DUAL).default_engine() == "learning"
+
+
+def test_default_engine_unconfigured_role_aliases_inference(monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "learning")
+
+    assert DTSession("s1").default_engine() == "inference"
+
+
+def test_default_engine_rejects_unknown_roles(monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "gpu")
+
+    with pytest.raises(ValueError, match="default_engine"):
+        DTSession("s1", _DUAL).default_engine()
+
+
+@pytest.mark.parametrize("value", ["gpu", None, ""])
+def test_register_session_rejects_a_bad_default_engine(client, value):
+    resp = client.post("/dt/register_session",
+                       json={"config": {"default_engine": value}})
+
+    assert resp.status_code == 400
+    assert "default_engine" in resp.text
+
+
+async def test_a_loss_during_init_fails_a_twin_on_the_default_role():
+    """With 'learning' as the default, a twin depends on that endpoint
+    from its first task on: losing it while the twin initializes must
+    fail the twin, and it must not come up `ready` afterwards (R8)."""
+
+    session = DTSession("s1", {**_dual(inference="ep1", learning="hpc1"),
+                               "default_engine": "learning"})
+    started = asyncio.Event()
+    _slow_build(session, 0.2, started)
+
+    class _Plugin:
+        async def connect_stream(self, twin_id, timeout):
+            stream = _FakeStream()
+
+            async def close():
+                stream.closed = True
+
+            stream.close = close
+            return stream
+
+    session._plugin = _Plugin()
+    twin = session.twins["t1"] = TwinInstance("t1")
+
+    init = asyncio.create_task(session._init_twin(twin))
+    await started.wait()
+    assert session.endpoints_lost({"hpc1"}) == ("t1",)
+    await init
+
+    assert twin.state == "failed"
+    assert twin.runtime is None
+    assert "hpc1" in twin.last_error
