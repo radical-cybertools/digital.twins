@@ -23,7 +23,7 @@ from radical.asyncflow import WorkflowEngine  # type: ignore
 from radical.orbit.plugin_session_base import PluginSession
 from rhapsody.backends.execution.orbit import OrbitExecutionBackend  # type: ignore
 
-from ..components import DataType, JoinDataType, TypedData, Barrier
+from ..components import Barrier, DataType, JoinDataType, TypedData
 from ..runtime import DTRuntime, RuntimeState
 from ..streaming import CODEC_JSON, PubSubClient
 from .wire import Package, check_versions, decode, encode
@@ -475,19 +475,31 @@ class DTSession(PluginSession):
     ) -> None:
         twin.runtime.add_data_join(join_dtype)
 
+    async def _verb_add_barrier(
+        self,
+        twin: TwinInstance,
+        name: str,
+        hard: bool,
+        dtypes: list[tuple[DataType, bool]],
+    ) -> None:
+        # built here, from the spec the client sent: the barrier's asyncio
+        # primitives must belong to this loop.  The dtypes it derives are
+        # deterministic, so they match the ones the client computed.
+        barrier = Barrier(name, hard)
+        for dtype, dtype_hard in dtypes:
+            barrier.add_dtype(dtype, dtype_hard)
+
+        twin.runtime.add_barrier(barrier)
+
     async def _verb_add_data_split_task(
         self,
         twin: TwinInstance,
         package: Package,
         input_dtype: DataType,
-        output_dtypes: tuple[DataType],
+        output_dtypes: tuple[DataType, ...],
     ) -> None:
         component = self._instantiate(package, twin)
         twin.runtime.add_data_split_task(component, input_dtype, output_dtypes)
-
-    async def _verb_add_barrier(twin: TwinInstance, barrier_ser: str):
-        b = Barrier.deserialize(barrier_ser)
-        twin.runtime.add_barrier(b)
 
     async def _verb_start(self, twin: TwinInstance) -> None:
         # a running twin is left running: an idempotent retry, not an error

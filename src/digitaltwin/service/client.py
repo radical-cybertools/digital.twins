@@ -27,7 +27,7 @@ from typing import Any, Optional
 
 from radical.orbit.client import PluginClient
 
-from ..components import DataType, JoinDataType, TypedData, Barrier
+from ..components import Barrier, DataType, JoinDataType, TypedData
 from ..streaming import CODEC_JSON
 from .wire import (
     Package,
@@ -163,7 +163,9 @@ class DTClient(PluginClient):
                     f"twin {twin_id} failed to initialize: {twin['last_error']}"
                 )
             if time.time() > deadline:
-                raise TimeoutError(f"twin {twin_id} still {state} after {timeout}s")
+                raise TimeoutError(
+                    f"twin {twin_id} still {state} after {timeout}s"
+                )
 
             time.sleep(POLL_INTERVAL)
 
@@ -267,24 +269,36 @@ class DTClient(PluginClient):
         return self._verb(twin_id, "add_data_join", join_dtype)["state"]
 
     def add_barrier(self, twin_id: str, barrier: Barrier) -> str:
-        """Register a join: one output event per complete set of inputs.
+        """Register a synchronization barrier (see `Barrier`).
 
-        `join_dtype` names the member dtypes; components downstream
-        consume the joined dtype like any other.
+        Build the barrier locally, exactly as for a local runtime: its
+        `add_dtype` returns the dtypes downstream components consume (a
+        soft stream's is a `WindowDataType`).  Only the barrier's spec
+        travels -- name, default hardness, and each dtype with its own --
+        and the service builds its own `Barrier` from it: a barrier holds
+        asyncio primitives, which belong to the loop that runs them.
         """
 
-        return self._verb(twin_id, "add_barrier", barrier.serialize())["state"]
+        dtypes = [(dtype, hard) for dtype, hard in barrier.dtypes.items()]
+
+        return self._verb(twin_id, "add_barrier", barrier.name,
+                          barrier.is_hard_barrier, dtypes)["state"]
 
     def add_data_split_task(
         self,
         twin_id: str,
         package: Package,
         input_dtype: DataType,
-        output_dtypes: tuple[DataType],
+        output_dtypes: tuple[DataType, ...],
     ) -> str:
-        return self._verb(
-            twin_id, "add_data_split_task", package, input_dtype, tuple(output_dtypes)
-        )["state"]
+        """Register a split task: one input event, one output per dtype.
+
+        The shipped `SplitTask` returns a tuple aligned with
+        `output_dtypes`; a `None` entry emits nothing on that dtype.
+        """
+
+        return self._verb(twin_id, "add_data_split_task", package,
+                          input_dtype, tuple(output_dtypes))["state"]
 
     def start(self, twin_id: str) -> str:
         """Start a twin.  Starting a running twin is a no-op."""
@@ -328,9 +342,8 @@ class DTClient(PluginClient):
 
         payload = {
             "verb": verb,
-            "payload": encode_checked(
-                {"args": args, "kwargs": kwargs}, f"{verb} payload"
-            ),
+            "payload": encode_checked({"args": args, "kwargs": kwargs},
+                                      f"{verb} payload"),
             "client": version_stamp(),
         }
 
