@@ -15,7 +15,14 @@ from pathlib import Path
 
 import pytest
 
-from digitaltwin.components import NULL_DTYPE, TRUTHY, DataType, JoinDataType, TypedData
+from digitaltwin.components import (
+    NULL_DTYPE,
+    TRUTHY,
+    Barrier,
+    DataType,
+    JoinDataType,
+    TypedData,
+)
 from digitaltwin.config import BACKEND_ORBIT
 from digitaltwin.service import register_user_modules
 from digitaltwin.streaming import (
@@ -32,10 +39,14 @@ from test_dt_learner import await_learned, build_learner_twin, infer
 from test_dt_service import await_state, broker_fds, build_pipeline
 from twin_components import (
     ECHO_DTYPE,
+    EVEN_DTYPE,
     INFERENCE_DTYPE,
+    ODD_DTYPE,
     SENSOR_DTYPE,
     JoinSink,
     OffsetModel,
+    ParitySplit,
+    TagSink,
 )
 
 pytestmark = pytest.mark.integration
@@ -343,5 +354,91 @@ def test_external_channels_join_through_the_client_verbs(orbit_dt, twin_id):
 
     # every output is one complete (a, b) pair; joins arrive in order
     assert seen == [0, 11, 22], seen
+
+    assert orbit_dt.twin_close(twin_id) == "closed"
+
+
+# ---------------------------------------------------------------------------
+# barriers and splits through the client verbs (#30)
+# ---------------------------------------------------------------------------
+
+def test_barrier_and_split_through_the_client_verbs(orbit_dt, twin_id):
+    """A mixed barrier and a split task, registered through the service.
+
+    The barrier is built client-side as for a local runtime; its window
+    dtype, computed here, must match the one the service's barrier emits.
+    Hard `a` gates each emission; soft `b` rides along as the window of
+    everything seen since the last one.  The split routes by parity."""
+
+    a = DataType("bar-a")
+    b = DataType("bar-b")
+    n = DataType("split-in")
+
+    barrier = Barrier("AB")
+    a_out = barrier.add_dtype(a)
+    b_window = barrier.add_dtype(b, hard=False)
+
+    chans = {dtype: f"itest/{twin_id[:8]}/{dtype.name}" for dtype in (a, b, n)}
+
+    orbit_dt.create_twin(twin_id)
+    for dtype, chan in chans.items():
+        orbit_dt.add_input(twin_id, dtype, chan)
+    orbit_dt.add_barrier(twin_id, barrier)
+    orbit_dt.add_task(twin_id, orbit_dt.package(TagSink, "a"), a_out, NULL_DTYPE)
+    orbit_dt.add_task(twin_id, orbit_dt.package(TagSink, "w"), b_window,
+                      NULL_DTYPE)
+    orbit_dt.add_data_split_task(twin_id, orbit_dt.package(ParitySplit), n,
+                                 (EVEN_DTYPE, ODD_DTYPE))
+    orbit_dt.add_task(twin_id, orbit_dt.package(TagSink, "even"), EVEN_DTYPE,
+                      NULL_DTYPE)
+    orbit_dt.add_task(twin_id, orbit_dt.package(TagSink, "odd"), ODD_DTYPE,
+                      NULL_DTYPE)
+    assert orbit_dt.start(twin_id) == "running"
+
+    graph = orbit_dt.describe(twin_id)
+    assert graph["barriers"], graph
+    assert any(c["is_split"] for c in graph["components"]), graph
+
+    async def feed_and_collect():
+        config = PubSubConfig(kind=BACKEND_ORBIT, broker_url=ORBIT_BROKER_URL)
+        collector = await connect_stream_client(
+            twin_id, backend=BACKEND_ORBIT, broker_url=ORBIT_BROKER_URL)
+        queue: asyncio.Queue = asyncio.Queue()
+        pubs = {dtype: await ChannelPublisher.open(chan, config=config)
+                for dtype, chan in chans.items()}
+
+        try:
+            await collector.subscribe_to_dtype(ECHO_DTYPE, queue)
+
+            # two soft values, then the hard one that releases them
+            await pubs[b].publish(1)
+            await pubs[b].publish(2)
+            await asyncio.sleep(1.0)
+            await pubs[a].publish(10)
+            await asyncio.sleep(1.0)
+            # no new soft value: the window repeats the last one
+            await pubs[a].publish(20)
+
+            for value in (1, 2, 3):
+                await pubs[n].publish(value)
+
+            return [
+                (await asyncio.wait_for(queue.get(), COLLECT_TIMEOUT)).data
+                for _ in range(7)
+            ]
+        finally:
+            for pub in pubs.values():
+                await pub.close()
+            await collector.close()
+
+    seen = asyncio.run(feed_and_collect())
+
+    def tagged(tag):
+        return [data for t, data in seen if t == tag]
+
+    assert tagged("a") == [10, 20], seen
+    assert tagged("w") == [[1, 2], [2]], seen
+    assert sorted(tagged("odd")) == [1, 3], seen
+    assert tagged("even") == [2], seen
 
     assert orbit_dt.twin_close(twin_id) == "closed"

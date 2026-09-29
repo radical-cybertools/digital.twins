@@ -18,8 +18,10 @@ from starlette.testclient import TestClient  # noqa: E402
 
 from digitaltwin.components import (  # noqa: E402
     TRUTHY,
+    Barrier,
     DataType,
     JoinDataType,
+    SplitTask,
     UtilityTask,
 )
 from digitaltwin.runtime import DTRuntime  # noqa: E402
@@ -1008,5 +1010,70 @@ async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
     assert raised.value.status_code == 409
     assert "codec" in raised.value.detail
     assert len(twin.runtime.inputs) == 1
+
+    await twin.close()
+
+
+# -- barriers and split tasks through the verbs (#30) --------------------------
+
+A, B, C = DataType("a"), DataType("b"), DataType("c")
+
+
+def _call(*args):
+    return encode({"args": list(args), "kwargs": {}})
+
+
+def test_add_barrier_sends_the_spec_not_the_barrier():
+    """A client-built barrier travels as name, hardness and per-dtype
+    flags; the asyncio primitives it holds stay behind."""
+
+    from digitaltwin.service.client import DTClient
+
+    sent = []
+    client = DTClient.__new__(DTClient)
+    client._verb = lambda twin, verb, *args, **kw: (
+        sent.append((verb, args)) or {"state": "ready"})
+
+    barrier = Barrier("AB", hard=False)
+    barrier.add_dtype(A, hard=True)
+    barrier.add_dtype(B)
+
+    assert client.add_barrier("t1", barrier) == "ready"
+    assert sent == [("add_barrier", ("AB", False, [(A, True), (B, False)]))]
+
+
+async def test_add_barrier_verb_builds_the_same_barrier_service_side():
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+
+    await session.twin_call("t1", "add_barrier",
+                            _call("AB", True, [(A, True), (B, False)]),
+                            stamp=version_stamp())
+
+    barrier = twin.runtime.barriers[A][0]
+    assert twin.runtime.barriers[B] == [barrier]
+    assert barrier.name == "AB"
+    assert barrier.is_hard_barrier is True
+    assert barrier.dtypes == {A: True, B: False}
+
+    await twin.close()
+
+
+class _Split(SplitTask):
+    async def main_loop(self, runtime, in_data):
+        return None, None
+
+
+async def test_add_data_split_task_verb_registers_the_split():
+    session = DTSession("s1")
+    twin = _running_twin(session, "t1")
+
+    await session.twin_call("t1", "add_data_split_task",
+                            _call(Package(_Split), A, (B, C)),
+                            stamp=version_stamp())
+
+    (split,) = twin.runtime.components[A]
+    assert isinstance(split.component, _Split)
+    assert tuple(split.split_outputs) == (B, C)
 
     await twin.close()
