@@ -10,7 +10,7 @@ in-situ flow via a system of queues.
 
 import asyncio
 import logging
-from collections import defaultdict, deque
+from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 import sys
@@ -619,16 +619,7 @@ class RuntimeAPI:
             Result of the underlying coroutine.
         """
 
-        assert self.cmp_type in ["AGENT", "INVESTIGATOR"]
-
-        # uses the shared_tasks dict in the annotated component
-        # reference was copied to investigator by agent
-        if label not in self._ant.shared_tasks:
-            raise ValueError(
-                f"Unknown shared task label: {label}. Expected: {list(self._ant.shared_tasks.keys())}"
-            )
-        assert self._ant.shared_tasks[label].wrap_fn is not None
-        return await self._ant.shared_tasks[label].wrap_fn(*args, **kwargs)  # type: ignore
+        return await self.get_shared_subtask(label)(*args, **kwargs)
 
     def get_shared_subtask(self, label: SharedSubtaskLabel):
         """Retrieve the wrapped callable for a registered shared sub-task.
@@ -731,11 +722,9 @@ class DTRuntime:
         # overwrites the oldest, which is also what makes it self-healing --
         # nothing has to be cleaned up, and a twin that stops submitting
         # stops appearing in new notifications.
-        self._task_uids: deque[str] = deque(maxlen=TASK_UID_RING)
-        self._task_seen: set[str] = set()
-        # uid -> submitting component's class name, ring-bounded with the
-        # uids above; a uid submitted with no component stays unattributed
-        self._task_comp: dict[str, str] = {}
+        # uid -> submitting component's class name (None: unattributed), in
+        # submission order -- a dict keeps it, so it is the ring as well
+        self._tasks: dict[str, Optional[str]] = {}
 
         # The twin's most recent visual output (e.g. a small rendered image
         # a component produced), as a data-URI.  Only the LATEST rides in
@@ -756,24 +745,18 @@ class DTRuntime:
         knows it; a uid recorded without one stays unattributed.
         """
 
-        if uid in self._task_seen:
+        if uid in self._tasks:
             return
 
-        if len(self._task_uids) == self._task_uids.maxlen:
-            old = self._task_uids[0]
-            self._task_seen.discard(old)
-            self._task_comp.pop(old, None)
+        if len(self._tasks) >= TASK_UID_RING:
+            del self._tasks[next(iter(self._tasks))]     # the oldest
 
-        self._task_uids.append(uid)
-        self._task_seen.add(uid)
-
-        if component:
-            self._task_comp[uid] = component
+        self._tasks[uid] = component or None
 
     def task_uids(self) -> list[str]:
         """The uids this twin submitted most recently, oldest first."""
 
-        return list(self._task_uids)
+        return list(self._tasks)
 
     def task_components(self) -> dict[str, str]:
         """uid -> submitting component's class name, for the current ring.
@@ -782,7 +765,7 @@ class DTRuntime:
         onto `task_uids` and shows the rest unattributed.
         """
 
-        return dict(self._task_comp)
+        return {uid: comp for uid, comp in self._tasks.items() if comp}
 
     def record_output(self, name: str, dataurl: str,
                       component: Optional[str] = None) -> None:
@@ -823,19 +806,6 @@ class DTRuntime:
         """
 
         return self.streamer.config
-
-    async def _call_await(self, func, *args, **kwargs) -> None:
-        """Await a given coroutine function.
-
-        The helper wraps an awaitable in a non-blocking fashion but still keeps
-        stack traces intact.
-
-        Args:
-            func: Coroutine function to await.
-            *args, **kwargs: Arguments for ``func``.
-        """
-
-        await func(*args, **kwargs)
 
     def start(self) -> None:
         """Signal that the runtime is ready and allow queued components to
@@ -1214,11 +1184,22 @@ class DTRuntime:
             output_dtype: Output data type produced.
             *args, **kwargs: Additional keyword arguments for ``investigator.main_loop``.
         """
+        rt = self._add_model_component(investigator, input_dtype, output_dtype)
+
+        # start up its main loop
+        self._to_asyncio_task(investigator.main_loop, rt, *args, **kwargs)
+
+    def _add_model_component(self, component, input_dtype: DataType,
+                             output_dtype: DataType) -> RuntimeAPI:
+        """Register an investigator or agent on one input -> output edge.
+
+        At most one of either serves a mapping.  Returns the component's
+        runtime API, for its main loop.
+        """
+
         self._check_mutable()
         assert input_dtype != TRUTHY
 
-        # check: is there already an investigator or agent assigned to this
-        # input output pair?
         for r in self.components.get(input_dtype, []):
             if r.output_dtype == output_dtype and (
                 isinstance(r.component, (ModelInvestigator, SciAgent))
@@ -1227,14 +1208,10 @@ class DTRuntime:
                     f"Error: investigator or agent already exists with {input_dtype}-->{output_dtype} mapping"
                 )
 
-        ant_comp = _AnnotatedComponent(investigator, input_dtype, output_dtype, False)
-
-        # Add component to edge dict
+        ant_comp = _AnnotatedComponent(component, input_dtype, output_dtype, False)
         self.components[input_dtype].append(ant_comp)
 
-        # start up its main loop
-        rt = self._api(ant_comp)
-        self._to_asyncio_task(investigator.main_loop, rt, *args, **kwargs)
+        return self._api(ant_comp)
 
     def _internal_add_investigator(self, ant: _AnnotatedComponent) -> None:
         """Internal helper to add an investigator to the runtime.
@@ -1270,26 +1247,9 @@ class DTRuntime:
             output_dtype: Data type produced.
             *args, **kwargs: Additional arguments for ``agent.main_loop``.
         """
-        self._check_mutable()
-        assert input_dtype != TRUTHY
-
-        # check: is there already an investigator or agent assigned to this
-        # input output pair?
-        for r in self.components.get(input_dtype, []):
-            if r.output_dtype == output_dtype and (
-                isinstance(r.component, (ModelInvestigator, SciAgent))
-            ):
-                raise ValueError(
-                    f"Error: investigator or agent already exists with {input_dtype}-->{output_dtype} mapping"
-                )
-
-        ant_comp = _AnnotatedComponent(agent, input_dtype, output_dtype, False)
-        # logger.debug(f"Add: {ant_comp}")
-        # Add component to edge dict
-        self.components[input_dtype].append(ant_comp)
+        rt = self._add_model_component(agent, input_dtype, output_dtype)
 
         # start up its main loop. Agents get a patched start_investigator
-        rt = self._api(ant_comp)
         rt._internal_add_investigator = self._internal_add_investigator
         self._to_asyncio_task(agent.main_loop, rt, *args, **kwargs)
 
@@ -1468,13 +1428,13 @@ class DTRuntime:
 
         for cb in ant.subscriptions[RuntimeAPI.ON_INPUT]:
             logger.info(f"Fire ON_INPUT on {cb}")
-            self._to_asyncio_task(self._call_await, cb, in_data)
+            self._to_asyncio_task(cb, in_data)
 
         # and child investigators
         for investigator in ant.investigators.values():
             for cb in investigator.subscriptions[RuntimeAPI.ON_INPUT]:
                 logger.info(f"Fire ON_INPUT on {cb}")
-                self._to_asyncio_task(self._call_await, cb, in_data)
+                self._to_asyncio_task(cb, in_data)
 
         # run the main loop directly
         if isinstance(ant.component, UtilityTask):
@@ -1593,25 +1553,25 @@ class DTRuntime:
             # now, run the inference of the provided investigator
             for cb in i_select.subscriptions[RuntimeAPI.ON_FILTERED_INPUT]:
                 logger.info(f"Fire ON_FILTERED_INPUT on {cb}")
-                self._to_asyncio_task(self._call_await, cb, in_data)
+                self._to_asyncio_task(cb, in_data)
 
             await i_select.has_published_model.wait()
             answer = await self._infer(i_select, in_data, model_kwargs)
 
             for cb in i_select.subscriptions[RuntimeAPI.ON_FILTERED_OUTPUT]:
-                self._to_asyncio_task(self._call_await, cb, answer)
+                self._to_asyncio_task(cb, answer)
 
         if ant.output_dtype == NULL_DTYPE:
             return
         assert isinstance(answer, TypedData) and answer.dtype is not NULL_DTYPE
 
         for cb in ant.subscriptions[RuntimeAPI.ON_OUTPUT]:
-            self._to_asyncio_task(self._call_await, cb, answer)
+            self._to_asyncio_task(cb, answer)
 
         # alert child investigators
         for investigator in ant.investigators.values():
             for cb in investigator.subscriptions[RuntimeAPI.ON_OUTPUT]:
-                self._to_asyncio_task(self._call_await, cb, in_data)
+                self._to_asyncio_task(cb, in_data)
 
         if not skip_queue_out:
             self._put_to_dtype_queue(answer)
