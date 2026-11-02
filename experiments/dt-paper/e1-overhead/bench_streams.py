@@ -9,7 +9,7 @@ The ZMQ row starts its own embedded broker on a random loopback port,
 exactly as the service does.  The ORBIT row needs a live broker::
 
     # against the integration stack (test/integration/conftest.py has one)
-    python perf/bench_streams.py both --broker https://127.0.0.1:8031
+    python experiments/dt-paper/e1-overhead/bench_streams.py both --broker https://127.0.0.1:8031
 
 Informational, not a gate: the ORBIT row buys the security property of
 milestone M3 (no unauthenticated ports) and pays a WebSocket round trip
