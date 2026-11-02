@@ -11,6 +11,37 @@ Do the abstractions cost performance?  (Outline, 2026-10-02.)
   - stream hop 0.98 ms on ZMQ vs 2.09 ms on ORBIT (`bench_streams.py`)
 - Missing: the baseline comparison; runs on Perlmutter.
 
+## `bench_dt_insitu.py` — in-situ: hand-wired vs DT
+
+The E1 in-situ comparison.  One no-op prediction (an asyncflow function
+task), measured three ways on the same backend: called directly (the
+hand-wired, xGFabric-style baseline), through `DTRuntime.get_inference`
+into a `ModelInvestigator`, and through a `SciAgent` with a model
+selector in front of it (the xGFabric twin shape).  The difference
+between the rows is the DT layer.
+
+```sh
+# local process pool
+python experiments/dt-paper/e1-overhead/bench_dt_insitu.py \
+    --out results/insitu-<host>-<date>.json
+
+# tasks on an ORBIT endpoint (notify window 0, see below)
+python experiments/dt-paper/e1-overhead/bench_dt_insitu.py \
+    --broker https://127.0.0.1:8031 --endpoint dt_test_task_ep \
+    --out results/insitu-orbit-<host>-<date>.json
+```
+
+The JSON records host, python, backend, notify window, Slurm job id and
+the `digital_twins` commit next to the raw latencies.
+
+Laptop smoke run (2026-11-02, local pool of 8, n=100, 50 concurrent):
+
+| row                 | p50      | concurrent |
+|---------------------|----------|------------|
+| bare asyncflow task | 11.09 ms | 1352 req/s |
+| DT investigator     | 11.21 ms | 1265 req/s |
+| DT agent + selector | 11.14 ms | 1248 req/s |
+
 ## `bench_insitu.py` — in-situ inference latency
 
 The harness behind the compute-placement decision: one no-op asyncflow

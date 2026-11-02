@@ -12,7 +12,7 @@ bounds come from the tools underneath: ZMQ, AsyncFlow, ROSE, ORBIT.
 | Dir                | Experiment                                           | State            |
 |--------------------|------------------------------------------------------|------------------|
 | `bounds/`          | asyncio / AsyncFlow no-op rates (upper bounds)        | scripts          |
-| `e1-overhead/`     | E1 Overhead: do the abstractions cost performance?    | single-host data |
+| `e1-overhead/`     | E1 Overhead: do the abstractions cost performance?    | in-situ harness, laptop smoke |
 | `e2-scaling/`      | E2 Scaling: inputs per second and DT size             | placeholder plots |
 | `e3-portability/`  | E3 Portability: same DT on 1 to N sites               | not started      |
 | `e4-hot-swap/`     | E4 Hot-swap: update components while the DT runs      | not started      |
