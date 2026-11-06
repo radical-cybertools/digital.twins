@@ -130,6 +130,39 @@ Branch `exp/pm-batch-20261106`, journal `../JOURNAL-pm-20261106.md`, raw
 results in `../results/p<N>/`, tables from `../summarize_pm_20261106.py`.
 CPU nodes, account m5290, Python 3.13.18, the four `deploy/install.sh` pins.
 
+### P1: pool-size sweep, 5 repeats (`bench_dt_insitu.py`)
+
+All three rows, `--tasks 1000`, pools 1-256 x `--concurrent` 50 / 500 x 5
+repeats (repeats outermost), one node (job 60899550).  Median req/s of the
+burst, and p50 of the sequential requests:
+
+| pool | c=500 bare / investigator / agent req/s | c=50 bare / investigator / agent req/s | bare p50 |
+|---|---|---|---|
+| 1 | 3,886 / 3,726 / 3,695 | 2,255 / 2,297 / 2,261 | 11.61 ms |
+| 4 | 5,018 / 4,744 / 4,716 | 2,571 / 2,503 / 2,575 | 11.20 ms |
+| 8 | 4,223 / 4,296 / 4,132 | 2,407 / 2,338 / 2,292 | 11.67 ms |
+| 32 | 4,462 / 3,835 / 4,229 | 2,481 / 2,316 / 2,385 | 11.78 ms |
+| 64 | 3,616 / 3,300 / 3,318 | 2,213 / 2,107 / 2,130 | 11.92 ms |
+| 128 | 3,060 / 2,807 / 2,801 | 1,935 / 1,881 / 1,926 | 12.01 ms |
+| 256 | 2,448 / 2,238 / 2,201 | 1,643 / 1,596 / 1,617 | 10.48 ms |
+
+(all pools and min-max in `../results/summary-pm-20261106.json`)
+
+- **DT cost:** investigator and agent run at 0.86-1.04 x bare throughput,
+  median about 0.95; the gap is largest at pool >= 64 under c=500 (about
+  0.91), and mostly inside the bare row's own repeat spread (2-30 % of its
+  median).  p50 differs from bare by at most 0.35 ms (pool 256 excepted:
+  its p50 is bimodal, about 10.5 or 12.0 ms per run, so the median jumps).
+- **Why pool 64 is slower than pool 8:** burst throughput peaks at pool 4
+  (about 5k req/s at c=500) and falls monotonically above it, to 2.4k at
+  pool 256, in all three rows alike, so it is the pool, not the DT.
+  Likely the per-dispatch cost of a `ProcessPoolExecutor` grows with its
+  worker count (unconfirmed; not profiled).  p50 does not change with
+  pool size: a sequential request needs one worker, and pays the
+  asyncflow 10 ms poll (P2) either way.
+- Consistent with E1 run A (2026-11-05): pool 8 c=50 bare 2,434 then,
+  2,407 now; pool 64 c=500 3,528 then, 3,616 now.
+
 ### P2: the per-task floor is asyncflow's 10 ms run-loop sleep
 
 The learner's engine rows on Perlmutter (about 4.3k msg/s at batch 100,

@@ -233,3 +233,14 @@ Times are local (PST) unless noted.
   reattaches. Detect 10.09 s (10.05-10.16), all 200 probes per twin
   answered during the window, endpoint up 1.25 s, learning resumed 2.82 s
   (2.81-3.07), reattach 18 ms, first answer 26 ms. Isolation check empty.
+
+## P1: E1 pool-size sweep (done)
+
+- Job 60899550 (regular, nid004587, 57 min): 9 pools x c 50/500 x 5
+  repeats = 90 runs, all rc=0, about 38 s each; nothing dropped (no run
+  over a minute).
+- DT/bare throughput 0.86-1.04 (median about 0.95), p50 delta <= 0.35 ms;
+  pool 256 p50 bimodal (10.5 / 12.0 ms). Burst throughput peaks at pool 4
+  and falls monotonically with pool size in all rows: that, not the DT,
+  is why pool 64 is slower than pool 8. Cause of the decline not profiled.
+- Consistent with E1 run A, so no rerun.
