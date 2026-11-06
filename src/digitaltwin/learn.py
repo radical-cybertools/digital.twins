@@ -1,9 +1,10 @@
 """Ex-situ learning: a ROSE streaming learner inside a twin component.
 
 `StreamingLearnerInvestigator` packages the wiring `test/rose_streaming`
-spells out by hand -- a `StreamingActiveLearner` fed from `ON_INPUT`, a
-bootstrap model published up front, `on_model_ready ->
-publish_new_model`, and a learner whose lifetime is the twin's.
+spells out by hand -- a ROSE `SequentialActiveLearner` driven by a
+`rose.Stream` fed from `ON_INPUT`, a bootstrap model published up front,
+every publishable window published, and a learner whose lifetime is the
+twin's.
 
 It is also the marker for **role injection**: the learner's training /
 active-learning / criterion tasks carry the `'learning'` backend label
@@ -37,6 +38,19 @@ A subclass provides its learner tasks and its inference task::
 
             self.inference_task = ...
 
+The learner runs with `skip_simulation_step=True`, so the call shapes
+are those of ROSE's streaming mode without a simulation: the window is
+the training task's first argument, `training(window, *args)`, and from
+the second window on the previous active-learning result is appended,
+`training(window, *args, acl_result)`; active learning is called as
+`active_learn(*args, train_result)`.
+
+A model is *publishable* when ROSE marks the window `model_ready`: the
+criterion was met, or -- without a criterion -- on every window.  (The
+older `StreamingActiveLearner` this class used to wrap published only on
+a met criterion, so a learner without one never got past its bootstrap
+model; that is the one contract change of the port.)
+
 A criterion task takes no dependency from ROSE's streaming loop, so
 whatever it scores has to travel *with* it -- the usual pattern is a
 dict mirroring the learner's state, captured by value.  Mind the cost:
@@ -57,7 +71,8 @@ import math
 from typing import Any, Callable, Optional
 
 from radical.asyncflow import WorkflowEngine  # type: ignore
-from rose.al.streaming_learner import StreamingActiveLearner  # type: ignore
+from rose import Stream  # type: ignore
+from rose.al.active_learner import SequentialActiveLearner  # type: ignore
 
 from .components import ModelInvestigator, TypedData
 from .runtime import RuntimeAPI, hook_engine, note_flow_task
@@ -101,15 +116,17 @@ def _number(value: Any) -> Optional[float]:
 
 
 class StreamingLearnerInvestigator(ModelInvestigator):
-    """A `ModelInvestigator` with a ROSE `StreamingActiveLearner` inside.
+    """A `ModelInvestigator` with a stream-driven ROSE learner inside.
 
-    Every item the twin routes to this investigator is fed to the learner
-    (`ON_INPUT`) *and* served by the inference task, so one stream drives
-    both retraining and prediction.  Each window of `batch_size` items (or
-    `max_wait` seconds' worth) runs one training / active-learning /
-    criterion iteration under the `'learning'` label; a met criterion is a
-    publish gate, not a terminator -- it swaps the model the in-situ
-    inference task runs with.
+    `self.learner` is a `SequentialActiveLearner`, `self.stream` the
+    `rose.Stream` driving it.  Every item the twin routes to this
+    investigator is fed to that stream (`ON_INPUT`) *and* served by the
+    inference task, so one stream drives both retraining and prediction.
+    Each window of `batch_size` items (or `max_wait` seconds' worth) runs
+    one training / active-learning / criterion iteration under the `'learning'` label; a publishable window
+    (criterion met, or any window without a criterion) is a publish gate,
+    not a terminator -- it swaps the model the in-situ inference task runs
+    with.
     """
 
     def __init__(
@@ -132,12 +149,12 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         # conflate: a stream faster than the learner drops its backlog
         # rather than growing it -- a days-long twin must not queue days
         # of sensor data
-        self.learner = StreamingActiveLearner(
-            flow,
+        self.stream = Stream(
             batch_size=batch_size,
             max_wait=max_wait,
             conflate=conflate,
         )
+        self.learner = SequentialActiveLearner(flow)
 
         # The routing label rides ROSE's own registration seam: every
         # learner task passes `_register_task`, which forwards
@@ -182,7 +199,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         return {}, {}
 
     def published_model(self, state: Any) -> tuple[dict, dict]:
-        """`(model_kwargs, accuracy_kwargs)` for a criterion-met window.
+        """`(model_kwargs, accuracy_kwargs)` for a publishable window.
 
         Whatever the learner's tasks registered as state becomes the model
         -- a training task returning a dict has every key of it registered
@@ -207,7 +224,7 @@ class StreamingLearnerInvestigator(ModelInvestigator):
             state.window_size,
             state.metric_name,
             state.metric_value,
-            state.should_stop,
+            state.model_ready,
         )
 
     # -- the wiring ---------------------------------------------------------
@@ -226,22 +243,26 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         runtime.subscribe_to_topic(RuntimeAPI.ON_INPUT, self._feed)
         runtime.publish_new_model(*self.bootstrap_model())
 
-        # criterion met => this model is worth serving.  In streaming mode
-        # the criterion is a publish gate and the loop keeps running.
-        self.learner.on_model_ready(
-            lambda state: runtime.publish_new_model(*self.published_model(state))
-        )
-
         self._started = True
 
         try:
-            async for state in self.learner.start():
+            # In stream mode the criterion is a publish gate and the loop
+            # keeps running.  Published here rather than from ROSE's
+            # `on_model_ready`, which logs and swallows callback errors: a
+            # `published_model` that raises fails the twin, as it should.
+            async for state in self.learner.start(
+                    stream=self.stream, skip_simulation_step=True):
+                if state.model_ready:
+                    runtime.publish_new_model(*self.published_model(state))
                 self._record_metrics(state)
                 self.on_window(state)
 
         finally:
-            # the failure path too: no learner outlives its twin
+            # the failure path too: no learner outlives its twin.  Closing
+            # the stream as well: it is one-shot, and nothing feeds it
+            # after this (see `_feed`)
             self.learner.stop()
+            self.stream.close()
             self._finished.set()
 
     def _own_learner_tasks(self, runtime: RuntimeAPI) -> None:
@@ -314,23 +335,30 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         }
 
     async def _feed(self, in_data: TypedData) -> None:
-        """`ON_INPUT`: everything the twin sees also feeds the learner."""
+        """`ON_INPUT`: everything the twin sees also feeds the learner.
 
-        await self.learner.feed(in_data.data)
+        Items arriving before the learner pulls its first window are kept
+        and delivered to it.  Once its loop has ended the stream is closed,
+        and a `Stream` raises on `feed` then -- an input still in flight
+        at teardown is dropped instead.
+        """
+
+        if self._finished.is_set():
+            return
+
+        await self.stream.feed(in_data.data)
 
     async def _on_stop(self) -> None:
         """Wind the learner down before the runtime cancels the main loop.
 
-        `learner.stop()` unblocks the window collector, so the loop leaves
-        its `async for` at a *window boundary* and ROSE's generator runs
-        its own cleanup.  Cancellation alone would mostly work -- the
-        consumer is usually suspended in `__anext__`, so the generator's
-        `finally` does run -- but three things only this buys:
+        `learner.stop()` wakes the learner's stream subscription, so the
+        loop leaves its `async for` at a *window boundary* and ROSE's
+        generator runs its own cleanup.  Cancellation alone would mostly
+        work -- the consumer is usually suspended in `__anext__`, so the
+        generator's `finally` does run -- but two things only this buys:
 
         - it does not kill an in-flight `await train_task` on a *shared*
           engine, which a cancellation mid-window would;
-        - ROSE catches `Exception`, not `CancelledError`, so a cancelled
-          loop records `stop_reason='stream_exhausted'` to its trackers;
         - it does not rely on async-generator GC finalization, which is
           not something to lean on after days of running.
 

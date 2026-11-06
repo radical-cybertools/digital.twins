@@ -22,9 +22,9 @@ Main set of features implemented:
 1. `pip install .[test,service,learn]`
 2. `pytest` (or `tox` for all supported interpreters)
 
-The `learn` extra currently needs ROSE from **PR #98** (commit
-`64330d9`) -- `StreamingActiveLearner` is not in a release yet, so
-`pip install <rose-checkout>` at that commit until it merges.
+The `learn` extra currently needs ROSE main (streaming landed with
+**PR #98**, `rose.Stream`) -- it is not in a release yet, so
+`pip install <rose-checkout>` of main until one ships.
 
 The unit tests start their own stream broker on a random port; no setup.
 The integration tests under `test/integration` bring up a real ORBIT
@@ -197,7 +197,7 @@ Three contract notes:
 ### Ex-situ learning: the second engine
 
 A `StreamingLearnerInvestigator` (`digitaltwin.learn`, needs the `learn`
-extra) embeds a ROSE `StreamingActiveLearner` in a model investigator:
+extra) embeds a stream-driven ROSE `SequentialActiveLearner` in a model investigator:
 the twin's input stream both feeds the learner and is served by the
 inference task, and each window of samples retrains the model the
 inference task runs with.

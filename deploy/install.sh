@@ -46,7 +46,10 @@ ORBIT="radical.orbit==0.7.0"
 # ROSE: PyPI's `rose` is an UNRELATED project (a version-string helper) which
 # pip will happily install for the `learn` extra -- and the learner then dies
 # on `import rose.al`.  Pin the real one, same commit the verified stack uses.
-ROSE="rose @ git+https://github.com/radical-cybertools/ROSE@64330d9cb43c3e13ca67daf0d8ae84a2ae6c3f17"
+# TODO(paper/dtaas): pin to final SHA
+# (dist name: ROSE main renamed the project to `rose-surrogate-explorer`; a
+# `rose @ ...` direct URL is rejected by pip as an inconsistent name)
+ROSE="rose-surrogate-explorer @ git+https://github.com/radical-cybertools/ROSE@paper/dtaas"
 
 # Python minor version is part of the wire contract (cloudpickle is not
 # portable across minors, and the service rejects skew at the first verb),
@@ -102,7 +105,7 @@ from radical.orbit.gateway import Gateway
 Gateway._sse_frame("notification", {"data": b"\x80"})
 
 # the real ROSE, not PyPI's homonym (a version-string helper)
-from rose.al.streaming_learner import StreamingActiveLearner  # noqa: F401
+from rose import Stream  # noqa: F401
 print("==> dependency sanity: OK")
 CHECK
 
