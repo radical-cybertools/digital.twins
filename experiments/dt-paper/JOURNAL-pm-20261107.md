@@ -26,6 +26,9 @@ Updated after every job (sacct elapsed x nodes).
 | 60930960 | s1-p7 | m5290 | 1 | 00:02:43 | 0.045 | 0.39 | 0.00 |
 | 60930964 | s1-p6 | m5290 | 1 | 00:06:01 | 0.100 | 0.49 | 0.00 |
 | 60930968 | s1-p2 | m5290 | 1 | 00:08:02 | 0.134 | 0.62 | 0.00 |
+| 60930971 | s1-p1 | m5290 | 1 | 00:07:05 | 0.118 | 0.74 | 0.00 |
+| 60931235 | s1-p4 | m5290 | 2 | 00:09:32 | 0.318 | 1.06 | 0.00 |
+| 60931654 | s1-p7o | m5290 | 2 | 00:05:56 | 0.198 | 1.25 | 0.00 |
 
 ## S0: build the stack (done)
 
@@ -158,3 +161,33 @@ Updated after every job (sacct elapsed x nodes).
 - **engine/zmq caps at about 13-14k msg/s** (pool 8, batch 100: 13,700),
   the same as P3's dt row (13,011): the ex-situ DT cost of P3 is the ZMQ
   stream transport, which a hand-wired learner fed through ZMQ pays as well.
+
+## S1 P4: E1 through ORBIT, cross-node and loopback (done)
+
+- Job 60931235 (debug, 2 nodes nid005665/005858, 9:32; round 1 33 min),
+  orbit 0.8, broker `--plugins dt`, per-job TLS; all 48 runs rc=0;
+  isolation check empty.
+- p50 through ORBIT: cross 3.36-3.54 ms, loop 3.88-4.01 ms (round 1 15.0 /
+  14.7 ms). The ORBIT hop is now about 3 ms over the local pool (0.55 ms,
+  P1). Cross-node is not slower than loopback (within the repeat spread).
+- DT p50 equal to bare within 0.5 ms.
+- Burst throughput through ORBIT did not change (bare c=50 794 cross / 785
+  loop; round 1 699 / 727): the ORBIT burst ceiling is in the ORBIT /
+  rhapsody client path, not asyncflow.
+- Agent burst gap: in-process 0.64-0.71 x bare at c=50/500 (as round 1);
+  in its own process 0.98 x (807 vs 824 cross, 730 vs 790 loop). The gap is
+  row order. Investigator solo 0.82-0.83 x.
+- One ORBIT task per request in every row (diag), as in round 1.
+- bench_streams: orbit p50 0.52 / 0.53 ms (round 1 0.45 / 0.43), burst 8.4k /
+  9.0k msg/s; zmq 0.19 ms, 19k msg/s (round 1 0.15 ms, 32k): orbit 0.8's
+  stream path is not faster, zmq a little slower (different nodes).
+
+## S1 P5: E2 scaling (E2b done; E2a rerun pending)
+
+- Job 60930958 (debug, 16:54). E2b (join) unchanged: about 8k joined
+  inputs/s for K = 4-16 (round 1 the same; the join does not use asyncflow).
+- E2a: one twin 1,367 req/s at p50 0.70 ms (round 1 84 / 11.96 ms), but the
+  aggregate stops at about 2.2k req/s from 2 twins on and per-twin p50 grows
+  linearly (64 twins: 2,161 req/s, 28 ms; round 1 2,812 req/s, 21 ms). A
+  lower ceiling than round 1 on a faster stack: rerun once unchanged plus a
+  py-spy at 16 twins, job 60931928 (`results/s1/p5-rerun/`).

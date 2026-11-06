@@ -1,0 +1,4 @@
+backend: orbit dt_p4_ep1
+DT investigator              n=200  mean=   3.09ms  p50=   3.05  p90=   3.32  p99=   3.74  max=   4.70
+DT investigator              50 concurrent requests in 70.5ms (709 req/s)
+DIAG {"counts": {"submit_calls": 222, "tasks": 271, "send_batches": 1, "sent_tasks": 0}, "task_names": {"predict": 271}, "argv": ["--broker", "https://10.249.11.66:8131", "--endpoint", "dt_p4_ep1", "--tasks", "200", "--concurrent", "50", "--rows", "investigator"]}
