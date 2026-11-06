@@ -22,34 +22,33 @@ ROLE="${1:-}"
 VENV="${2:-$PWD/ve.demo}"
 
 REPO="https://github.com/radical-cybertools/digital.twins"
-REF="d4346f928fa4d8e1d9927edf41a5aa7a1eaa6e6a"   # devel: twin outputs (#38), graph verbs (#31), wire fixes (#33)
+# The paper/dtaas stack: every repo on its `paper/dtaas` branch, the four
+# dependencies pinned by commit (see experiments/dt-paper/STACK.md).  The
+# digitaltwin package itself comes from DT_REF, the branch by default; pass
+# the SHA from STACK.md to reproduce a recorded run exactly.
+REF="${DT_REF:-paper/dtaas}"
 
 # The radical dependencies must NOT come from naive PyPI resolution: PyPI's
 # rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit` (the
-# OrbitExecutionBackend the whole service runs on).  These pins are the
-# exact commits the verified laptop stack was built from -- all pushed to
-# public radical-cybertools repos.
+# OrbitExecutionBackend the whole service runs on), and PyPI's `rose` is an
+# unrelated project.  All four are git commits of public radical-cybertools
+# repos.
+GH="https://github.com/radical-cybertools"
 
-# asyncflow: the 0.5.1 RELEASE carries the non-main-thread engine fix the
-# broker-hosted plugin needs (it contains d9f7ca0) -- PyPI is fine
-ASYNCFLOW="radical.asyncflow==0.5.1"
-# rhapsody's [telemetry] extra is required, not optional, at this commit:
-# the ORBIT plugin calls `session.start_telemetry()` whenever it exists, and
-# that path hard-imports opentelemetry -- an endpoint without it fails every
-# session init with "No module named 'opentelemetry'".  (Known upstream gap;
-# the proper fix is an ImportError guard in orbit's plugin_rhapsody.)
-RHAPSODY="rhapsody-py[telemetry] @ git+https://github.com/radical-cybertools/rhapsody@e491cd2"   # f479c75 + participant_name + engine role
-
-# orbit: 0.7.0 carries the dispatcher rhapsody dialect (#117) -- PyPI is fine
-ORBIT="radical.orbit==0.7.0"
-
-# ROSE: PyPI's `rose` is an UNRELATED project (a version-string helper) which
-# pip will happily install for the `learn` extra -- and the learner then dies
-# on `import rose.al`.  Pin the real one, same commit the verified stack uses.
-# TODO(paper/dtaas): pin to final SHA
-# (dist name: ROSE main renamed the project to `rose-surrogate-explorer`; a
-# `rose @ ...` direct URL is rejected by pip as an inconsistent name)
-ROSE="rose-surrogate-explorer @ git+https://github.com/radical-cybertools/ROSE@paper/dtaas"
+# asyncflow paper/dtaas: main + hot path (#100), tickless run loop (#110,
+# no 10 ms poll), cancel fixes (#119, #121-#124)
+ASYNCFLOW="radical.asyncflow @ git+$GH/radical.asyncflow@41e49145fab84247894e98ce4f1637e7b8cedd62"
+# rhapsody paper/dtaas: main + OrbitDataBackend (#96), idempotent cancels
+# (#91), telemetry teardown (#77), concurrent cancel (#123), Dragon 0.15
+# sizing and PMI (#113, #114).  The [telemetry] extra is required: the ORBIT
+# plugin calls `session.start_telemetry()` whenever it exists, and that path
+# hard-imports opentelemetry.
+RHAPSODY="rhapsody-py[telemetry] @ git+$GH/rhapsody@3696998635f9fc19778554fb52548817c95a6923"
+# orbit paper/dtaas: the devel tip (0.8.0)
+ORBIT="radical.orbit @ git+$GH/radical.orbit@b10479c30bd979bcd3b5a3f4666766d054c14776"
+# ROSE paper/dtaas: main with the Stream API (#98).  The dist name is
+# `rose-surrogate-explorer`; a `rose @ ...` direct URL is rejected by pip
+ROSE="rose-surrogate-explorer @ git+$GH/ROSE@9cc47a597063351c6192e3520f1bb0d39dd35230"
 
 # Python minor version is part of the wire contract (cloudpickle is not
 # portable across minors, and the service rejects skew at the first verb),
