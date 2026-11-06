@@ -120,11 +120,7 @@ async def run_zmq(batch_size, mode, flow):
     # learner.stop() fires after IDLE_TIMEOUT of silence; the last windows
     # processed before that are already timed, no idle time is included
     for client in (pub, sub):
-        if client.task:
-            client.task.cancel()
-        for soc in (client.pub_soc, client.sub_soc):
-            if soc is not None:
-                soc.close()
+        await client.close()
     return n / elapsed
 
 
