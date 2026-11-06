@@ -1015,7 +1015,8 @@ async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
 
 # -- engine-side telemetry and workflow scopes (#36) ---------------------------
 
-@pytest.mark.parametrize("telemetry", ["on", {"checkpoint_dir": "/tmp"}])
+@pytest.mark.parametrize("telemetry", ["on", {}, {"checkpoint_path": 3},
+                                       {"checkpoint_interval": 0}])
 def test_register_session_rejects_a_bad_telemetry_block(client, telemetry):
     resp = client.post("/dt/register_session",
                        json={"config": {"telemetry": telemetry}})
@@ -1026,7 +1027,7 @@ def test_register_session_rejects_a_bad_telemetry_block(client, telemetry):
 
 def test_register_session_accepts_a_telemetry_block(client):
     resp = client.post("/dt/register_session", json={"config": {
-        "telemetry": {"checkpoint_path": "/tmp/t", "resource_poll_interval": 1.0}}})
+        "telemetry": {"checkpoint_path": "/tmp/t"}}})
 
     assert resp.status_code == 200
 
@@ -1038,3 +1039,25 @@ def test_twin_create_rejects_a_bad_workflow_scope(client):
 
     assert resp.status_code == 400
     assert "workflow_scope" in resp.text
+
+
+async def test_a_failed_telemetry_start_shuts_the_engine_down(monkeypatch):
+    session = DTSession("s1", {"telemetry": {"checkpoint_path": "/x"}})
+    _slow_build(session, 0)
+    stopped = []
+
+    async def start_telemetry(self, **kwargs):
+        raise RuntimeError("no such directory")
+
+    async def shutdown_engine(flow):
+        stopped.append(flow)
+
+    monkeypatch.setattr("radical.asyncflow.WorkflowEngine.start_telemetry",
+                        start_telemetry)
+    session._shutdown_engine = shutdown_engine
+
+    with pytest.raises(RuntimeError, match="no such directory"):
+        await session.engine()
+
+    assert len(stopped) == 1
+    await stopped[0].shutdown()

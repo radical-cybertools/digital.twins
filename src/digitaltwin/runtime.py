@@ -125,12 +125,14 @@ def hook_engine(flow: Any, owner: Optional["DTRuntime"] = None) -> None:
         # A twin with a workflow id (#36) tags every task it submits, as
         # `workflow_scope()` does for a standalone run -- unless the task
         # already carries one, explicitly or from a scope the component
-        # opened itself.  asyncflow reads the key inside the call below.
+        # opened itself.  A block's uid in that context is no such scope.
+        # asyncflow reads the key inside the call below.
         wid = getattr(who, "workflow_id", None)
         ctx = getattr(flow, "_workflow_id_ctx", None)
+        scope = ctx.get() if ctx is not None else None
         if (wid and isinstance(comp_desc, dict)
                 and not comp_desc.get("_explicit_workflow_id")
-                and (ctx is None or ctx.get() is None)):
+                and (scope is None or scope.startswith("block."))):
             comp_desc["_explicit_workflow_id"] = wid
 
         result = inner(comp_fut, comp_type, comp_desc, *args, **kwargs)

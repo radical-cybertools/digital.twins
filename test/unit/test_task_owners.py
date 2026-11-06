@@ -309,3 +309,33 @@ async def test_a_components_own_scope_wins(engines, stream_clients):
     assert tasks and all(d["workflow_id"] == "own-wf" for d in tasks), tasks
 
     await runtime.stop()
+
+
+async def test_a_block_does_not_hide_the_twin_id(engines, stream_clients):
+    """asyncflow puts a block's uid in the scope's context; that is not a
+    scope of the component's own."""
+
+    flow = await engines()
+    runtime = DTRuntime(flow, await stream_clients("wf-block"))
+    runtime.workflow_id = "twin-wf"
+
+    class Blocked(Wrapped):
+        def __init__(self, flow):
+            super().__init__(flow)
+            inner = self._infer
+
+            @flow.block
+            async def infer(in_data, k=1.0):
+                return await inner(in_data, k=k)
+
+            self._infer = infer
+
+    seen = _spy(flow)
+    runtime.add_investigator(Blocked(flow), X, Y)
+    runtime.start()
+    await runtime.get_inference(TypedData(X, 1.0), Y)
+
+    tasks = [d for d in seen if str(d.get("uid", "")).startswith("task.")]
+    assert tasks and all(d["workflow_id"] == "twin-wf" for d in tasks), tasks
+
+    await runtime.stop()

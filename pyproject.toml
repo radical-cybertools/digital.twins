@@ -20,6 +20,7 @@ dependencies = [
 # the ORBIT service plugin (`digitaltwin.service`) and its client
 service = [
     "radical.orbit>=0.7",
+    "rhapsody-py[telemetry]>=0.4.0",
 ]
 # ex-situ learning (`digitaltwin.learn`).  A separate extra rather than
 # part of `service`: the learner runs perfectly well against a local

@@ -51,7 +51,7 @@ from ..streaming import (
     connect_stream_client,
 )
 from .client import DTClient
-from .session import TELEMETRY_KEYS, VERBS, DTSession
+from .session import VERBS, DTSession
 
 log = logging.getLogger("radical.orbit")
 
@@ -199,10 +199,8 @@ class PluginDT(Plugin):
         idempotent), and share one dispatcher session per DT session.
 
         `"telemetry"` turns on engine-side telemetry for the session's
-        engine (`WorkflowEngine.start_telemetry`): `checkpoint_path`
-        (directory on the service host), `checkpoint_interval`,
-        `resource_poll_interval`.  The checkpoint is flushed when the
-        session closes.
+        engine (`WorkflowEngine.start_telemetry`): `checkpoint_path` is
+        a directory on the service host, written when the session closes.
         """
 
         self._ensure_cleanup_task()
@@ -213,11 +211,11 @@ class PluginDT(Plugin):
             raise http_exception(ValueError("'config' must be an object"))
 
         telemetry = (config or {}).get("telemetry")
-        if telemetry is not None and (
-                not isinstance(telemetry, dict)
-                or not set(telemetry) <= set(TELEMETRY_KEYS)):
+        if telemetry is not None and not (
+                isinstance(telemetry, dict) and set(telemetry) == {"checkpoint_path"}
+                and isinstance(telemetry["checkpoint_path"], str)):
             raise http_exception(ValueError(
-                f"'telemetry' must be an object with keys from {TELEMETRY_KEYS}"))
+                "'telemetry' must be {'checkpoint_path': <directory>}"))
 
         owner = self._request_owner(request)
         sid, lifetime, ttl = self._normalize_session_policy(data)
