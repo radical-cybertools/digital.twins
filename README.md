@@ -17,11 +17,6 @@ Main set of features implemented:
 - Shared SIM / subtasks running on agent, accessible by all investigators
 - Ex-situ learning (ROSE streaming learner on a second engine)
 
-Not yet implemented:
-- Barrier working on remote
-- Split working on remote
-- Join working on remote
-
 ## Running the unit tests:
 
 1. `pip install .[test,service,learn]`

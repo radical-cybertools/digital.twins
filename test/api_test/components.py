@@ -30,8 +30,8 @@ UPDATE_EVERY = 2
 
 
 class InvestigatorTest(ModelInvestigator):
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, flow=None):
+        super().__init__(flow)
         self.version = 1
         self.count = 0
         self.to_publish = asyncio.Event()
@@ -70,8 +70,8 @@ class LetterInvestigator(ModelInvestigator):
     same as `TestInvestigator`, plus a random 6-letter sequence -- so a
     model-selection test can tell which investigator answered."""
 
-    def __init__(self, upper: bool = False):
-        super().__init__(None)
+    def __init__(self, flow=None, upper: bool = False):
+        super().__init__(flow)
         self.version = 0
         self.alphabet = string.ascii_uppercase if upper else string.ascii_lowercase
 
@@ -147,8 +147,8 @@ class AgentTest(SciAgent):
     """A SciAgent with two `LetterInvestigator`s and a pass-through model
     selector, mirroring `05-agent-w-multi-investigators/agent.py`."""
 
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, flow=None):
+        super().__init__(flow)
         self.inv_lower = LetterInvestigator(upper=False)
         self.inv_upper = LetterInvestigator(upper=True)
 
@@ -205,8 +205,8 @@ class AgentTest(SciAgent):
 
 
 class FlipInvestigator(ModelInvestigator):
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, flow=None):
+        super().__init__(flow)
         self.version = 0
 
         async def do_inference(
@@ -271,8 +271,8 @@ class FlipInvestigator(ModelInvestigator):
 
 
 class FlipAgent(SciAgent):
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, flow=None):
+        super().__init__(flow)
         self.flip = FlipInvestigator()
 
         self.update = asyncio.Event()
@@ -290,8 +290,8 @@ class FlipAgent(SciAgent):
 
 
 class SplitTest(SplitTask):
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, flow=None):
+        super().__init__(flow)
 
     async def main_loop(self, runtime: RuntimeAPI, in_data: TypedData):
         # runtime
