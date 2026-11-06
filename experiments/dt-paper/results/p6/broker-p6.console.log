@@ -26,24 +26,24 @@ INFO:     127.0.0.1:49560 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:49568 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.2f1b036c (owner=None)
-INFO [dt] session session.2f1b036c created twin 592cedad-9435-4e5b-aa8e-71ec4b154a05
-INFO [dt] session session.2f1b036c building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.2f1b036c building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 592cedad-9435-4e5b-aa8e-71ec4b154a05
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:49580 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:49590 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.2f1b036c.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.2f1b036c.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.d84670c7)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.f56d66cb)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO stream broker at tcp://127.0.0.1:43077 / tcp://127.0.0.1:33795
 INFO [dt] stream broker at tcp://127.0.0.1:43077 / tcp://127.0.0.1:33795
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 592cedad-9435-4e5b-aa8e-71ec4b154a05 ready
-INFO [dt] session session.2f1b036c created twin 455a908b-c7fb-4db2-8f29-17c24c348a0d
+INFO [dt] session session.<redacted> created twin 455a908b-c7fb-4db2-8f29-17c24c348a0d
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 455a908b-c7fb-4db2-8f29-17c24c348a0d ready
 INFO Online run: CountingSensor.
@@ -1545,11 +1545,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.2f1b036c lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin 455a908b-c7fb-4db2-8f29-17c24c348a0d failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.2f1b036c: endpoint(s) dt_p6_learning_ep lost -- twins failed: 455a908b-c7fb-4db2-8f29-17c24c348a0d
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: 455a908b-c7fb-4db2-8f29-17c24c348a0d
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f72307bf620>>
@@ -1581,7 +1581,7 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000268 is in RUNNING state
 INFO task.000268 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.2f1b036c closed twin 592cedad-9435-4e5b-aa8e-71ec4b154a05
+INFO [dt] session session.<redacted> closed twin 592cedad-9435-4e5b-aa8e-71ec4b154a05
 INFO Shutting down runtime....
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
@@ -2161,28 +2161,28 @@ INFO task.000364 is in RUNNING state
 INFO task.000364 is in DONE state
 INFO Cancellation requested for task.000024 ('running') from the execution backend
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f7230339f30>
-INFO [dt] session session.2f1b036c closed twin 455a908b-c7fb-4db2-8f29-17c24c348a0d
+INFO [dt] session session.<redacted> closed twin 455a908b-c7fb-4db2-8f29-17c24c348a0d
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.2f1b036c
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:58156 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.d165a376 (owner=None)
-INFO [dt] session session.d165a376 created twin d7d08c7b-81d6-46a0-a121-70eb82542aed
-INFO [dt] session session.d165a376 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.d165a376 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin d7d08c7b-81d6-46a0-a121-70eb82542aed
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:58164 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:58178 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.d165a376.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.d165a376.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.bb3ea1f9)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.b6e5fb4b)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin d7d08c7b-81d6-46a0-a121-70eb82542aed ready
 INFO Online run: CountingSensor.
@@ -2389,28 +2389,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.d165a376 closed twin d7d08c7b-81d6-46a0-a121-70eb82542aed
+INFO [dt] session session.<redacted> closed twin d7d08c7b-81d6-46a0-a121-70eb82542aed
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.d165a376
-INFO [dt] Registered session session.47eae342 (owner=None)
-INFO [dt] session session.47eae342 created twin 84cf95a1-2ac8-4ed4-b292-1d8667945125
-INFO [dt] session session.47eae342 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.47eae342 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 84cf95a1-2ac8-4ed4-b292-1d8667945125
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:58190 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:58192 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.47eae342.learning' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.47eae342.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.522b21bb)
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.ff4a51b9)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 84cf95a1-2ac8-4ed4-b292-1d8667945125 ready
-INFO [dt] session session.47eae342 created twin f302ce20-e4e6-4161-b326-1e1a79f00f5a
+INFO [dt] session session.<redacted> created twin f302ce20-e4e6-4161-b326-1e1a79f00f5a
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin f302ce20-e4e6-4161-b326-1e1a79f00f5a ready
 INFO Online run: CountingSensor.
@@ -3916,11 +3916,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000263 is in RUNNING state
 INFO task.000263 is in DONE state
-WARNING [dt] session session.47eae342 lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin f302ce20-e4e6-4161-b326-1e1a79f00f5a failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.47eae342: endpoint(s) dt_p6_learning_ep lost -- twins failed: f302ce20-e4e6-4161-b326-1e1a79f00f5a
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: f302ce20-e4e6-4161-b326-1e1a79f00f5a
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f7230355810>>
@@ -3944,7 +3944,7 @@ INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f7230355810>>
 INFO task.000267 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.47eae342 closed twin 84cf95a1-2ac8-4ed4-b292-1d8667945125
+INFO [dt] session session.<redacted> closed twin 84cf95a1-2ac8-4ed4-b292-1d8667945125
 INFO Shutting down runtime....
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000268 is in RUNNING state
@@ -4527,28 +4527,28 @@ INFO task.000364 is in RUNNING state
 INFO task.000364 is in DONE state
 INFO Cancellation requested for task.000024 ('running') from the execution backend
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f72302a9b70>
-INFO [dt] session session.47eae342 closed twin f302ce20-e4e6-4161-b326-1e1a79f00f5a
+INFO [dt] session session.<redacted> closed twin f302ce20-e4e6-4161-b326-1e1a79f00f5a
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.47eae342
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:54540 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.b47dc0a6 (owner=None)
-INFO [dt] session session.b47dc0a6 created twin cc8752ec-4c5c-46cf-99e0-722a0eada9a0
-INFO [dt] session session.b47dc0a6 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.b47dc0a6 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin cc8752ec-4c5c-46cf-99e0-722a0eada9a0
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:54546 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:54556 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.b47dc0a6.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.b47dc0a6.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.18c68c45)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.89019270)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin cc8752ec-4c5c-46cf-99e0-722a0eada9a0 ready
 INFO Online run: CountingSensor.
@@ -4755,28 +4755,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.b47dc0a6 closed twin cc8752ec-4c5c-46cf-99e0-722a0eada9a0
+INFO [dt] session session.<redacted> closed twin cc8752ec-4c5c-46cf-99e0-722a0eada9a0
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.b47dc0a6
-INFO [dt] Registered session session.0dff9301 (owner=None)
-INFO [dt] session session.0dff9301 created twin cc4d4477-f047-4a83-87e1-0135588e9e27
-INFO [dt] session session.0dff9301 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.0dff9301 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin cc4d4477-f047-4a83-87e1-0135588e9e27
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:54558 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:54570 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.0dff9301.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.0dff9301.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.55e39e9c)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.93647c2d)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin cc4d4477-f047-4a83-87e1-0135588e9e27 ready
-INFO [dt] session session.0dff9301 created twin 63e0e2fb-0639-43bd-a375-bc4a1908cc91
+INFO [dt] session session.<redacted> created twin 63e0e2fb-0639-43bd-a375-bc4a1908cc91
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 63e0e2fb-0639-43bd-a375-bc4a1908cc91 ready
 INFO Online run: CountingSensor.
@@ -6276,11 +6276,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.0dff9301 lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin 63e0e2fb-0639-43bd-a375-bc4a1908cc91 failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.0dff9301: endpoint(s) dt_p6_learning_ep lost -- twins failed: 63e0e2fb-0639-43bd-a375-bc4a1908cc91
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: 63e0e2fb-0639-43bd-a375-bc4a1908cc91
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f72301e8770>>
@@ -6306,7 +6306,7 @@ INFO task.000267 is in RUNNING state
 INFO task.000266 is in DONE state
 INFO task.000267 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.0dff9301 closed twin cc4d4477-f047-4a83-87e1-0135588e9e27
+INFO [dt] session session.<redacted> closed twin cc4d4477-f047-4a83-87e1-0135588e9e27
 INFO Shutting down runtime....
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
@@ -6892,28 +6892,28 @@ INFO task.000364 is in RUNNING state
 INFO task.000364 is in DONE state
 INFO Cancellation requested for task.000024 ('running') from the execution backend
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f72301fd120>
-INFO [dt] session session.0dff9301 closed twin 63e0e2fb-0639-43bd-a375-bc4a1908cc91
+INFO [dt] session session.<redacted> closed twin 63e0e2fb-0639-43bd-a375-bc4a1908cc91
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.0dff9301
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:44760 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.aed359b8 (owner=None)
-INFO [dt] session session.aed359b8 created twin c409c214-36bb-451f-8f02-68ae63f0c72a
-INFO [dt] session session.aed359b8 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.aed359b8 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin c409c214-36bb-451f-8f02-68ae63f0c72a
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:44772 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:44782 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.aed359b8.learning' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.aed359b8.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.f0a762ea)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.49c7b838)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin c409c214-36bb-451f-8f02-68ae63f0c72a ready
 INFO Online run: CountingSensor.
@@ -7120,28 +7120,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.aed359b8 closed twin c409c214-36bb-451f-8f02-68ae63f0c72a
+INFO [dt] session session.<redacted> closed twin c409c214-36bb-451f-8f02-68ae63f0c72a
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.aed359b8
-INFO [dt] Registered session session.788c4ec1 (owner=None)
-INFO [dt] session session.788c4ec1 created twin e43c1650-543e-4daa-8d81-77b217c90f9f
-INFO [dt] session session.788c4ec1 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.788c4ec1 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin e43c1650-543e-4daa-8d81-77b217c90f9f
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:44796 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:44804 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.788c4ec1.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.788c4ec1.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.c88b909b)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.fd9dfe7c)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin e43c1650-543e-4daa-8d81-77b217c90f9f ready
-INFO [dt] session session.788c4ec1 created twin 9364b30b-92f3-47f0-8dfb-656468877fa7
+INFO [dt] session session.<redacted> created twin 9364b30b-92f3-47f0-8dfb-656468877fa7
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 9364b30b-92f3-47f0-8dfb-656468877fa7 ready
 INFO Online run: CountingSensor.
@@ -8643,11 +8643,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.788c4ec1 lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin 9364b30b-92f3-47f0-8dfb-656468877fa7 failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.788c4ec1: endpoint(s) dt_p6_learning_ep lost -- twins failed: 9364b30b-92f3-47f0-8dfb-656468877fa7
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: 9364b30b-92f3-47f0-8dfb-656468877fa7
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f7230313570>>
@@ -8679,7 +8679,7 @@ INFO task.000268 is in RUNNING state
 INFO task.000267 is in DONE state
 INFO task.000268 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.788c4ec1 closed twin e43c1650-543e-4daa-8d81-77b217c90f9f
+INFO [dt] session session.<redacted> closed twin e43c1650-543e-4daa-8d81-77b217c90f9f
 INFO Shutting down runtime....
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
@@ -9259,28 +9259,28 @@ INFO task.000364 is in RUNNING state
 INFO task.000364 is in DONE state
 INFO Cancellation requested for task.000024 ('running') from the execution backend
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f72301e5990>
-INFO [dt] session session.788c4ec1 closed twin 9364b30b-92f3-47f0-8dfb-656468877fa7
+INFO [dt] session session.<redacted> closed twin 9364b30b-92f3-47f0-8dfb-656468877fa7
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.788c4ec1
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:59414 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.2ecfc2ed (owner=None)
-INFO [dt] session session.2ecfc2ed created twin a0446790-5611-41d1-bb1e-055efafb23d6
-INFO [dt] session session.2ecfc2ed building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.2ecfc2ed building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin a0446790-5611-41d1-bb1e-055efafb23d6
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:59426 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.2ecfc2ed.learning' (role=engine, plugins=[])
 INFO:     127.0.0.1:59434 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.2ecfc2ed.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.21e722bc)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.2893eefa)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin a0446790-5611-41d1-bb1e-055efafb23d6 ready
 INFO Online run: CountingSensor.
@@ -9487,28 +9487,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.2ecfc2ed closed twin a0446790-5611-41d1-bb1e-055efafb23d6
+INFO [dt] session session.<redacted> closed twin a0446790-5611-41d1-bb1e-055efafb23d6
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.2ecfc2ed
-INFO [dt] Registered session session.8294fbae (owner=None)
-INFO [dt] session session.8294fbae created twin cdaee3fe-d6a9-4ddd-a4e3-16a88c9e75d6
-INFO [dt] session session.8294fbae building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.8294fbae building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin cdaee3fe-d6a9-4ddd-a4e3-16a88c9e75d6
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:59450 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:59458 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.8294fbae.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.8294fbae.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.2d0889d7)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.ab5d5013)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin cdaee3fe-d6a9-4ddd-a4e3-16a88c9e75d6 ready
-INFO [dt] session session.8294fbae created twin 80cae696-db23-479f-add4-ddaf47bc9780
+INFO [dt] session session.<redacted> created twin 80cae696-db23-479f-add4-ddaf47bc9780
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 80cae696-db23-479f-add4-ddaf47bc9780 ready
 INFO Online run: CountingSensor.
@@ -11008,11 +11008,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.8294fbae lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin 80cae696-db23-479f-add4-ddaf47bc9780 failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.8294fbae: endpoint(s) dt_p6_learning_ep lost -- twins failed: 80cae696-db23-479f-add4-ddaf47bc9780
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: 80cae696-db23-479f-add4-ddaf47bc9780
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f72307a2f50>>
@@ -11038,7 +11038,7 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000267 is in RUNNING state
 INFO task.000267 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.8294fbae closed twin cdaee3fe-d6a9-4ddd-a4e3-16a88c9e75d6
+INFO [dt] session session.<redacted> closed twin cdaee3fe-d6a9-4ddd-a4e3-16a88c9e75d6
 INFO Shutting down runtime....
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
@@ -11626,28 +11626,28 @@ INFO Cancellation requested for task.000364 (pending) locally
 INFO task.000364 is in DONE state
 WARNING Attempted to handle an already finished task "task.000364"
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f72300f8e50>
-INFO [dt] session session.8294fbae closed twin 80cae696-db23-479f-add4-ddaf47bc9780
+INFO [dt] session session.<redacted> closed twin 80cae696-db23-479f-add4-ddaf47bc9780
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.8294fbae
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:44266 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.28943c14 (owner=None)
-INFO [dt] session session.28943c14 created twin 1250d711-99ea-4afe-9141-4cc1c4f7449f
-INFO [dt] session session.28943c14 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.28943c14 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 1250d711-99ea-4afe-9141-4cc1c4f7449f
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:44278 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:44290 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.28943c14.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.28943c14.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.06c0ead3)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.92874166)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 1250d711-99ea-4afe-9141-4cc1c4f7449f ready
 INFO Online run: CountingSensor.
@@ -11860,28 +11860,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000037 is in RUNNING state
 INFO task.000037 is in DONE state
 INFO task.000032 is in DONE state
-INFO [dt] session session.28943c14 closed twin 1250d711-99ea-4afe-9141-4cc1c4f7449f
+INFO [dt] session session.<redacted> closed twin 1250d711-99ea-4afe-9141-4cc1c4f7449f
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.28943c14
-INFO [dt] Registered session session.e5678f48 (owner=None)
-INFO [dt] session session.e5678f48 created twin 2c50aacd-316f-42bb-8ce2-bd0e4706536a
-INFO [dt] session session.e5678f48 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.e5678f48 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 2c50aacd-316f-42bb-8ce2-bd0e4706536a
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:44294 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:44308 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.e5678f48.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.e5678f48.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.0ef3e8af)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.0e5738dd)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 2c50aacd-316f-42bb-8ce2-bd0e4706536a ready
-INFO [dt] session session.e5678f48 created twin cd8e1125-dc02-4c87-92e1-95f9a4deb0a8
+INFO [dt] session session.<redacted> created twin cd8e1125-dc02-4c87-92e1-95f9a4deb0a8
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin cd8e1125-dc02-4c87-92e1-95f9a4deb0a8 ready
 INFO Online run: CountingSensor.
@@ -13380,11 +13380,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.e5678f48 lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin cd8e1125-dc02-4c87-92e1-95f9a4deb0a8 failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.e5678f48: endpoint(s) dt_p6_learning_ep lost -- twins failed: cd8e1125-dc02-4c87-92e1-95f9a4deb0a8
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: cd8e1125-dc02-4c87-92e1-95f9a4deb0a8
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f723028d9a0>>
@@ -13408,7 +13408,7 @@ INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f723028d9a0>>
 INFO Shutting down runtime....
-INFO [dt] session session.e5678f48 closed twin 2c50aacd-316f-42bb-8ce2-bd0e4706536a
+INFO [dt] session session.<redacted> closed twin 2c50aacd-316f-42bb-8ce2-bd0e4706536a
 INFO Shutting down runtime....
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000267 is in RUNNING state
@@ -13997,28 +13997,28 @@ INFO task.000364 is in RUNNING state
 INFO task.000364 is in DONE state
 INFO Cancellation requested for task.000024 ('running') from the execution backend
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f72302ab970>
-INFO [dt] session session.e5678f48 closed twin cd8e1125-dc02-4c87-92e1-95f9a4deb0a8
+INFO [dt] session session.<redacted> closed twin cd8e1125-dc02-4c87-92e1-95f9a4deb0a8
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.e5678f48
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:56760 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.09af8616 (owner=None)
-INFO [dt] session session.09af8616 created twin 9e6062f0-9f47-4a2d-9c94-f1715ebcc0fd
-INFO [dt] session session.09af8616 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.09af8616 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 9e6062f0-9f47-4a2d-9c94-f1715ebcc0fd
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:56768 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:56770 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.09af8616.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.09af8616.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.a1a029de)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.4a814aed)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 9e6062f0-9f47-4a2d-9c94-f1715ebcc0fd ready
 INFO Online run: CountingSensor.
@@ -14225,28 +14225,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.09af8616 closed twin 9e6062f0-9f47-4a2d-9c94-f1715ebcc0fd
+INFO [dt] session session.<redacted> closed twin 9e6062f0-9f47-4a2d-9c94-f1715ebcc0fd
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.09af8616
-INFO [dt] Registered session session.446b6872 (owner=None)
-INFO [dt] session session.446b6872 created twin 3f14cfa5-d0b9-4afe-bf7e-6c9596818d4a
-INFO [dt] session session.446b6872 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.446b6872 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 3f14cfa5-d0b9-4afe-bf7e-6c9596818d4a
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:56782 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:56798 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.446b6872.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.446b6872.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.5b79e7d8)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.33e2b8ae)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 3f14cfa5-d0b9-4afe-bf7e-6c9596818d4a ready
-INFO [dt] session session.446b6872 created twin cbae2512-6d52-4876-909f-1205b37da3d6
+INFO [dt] session session.<redacted> created twin cbae2512-6d52-4876-909f-1205b37da3d6
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin cbae2512-6d52-4876-909f-1205b37da3d6 ready
 INFO Online run: CountingSensor.
@@ -15746,11 +15746,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.446b6872 lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin cbae2512-6d52-4876-909f-1205b37da3d6 failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.446b6872: endpoint(s) dt_p6_learning_ep lost -- twins failed: cbae2512-6d52-4876-909f-1205b37da3d6
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: cbae2512-6d52-4876-909f-1205b37da3d6
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f723024fbd0>>
@@ -15782,7 +15782,7 @@ INFO task.000268 is in RUNNING state
 INFO task.000267 is in DONE state
 INFO task.000268 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.446b6872 closed twin 3f14cfa5-d0b9-4afe-bf7e-6c9596818d4a
+INFO [dt] session session.<redacted> closed twin 3f14cfa5-d0b9-4afe-bf7e-6c9596818d4a
 INFO Shutting down runtime....
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
@@ -16356,28 +16356,28 @@ INFO task.000363 is in RUNNING state
 INFO task.000363 is in DONE state
 INFO Cancellation requested for task.000024 ('running') from the execution backend
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f71887957b0>
-INFO [dt] session session.446b6872 closed twin cbae2512-6d52-4876-909f-1205b37da3d6
+INFO [dt] session session.<redacted> closed twin cbae2512-6d52-4876-909f-1205b37da3d6
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.446b6872
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:37810 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.b2f41712 (owner=None)
-INFO [dt] session session.b2f41712 created twin 2fd3463d-4bfe-473d-a459-ffc75f438317
-INFO [dt] session session.b2f41712 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.b2f41712 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 2fd3463d-4bfe-473d-a459-ffc75f438317
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:37812 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:37818 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.b2f41712.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.b2f41712.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.5f66fedf)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.efdd1b56)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 2fd3463d-4bfe-473d-a459-ffc75f438317 ready
 INFO Online run: CountingSensor.
@@ -16584,28 +16584,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.b2f41712 closed twin 2fd3463d-4bfe-473d-a459-ffc75f438317
+INFO [dt] session session.<redacted> closed twin 2fd3463d-4bfe-473d-a459-ffc75f438317
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.b2f41712
-INFO [dt] Registered session session.0b1056b8 (owner=None)
-INFO [dt] session session.0b1056b8 created twin d8a5ae32-2bd1-4a35-848c-4e7871f0dade
-INFO [dt] session session.0b1056b8 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.0b1056b8 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin d8a5ae32-2bd1-4a35-848c-4e7871f0dade
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:37824 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:37836 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.0b1056b8.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.0b1056b8.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.b050c7bc)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.7f3f67f2)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin d8a5ae32-2bd1-4a35-848c-4e7871f0dade ready
-INFO [dt] session session.0b1056b8 created twin 0fa6775a-f750-4033-b61b-9d2ea10395a0
+INFO [dt] session session.<redacted> created twin 0fa6775a-f750-4033-b61b-9d2ea10395a0
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 0fa6775a-f750-4033-b61b-9d2ea10395a0 ready
 INFO Online run: CountingSensor.
@@ -18104,11 +18104,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.0b1056b8 lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin 0fa6775a-f750-4033-b61b-9d2ea10395a0 failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.0b1056b8: endpoint(s) dt_p6_learning_ep lost -- twins failed: 0fa6775a-f750-4033-b61b-9d2ea10395a0
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: 0fa6775a-f750-4033-b61b-9d2ea10395a0
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f7230324390>>
@@ -18134,7 +18134,7 @@ INFO task.000267 is in RUNNING state
 INFO task.000266 is in DONE state
 INFO task.000267 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.0b1056b8 closed twin d8a5ae32-2bd1-4a35-848c-4e7871f0dade
+INFO [dt] session session.<redacted> closed twin d8a5ae32-2bd1-4a35-848c-4e7871f0dade
 INFO Shutting down runtime....
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
@@ -18720,28 +18720,28 @@ INFO task.000364 is in RUNNING state
 INFO task.000364 is in DONE state
 INFO Cancellation requested for task.000024 ('running') from the execution backend
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f723028cd60>
-INFO [dt] session session.0b1056b8 closed twin 0fa6775a-f750-4033-b61b-9d2ea10395a0
+INFO [dt] session session.<redacted> closed twin 0fa6775a-f750-4033-b61b-9d2ea10395a0
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.0b1056b8
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:48082 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.30339ace (owner=None)
-INFO [dt] session session.30339ace created twin 40f225fe-a77a-4e6a-abc5-254ca1c9abf7
-INFO [dt] session session.30339ace building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.30339ace building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 40f225fe-a77a-4e6a-abc5-254ca1c9abf7
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:48086 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:48088 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.30339ace.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.30339ace.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.3eb825c4)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.45de507a)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 40f225fe-a77a-4e6a-abc5-254ca1c9abf7 ready
 INFO Online run: CountingSensor.
@@ -18948,28 +18948,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.30339ace closed twin 40f225fe-a77a-4e6a-abc5-254ca1c9abf7
+INFO [dt] session session.<redacted> closed twin 40f225fe-a77a-4e6a-abc5-254ca1c9abf7
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.30339ace
-INFO [dt] Registered session session.d674538c (owner=None)
-INFO [dt] session session.d674538c created twin 8e90a301-a0be-4dfc-9622-c16eb1618024
-INFO [dt] session session.d674538c building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.d674538c building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 8e90a301-a0be-4dfc-9622-c16eb1618024
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:48094 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:48106 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.d674538c.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.d674538c.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.34049647)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.c2d1615b)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 8e90a301-a0be-4dfc-9622-c16eb1618024 ready
-INFO [dt] session session.d674538c created twin 632c2f4e-2e5d-49b1-84f4-d6a426800fae
+INFO [dt] session session.<redacted> created twin 632c2f4e-2e5d-49b1-84f4-d6a426800fae
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 632c2f4e-2e5d-49b1-84f4-d6a426800fae ready
 INFO Online run: CountingSensor.
@@ -20468,11 +20468,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.d674538c lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin 632c2f4e-2e5d-49b1-84f4-d6a426800fae failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.d674538c: endpoint(s) dt_p6_learning_ep lost -- twins failed: 632c2f4e-2e5d-49b1-84f4-d6a426800fae
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: 632c2f4e-2e5d-49b1-84f4-d6a426800fae
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f7230306b10>>
@@ -20496,7 +20496,7 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO task.000266 is in RUNNING state
 INFO task.000266 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.d674538c closed twin 8e90a301-a0be-4dfc-9622-c16eb1618024
+INFO [dt] session session.<redacted> closed twin 8e90a301-a0be-4dfc-9622-c16eb1618024
 INFO Shutting down runtime....
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000267 is in RUNNING state
@@ -21085,28 +21085,28 @@ INFO task.000364 is in RUNNING state
 INFO task.000364 is in DONE state
 INFO Cancellation requested for task.000024 ('running') from the execution backend
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f72307d96c0>
-INFO [dt] session session.d674538c closed twin 632c2f4e-2e5d-49b1-84f4-d6a426800fae
+INFO [dt] session session.<redacted> closed twin 632c2f4e-2e5d-49b1-84f4-d6a426800fae
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.d674538c
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:59376 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.2efe76b0 (owner=None)
-INFO [dt] session session.2efe76b0 created twin a56a7dd3-c7b9-42e6-bff9-15fb456862c2
-INFO [dt] session session.2efe76b0 building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.2efe76b0 building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin a56a7dd3-c7b9-42e6-bff9-15fb456862c2
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:59386 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:59390 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.2efe76b0.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.2efe76b0.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.10c2a770)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.246027b8)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin a56a7dd3-c7b9-42e6-bff9-15fb456862c2 ready
 INFO Online run: CountingSensor.
@@ -21313,28 +21313,28 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.2efe76b0 closed twin a56a7dd3-c7b9-42e6-bff9-15fb456862c2
+INFO [dt] session session.<redacted> closed twin a56a7dd3-c7b9-42e6-bff9-15fb456862c2
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.2efe76b0
-INFO [dt] Registered session session.1d97cd0d (owner=None)
-INFO [dt] session session.1d97cd0d created twin 1416e3be-33ce-40f2-9c3a-2f7f056e697b
-INFO [dt] session session.1d97cd0d building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.1d97cd0d building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Unregistered session session.<redacted>
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 1416e3be-33ce-40f2-9c3a-2f7f056e697b
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:59392 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:59408 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.1d97cd0d.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.1d97cd0d.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.fd2661d4)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.1ff0f46d)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 1416e3be-33ce-40f2-9c3a-2f7f056e697b ready
-INFO [dt] session session.1d97cd0d created twin b25da105-320e-47ea-bda2-3f1c520cdc71
+INFO [dt] session session.<redacted> created twin b25da105-320e-47ea-bda2-3f1c520cdc71
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin b25da105-320e-47ea-bda2-3f1c520cdc71 ready
 INFO Online run: CountingSensor.
@@ -22834,11 +22834,11 @@ INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learn
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000262 is in RUNNING state
 INFO task.000262 is in DONE state
-WARNING [dt] session session.1d97cd0d lost endpoint(s) dt_p6_learning_ep -- it must be recreated
+WARNING [dt] session session.<redacted> lost endpoint(s) dt_p6_learning_ep -- it must be recreated
 ERROR twin component failed: engine endpoint lost: dt_p6_learning_ep
 twin component failed: engine endpoint lost: dt_p6_learning_ep
 ERROR [dt] twin b25da105-320e-47ea-bda2-3f1c520cdc71 failed: engine endpoint lost: dt_p6_learning_ep
-WARNING [dt] session session.1d97cd0d: endpoint(s) dt_p6_learning_ep lost -- twins failed: b25da105-320e-47ea-bda2-3f1c520cdc71
+WARNING [dt] session session.<redacted>: endpoint(s) dt_p6_learning_ep lost -- twins failed: b25da105-320e-47ea-bda2-3f1c520cdc71
 INFO Online run: LinearLearner.
 INFO Fire ON_INPUT on <bound method StreamingLearnerInvestigator._feed of <learner_components.LinearLearner object at 0x7f72307f1a70>>
 INFO Submitting 1 tasks/blocks for execution
@@ -22858,7 +22858,7 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000266 is in RUNNING state
 INFO task.000266 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.1d97cd0d closed twin 1416e3be-33ce-40f2-9c3a-2f7f056e697b
+INFO [dt] session session.<redacted> closed twin 1416e3be-33ce-40f2-9c3a-2f7f056e697b
 INFO Shutting down runtime....
 INFO Dequeue: sensor
 INFO Online run: LinearLearner.
@@ -23452,28 +23452,28 @@ INFO task.000364 is in RUNNING state
 INFO task.000364 is in DONE state
 WARNING Attempted to handle an already finished task "task.000364"
 WARNING abandoning 1 task(s) which ignored cancellation: <coroutine object DTRuntime._owned at 0x7f72302abb50>
-INFO [dt] session session.1d97cd0d closed twin b25da105-320e-47ea-bda2-3f1c520cdc71
+INFO [dt] session session.<redacted> closed twin b25da105-320e-47ea-bda2-3f1c520cdc71
 INFO Initiating shutdown
 WARNING Failed to unregister session on close: HTTP 502 — [dt_p6_learning_ep/rhapsody] — endpoint 'dt_p6_learning_ep' unknown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.1d97cd0d
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:57832 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.a7d94aca (owner=None)
-INFO [dt] session session.a7d94aca created twin 0c45689e-abfd-4dfe-8f73-014f1b772935
-INFO [dt] session session.a7d94aca building 'inference' backend on endpoint dt_p6_inference_ep
-INFO [dt] session session.a7d94aca building 'learning' backend on endpoint dt_p6_learning_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 0c45689e-abfd-4dfe-8f73-014f1b772935
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] session session.<redacted> building 'learning' backend on endpoint dt_p6_learning_ep
 INFO:     127.0.0.1:57836 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO:     127.0.0.1:57842 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.a7d94aca.inference' (role=engine, plugins=[])
 INFO [Runtime] registered as 'rhapsody.a7d94aca.learning' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.365d4528)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
-INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.e1b39d62)
+INFO Orbit backend ready: dt_p6_learning_ep/rhapsody (session session.<redacted>)
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 0c45689e-abfd-4dfe-8f73-014f1b772935 ready
 INFO Online run: CountingSensor.
@@ -23680,21 +23680,21 @@ INFO Submitting 1 tasks/blocks for execution
 INFO task.000036 is in RUNNING state
 INFO task.000036 is in DONE state
 INFO task.000031 is in DONE state
-INFO [dt] session session.a7d94aca closed twin 0c45689e-abfd-4dfe-8f73-014f1b772935
+INFO [dt] session session.<redacted> closed twin 0c45689e-abfd-4dfe-8f73-014f1b772935
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.a7d94aca
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:57850 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.53c031cb (owner=None)
-INFO [dt] session session.53c031cb created twin 61dba4a3-5e52-46d8-a4d0-99d086491907
-INFO [dt] session session.53c031cb building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 61dba4a3-5e52-46d8-a4d0-99d086491907
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:57852 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.53c031cb.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.5867029e)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 61dba4a3-5e52-46d8-a4d0-99d086491907 ready
@@ -23704,26 +23704,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:39994 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.53c031cb
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.53c031cb closed twin 61dba4a3-5e52-46d8-a4d0-99d086491907
+INFO [dt] session session.<redacted> closed twin 61dba4a3-5e52-46d8-a4d0-99d086491907
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.53c031cb
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:40002 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.bda13c5d (owner=None)
-INFO [dt] session session.bda13c5d created twin d2790808-a925-4a51-b5e7-de5b68633ab7
-INFO [dt] session session.bda13c5d building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin d2790808-a925-4a51-b5e7-de5b68633ab7
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:40006 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.bda13c5d.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.c472358d)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin d2790808-a925-4a51-b5e7-de5b68633ab7 ready
@@ -23733,26 +23733,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:40020 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.bda13c5d
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.bda13c5d closed twin d2790808-a925-4a51-b5e7-de5b68633ab7
+INFO [dt] session session.<redacted> closed twin d2790808-a925-4a51-b5e7-de5b68633ab7
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.bda13c5d
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:40032 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.b74da0d6 (owner=None)
-INFO [dt] session session.b74da0d6 created twin 4d863ecb-35e0-4b42-89f3-62927c26a2a1
-INFO [dt] session session.b74da0d6 building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 4d863ecb-35e0-4b42-89f3-62927c26a2a1
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:40044 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.b74da0d6.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.bb73e5be)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 4d863ecb-35e0-4b42-89f3-62927c26a2a1 ready
@@ -23762,26 +23762,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:40052 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.b74da0d6
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.b74da0d6 closed twin 4d863ecb-35e0-4b42-89f3-62927c26a2a1
+INFO [dt] session session.<redacted> closed twin 4d863ecb-35e0-4b42-89f3-62927c26a2a1
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.b74da0d6
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:40064 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.7fe71c00 (owner=None)
-INFO [dt] session session.7fe71c00 created twin 7c1ec569-f539-4e6c-827f-8ab3dd5bd8c1
-INFO [dt] session session.7fe71c00 building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 7c1ec569-f539-4e6c-827f-8ab3dd5bd8c1
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:40072 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.7fe71c00.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.2a98951f)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 7c1ec569-f539-4e6c-827f-8ab3dd5bd8c1 ready
@@ -23791,26 +23791,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:40088 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.7fe71c00
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.7fe71c00 closed twin 7c1ec569-f539-4e6c-827f-8ab3dd5bd8c1
+INFO [dt] session session.<redacted> closed twin 7c1ec569-f539-4e6c-827f-8ab3dd5bd8c1
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.7fe71c00
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:40100 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.7995b976 (owner=None)
-INFO [dt] session session.7995b976 created twin 3fc20265-d73d-4b2f-9b59-66c1e0e1b016
-INFO [dt] session session.7995b976 building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 3fc20265-d73d-4b2f-9b59-66c1e0e1b016
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:40110 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.7995b976.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.43f4faf5)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 3fc20265-d73d-4b2f-9b59-66c1e0e1b016 ready
@@ -23820,26 +23820,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:50560 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.7995b976
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.7995b976 closed twin 3fc20265-d73d-4b2f-9b59-66c1e0e1b016
+INFO [dt] session session.<redacted> closed twin 3fc20265-d73d-4b2f-9b59-66c1e0e1b016
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.7995b976
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:50572 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.1641b625 (owner=None)
-INFO [dt] session session.1641b625 created twin 65e14f8b-d5c1-435e-aff0-5dfd8d8426a5
-INFO [dt] session session.1641b625 building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 65e14f8b-d5c1-435e-aff0-5dfd8d8426a5
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:50586 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.1641b625.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.dd79705c)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 65e14f8b-d5c1-435e-aff0-5dfd8d8426a5 ready
@@ -23849,26 +23849,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:50590 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.1641b625
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.1641b625 closed twin 65e14f8b-d5c1-435e-aff0-5dfd8d8426a5
+INFO [dt] session session.<redacted> closed twin 65e14f8b-d5c1-435e-aff0-5dfd8d8426a5
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.1641b625
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:50594 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.ba664584 (owner=None)
-INFO [dt] session session.ba664584 created twin 40bf3496-0981-4e07-89df-85677d381901
-INFO [dt] session session.ba664584 building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin 40bf3496-0981-4e07-89df-85677d381901
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:50602 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.ba664584.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.32a7e1c3)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin 40bf3496-0981-4e07-89df-85677d381901 ready
@@ -23878,26 +23878,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:50618 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.ba664584
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.ba664584 closed twin 40bf3496-0981-4e07-89df-85677d381901
+INFO [dt] session session.<redacted> closed twin 40bf3496-0981-4e07-89df-85677d381901
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.ba664584
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:50634 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.19dc9375 (owner=None)
-INFO [dt] session session.19dc9375 created twin c9b30027-8965-4b19-997a-3276272d13ae
-INFO [dt] session session.19dc9375 building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin c9b30027-8965-4b19-997a-3276272d13ae
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:50646 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.19dc9375.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.41c5e520)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin c9b30027-8965-4b19-997a-3276272d13ae ready
@@ -23907,26 +23907,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:50658 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.19dc9375
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.19dc9375 closed twin c9b30027-8965-4b19-997a-3276272d13ae
+INFO [dt] session session.<redacted> closed twin c9b30027-8965-4b19-997a-3276272d13ae
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.19dc9375
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:50666 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.b0a5eb71 (owner=None)
-INFO [dt] session session.b0a5eb71 created twin a5f63552-9037-4383-a5b9-a6b4d6049302
-INFO [dt] session session.b0a5eb71 building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin a5f63552-9037-4383-a5b9-a6b4d6049302
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:50668 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.b0a5eb71.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.0e98a8e6)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin a5f63552-9037-4383-a5b9-a6b4d6049302 ready
@@ -23936,26 +23936,26 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:33364 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.b0a5eb71
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.b0a5eb71 closed twin a5f63552-9037-4383-a5b9-a6b4d6049302
+INFO [dt] session session.<redacted> closed twin a5f63552-9037-4383-a5b9-a6b4d6049302
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.b0a5eb71
+INFO [dt] Unregistered session session.<redacted>
 INFO:     127.0.0.1:33380 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] Registered session session.3fb3e138 (owner=None)
-INFO [dt] session session.3fb3e138 created twin f93f333a-254b-476d-838e-c5cdb0396ff8
-INFO [dt] session session.3fb3e138 building 'inference' backend on endpoint dt_p6_inference_ep
+INFO [dt] Registered session session.<redacted> (owner=None)
+INFO [dt] session session.<redacted> created twin f93f333a-254b-476d-838e-c5cdb0396ff8
+INFO [dt] session session.<redacted> building 'inference' backend on endpoint dt_p6_inference_ep
 INFO:     127.0.0.1:33382 - "WebSocket /register" [accepted]
 INFO:     connection open
 INFO [Runtime] registered as 'rhapsody.3fb3e138.inference' (role=engine, plugins=[])
-INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.aae3a990)
+INFO Orbit backend ready: dt_p6_inference_ep/rhapsody (session session.<redacted>)
 WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
 INFO Waiting to connect to ZMQ broker...
 INFO [dt] twin f93f333a-254b-476d-838e-c5cdb0396ff8 ready
@@ -23965,17 +23965,17 @@ INFO task.000001 is in RUNNING state
 INFO task.000001 is in DONE state
 INFO:     127.0.0.1:33384 - "WebSocket /register" [accepted]
 INFO:     connection open
-INFO [dt] reattached session session.3fb3e138
+INFO [dt] reattached session session.<redacted>
 INFO Online run: OffsetModel.
 INFO Submitting 1 tasks/blocks for execution
 INFO task.000002 is in RUNNING state
 INFO task.000002 is in DONE state
 INFO Shutting down runtime....
-INFO [dt] session session.3fb3e138 closed twin f93f333a-254b-476d-838e-c5cdb0396ff8
+INFO [dt] session session.<redacted> closed twin f93f333a-254b-476d-838e-c5cdb0396ff8
 INFO Initiating shutdown
 INFO Orbit execution backend shutdown complete
 INFO Shutdown completed for all components.
-INFO [dt] Unregistered session session.3fb3e138
+INFO [dt] Unregistered session session.<redacted>
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.

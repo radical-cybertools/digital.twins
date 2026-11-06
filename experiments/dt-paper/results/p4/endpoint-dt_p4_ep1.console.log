@@ -7,16 +7,16 @@ INFO [PluginHost] Loaded plugin: sysinfo
 INFO [PluginHost] Loaded plugin: queue_info
 INFO Starting ORBIT endpoint (https://10.249.17.199:8131)
 INFO [Runtime] registered as 'dt_p4_ep1' (role=endpoint, plugins=['rhapsody', 'staging', 'sysinfo', 'queue_info'])
-INFO [rhapsody] Registered session session.bf1f21ef
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.bf1f21ef.1793967638.telemetry.jsonl
-INFO [session.bf1f21ef] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793967638.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.f6783764 (owner=rhapsody.c3267f5d)
-INFO [sysinfo] Unregistered session session.f6783764
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.c3267f5d)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.bf1f21ef",
+    "session_id": "session.<redacted>",
     "duration_seconds": 45.680193,
     "tasks": {
         "submitted": 3065,
@@ -46,7 +46,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.bf1f21ef",
+    "session_id": "session.<redacted>",
     "duration_seconds": 45.680193,
     "tasks": {
         "submitted": 3065,
@@ -85,17 +85,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd16ecee580> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.bf1f21ef
-INFO [rhapsody] Registered session session.d1b094b3
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.d1b094b3.1793967685.telemetry.jsonl
-INFO [session.d1b094b3] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793967685.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.7de47eaa (owner=rhapsody.9654ec8d)
-INFO [sysinfo] Unregistered session session.7de47eaa
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.9654ec8d)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.d1b094b3",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.818383,
     "tasks": {
         "submitted": 3212,
@@ -125,7 +125,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.d1b094b3",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.818383,
     "tasks": {
         "submitted": 3212,
@@ -164,17 +164,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0c5686d40> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.d1b094b3
-INFO [rhapsody] Registered session session.6703e208
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.6703e208.1793967734.telemetry.jsonl
-INFO [session.6703e208] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793967734.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.93c51cf3 (owner=rhapsody.ed71f5c7)
-INFO [sysinfo] Unregistered session session.93c51cf3
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.ed71f5c7)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.6703e208",
+    "session_id": "session.<redacted>",
     "duration_seconds": 48.045364,
     "tasks": {
         "submitted": 4562,
@@ -204,7 +204,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.6703e208",
+    "session_id": "session.<redacted>",
     "duration_seconds": 48.045364,
     "tasks": {
         "submitted": 4562,
@@ -243,17 +243,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a8897040> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.6703e208
-INFO [rhapsody] Registered session session.c406a6c8
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.c406a6c8.1793967784.telemetry.jsonl
-INFO [session.c406a6c8] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793967784.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.a067000f (owner=rhapsody.85b41f4f)
-INFO [sysinfo] Unregistered session session.a067000f
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.85b41f4f)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.c406a6c8",
+    "session_id": "session.<redacted>",
     "duration_seconds": 46.800363,
     "tasks": {
         "submitted": 3065,
@@ -283,7 +283,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.c406a6c8",
+    "session_id": "session.<redacted>",
     "duration_seconds": 46.800363,
     "tasks": {
         "submitted": 3065,
@@ -322,17 +322,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0c4d18d80> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.c406a6c8
-INFO [rhapsody] Registered session session.6ad8bde4
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.6ad8bde4.1793967832.telemetry.jsonl
-INFO [session.6ad8bde4] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793967832.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.6c077faa (owner=rhapsody.a3d08c67)
-INFO [sysinfo] Unregistered session session.6c077faa
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.a3d08c67)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.6ad8bde4",
+    "session_id": "session.<redacted>",
     "duration_seconds": 46.855567,
     "tasks": {
         "submitted": 3212,
@@ -362,7 +362,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.6ad8bde4",
+    "session_id": "session.<redacted>",
     "duration_seconds": 46.855567,
     "tasks": {
         "submitted": 3212,
@@ -401,17 +401,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a33fa100> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.6ad8bde4
-INFO [rhapsody] Registered session session.435e3c26
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.435e3c26.1793967881.telemetry.jsonl
-INFO [session.435e3c26] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793967881.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.7dfc3d15 (owner=rhapsody.70d20574)
-INFO [sysinfo] Unregistered session session.7dfc3d15
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.70d20574)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.435e3c26",
+    "session_id": "session.<redacted>",
     "duration_seconds": 49.730433,
     "tasks": {
         "submitted": 4562,
@@ -441,7 +441,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.435e3c26",
+    "session_id": "session.<redacted>",
     "duration_seconds": 49.730433,
     "tasks": {
         "submitted": 4562,
@@ -480,17 +480,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a37eed40> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.435e3c26
-INFO [rhapsody] Registered session session.2f36c672
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.2f36c672.1793967932.telemetry.jsonl
-INFO [session.2f36c672] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793967932.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.6d301abf (owner=rhapsody.f444a1d3)
-INFO [sysinfo] Unregistered session session.6d301abf
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.f444a1d3)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.2f36c672",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.505474,
     "tasks": {
         "submitted": 3065,
@@ -520,7 +520,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.2f36c672",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.505474,
     "tasks": {
         "submitted": 3065,
@@ -559,17 +559,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0c4176500> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.2f36c672
-INFO [rhapsody] Registered session session.cbc7e52b
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.cbc7e52b.1793967981.telemetry.jsonl
-INFO [session.cbc7e52b] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793967981.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.ab2f4c69 (owner=rhapsody.8b73e72c)
-INFO [sysinfo] Unregistered session session.ab2f4c69
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.8b73e72c)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.cbc7e52b",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.247595,
     "tasks": {
         "submitted": 3212,
@@ -599,7 +599,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.cbc7e52b",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.247595,
     "tasks": {
         "submitted": 3212,
@@ -638,17 +638,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a87a0980> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.cbc7e52b
-INFO [rhapsody] Registered session session.eb2b1bc6
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.eb2b1bc6.1793968030.telemetry.jsonl
-INFO [session.eb2b1bc6] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968030.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.0425625a (owner=rhapsody.fe10c3c5)
-INFO [sysinfo] Unregistered session session.0425625a
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.fe10c3c5)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.eb2b1bc6",
+    "session_id": "session.<redacted>",
     "duration_seconds": 48.801792,
     "tasks": {
         "submitted": 4562,
@@ -678,7 +678,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.eb2b1bc6",
+    "session_id": "session.<redacted>",
     "duration_seconds": 48.801792,
     "tasks": {
         "submitted": 4562,
@@ -717,17 +717,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0c4ea3f00> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.eb2b1bc6
-INFO [rhapsody] Registered session session.4c361836
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.4c361836.1793968080.telemetry.jsonl
-INFO [session.4c361836] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968080.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.45c7d110 (owner=rhapsody.0cd7c412)
-INFO [sysinfo] Unregistered session session.45c7d110
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.0cd7c412)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.4c361836",
+    "session_id": "session.<redacted>",
     "duration_seconds": 46.677559,
     "tasks": {
         "submitted": 3065,
@@ -757,7 +757,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.4c361836",
+    "session_id": "session.<redacted>",
     "duration_seconds": 46.677559,
     "tasks": {
         "submitted": 3065,
@@ -796,17 +796,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a24b9dc0> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.4c361836
-INFO [rhapsody] Registered session session.b7bb488e
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.b7bb488e.1793968129.telemetry.jsonl
-INFO [session.b7bb488e] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968129.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.60a8a0b4 (owner=rhapsody.b37820a0)
-INFO [sysinfo] Unregistered session session.60a8a0b4
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.b37820a0)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.b7bb488e",
+    "session_id": "session.<redacted>",
     "duration_seconds": 46.886306,
     "tasks": {
         "submitted": 3212,
@@ -836,7 +836,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.b7bb488e",
+    "session_id": "session.<redacted>",
     "duration_seconds": 46.886306,
     "tasks": {
         "submitted": 3212,
@@ -875,17 +875,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a05dfd00> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.b7bb488e
-INFO [rhapsody] Registered session session.9c8c5131
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.9c8c5131.1793968177.telemetry.jsonl
-INFO [session.9c8c5131] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968177.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.efa0bc05 (owner=rhapsody.e8e3f99c)
-INFO [sysinfo] Unregistered session session.efa0bc05
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.e8e3f99c)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.9c8c5131",
+    "session_id": "session.<redacted>",
     "duration_seconds": 48.747424,
     "tasks": {
         "submitted": 4562,
@@ -915,7 +915,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.9c8c5131",
+    "session_id": "session.<redacted>",
     "duration_seconds": 48.747424,
     "tasks": {
         "submitted": 4562,
@@ -954,17 +954,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a8154e00> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.9c8c5131
-INFO [rhapsody] Registered session session.7fadf7b4
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.7fadf7b4.1793968227.telemetry.jsonl
-INFO [session.7fadf7b4] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968227.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.a1113a23 (owner=rhapsody.2873b1df)
-INFO [sysinfo] Unregistered session session.a1113a23
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.2873b1df)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.7fadf7b4",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.54298,
     "tasks": {
         "submitted": 3065,
@@ -994,7 +994,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.7fadf7b4",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.54298,
     "tasks": {
         "submitted": 3065,
@@ -1033,17 +1033,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a3fed580> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.7fadf7b4
-INFO [rhapsody] Registered session session.5fdaa9ec
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.5fdaa9ec.1793968277.telemetry.jsonl
-INFO [session.5fdaa9ec] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968277.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.8ac6bc6b (owner=rhapsody.2ae02682)
-INFO [sysinfo] Unregistered session session.8ac6bc6b
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.2ae02682)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.5fdaa9ec",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.981801,
     "tasks": {
         "submitted": 3212,
@@ -1073,7 +1073,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.5fdaa9ec",
+    "session_id": "session.<redacted>",
     "duration_seconds": 47.981801,
     "tasks": {
         "submitted": 3212,
@@ -1112,17 +1112,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a1e11000> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.5fdaa9ec
-INFO [rhapsody] Registered session session.9d52f66a
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.9d52f66a.1793968326.telemetry.jsonl
-INFO [session.9d52f66a] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968326.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.e015c779 (owner=rhapsody.ab013463)
-INFO [sysinfo] Unregistered session session.e015c779
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.ab013463)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.9d52f66a",
+    "session_id": "session.<redacted>",
     "duration_seconds": 49.207682,
     "tasks": {
         "submitted": 4562,
@@ -1152,7 +1152,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.9d52f66a",
+    "session_id": "session.<redacted>",
     "duration_seconds": 49.207682,
     "tasks": {
         "submitted": 4562,
@@ -1191,17 +1191,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a2dbfbc0> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.9d52f66a
-INFO [rhapsody] Registered session session.465d4b50
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.465d4b50.1793968377.telemetry.jsonl
-INFO [session.465d4b50] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968377.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.9f6f379b (owner=rhapsody.bca042fc)
-INFO [sysinfo] Unregistered session session.9f6f379b
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.bca042fc)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.465d4b50",
+    "session_id": "session.<redacted>",
     "duration_seconds": 16.014148,
     "tasks": {
         "submitted": 1070,
@@ -1231,7 +1231,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.465d4b50",
+    "session_id": "session.<redacted>",
     "duration_seconds": 16.014148,
     "tasks": {
         "submitted": 1070,
@@ -1270,17 +1270,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a3755040> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.465d4b50
-INFO [rhapsody] Registered session session.cd485ebc
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.cd485ebc.1793968394.telemetry.jsonl
-INFO [session.cd485ebc] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968394.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.4e6f6978 (owner=rhapsody.47775808)
-INFO [sysinfo] Unregistered session session.4e6f6978
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.47775808)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.cd485ebc",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.925385,
     "tasks": {
         "submitted": 1071,
@@ -1310,7 +1310,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.cd485ebc",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.925385,
     "tasks": {
         "submitted": 1071,
@@ -1349,17 +1349,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a8d74d40> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.cd485ebc
-INFO [rhapsody] Registered session session.06caf56d
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.06caf56d.1793968412.telemetry.jsonl
-INFO [session.06caf56d] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968412.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.927fd5e0 (owner=rhapsody.d1c80145)
-INFO [sysinfo] Unregistered session session.927fd5e0
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.d1c80145)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.06caf56d",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.980041,
     "tasks": {
         "submitted": 1071,
@@ -1389,7 +1389,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.06caf56d",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.980041,
     "tasks": {
         "submitted": 1071,
@@ -1428,17 +1428,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a1ded000> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.06caf56d
-INFO [rhapsody] Registered session session.5475d40c
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.5475d40c.1793968429.telemetry.jsonl
-INFO [session.5475d40c] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968429.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.918ec0d9 (owner=rhapsody.1eff7e5d)
-INFO [sysinfo] Unregistered session session.918ec0d9
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.1eff7e5d)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.5475d40c",
+    "session_id": "session.<redacted>",
     "duration_seconds": 4.097897,
     "tasks": {
         "submitted": 270,
@@ -1468,7 +1468,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.5475d40c",
+    "session_id": "session.<redacted>",
     "duration_seconds": 4.097897,
     "tasks": {
         "submitted": 270,
@@ -1507,17 +1507,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0c55e7a80> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.5475d40c
-INFO [rhapsody] Registered session session.6c572e1e
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.6c572e1e.1793968435.telemetry.jsonl
-INFO [session.6c572e1e] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968435.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.f69db00e (owner=rhapsody.d3562bf3)
-INFO [sysinfo] Unregistered session session.f69db00e
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.d3562bf3)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.6c572e1e",
+    "session_id": "session.<redacted>",
     "duration_seconds": 3.933076,
     "tasks": {
         "submitted": 271,
@@ -1547,7 +1547,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.6c572e1e",
+    "session_id": "session.<redacted>",
     "duration_seconds": 3.933076,
     "tasks": {
         "submitted": 271,
@@ -1586,17 +1586,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0afc548c0> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.6c572e1e
-INFO [rhapsody] Registered session session.d3a3b853
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.d3a3b853.1793968440.telemetry.jsonl
-INFO [session.d3a3b853] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968440.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.94bd3132 (owner=rhapsody.0e6ce3a9)
-INFO [sysinfo] Unregistered session session.94bd3132
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.0e6ce3a9)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.d3a3b853",
+    "session_id": "session.<redacted>",
     "duration_seconds": 4.05443,
     "tasks": {
         "submitted": 271,
@@ -1626,7 +1626,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.d3a3b853",
+    "session_id": "session.<redacted>",
     "duration_seconds": 4.05443,
     "tasks": {
         "submitted": 271,
@@ -1665,17 +1665,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a1e86140> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.d3a3b853
-INFO [rhapsody] Registered session session.a2999b27
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.a2999b27.1793968446.telemetry.jsonl
-INFO [session.a2999b27] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968446.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.682cc4e5 (owner=rhapsody.c3f59b94)
-INFO [sysinfo] Unregistered session session.682cc4e5
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.c3f59b94)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.a2999b27",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.907282,
     "tasks": {
         "submitted": 1071,
@@ -1705,7 +1705,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.a2999b27",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.907282,
     "tasks": {
         "submitted": 1071,
@@ -1744,17 +1744,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a30dd2c0> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.a2999b27
-INFO [rhapsody] Registered session session.ae79ea47
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.ae79ea47.1793968464.telemetry.jsonl
-INFO [session.ae79ea47] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968464.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.a8b357b5 (owner=rhapsody.78dd714b)
-INFO [sysinfo] Unregistered session session.a8b357b5
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.78dd714b)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.ae79ea47",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.826386,
     "tasks": {
         "submitted": 1071,
@@ -1784,7 +1784,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.ae79ea47",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.826386,
     "tasks": {
         "submitted": 1071,
@@ -1823,17 +1823,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a1d47c80> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.ae79ea47
-INFO [rhapsody] Registered session session.2dbb2af3
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.2dbb2af3.1793968482.telemetry.jsonl
-INFO [session.2dbb2af3] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968482.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.87a2dcfd (owner=rhapsody.83caa764)
-INFO [sysinfo] Unregistered session session.87a2dcfd
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.83caa764)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.2dbb2af3",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.791042,
     "tasks": {
         "submitted": 1070,
@@ -1863,7 +1863,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.2dbb2af3",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.791042,
     "tasks": {
         "submitted": 1070,
@@ -1902,17 +1902,17 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0a8589dc0> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.2dbb2af3
-INFO [rhapsody] Registered session session.d8385939
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
 INFO No executor was provided. Falling back to default ThreadPoolExecutor
 INFO ThreadPoolExecutor execution backend started successfully
-INFO Telemetry checkpoint file: telemetry-output/session.d8385939.1793968499.telemetry.jsonl
-INFO [session.d8385939] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968499.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
 WARNING pynvml initialization failed on nid006481 — GPU metrics disabled: Driver Not Loaded
-INFO [sysinfo] Registered session session.b416077b (owner=rhapsody.53317ca4)
-INFO [sysinfo] Unregistered session session.b416077b
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.53317ca4)
+INFO [sysinfo] Unregistered session session.<redacted>
 INFO {
-    "session_id": "session.d8385939",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.783575,
     "tasks": {
         "submitted": 1070,
@@ -1942,7 +1942,7 @@ INFO {
     }
 }
 {
-    "session_id": "session.d8385939",
+    "session_id": "session.<redacted>",
     "duration_seconds": 15.783575,
     "tasks": {
         "submitted": 1070,
@@ -1981,7 +1981,7 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
 ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fd170d66610> at 0x7fd0c569d3c0> was created in a different Context
 INFO Concurrent execution backend shutdown complete
-INFO [rhapsody] Unregistered session session.d8385939
+INFO [rhapsody] Unregistered session session.<redacted>
 srun: forcing job termination
 srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
 [2026-11-06T12:35:19.276] error: *** STEP 60900891.0 ON nid006481 CANCELLED AT 2026-11-06T12:35:19 DUE to SIGNAL Killed ***

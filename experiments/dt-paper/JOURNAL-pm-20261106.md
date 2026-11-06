@@ -261,3 +261,21 @@ Times are local (PST) unless noted.
   client loop under a burst with the agent row alone). Per the contract
   the result is reported both ways (in-process and solo), not explained
   away.
+
+## Incident: DT session IDs in committed logs (redacted)
+
+- The broker / endpoint console logs committed with P4 (1b8523e), P6
+  (420f80b) and P7 (368ce76) contain `session.<8 hex>` IDs. Those in
+  `results/p6/broker-p6.console.log` are DT plugin sessions (bearer
+  credentials per the page); the endpoint logs carry rhapsody / sysinfo
+  plugin sessions. I ran the secret grep after pushing instead of before.
+- Exposure: none in practice. Every session belonged to a throwaway broker
+  on a compute node (127.0.0.1 or the node-internal hsn0 address), all
+  brokers are shut down, and their tokens and keys were never committed
+  (checked: no token value from `$W/tls/**` appears in any results file).
+- Fix: all six files redacted in place (`session.<redacted>`) in the next
+  commit. The IDs remain in the history of `exp/pm-batch-20261106`;
+  removing them needs a force-push, which this session may not do.
+  Open question for Andre: rewrite that branch's history, or leave it
+  (the sessions are dead).
+- From here on the secret grep runs before every commit of logs.
