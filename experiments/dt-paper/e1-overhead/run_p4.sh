@@ -25,13 +25,15 @@ URL=https://$IP0:$PORT
 echo "node0 $N0 ($IP0) node1 $N1  broker $URL"
 
 # throwaway credentials for this job (never committed)
-T=$W/tls; mkdir -p $T; chmod 700 $T
+T=$W/tls/p4-$SLURM_JOB_ID; mkdir -p $T; chmod 700 $W/tls $T
 openssl req -x509 -newkey rsa:4096 -nodes -days 7 -subj "/CN=dt-pm2" \
     -addext "subjectAltName=IP:127.0.0.1,IP:$IP0,DNS:localhost,DNS:$N0" \
     -keyout $T/broker_key.pem -out $T/broker_cert.pem 2>/dev/null
 python3 -c "import secrets; print(secrets.token_urlsafe(32))" > $T/broker.token
 chmod 600 $T/*
-source $W/env.sh   # picks up the token
+export RADICAL_ORBIT_BROKER_CERT=$T/broker_cert.pem
+export RADICAL_ORBIT_BROKER_KEY=$T/broker_key.pem
+export RADICAL_ORBIT_BROKER_TOKEN=$(cat $T/broker.token)
 
 touch $W/orbit-stamp
 RADICAL_ORBIT_LOG_FILE=$L/broker-p4.log \
