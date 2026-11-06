@@ -507,3 +507,18 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
   `pinn` from 392 s to the end (228 probes, p50 194 ms). It settled on the
   model that is also the cheapest by measurement. Isolation check empty;
   the endpoint again needed the KILL after TERM.
+- rhapsody tests (venv `$W/ve.rh`, Python 3.13, `pip install
+  ".[dev,dask,radical_pilot,telemetry,orbit]"`, non-editable): my first
+  full run hung because I left out CI's two `--ignore`s for the Dragon
+  tests; with CI's selection (`tests/unit tests/integration`, Dragon
+  ignored, `--timeout=120`): 403 passed, 14 skipped, 2 failed in
+  radical.pilot (`radical-pilot-bridge` not on PATH; with the venv bin on
+  PATH both skip). Pre-commit hooks on the changed files: docformatter
+  reflowed four docstrings (folded into the commit), then all pass.
+- rhapsody `fix/orbit-exec-stdout` = **65a55ff** (the reflowed 3b783b4),
+  pushed; **PR radical-cybertools/rhapsody#125** into main.
+- Open for Andre: xGFabric 3adefa8 (profiler `sys_write_bytes`) is
+  committed locally on fix/pinn-eval, validated by run 6, not pushed:
+  into PR #17? The P8b env runs rhapsody e491cd2 + this fix (worktree
+  `$W/rhapsody-p8b`, local branch p8b/e491cd2-stdout), not the pin.
+- Node-hours after P8b: m5290 3.44, m5290_g 1.56, total 5.00 of 100.
