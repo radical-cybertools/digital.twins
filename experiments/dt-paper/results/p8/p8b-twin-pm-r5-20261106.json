@@ -1,0 +1,1359 @@
+{
+ "provenance": {
+  "experiment": "E6 P8b WindField twin, real surrogates",
+  "harness": "p8b_client.py",
+  "time": "2026-11-06T10:20:30-0800",
+  "host": "nid001513",
+  "python": "3.12.13",
+  "digital_twins_commit": "29672a36af3931c7c5caecb556b0fb235d6e564f",
+  "xgfabric_commit": "438d0d32a160d6ddf326402eb0dcb1b43b3523ec",
+  "xgfabric_dirty": false,
+  "slurm_job": "60917315",
+  "engines": {
+   "engines": {
+    "inference": {
+     "endpoint_name": "dt_p8b_ep",
+     "backends": [
+      "concurrent"
+     ]
+    },
+    "learning": {
+     "endpoint_name": "dt_p8b_ep",
+     "backends": [
+      "concurrent"
+     ]
+    }
+   }
+  },
+  "args": {
+   "xgf": "/pscratch/sd/m/merzky/dt-pm2/xGFabric",
+   "runtime": 1080.0,
+   "probe": 3.0,
+   "timeout": 180.0,
+   "out": "/pscratch/sd/m/merzky/dt-pm2/digital_twins/experiments/dt-paper/results/p8/p8b-twin-pm-r5-20261106.json"
+  }
+ },
+ "probes": [
+  {
+   "t": 0.0023086071014404297,
+   "latency_s": 2.041292905807495,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 3.002445697784424,
+   "latency_s": 0.08607101440429688,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 6.002601146697998,
+   "latency_s": 0.023886919021606445,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 9.002744674682617,
+   "latency_s": 0.023274660110473633,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 12.005882263183594,
+   "latency_s": 1.609189748764038,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 15.005983114242554,
+   "latency_s": 0.024649858474731445,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 18.006099462509155,
+   "latency_s": 0.02490091323852539,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 21.006248235702515,
+   "latency_s": 0.025401592254638672,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 24.009896516799927,
+   "latency_s": 0.023745298385620117,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 27.010043621063232,
+   "latency_s": 0.024878501892089844,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 30.010194301605225,
+   "latency_s": 0.02456212043762207,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 33.010310888290405,
+   "latency_s": 0.025784015655517578,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 36.01461362838745,
+   "latency_s": 0.02452874183654785,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 39.01473832130432,
+   "latency_s": 0.025002479553222656,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 42.014909505844116,
+   "latency_s": 0.024025440216064453,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 45.01506757736206,
+   "latency_s": 0.025194406509399414,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 48.01867389678955,
+   "latency_s": 0.024035215377807617,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 51.018821001052856,
+   "latency_s": 0.024830341339111328,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 54.01895833015442,
+   "latency_s": 0.02579331398010254,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 57.019102334976196,
+   "latency_s": 0.0274350643157959,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 60.02300810813904,
+   "latency_s": 0.024500370025634766,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 63.023176193237305,
+   "latency_s": 0.025446653366088867,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 66.02329707145691,
+   "latency_s": 0.024870872497558594,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 69.02345585823059,
+   "latency_s": 0.025712013244628906,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 72.02803111076355,
+   "latency_s": 0.024416208267211914,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 75.02818441390991,
+   "latency_s": 0.0266721248626709,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 78.02832078933716,
+   "latency_s": 0.02580094337463379,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 81.02846693992615,
+   "latency_s": 0.025728940963745117,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 84.03275895118713,
+   "latency_s": 0.025193452835083008,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 87.03289866447449,
+   "latency_s": 0.026005029678344727,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 90.0330560207367,
+   "latency_s": 0.02561211585998535,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 93.03319883346558,
+   "latency_s": 0.025387048721313477,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 96.03725719451904,
+   "latency_s": 0.02395486831665039,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 99.03743052482605,
+   "latency_s": 0.024988412857055664,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 102.03758716583252,
+   "latency_s": 0.024698734283447266,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 105.0377266407013,
+   "latency_s": 0.024464130401611328,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 108.04176807403564,
+   "latency_s": 0.02309584617614746,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 111.04191136360168,
+   "latency_s": 0.025323867797851562,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 114.04204726219177,
+   "latency_s": 0.024290084838867188,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 117.04218792915344,
+   "latency_s": 0.024916410446166992,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 120.04630517959595,
+   "latency_s": 0.02390265464782715,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 123.0464403629303,
+   "latency_s": 0.025836467742919922,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 126.04656863212585,
+   "latency_s": 0.023877382278442383,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 129.0467381477356,
+   "latency_s": 0.024760007858276367,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 132.05089235305786,
+   "latency_s": 0.024325847625732422,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 135.05104899406433,
+   "latency_s": 0.02522754669189453,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 138.05121111869812,
+   "latency_s": 0.025107383728027344,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 141.05136632919312,
+   "latency_s": 0.024683237075805664,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 144.05529022216797,
+   "latency_s": 0.023349285125732422,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 147.0554473400116,
+   "latency_s": 0.028805017471313477,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 150.05556678771973,
+   "latency_s": 0.02495265007019043,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 153.05571603775024,
+   "latency_s": 0.025725841522216797,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 156.05938458442688,
+   "latency_s": 0.02398371696472168,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 159.05953073501587,
+   "latency_s": 0.025665283203125,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 162.0596649646759,
+   "latency_s": 0.02489471435546875,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 165.05981516838074,
+   "latency_s": 0.025131702423095703,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 168.06376147270203,
+   "latency_s": 0.023957014083862305,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 171.063903093338,
+   "latency_s": 0.024652957916259766,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 174.0640425682068,
+   "latency_s": 0.02475142478942871,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 177.06418180465698,
+   "latency_s": 0.024627685546875,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 180.0681028366089,
+   "latency_s": 0.024605751037597656,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 183.0682406425476,
+   "latency_s": 0.024833202362060547,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 186.06837916374207,
+   "latency_s": 0.025431394577026367,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 189.06851315498352,
+   "latency_s": 0.026537418365478516,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 192.07284688949585,
+   "latency_s": 0.023613452911376953,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 195.07299065589905,
+   "latency_s": 0.025552034378051758,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 198.0731225013733,
+   "latency_s": 0.027958154678344727,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 201.07325315475464,
+   "latency_s": 0.024147987365722656,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 204.07745003700256,
+   "latency_s": 0.023979663848876953,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 207.0775911808014,
+   "latency_s": 0.024808883666992188,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 210.0777611732483,
+   "latency_s": 0.02772355079650879,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 213.07793879508972,
+   "latency_s": 0.026006698608398438,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 216.08222889900208,
+   "latency_s": 0.02416682243347168,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 219.08232998847961,
+   "latency_s": 0.025125741958618164,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 222.0824432373047,
+   "latency_s": 0.02568840980529785,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 225.08258438110352,
+   "latency_s": 0.025667905807495117,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 228.08672070503235,
+   "latency_s": 0.024746179580688477,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 231.08686113357544,
+   "latency_s": 0.025849580764770508,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 234.0869996547699,
+   "latency_s": 0.025722026824951172,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 237.08715295791626,
+   "latency_s": 0.02534008026123047,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 240.09136581420898,
+   "latency_s": 0.02473592758178711,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 243.09149289131165,
+   "latency_s": 0.02573418617248535,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 246.09164357185364,
+   "latency_s": 0.025269746780395508,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 249.09178566932678,
+   "latency_s": 0.025243282318115234,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 252.09582471847534,
+   "latency_s": 0.02414870262145996,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 255.09594774246216,
+   "latency_s": 0.026674509048461914,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 258.0960614681244,
+   "latency_s": 0.025139570236206055,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 261.09617161750793,
+   "latency_s": 0.025461912155151367,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 264.1011118888855,
+   "latency_s": 0.024625062942504883,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 267.101261138916,
+   "latency_s": 0.024776220321655273,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 270.1014220714569,
+   "latency_s": 0.0255887508392334,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 273.10157084465027,
+   "latency_s": 0.025956153869628906,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 276.1059744358063,
+   "latency_s": 0.024231910705566406,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 279.1061227321625,
+   "latency_s": 0.02577996253967285,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 282.10626125335693,
+   "latency_s": 0.02722024917602539,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 285.10640144348145,
+   "latency_s": 0.025182723999023438,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 288.1107838153839,
+   "latency_s": 0.023548603057861328,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 291.11092829704285,
+   "latency_s": 0.025883913040161133,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 294.11108899116516,
+   "latency_s": 0.02489614486694336,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 297.11124563217163,
+   "latency_s": 0.024848222732543945,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 300.1154217720032,
+   "latency_s": 0.022989749908447266,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 303.11554646492004,
+   "latency_s": 0.024429798126220703,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 306.11568570137024,
+   "latency_s": 0.023988008499145508,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 309.1158404350281,
+   "latency_s": 0.024480581283569336,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 312.12007761001587,
+   "latency_s": 0.02343916893005371,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 315.12020683288574,
+   "latency_s": 0.025028228759765625,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 318.12031602859497,
+   "latency_s": 0.024854183197021484,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 321.120423078537,
+   "latency_s": 0.025939226150512695,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 324.1246211528778,
+   "latency_s": 0.023433685302734375,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 327.1247339248657,
+   "latency_s": 0.025127172470092773,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 330.12484645843506,
+   "latency_s": 0.024317502975463867,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 333.12496423721313,
+   "latency_s": 0.024964570999145508,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 336.12917137145996,
+   "latency_s": 0.02294135093688965,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 339.1293168067932,
+   "latency_s": 0.024843692779541016,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 342.12945771217346,
+   "latency_s": 0.025133132934570312,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 345.12959265708923,
+   "latency_s": 0.025484323501586914,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 348.13434410095215,
+   "latency_s": 0.02300095558166504,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 351.13450860977173,
+   "latency_s": 0.023906469345092773,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 354.1346483230591,
+   "latency_s": 0.023453712463378906,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 357.1347963809967,
+   "latency_s": 0.02489924430847168,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 360.13960313796997,
+   "latency_s": 0.02395486831665039,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 363.13973689079285,
+   "latency_s": 0.02433323860168457,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 366.1398346424103,
+   "latency_s": 0.02507185935974121,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 369.1399447917938,
+   "latency_s": 0.02337193489074707,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 372.14431715011597,
+   "latency_s": 0.022928476333618164,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 375.1444454193115,
+   "latency_s": 0.023566246032714844,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 378.144572019577,
+   "latency_s": 0.0235137939453125,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 381.1446979045868,
+   "latency_s": 0.023117780685424805,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 384.1492292881012,
+   "latency_s": 0.022867202758789062,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 387.1493709087372,
+   "latency_s": 0.02532672882080078,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 390.14947533607483,
+   "latency_s": 0.024886131286621094,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 393.14957189559937,
+   "latency_s": 0.024310588836669922,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 396.15405678749084,
+   "latency_s": 0.02330160140991211,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 399.15418767929077,
+   "latency_s": 0.03320670127868652,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 402.1543035507202,
+   "latency_s": 0.023906946182250977,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 405.15443325042725,
+   "latency_s": 0.025043010711669922,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 408.15865755081177,
+   "latency_s": 0.02378702163696289,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 411.15875482559204,
+   "latency_s": 0.7436246871948242,
+   "arch": "fno",
+   "error": null
+  },
+  {
+   "t": 414.15890622138977,
+   "latency_s": 8.558161973953247,
+   "arch": "fno",
+   "error": null
+  }
+ ],
+ "states": [
+  {
+   "t": 2.86102294921875e-06,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1
+   },
+   "last_error": null
+  },
+  {
+   "t": 12.00281810760498,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 4
+   },
+   "last_error": null
+  },
+  {
+   "t": 24.00635528564453,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 8
+   },
+   "last_error": null
+  },
+  {
+   "t": 36.01042032241821,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 12
+   },
+   "last_error": null
+  },
+  {
+   "t": 48.01519799232483,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 16
+   },
+   "last_error": null
+  },
+  {
+   "t": 60.0191376209259,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 20
+   },
+   "last_error": null
+  },
+  {
+   "t": 72.02357578277588,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 24
+   },
+   "last_error": null
+  },
+  {
+   "t": 84.02857446670532,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 28
+   },
+   "last_error": null
+  },
+  {
+   "t": 96.03331661224365,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 32
+   },
+   "last_error": null
+  },
+  {
+   "t": 108.03783440589905,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 36
+   },
+   "last_error": null
+  },
+  {
+   "t": 120.04228353500366,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 40
+   },
+   "last_error": null
+  },
+  {
+   "t": 132.04688096046448,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 44
+   },
+   "last_error": null
+  },
+  {
+   "t": 144.05147290229797,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 48
+   },
+   "last_error": null
+  },
+  {
+   "t": 156.05580925941467,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 52
+   },
+   "last_error": null
+  },
+  {
+   "t": 168.0599262714386,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 56
+   },
+   "last_error": null
+  },
+  {
+   "t": 180.06429362297058,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 60
+   },
+   "last_error": null
+  },
+  {
+   "t": 192.06861448287964,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 64
+   },
+   "last_error": null
+  },
+  {
+   "t": 204.0733528137207,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 68
+   },
+   "last_error": null
+  },
+  {
+   "t": 216.07801508903503,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 72
+   },
+   "last_error": null
+  },
+  {
+   "t": 228.08268666267395,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 76
+   },
+   "last_error": null
+  },
+  {
+   "t": 240.08729457855225,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 80
+   },
+   "last_error": null
+  },
+  {
+   "t": 252.09187388420105,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 84
+   },
+   "last_error": null
+  },
+  {
+   "t": 264.0962975025177,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 88
+   },
+   "last_error": null
+  },
+  {
+   "t": 276.10168075561523,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 92
+   },
+   "last_error": null
+  },
+  {
+   "t": 288.1065003871918,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 96
+   },
+   "last_error": null
+  },
+  {
+   "t": 300.1113221645355,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 100
+   },
+   "last_error": null
+  },
+  {
+   "t": 312.11595153808594,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 104
+   },
+   "last_error": null
+  },
+  {
+   "t": 324.1205017566681,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 108
+   },
+   "last_error": null
+  },
+  {
+   "t": 336.12504053115845,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 112
+   },
+   "last_error": null
+  },
+  {
+   "t": 348.12969064712524,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 116
+   },
+   "last_error": null
+  },
+  {
+   "t": 360.13491702079773,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 120
+   },
+   "last_error": null
+  },
+  {
+   "t": 372.1400420665741,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 124
+   },
+   "last_error": null
+  },
+  {
+   "t": 384.14476680755615,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 128
+   },
+   "last_error": null
+  },
+  {
+   "t": 396.1496434211731,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 132
+   },
+   "last_error": null
+  },
+  {
+   "t": 408.15453004837036,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 136
+   },
+   "last_error": null
+  },
+  {
+   "t": 422.71715688705444,
+   "state": "failed",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 139
+   },
+   "last_error": "RuntimeError: failed with unknown error"
+  }
+ ],
+ "summary": {
+  "na": {
+   "n": 137,
+   "p50_ms": 24.878501892089844,
+   "min_ms": 22.867202758789062,
+   "max_ms": 2041.2929058074951
+  },
+  "fno": {
+   "n": 2,
+   "p50_ms": 4650.893330574036,
+   "min_ms": 743.6246871948242,
+   "max_ms": 8558.161973953247
+  }
+ },
+ "first_seen_s": {
+  "na": 0.0023086071014404297,
+  "fno": 411.15875482559204
+ }
+}

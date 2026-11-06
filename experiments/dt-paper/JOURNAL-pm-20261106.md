@@ -484,3 +484,16 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
 - Slip: I switched branches in the rhapsody checkout while the full unit
   suite ran from it in the background; reverted within a minute (the suite
   runs against the installed package; the worktree is used from then on).
+- Run 5, job 60917315 (gpu_debug, with the rhapsody stdout fix): the
+  stack fix works: the Pi predictor's executable training task completes
+  ("Baseline endpoint model MAE: 0.456"), the agent profiles its first
+  model (profiler ran, `inf.json` staged). Then the predictor's
+  executable inference `tasks.profiler.endpoint_eval` failed on the
+  endpoint (`failed with unknown error`); reproduced by hand on the staged
+  files: `KeyError: 'sys_write_bytes'`. Cause (xGFabric): `inproc.py`
+  `profile_call` omits `sys_write_bytes`, which endpoint_eval /
+  endpoint_trainer read and data.csv carries; the appended training rows
+  were also one column short. Fix, local only: xGFabric 3adefa8 (inproc
+  emits `sys_write_bytes` from `write_chars`); by hand the eval then
+  predicts 5.40 s for that profile. Teardown: the endpoint ignored TERM and
+  was killed after 15 s; isolation check ran, empty. Run 6 uses the fix.
