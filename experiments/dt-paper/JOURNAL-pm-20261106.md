@@ -305,3 +305,13 @@ Times are local (PST) unless noted.
   TAG); job 60901615 on gpu_debug (`-q debug -C gpu`, 30 min): GPU x 3
   repeats per model, CPU x 1 with a 60 s budget per loop, files tagged
   `-dbg`. 60898696 stays queued for the full CPU comparison.
+- Debug job 60901615 (nid001221, 1:18) failed every run: (1) RecursionError
+  in xGFabric's lazy `tasks/do_*/__init__.py` (`__getattr__` doing
+  `from . import main`) when the harness did `from tasks.do_fno import
+  inference`; fixed in the harness with `importlib.import_module`. (2) TF
+  printed "Cannot dlopen some GPU libraries", GPUs: [] (the run was
+  correctly flagged as a failed GPU run). Decision: `run_p8a.sbatch` now
+  probes the GPU first with full TF logging and, if TF sees none, adds the
+  env's own pip CUDA wheel directories (`site-packages/nvidia/*/lib`, not
+  `/usr/lib64`) to `LD_LIBRARY_PATH` and probes again; it stops before the
+  benchmark if both fail.

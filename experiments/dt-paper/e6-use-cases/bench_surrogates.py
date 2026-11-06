@@ -103,8 +103,13 @@ def main() -> int:
     y = np.linspace(8.1, 82.1, 38)
     pts = np.meshgrid(x, y)
 
+    # import_module, not `from tasks.do_x import inference`: the package's
+    # lazy PEP 562 `__getattr__` (`from . import main`) recurses when a
+    # from-import probes it for the submodule
+    import importlib
+
     if args.model == "fno":
-        from tasks.do_fno import inference as m
+        m = importlib.import_module("tasks.do_fno.inference")
         d = Path(args.models) / "fno/0/results"
         weights, meta_file = d / "model.weights.h5", d / "model_meta.json"
 
@@ -117,7 +122,7 @@ def main() -> int:
             return [m.fno_predict_field(model, meta, xg, yg, xl, yl, pts,
                                         args.wind, z) for z in (1, 3, 5)]
     else:
-        from tasks.do_pinn import inference as m
+        m = importlib.import_module("tasks.do_pinn.inference")
         d = Path(args.models) / "pinn/0/results"
         weights = d / "pinn.weights.h5"
         meta = json.loads((d / "pinn.model_meta.json").read_text())

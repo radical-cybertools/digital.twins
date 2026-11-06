@@ -27,6 +27,23 @@ mkdir -p $R
 nvidia-smi -L | tee $R/nvidia-smi-$SLURM_JOB_ID.txt
 echo "DEVS=${DEVS:-gpu cpu} REPS=${REPS:-3} CPU_REPS=${CPU_REPS:-3} BUDGET=${BUDGET:-240} TAG=${TAG:-}"
 
+# GPU probe: as is first; if TF sees no GPU, add the env's own pip CUDA
+# wheel libraries (nvidia/*/lib) -- never /usr/lib64 -- and probe again
+probe() {
+  CUDA_VISIBLE_DEVICES=0 TF_CPP_MIN_LOG_LEVEL=0 srun -N1 -n1 -c 8 --gpus=1 \
+    $ENV/bin/python -c "import tensorflow as tf; print('NGPU', len(tf.config.list_physical_devices('GPU')))" \
+    > $R/gpu-probe-$1$TAG.log 2>&1
+  grep -h "^NGPU" $R/gpu-probe-$1$TAG.log
+}
+TAG=${TAG:-}
+if ! probe plain | grep -q "NGPU [1-9]"; then
+  NV=$(ls -d $ENV/lib/python3.12/site-packages/nvidia/*/lib | paste -sd:)
+  export LD_LIBRARY_PATH="$NV${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  echo "TF saw no GPU as is; LD_LIBRARY_PATH += env nvidia wheel libs"
+  grep -h -i -E "could not load|dlopen|cannot open" $R/gpu-probe-plain$TAG.log | head -5
+  probe wheels | grep -q "NGPU [1-9]" || { echo "GPU probe failed twice"; grep -h -i -E "could not load|dlopen|cannot open|error" $R/gpu-probe-wheels$TAG.log | head -10; exit 4; }
+fi
+echo "GPU probe ok: $(grep -h ^NGPU $R/gpu-probe-*$TAG.log | tail -1)"
 T=${TAG:-}
 BUDGET=${BUDGET:-240}
 run() {  # model device rep
