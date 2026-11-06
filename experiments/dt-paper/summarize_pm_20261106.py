@@ -189,7 +189,7 @@ def p7():
     out = {}
     for layout in ("local", "orbit-cross", "orbit-loop"):
         pts = {}
-        for f, d in load(f"p7/update-pm-{layout}-*-r*-{D}.json"):
+        for f, d in load(f"p7/update-pm-{layout}*-r*-{D}.json"):
             for pt in d["points"]:
                 pts.setdefault(pt["interval_s"], []).append(pt)
         if not pts:

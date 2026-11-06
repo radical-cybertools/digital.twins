@@ -204,3 +204,15 @@ Times are local (PST) unless noted.
   twins (2,681 req/s, p50 11.07 ms), saturates at 64 (2,812 req/s, p50
   20.9 ms). E2b: max sustainable about 8k inputs/s total for K = 4-16,
   5k at K=1, 6.4k at K=32; no tuple dropped or misaligned at any rate.
+
+## P7: E4 model-update propagation (done, preliminary)
+
+- New harness `e4-hot-swap/bench_model_update.py`. Decision: the model
+  publisher is the investigator's own main loop (no learner), so only the
+  publish -> inference half is timed; the learner half is P3.
+- Local: job 60900442 (regular, pool 8, 3 repeats): answered p50 16.2-16.7
+  ms at 1 s / 100 ms / 10 ms intervals; at 10 ms 93.6 % of versions seen.
+- ORBIT: `run_p7_orbit.sh` (P4 layout, broker `--plugins dt`, per-job TLS,
+  own stamp), job 60901098 (2 nodes, nid007062/007071): cross-node 21.9-22.4
+  ms, loopback 21.1-22.2 ms, inference 14.5-15.0 ms; at 10 ms 66-68 % seen.
+  Isolation check empty.
