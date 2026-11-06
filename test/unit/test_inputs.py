@@ -3,6 +3,7 @@
 import asyncio
 
 import pytest
+import zmq
 
 from digitaltwin import (
     CODEC_CLOUDPICKLE,
@@ -182,3 +183,70 @@ def test_unknown_codec_is_refused():
         encode_payload({}, "yaml")
     with pytest.raises(ValueError):
         decode_payload(b"{}", "yaml")
+
+
+# -- a burst right after open() is not lost (#40) ------------------------------
+
+async def test_burst_right_after_open_reaches_the_twin(broker, stream_clients,
+                                                      no_task_leaks):
+    """No settle sleep: `open()` waits until the twin's subscription has
+    reached the publisher, so the first message already arrives."""
+
+    twin, received = await _twin(stream_clients, "twin-a")
+    publisher = await _publisher(broker)
+
+    try:
+        for value in range(3):
+            await publisher.publish({"value": value})
+
+        await _wait_for(received, 3)
+        assert received == [{"value": value} for value in range(3)]
+
+    finally:
+        await publisher.close()
+        await twin.stop()
+
+
+async def test_open_without_subscriber_returns_after_ready_timeout(broker):
+    config = PubSubConfig(None, *broker.get_connection_str())
+    loop = asyncio.get_running_loop()
+
+    t0 = loop.time()
+    publisher = await ChannelPublisher.open("nobody/listens", config=config,
+                                            timeout=10.0, ready_timeout=0.3)
+    elapsed = loop.time() - t0
+
+    try:
+        assert 0.25 <= elapsed < 5.0
+        await publisher.publish({"value": 1})     # still usable
+    finally:
+        await publisher.close()
+
+
+async def test_a_shorter_channel_does_not_satisfy_the_wait(broker, stream_clients):
+    """Delivery is by exact topic: a twin on `sensors` receives nothing
+    published on `sensors/temperature`, so it must not end the wait."""
+
+    twin, _ = await _twin(stream_clients, "twin-a", channel="sensors")
+    config = PubSubConfig(None, *broker.get_connection_str())
+    loop = asyncio.get_running_loop()
+
+    try:
+        t0 = loop.time()
+        publisher = await ChannelPublisher.open(
+            "sensors/temperature", config=config, timeout=10.0, ready_timeout=0.3)
+        assert loop.time() - t0 >= 0.25
+        await publisher.close()
+    finally:
+        await twin.stop()
+
+
+async def test_ready_timeout_zero_skips_the_wait(broker):
+    config = PubSubConfig(None, *broker.get_connection_str())
+
+    publisher = await ChannelPublisher.open("nobody/listens", config=config,
+                                            timeout=10.0, ready_timeout=0)
+    try:
+        assert publisher._backend.pub_soc.type == zmq.PUB
+    finally:
+        await publisher.close()
