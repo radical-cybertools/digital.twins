@@ -315,3 +315,14 @@ Times are local (PST) unless noted.
   env's own pip CUDA wheel directories (`site-packages/nvidia/*/lib`, not
   `/usr/lib64`) to `LD_LIBRARY_PATH` and probes again; it stops before the
   benchmark if both fail.
+- Debug job 60901870 (nid003257, gpu_debug): plain probe no GPU, with the
+  env's nvidia wheel libs NGPU 1; FNO / PINN on GPU x 3 and CPU x 1, all
+  rc=0, no loop hit its budget. Job 60902010 (gpu_debug): CPU x 3 per
+  model (consistent with the single CPU run). Cancelled the 2 h
+  gpu_regular job 60898696 (never started).
+- Result: warm field FNO 96.8 ms GPU / 122.0 ms CPU, PINN 13.1 / 23.4 ms;
+  reload + field 446 / 491 ms and 77.7 / 87.4 ms; cold 8.0 / 6.2 s and
+  5.9 / 4.5 s. The "54 s per inference on CPU" is not reproduced (open
+  question where it came from). The GPU gains 1.1-1.8x; rebuilding the
+  model per call costs 4.6-6x the warm field.
+- P8: P8a done, P8b skipped (see above).

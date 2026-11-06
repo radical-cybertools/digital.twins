@@ -1,0 +1,4 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1793970489.830510  264919 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+[pinn] TF 2.21.0  GPUs: []
+[pinn] gpus=0 cold 4.38s  reload p50 86.0 ms  warm p50 22.14 ms
