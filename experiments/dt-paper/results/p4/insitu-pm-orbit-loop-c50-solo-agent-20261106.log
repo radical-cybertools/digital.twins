@@ -1,0 +1,4 @@
+backend: orbit dt_p4_ep0
+DT agent + selector          n=1000  mean=  14.53ms  p50=  14.49  p90=  15.06  p99=  15.69  max=  19.12
+DT agent + selector          50 concurrent requests in 80.2ms (624 req/s)
+results: experiments/dt-paper/results/p4/insitu-pm-orbit-loop-c50-solo-agent-20261106.json

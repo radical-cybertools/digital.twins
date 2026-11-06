@@ -1,0 +1,42 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm2/orbit-logs/broker-p7.log
+[Broker] using     cert  at /pscratch/sd/m/merzky/dt-pm2/tls/p7-60901098/broker_cert.pem
+[Broker] using     token from $RADICAL_ORBIT_BROKER_TOKEN
+[Broker] listening       on https://10.249.22.61:8331
+
+  On Client:
+    export RADICAL_ORBIT_BROKER_URL=https://10.249.22.61:8331
+    export RADICAL_ORBIT_BROKER_TOKEN=<the configured token>
+    mkdir -p ~/.radical/orbit && scp 10.249.22.61:/pscratch/sd/m/merzky/dt-pm2/tls/p7-60901098/broker_cert.pem ~/.radical/orbit/broker_cert.pem
+
+  On Endpoint:
+    export RADICAL_ORBIT_BROKER_URL=https://10.249.22.61:8331
+    mkdir -p ~/.radical/orbit && scp 10.249.22.61:/pscratch/sd/m/merzky/dt-pm2/tls/p7-60901098/broker_cert.pem ~/.radical/orbit/broker_cert.pem
+
+INFO:     Started server process [1629248]
+INFO:     Waiting for application startup.
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['dt']
+INFO [PluginHost] Loaded plugin: dt
+INFO [Broker] hosted plugins: ['dt']
+INFO:     Application startup complete.
+INFO:     Uvicorn running on https://10.249.22.61:8331 (Press CTRL+C to quit)
+INFO:     10.249.22.65:34436 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.22.61:35886 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.22.61:48802 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.22.61:33554 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.22.61:59000 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.22.61:44996 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.22.61:51710 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.22.61:46674 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1629248]

@@ -1,0 +1,15 @@
+engine  inproc  batch=   1          44 msg/s
+engine  inproc  batch=   2          91 msg/s
+engine  inproc  batch=   5         226 msg/s
+engine  inproc  batch=  10         459 msg/s
+engine  inproc  batch=  20         929 msg/s
+engine  inproc  batch=  50        2356 msg/s
+engine  inproc  batch= 100        4414 msg/s
+engine  zmq     batch=   1          45 msg/s
+engine  zmq     batch=   2          91 msg/s
+engine  zmq     batch=   5         224 msg/s
+engine  zmq     batch=  10         454 msg/s
+engine  zmq     batch=  20         891 msg/s
+engine  zmq     batch=  50        2053 msg/s
+engine  zmq     batch= 100        3925 msg/s
+wrote experiments/dt-paper/results/p2/learner-engine-pool256-r2-20261106.json

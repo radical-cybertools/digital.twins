@@ -15,14 +15,25 @@ and two task payloads:
   - engine:  real no-op function tasks through asyncflow +
              ConcurrentExecutionBackend(ProcessPoolExecutor)
 
-Writes results to streaming_perf.json (plot with plot_streaming_perf.py).
-Self-contained: spawns its own broker process.
+Writes results to streaming_perf.json, or to --out (plot with
+plot_streaming_perf.py).  Self-contained: spawns its own broker process.
+
+    # all cells, default pool (ProcessPoolExecutor() = os.cpu_count() workers)
+    python streaming_learner_perf.py
+    # engine rows only, 8 workers
+    python streaming_learner_perf.py --modes engine --workers 8 --out p2.json
 """
 
+import argparse
 import asyncio
 import json
 import multiprocessing
+import os
+import platform
+import socket
+import subprocess
 import time
+from pathlib import Path
 from unittest.mock import MagicMock
 
 from radical.asyncflow import WorkflowEngine
@@ -128,17 +139,42 @@ async def run_zmq(batch_size, mode, flow):
     return n / elapsed
 
 
-async def main():
+def provenance(args) -> dict:
+    root = Path(__file__).resolve().parents[3]
+
+    def git(*cmd):
+        try:
+            return subprocess.check_output(["git", "-C", str(root), *cmd],
+                                           text=True).strip()
+        except Exception:
+            return None
+
+    return {
+        "experiment": "E1 ROSE streaming learner throughput",
+        "harness": Path(__file__).name,
+        "time": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "host": socket.gethostname(),
+        "python": platform.python_version(),
+        "digital_twins_commit": git("rev-parse", "HEAD"),
+        "digital_twins_dirty": bool(git("status", "--porcelain", "--", "src")),
+        "backend": f"local concurrent pool ({args.workers or os.cpu_count()} workers)",
+        "cpu_count": os.cpu_count(),
+        "slurm_job": os.environ.get("SLURM_JOB_ID"),
+        "args": vars(args),
+    }
+
+
+async def main(args):
     from concurrent.futures import ProcessPoolExecutor
 
     from rhapsody.backends import ConcurrentExecutionBackend
 
-    exe = await ConcurrentExecutionBackend(ProcessPoolExecutor())
+    exe = await ConcurrentExecutionBackend(ProcessPoolExecutor(args.workers))
     flow = await WorkflowEngine.create(backend=exe)
 
     results = {}
-    for mode in ("stub", "engine"):
-        for feed in ("inproc", "zmq"):
+    for mode in args.modes:
+        for feed in args.feeds:
             run = run_inproc if feed == "inproc" else run_zmq
             rates = []
             for bs in BATCH_SIZES:
@@ -148,9 +184,10 @@ async def main():
             results[f"{mode}/{feed}"] = rates
 
     results["batch_sizes"] = BATCH_SIZES
-    with open("streaming_perf.json", "w") as f:
+    results["provenance"] = provenance(args)
+    with open(args.out, "w") as f:
         json.dump(results, f, indent=2)
-    print("wrote streaming_perf.json")
+    print(f"wrote {args.out}")
 
     await flow.shutdown()
 
@@ -162,10 +199,22 @@ def _run_broker():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--workers", type=int, default=None,
+                        help="process pool size (default: ProcessPoolExecutor() "
+                             "default, os.cpu_count())")
+    parser.add_argument("--modes", default="stub,engine")
+    parser.add_argument("--feeds", default="inproc,zmq")
+    parser.add_argument("--out", default="streaming_perf.json")
+    args = parser.parse_args()
+    args.modes = [m for m in args.modes.split(",") if m]
+    args.feeds = [f for f in args.feeds.split(",") if f]
+
     broker_proc = multiprocessing.Process(target=_run_broker, daemon=True)
     broker_proc.start()
     time.sleep(0.5)
     try:
-        asyncio.run(main())
+        asyncio.run(main(args))
     finally:
         broker_proc.terminate()

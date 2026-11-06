@@ -1,0 +1,1469 @@
+{
+ "provenance": {
+  "experiment": "E6 P8b WindField twin, real surrogates",
+  "harness": "p8b_client.py",
+  "time": "2026-11-06T05:31:22-0800",
+  "host": "nid001300",
+  "python": "3.12.13",
+  "digital_twins_commit": "3733bc6d0056f41a48ed0a69aa959d6e7d4c0692",
+  "xgfabric_commit": "0ac3f59c148bb3bdc759c3d69223826239a0aab3",
+  "xgfabric_dirty": false,
+  "slurm_job": "60902704",
+  "engines": {
+   "engines": {
+    "inference": {
+     "endpoint_name": "dt_p8b_ep",
+     "backends": [
+      "concurrent"
+     ]
+    },
+    "learning": {
+     "endpoint_name": "dt_p8b_ep",
+     "backends": [
+      "concurrent"
+     ]
+    }
+   }
+  },
+  "args": {
+   "xgf": "/pscratch/sd/m/merzky/dt-pm2/xGFabric",
+   "runtime": 1200.0,
+   "probe": 3.0,
+   "timeout": 180.0,
+   "out": "/pscratch/sd/m/merzky/dt-pm2/digital_twins/experiments/dt-paper/results/p8/p8b-twin-pm-20261106.json"
+  }
+ },
+ "probes": [
+  {
+   "t": 0.0022284984588623047,
+   "latency_s": 0.029854536056518555,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 3.002365827560425,
+   "latency_s": 0.025445222854614258,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 6.002540111541748,
+   "latency_s": 0.025610685348510742,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 9.00270700454712,
+   "latency_s": 0.02482771873474121,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 12.005410194396973,
+   "latency_s": 0.026406288146972656,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 15.005503416061401,
+   "latency_s": 0.02645087242126465,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 18.005661010742188,
+   "latency_s": 0.6707334518432617,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 21.00580358505249,
+   "latency_s": 0.0276641845703125,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 24.00961208343506,
+   "latency_s": 0.024755477905273438,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 27.009753704071045,
+   "latency_s": 0.02545452117919922,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 30.00989031791687,
+   "latency_s": 0.024969816207885742,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 33.01001524925232,
+   "latency_s": 0.02603912353515625,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 36.013225078582764,
+   "latency_s": 0.024372339248657227,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 39.01333451271057,
+   "latency_s": 0.02446436882019043,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 42.01346278190613,
+   "latency_s": 0.024003267288208008,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 45.013574838638306,
+   "latency_s": 0.025044679641723633,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 48.01703715324402,
+   "latency_s": 0.023653745651245117,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 51.017152547836304,
+   "latency_s": 0.30556774139404297,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 54.017256021499634,
+   "latency_s": 0.024754047393798828,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 57.01735734939575,
+   "latency_s": 0.02581501007080078,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 60.02098727226257,
+   "latency_s": 0.024254560470581055,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 63.02113151550293,
+   "latency_s": 0.025265216827392578,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 66.02125883102417,
+   "latency_s": 0.024902820587158203,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 69.02138900756836,
+   "latency_s": 0.024549007415771484,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 72.02528357505798,
+   "latency_s": 0.0245969295501709,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 75.02539300918579,
+   "latency_s": 0.02472090721130371,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 78.02550673484802,
+   "latency_s": 0.02513599395751953,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 81.0256335735321,
+   "latency_s": 0.02386951446533203,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 84.02942204475403,
+   "latency_s": 0.024374008178710938,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 87.02956938743591,
+   "latency_s": 0.024530887603759766,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 90.02968549728394,
+   "latency_s": 0.025206565856933594,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 93.02979874610901,
+   "latency_s": 0.024893522262573242,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 96.03349351882935,
+   "latency_s": 0.02378559112548828,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 99.03365755081177,
+   "latency_s": 0.02414250373840332,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 102.03378820419312,
+   "latency_s": 0.024637937545776367,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 105.03394961357117,
+   "latency_s": 0.025454044342041016,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 108.03778004646301,
+   "latency_s": 0.024149179458618164,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 111.03793931007385,
+   "latency_s": 0.025208234786987305,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 114.03806638717651,
+   "latency_s": 0.02359914779663086,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 117.0382068157196,
+   "latency_s": 0.025156021118164062,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 120.04196619987488,
+   "latency_s": 0.02306222915649414,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 123.04211735725403,
+   "latency_s": 0.028187990188598633,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 126.04225134849548,
+   "latency_s": 0.3515598773956299,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 129.04238104820251,
+   "latency_s": 0.024779796600341797,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 132.0464518070221,
+   "latency_s": 0.02525019645690918,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 135.04657626152039,
+   "latency_s": 0.024571657180786133,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 138.046692609787,
+   "latency_s": 0.02442193031311035,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 141.0468349456787,
+   "latency_s": 0.025646209716796875,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 144.05073857307434,
+   "latency_s": 0.024166584014892578,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 147.05085349082947,
+   "latency_s": 0.1922464370727539,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 150.0509774684906,
+   "latency_s": 0.025119781494140625,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 153.05116391181946,
+   "latency_s": 0.024576902389526367,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 156.05505871772766,
+   "latency_s": 0.02382373809814453,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 159.0552043914795,
+   "latency_s": 0.02447056770324707,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 162.0553503036499,
+   "latency_s": 0.024794816970825195,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 165.05548644065857,
+   "latency_s": 0.02399134635925293,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 168.0593626499176,
+   "latency_s": 0.024736404418945312,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 171.05951285362244,
+   "latency_s": 0.18857693672180176,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 174.059641122818,
+   "latency_s": 0.024764299392700195,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 177.0598270893097,
+   "latency_s": 0.026314973831176758,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 180.063884973526,
+   "latency_s": 0.024498462677001953,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 183.0640470981598,
+   "latency_s": 0.025457143783569336,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 186.06417059898376,
+   "latency_s": 0.024937868118286133,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 189.06429052352905,
+   "latency_s": 0.026028156280517578,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 192.06871891021729,
+   "latency_s": 0.024304866790771484,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 195.06889867782593,
+   "latency_s": 0.025220870971679688,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 198.0691213607788,
+   "latency_s": 0.0255279541015625,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 201.06929302215576,
+   "latency_s": 0.026593446731567383,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 204.07389903068542,
+   "latency_s": 0.02300882339477539,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 207.07407355308533,
+   "latency_s": 0.025850534439086914,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 210.07421708106995,
+   "latency_s": 0.024517297744750977,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 213.07434391975403,
+   "latency_s": 0.024700641632080078,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 216.0788552761078,
+   "latency_s": 0.027356386184692383,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 219.07896423339844,
+   "latency_s": 0.02425551414489746,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 222.07907557487488,
+   "latency_s": 0.024442195892333984,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 225.07918405532837,
+   "latency_s": 0.023989439010620117,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 228.08347940444946,
+   "latency_s": 0.0242612361907959,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 231.08359503746033,
+   "latency_s": 0.02425694465637207,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 234.0837197303772,
+   "latency_s": 0.024196386337280273,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 237.08384943008423,
+   "latency_s": 0.024139881134033203,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 240.08802723884583,
+   "latency_s": 0.02460956573486328,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 243.08816504478455,
+   "latency_s": 0.02484869956970215,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 246.088312625885,
+   "latency_s": 0.02544999122619629,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 249.08843421936035,
+   "latency_s": 0.030731201171875,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 252.09293484687805,
+   "latency_s": 0.023822546005249023,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 255.0930597782135,
+   "latency_s": 0.026041746139526367,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 258.09319615364075,
+   "latency_s": 0.0247647762298584,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 261.0933120250702,
+   "latency_s": 0.02488541603088379,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 264.09772539138794,
+   "latency_s": 0.02356863021850586,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 267.0978937149048,
+   "latency_s": 0.025223731994628906,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 270.09803581237793,
+   "latency_s": 0.030829668045043945,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 273.0981955528259,
+   "latency_s": 0.024924516677856445,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 276.1021902561188,
+   "latency_s": 0.023444175720214844,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 279.1023495197296,
+   "latency_s": 0.026517391204833984,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 282.1025221347809,
+   "latency_s": 0.024950504302978516,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 285.1026420593262,
+   "latency_s": 0.02544546127319336,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 288.1069333553314,
+   "latency_s": 0.024293184280395508,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 291.1073703765869,
+   "latency_s": 0.025885343551635742,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 294.1075322628021,
+   "latency_s": 0.024842023849487305,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 297.1076674461365,
+   "latency_s": 0.03916645050048828,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 300.112113237381,
+   "latency_s": 0.024474382400512695,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 303.1122236251831,
+   "latency_s": 0.0241851806640625,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 306.11233043670654,
+   "latency_s": 0.02593851089477539,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 309.11242866516113,
+   "latency_s": 0.024468421936035156,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 312.1168909072876,
+   "latency_s": 0.023967981338500977,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 315.1169900894165,
+   "latency_s": 0.024486064910888672,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 318.11708974838257,
+   "latency_s": 0.02415919303894043,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 321.11720085144043,
+   "latency_s": 0.02350902557373047,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 324.12196683883667,
+   "latency_s": 0.02382183074951172,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 327.1220920085907,
+   "latency_s": 0.0264737606048584,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 330.1221957206726,
+   "latency_s": 0.025115013122558594,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 333.1223030090332,
+   "latency_s": 0.02471184730529785,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 336.1274139881134,
+   "latency_s": 0.02365875244140625,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 339.1275053024292,
+   "latency_s": 0.024962186813354492,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 342.1276042461395,
+   "latency_s": 0.02530360221862793,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 345.1277000904083,
+   "latency_s": 0.02408456802368164,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 348.13247537612915,
+   "latency_s": 0.023950815200805664,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 351.1326150894165,
+   "latency_s": 0.025739669799804688,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 354.13279271125793,
+   "latency_s": 0.024817705154418945,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 357.13296484947205,
+   "latency_s": 0.02685856819152832,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 360.13712191581726,
+   "latency_s": 0.023271560668945312,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 363.1372675895691,
+   "latency_s": 0.0261688232421875,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 366.1374032497406,
+   "latency_s": 0.024999141693115234,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 369.1375229358673,
+   "latency_s": 0.026514053344726562,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 372.14263010025024,
+   "latency_s": 0.02436089515686035,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 375.14278864860535,
+   "latency_s": 0.024624347686767578,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 378.1429078578949,
+   "latency_s": 0.025864601135253906,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 381.1430232524872,
+   "latency_s": 0.025126218795776367,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 384.14732336997986,
+   "latency_s": 0.024610280990600586,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 387.1474578380585,
+   "latency_s": 0.025020360946655273,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 390.1475932598114,
+   "latency_s": 0.024768352508544922,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 393.1477241516113,
+   "latency_s": 0.027064085006713867,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 396.15257501602173,
+   "latency_s": 0.024572134017944336,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 399.1526896953583,
+   "latency_s": 0.024431943893432617,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 402.1528444290161,
+   "latency_s": 0.024440765380859375,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 405.15299463272095,
+   "latency_s": 0.0250394344329834,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 408.1580557823181,
+   "latency_s": 0.025701284408569336,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 411.15820121765137,
+   "latency_s": 0.031555891036987305,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 414.15834403038025,
+   "latency_s": 0.03345513343811035,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 417.1584966182709,
+   "latency_s": 0.7484128475189209,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 420.1637854576111,
+   "latency_s": 0.027439117431640625,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 423.1639060974121,
+   "latency_s": 0.026804447174072266,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 426.164021730423,
+   "latency_s": 0.02784562110900879,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 429.1641626358032,
+   "latency_s": 0.030439376831054688,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 432.1689929962158,
+   "latency_s": 0.02816462516784668,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 435.16912722587585,
+   "latency_s": 0.031047582626342773,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 438.1692976951599,
+   "latency_s": 0.02867603302001953,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 441.16948199272156,
+   "latency_s": 0.03290438652038574,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 444.17420721054077,
+   "latency_s": 0.025936365127563477,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 447.17436385154724,
+   "latency_s": 0.030168771743774414,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 450.17451429367065,
+   "latency_s": 0.03098011016845703,
+   "arch": "na",
+   "error": null
+  },
+  {
+   "t": 453.17465353012085,
+   "latency_s": 0.028418779373168945,
+   "arch": "na",
+   "error": null
+  }
+ ],
+ "states": [
+  {
+   "t": 1.5735626220703125e-05,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1
+   },
+   "last_error": null
+  },
+  {
+   "t": 12.002768993377686,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 4
+   },
+   "last_error": null
+  },
+  {
+   "t": 24.00591015815735,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 8
+   },
+   "last_error": null
+  },
+  {
+   "t": 36.01012420654297,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 12
+   },
+   "last_error": null
+  },
+  {
+   "t": 48.01366448402405,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 16
+   },
+   "last_error": null
+  },
+  {
+   "t": 60.01742887496948,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 20
+   },
+   "last_error": null
+  },
+  {
+   "t": 72.02148818969727,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 24
+   },
+   "last_error": null
+  },
+  {
+   "t": 84.02571558952332,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 28
+   },
+   "last_error": null
+  },
+  {
+   "t": 96.02987265586853,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 32
+   },
+   "last_error": null
+  },
+  {
+   "t": 108.03406000137329,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 36
+   },
+   "last_error": null
+  },
+  {
+   "t": 120.03831171989441,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 40
+   },
+   "last_error": null
+  },
+  {
+   "t": 132.0424587726593,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 44
+   },
+   "last_error": null
+  },
+  {
+   "t": 144.04692459106445,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 48
+   },
+   "last_error": null
+  },
+  {
+   "t": 156.05126523971558,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 52
+   },
+   "last_error": null
+  },
+  {
+   "t": 168.0555968284607,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 56
+   },
+   "last_error": null
+  },
+  {
+   "t": 180.0599603652954,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 60
+   },
+   "last_error": null
+  },
+  {
+   "t": 192.064382314682,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 64
+   },
+   "last_error": null
+  },
+  {
+   "t": 204.06940460205078,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 68
+   },
+   "last_error": null
+  },
+  {
+   "t": 216.07443618774414,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 72
+   },
+   "last_error": null
+  },
+  {
+   "t": 228.0792601108551,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 76
+   },
+   "last_error": null
+  },
+  {
+   "t": 240.08402395248413,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 80
+   },
+   "last_error": null
+  },
+  {
+   "t": 252.0885238647461,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 84
+   },
+   "last_error": null
+  },
+  {
+   "t": 264.0934579372406,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 88
+   },
+   "last_error": null
+  },
+  {
+   "t": 276.09828186035156,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 92
+   },
+   "last_error": null
+  },
+  {
+   "t": 288.1027386188507,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 96
+   },
+   "last_error": null
+  },
+  {
+   "t": 300.1077661514282,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 100
+   },
+   "last_error": null
+  },
+  {
+   "t": 312.1125137805939,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 104
+   },
+   "last_error": null
+  },
+  {
+   "t": 324.1172983646393,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 108
+   },
+   "last_error": null
+  },
+  {
+   "t": 336.122403383255,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 112
+   },
+   "last_error": null
+  },
+  {
+   "t": 348.1278004646301,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 116
+   },
+   "last_error": null
+  },
+  {
+   "t": 360.13306498527527,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 120
+   },
+   "last_error": null
+  },
+  {
+   "t": 372.137629032135,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 124
+   },
+   "last_error": null
+  },
+  {
+   "t": 384.14312267303467,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 128
+   },
+   "last_error": null
+  },
+  {
+   "t": 396.1478474140167,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 132
+   },
+   "last_error": null
+  },
+  {
+   "t": 408.15307903289795,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 136
+   },
+   "last_error": null
+  },
+  {
+   "t": 420.1586174964905,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 140
+   },
+   "last_error": null
+  },
+  {
+   "t": 432.16425371170044,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 144
+   },
+   "last_error": null
+  },
+  {
+   "t": 444.1696128845215,
+   "state": "running",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 148
+   },
+   "last_error": null
+  },
+  {
+   "t": 456.1747796535492,
+   "state": "failed",
+   "calls": {
+    "add_input": 1,
+    "add_agent": 1,
+    "add_task": 1,
+    "add_investigator": 3,
+    "start": 1,
+    "get_inference": 152
+   },
+   "last_error": "RuntimeError: Exception encountered when calling Dense.call().\n\n\u001b[1m{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 20736 values, but the requested shape has 1 [Op:Reshape]\u001b[0m\n\nArguments received by Dense.call():\n  \u2022 inputs=tf.Tensor(shape=(1, 48, 24, 18), dtype=float32)\n  \u2022 training=False"
+  }
+ ],
+ "summary": {
+  "na": {
+   "n": 152,
+   "p50_ms": 24.93119239807129,
+   "min_ms": 23.00882339477539,
+   "max_ms": 748.4128475189209
+  }
+ },
+ "first_seen_s": {
+  "na": 0.0022284984588623047
+ }
+}

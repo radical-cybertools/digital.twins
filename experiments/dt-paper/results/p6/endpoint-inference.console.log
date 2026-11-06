@@ -1,0 +1,2382 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm2/orbit-logs/endpoint-dt_p6_inference_ep.log
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['rhapsody', 'staging', 'sysinfo', 'queue_info']
+INFO [PluginHost] Loaded plugin: rhapsody
+INFO [PluginHost] Loaded plugin: staging
+INFO [PluginHost] Loaded plugin: sysinfo
+INFO [PluginHost] Loaded plugin: queue_info
+INFO Starting ORBIT endpoint (https://127.0.0.1:8231)
+INFO [Runtime] registered as 'dt_p6_inference_ep' (role=endpoint, plugins=['rhapsody', 'staging', 'sysinfo', 'queue_info'])
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968717.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.2f1b036c.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 27.448246,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.46769,
+        "mean_seconds": 0.001299,
+        "min_seconds": 0.000903,
+        "max_seconds": 0.004298
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 550.0,
+            "net_recv_bytes": 550.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 27.448246,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.46769,
+        "mean_seconds": 0.001299,
+        "min_seconds": 0.000903,
+        "max_seconds": 0.004298
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 550.0,
+            "net_recv_bytes": 550.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa5996cf280> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968746.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.d165a376.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.941195,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.040059,
+        "mean_seconds": 0.001292,
+        "min_seconds": 0.00101,
+        "max_seconds": 0.002532
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.1,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4631.0,
+            "net_recv_bytes": 4631.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.941195,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.040059,
+        "mean_seconds": 0.001292,
+        "min_seconds": 0.00101,
+        "max_seconds": 0.002532
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.1,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4631.0,
+            "net_recv_bytes": 4631.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dfb57dc0> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968748.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.47eae342.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.573576,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.445395,
+        "mean_seconds": 0.001237,
+        "min_seconds": 0.000887,
+        "max_seconds": 0.007135
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 360.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.573576,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.445395,
+        "mean_seconds": 0.001237,
+        "min_seconds": 0.000887,
+        "max_seconds": 0.007135
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 360.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dff5ebc0> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968775.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.b47dc0a6.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.941434,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.042459,
+        "mean_seconds": 0.00137,
+        "min_seconds": 0.001122,
+        "max_seconds": 0.001961
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.5,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4079.0,
+            "net_recv_bytes": 4259.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.941434,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.042459,
+        "mean_seconds": 0.00137,
+        "min_seconds": 0.001122,
+        "max_seconds": 0.001961
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.5,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4079.0,
+            "net_recv_bytes": 4259.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df0be880> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968777.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.0dff9301.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.574091,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.452238,
+        "mean_seconds": 0.001256,
+        "min_seconds": 0.000984,
+        "max_seconds": 0.003704
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 550.0,
+            "net_recv_bytes": 934.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.574091,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.452238,
+        "mean_seconds": 0.001256,
+        "min_seconds": 0.000984,
+        "max_seconds": 0.003704
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 550.0,
+            "net_recv_bytes": 934.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df1492c0> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968805.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.aed359b8.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.940314,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.048215,
+        "mean_seconds": 0.001555,
+        "min_seconds": 0.001195,
+        "max_seconds": 0.002363
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 1.9,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 3692.0,
+            "net_recv_bytes": 3812.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.940314,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.048215,
+        "mean_seconds": 0.001555,
+        "min_seconds": 0.001195,
+        "max_seconds": 0.002363
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 1.9,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 3692.0,
+            "net_recv_bytes": 3812.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df0e4240> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968807.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.788c4ec1.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.577219,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.645153,
+        "mean_seconds": 0.001792,
+        "min_seconds": 0.001149,
+        "max_seconds": 0.00458
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 186.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.577219,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.645153,
+        "mean_seconds": 0.001792,
+        "min_seconds": 0.001149,
+        "max_seconds": 0.00458
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 186.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df3d8c00> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968835.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.2ecfc2ed.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.94225,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.042302,
+        "mean_seconds": 0.001365,
+        "min_seconds": 0.001078,
+        "max_seconds": 0.002147
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 2.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 5016.0,
+            "net_recv_bytes": 5136.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.94225,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.042302,
+        "mean_seconds": 0.001365,
+        "min_seconds": 0.001078,
+        "max_seconds": 0.002147
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 2.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 5016.0,
+            "net_recv_bytes": 5136.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df269e00> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968837.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.8294fbae.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.719239,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.519534,
+        "mean_seconds": 0.001443,
+        "min_seconds": 0.001061,
+        "max_seconds": 0.002664
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88330.0,
+            "net_recv_bytes": 864.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.719239,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.519534,
+        "mean_seconds": 0.001443,
+        "min_seconds": 0.001061,
+        "max_seconds": 0.002664
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88330.0,
+            "net_recv_bytes": 864.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4d166c300> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968865.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.28943c14.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.978795,
+    "tasks": {
+        "submitted": 32,
+        "completed": 32,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.035913,
+        "mean_seconds": 0.001122,
+        "min_seconds": 0.000919,
+        "max_seconds": 0.001894
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.1,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4741.0,
+            "net_recv_bytes": 4921.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.978795,
+    "tasks": {
+        "submitted": 32,
+        "completed": 32,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.035913,
+        "mean_seconds": 0.001122,
+        "min_seconds": 0.000919,
+        "max_seconds": 0.001894
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.1,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4741.0,
+            "net_recv_bytes": 4921.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4d1686a40> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968867.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.e5678f48.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.563703,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.448097,
+        "mean_seconds": 0.001245,
+        "min_seconds": 0.00096,
+        "max_seconds": 0.004694
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 1432.0,
+            "net_recv_bytes": 1618.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.563703,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.448097,
+        "mean_seconds": 0.001245,
+        "min_seconds": 0.00096,
+        "max_seconds": 0.004694
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 1432.0,
+            "net_recv_bytes": 1618.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4de735b80> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968895.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.09af8616.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.936922,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.037559,
+        "mean_seconds": 0.001212,
+        "min_seconds": 0.001024,
+        "max_seconds": 0.001903
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4411.0,
+            "net_recv_bytes": 4531.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.936922,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.037559,
+        "mean_seconds": 0.001212,
+        "min_seconds": 0.001024,
+        "max_seconds": 0.001903
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4411.0,
+            "net_recv_bytes": 4531.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dd401900> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968897.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.446b6872.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.569111,
+    "tasks": {
+        "submitted": 359,
+        "completed": 359,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.509442,
+        "mean_seconds": 0.001419,
+        "min_seconds": 0.001016,
+        "max_seconds": 0.005022
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 240.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.569111,
+    "tasks": {
+        "submitted": 359,
+        "completed": 359,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.509442,
+        "mean_seconds": 0.001419,
+        "min_seconds": 0.001016,
+        "max_seconds": 0.005022
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 240.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4de7afc00> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968925.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.b2f41712.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.947535,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.04127,
+        "mean_seconds": 0.001331,
+        "min_seconds": 0.001133,
+        "max_seconds": 0.002579
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.5,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 29034.0,
+            "net_recv_bytes": 24661.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.947535,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.04127,
+        "mean_seconds": 0.001331,
+        "min_seconds": 0.001133,
+        "max_seconds": 0.002579
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.5,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 29034.0,
+            "net_recv_bytes": 24661.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dfc39a40> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968927.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.0b1056b8.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.564611,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.535147,
+        "mean_seconds": 0.001487,
+        "min_seconds": 0.001148,
+        "max_seconds": 0.006001
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88198.0,
+            "net_recv_bytes": 1053.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.564611,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.535147,
+        "mean_seconds": 0.001487,
+        "min_seconds": 0.001148,
+        "max_seconds": 0.006001
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88198.0,
+            "net_recv_bytes": 1053.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4de530f00> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968955.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.30339ace.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.945184,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.040316,
+        "mean_seconds": 0.001301,
+        "min_seconds": 0.001188,
+        "max_seconds": 0.001736
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 2.1,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 5382.0,
+            "net_recv_bytes": 5562.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.945184,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.040316,
+        "mean_seconds": 0.001301,
+        "min_seconds": 0.001188,
+        "max_seconds": 0.001736
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 2.1,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 5382.0,
+            "net_recv_bytes": 5562.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dfa5c900> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968957.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.d674538c.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.565665,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.559274,
+        "mean_seconds": 0.001554,
+        "min_seconds": 0.001038,
+        "max_seconds": 0.003693
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 66.0,
+            "net_recv_bytes": 150.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.565665,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.559274,
+        "mean_seconds": 0.001554,
+        "min_seconds": 0.001038,
+        "max_seconds": 0.003693
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 66.0,
+            "net_recv_bytes": 150.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dfa5d440> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968985.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.2efe76b0.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.939376,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.035845,
+        "mean_seconds": 0.001156,
+        "min_seconds": 0.001067,
+        "max_seconds": 0.001453
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.5,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4848.0,
+            "net_recv_bytes": 5088.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.939376,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.035845,
+        "mean_seconds": 0.001156,
+        "min_seconds": 0.001067,
+        "max_seconds": 0.001453
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.5,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4848.0,
+            "net_recv_bytes": 5088.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df7a1400> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793968987.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.1d97cd0d.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.563351,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.465302,
+        "mean_seconds": 0.001293,
+        "min_seconds": 0.000997,
+        "max_seconds": 0.004145
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 89085.0,
+            "net_recv_bytes": 1811.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 26.563351,
+    "tasks": {
+        "submitted": 360,
+        "completed": 360,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.465302,
+        "mean_seconds": 0.001293,
+        "min_seconds": 0.000997,
+        "max_seconds": 0.004145
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 89085.0,
+            "net_recv_bytes": 1811.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df8ff8c0> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969015.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.a7d94aca.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.940543,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.035023,
+        "mean_seconds": 0.00113,
+        "min_seconds": 0.00097,
+        "max_seconds": 0.001588
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.1,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4931.0,
+            "net_recv_bytes": 4991.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 1.940543,
+    "tasks": {
+        "submitted": 31,
+        "completed": 31,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.035023,
+        "mean_seconds": 0.00113,
+        "min_seconds": 0.00097,
+        "max_seconds": 0.001588
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.1,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 4931.0,
+            "net_recv_bytes": 4991.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dfeda680> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969017.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.53c031cb.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.529896,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002631,
+        "mean_seconds": 0.001316,
+        "min_seconds": 0.001208,
+        "max_seconds": 0.001423
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88990.0,
+            "net_recv_bytes": 1626.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.529896,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002631,
+        "mean_seconds": 0.001316,
+        "min_seconds": 0.001208,
+        "max_seconds": 0.001423
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88990.0,
+            "net_recv_bytes": 1626.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dfed9b80> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969020.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.bda13c5d.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.527717,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.003232,
+        "mean_seconds": 0.001616,
+        "min_seconds": 0.00127,
+        "max_seconds": 0.001962
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 1042.0,
+            "net_recv_bytes": 1449.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.527717,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.003232,
+        "mean_seconds": 0.001616,
+        "min_seconds": 0.00127,
+        "max_seconds": 0.001962
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 1042.0,
+            "net_recv_bytes": 1449.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df68c9c0> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969022.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.b74da0d6.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.526944,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002817,
+        "mean_seconds": 0.001409,
+        "min_seconds": 0.001322,
+        "max_seconds": 0.001495
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 66.0,
+            "net_recv_bytes": 246.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.526944,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002817,
+        "mean_seconds": 0.001409,
+        "min_seconds": 0.001322,
+        "max_seconds": 0.001495
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 66.0,
+            "net_recv_bytes": 246.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df08f840> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969025.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.7fe71c00.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.529267,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002696,
+        "mean_seconds": 0.001348,
+        "min_seconds": 0.001274,
+        "max_seconds": 0.001422
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 0.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.529267,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002696,
+        "mean_seconds": 0.001348,
+        "min_seconds": 0.001274,
+        "max_seconds": 0.001422
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 0.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df33d2c0> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969028.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.7995b976.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.52882,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.003174,
+        "mean_seconds": 0.001587,
+        "min_seconds": 0.00139,
+        "max_seconds": 0.001784
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.2,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 564.0,
+            "net_recv_bytes": 744.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.52882,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.003174,
+        "mean_seconds": 0.001587,
+        "min_seconds": 0.00139,
+        "max_seconds": 0.001784
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.2,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 564.0,
+            "net_recv_bytes": 744.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dfe73800> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969030.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.1641b625.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.52994,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002638,
+        "mean_seconds": 0.001319,
+        "min_seconds": 0.001312,
+        "max_seconds": 0.001326
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 0.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.52994,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002638,
+        "mean_seconds": 0.001319,
+        "min_seconds": 0.001312,
+        "max_seconds": 0.001326
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 0.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4de5f6280> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969033.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.ba664584.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.52909,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002574,
+        "mean_seconds": 0.001287,
+        "min_seconds": 0.001255,
+        "max_seconds": 0.001319
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 968.0,
+            "net_recv_bytes": 1028.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.52909,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002574,
+        "mean_seconds": 0.001287,
+        "min_seconds": 0.001255,
+        "max_seconds": 0.001319
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 968.0,
+            "net_recv_bytes": 1028.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4df6f5d40> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969035.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.19dc9375.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.525702,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002556,
+        "mean_seconds": 0.001278,
+        "min_seconds": 0.001269,
+        "max_seconds": 0.001287
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 462.0,
+            "net_recv_bytes": 528.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.525702,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002556,
+        "mean_seconds": 0.001278,
+        "min_seconds": 0.001269,
+        "max_seconds": 0.001287
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 462.0,
+            "net_recv_bytes": 528.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4de7d1e80> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969038.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.b0a5eb71.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.526919,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002881,
+        "mean_seconds": 0.00144,
+        "min_seconds": 0.00134,
+        "max_seconds": 0.001541
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 179.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.526919,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002881,
+        "mean_seconds": 0.00144,
+        "min_seconds": 0.00134,
+        "max_seconds": 0.001541
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 179.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dff107c0> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO [rhapsody] Registered session session.<redacted>
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.<redacted>.1793969040.telemetry.jsonl
+INFO [session.<redacted>] Session initialization complete
+WARNING pynvml initialization failed on nid006920 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.<redacted> (owner=rhapsody.3fb3e138.inference)
+INFO [sysinfo] Unregistered session session.<redacted>
+INFO {
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.529517,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002596,
+        "mean_seconds": 0.001298,
+        "min_seconds": 0.001278,
+        "max_seconds": 0.001318
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 60.0
+        }
+    }
+}
+{
+    "session_id": "session.<redacted>",
+    "duration_seconds": 2.529517,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.002596,
+        "mean_seconds": 0.001298,
+        "min_seconds": 0.001278,
+        "max_seconds": 0.001318
+    },
+    "resources": {
+        "concurrent/nid006920": {
+            "backend": "concurrent",
+            "node_id": "nid006920",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 60.0
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-e1/ve.dt/lib/python3.13/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fa59b3fe5c0> at 0x7fa4dfe71a80> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.<redacted>
+INFO Received shutdown signal
+INFO Endpoint stopping
+INFO Endpoint stopped

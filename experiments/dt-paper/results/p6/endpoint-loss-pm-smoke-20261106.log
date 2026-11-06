@@ -1,0 +1,39 @@
+kill 0: detect 10.2s (engine endpoint lost: dt_p6_learning_ep); learner answered 20/20, sibling 20/20 (after: True); endpoint up 1.5s, learning resumed 3.1s
+reattach 0: attach 0.02s, first answer 0.03s, state running, ok True
+{
+  "kills_ok": 1,
+  "kills": 1,
+  "detect_s": {
+    "median": 10.178492307662964,
+    "min": 10.178492307662964,
+    "max": 10.178492307662964,
+    "n": 1
+  },
+  "resume_s": {
+    "median": 3.066018581390381,
+    "min": 3.066018581390381,
+    "max": 3.066018581390381,
+    "n": 1
+  },
+  "endpoint_up_s": {
+    "median": 1.5024034976959229,
+    "min": 1.5024034976959229,
+    "max": 1.5024034976959229,
+    "n": 1
+  },
+  "sibling_all_answered": true,
+  "reattaches_ok": 1,
+  "reattaches": 1,
+  "attach_s": {
+    "median": 0.019072532653808594,
+    "min": 0.019072532653808594,
+    "max": 0.019072532653808594,
+    "n": 1
+  },
+  "first_answer_s": {
+    "median": 0.027897119522094727,
+    "min": 0.027897119522094727,
+    "max": 0.027897119522094727,
+    "n": 1
+  }
+}
