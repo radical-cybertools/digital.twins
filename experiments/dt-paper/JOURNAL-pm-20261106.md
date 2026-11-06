@@ -522,3 +522,6 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
   into PR #17? The P8b env runs rhapsody e491cd2 + this fix (worktree
   `$W/rhapsody-p8b`, local branch p8b/e491cd2-stdout), not the pin.
 - Node-hours after P8b: m5290 3.44, m5290_g 1.56, total 5.00 of 100.
+- Andre: yes, 3adefa8 into PR #17. Pushed; PR #17 now holds 0ac3f59,
+  56490dc, 438d0d3, 3adefa8, description updated with the end-to-end
+  result and a pointer to rhapsody#125.
