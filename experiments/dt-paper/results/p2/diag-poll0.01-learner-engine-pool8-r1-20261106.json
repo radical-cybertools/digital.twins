@@ -1,0 +1,52 @@
+{
+  "engine/inproc": [
+    42.95563163796476,
+    85.81339166136556,
+    214.27653646455107,
+    428.57495620923146,
+    856.3897669009165,
+    2128.8887692532962,
+    4352.655691559389
+  ],
+  "engine/zmq": [
+    42.77347241231299,
+    85.63965786239125,
+    214.37969237177603,
+    428.4103374273462,
+    854.2960534039308,
+    2111.3806618069843,
+    4379.434556090544
+  ],
+  "batch_sizes": [
+    1,
+    2,
+    5,
+    10,
+    20,
+    50,
+    100
+  ],
+  "provenance": {
+    "experiment": "E1 ROSE streaming learner throughput",
+    "harness": "streaming_learner_perf.py",
+    "time": "2026-11-06T03:53:58-0800",
+    "host": "nid004218",
+    "python": "3.13.18",
+    "digital_twins_commit": "4e81e81a10ecbaee2fb648984117fa125fa569b7",
+    "digital_twins_dirty": false,
+    "backend": "local concurrent pool (8 workers)",
+    "cpu_count": 256,
+    "slurm_job": "60900302",
+    "args": {
+      "workers": 8,
+      "modes": [
+        "engine"
+      ],
+      "feeds": [
+        "inproc",
+        "zmq"
+      ],
+      "out": "experiments/dt-paper/results/p2/diag-poll0.01-learner-engine-pool8-r1-20261106.json"
+    }
+  }
+}

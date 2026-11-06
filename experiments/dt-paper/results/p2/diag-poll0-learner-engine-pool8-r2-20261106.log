@@ -1,0 +1,16 @@
+engine  inproc  batch=   1         765 msg/s
+engine  inproc  batch=   2        1728 msg/s
+engine  inproc  batch=   5        4299 msg/s
+engine  inproc  batch=  10        8530 msg/s
+engine  inproc  batch=  20       16726 msg/s
+engine  inproc  batch=  50       38856 msg/s
+engine  inproc  batch= 100       72513 msg/s
+engine  zmq     batch=   1         833 msg/s
+engine  zmq     batch=   2        1648 msg/s
+engine  zmq     batch=   5        3516 msg/s
+engine  zmq     batch=  10        6378 msg/s
+engine  zmq     batch=  20        9745 msg/s
+engine  zmq     batch=  50       14683 msg/s
+engine  zmq     batch= 100       19565 msg/s
+wrote experiments/dt-paper/results/p2/diag-poll0-learner-engine-pool8-r2-20261106.json
+DIAG poll=0.0 patched_sleeps=2677

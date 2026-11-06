@@ -120,3 +120,61 @@ Times are local (PST) unless noted.
 - Sanitize: grep for token/BEGIN/sid/secret/key/cert finds only path
   references (`my-env.sh` reads the token file at run time; no value is in it).
 - Commit `ff663e3` pushed to `radical-experiments/rhapsody` `2026_hppss`.
+
+## P2: learner engine slowdown (done)
+
+- Harness change (commit 5680c09): `streaming_learner_perf.py` gets
+  `--workers`, `--modes`, `--feeds`, `--out`, provenance; defaults unchanged.
+- Job 60899665 (nid004706, regular, m5290): engine mode, both feeds, all
+  batch sizes, pool 4/8/32/128/256/default x 3 repeats, then py-spy
+  (speedscope + folded) on engine/inproc at pool default and 8.
+- Result: **pool size is not the cause.** All pools give 42-45 msg/s at
+  batch 1 and 4.1-4.7k msg/s at batch 100; pool 256 / default are, if
+  anything, 3-8% faster. A window costs about 23 ms = 2 tasks x 11.6 ms,
+  the same per-task cost as the E1 in-situ p50.
+- py-spy: only 553 active samples over the pool-8 run (about 20 s at
+  200 Hz): the main process is idle, waiting, most of the time.
+- Cause found in radical.asyncflow 0.5.1 `workflow_manager.py`: the
+  run loop's `else: await asyncio.sleep(0.01)` after any iteration that
+  submitted or completed something.
+- Decision: confirm causality without touching the pins. New
+  `e1-overhead/diag_asyncflow_poll.py` swaps the `asyncio` name inside
+  `radical.asyncflow.workflow_manager` for a proxy whose `sleep(0.01)` sleeps
+  `--poll` instead, then runs a harness unchanged. Job 60900302 (debug):
+  learner engine pool 8 and `bench_dt_insitu.py` pool 8 c=50 at poll 0.01
+  (control, same wrapper), 0.001, 0, 2 repeats. Learner engine/inproc
+  b=100: 4,346 / 30,422 / 68,099 msg/s; in-situ bare p50 11.32 / 1.61 /
+  0.62 ms. At 0.001 the learner matches the laptop (30,417). DT rows stay
+  within 0.3 ms of bare at every setting.
+- Open question for Andre: report the 10 ms run-loop sleep to
+  radical.asyncflow (I did not comment on GitHub). Why the laptop does not
+  show it is unexplained; the laptop's asyncflow / ROSE versions for the
+  2026-11-02 run should be checked.
+
+## P3: E1 ex-situ (done)
+
+- New harness `e1-overhead/bench_dt_exsitu.py` (commit 77fb67b). Two smoke
+  runs (debug jobs 60899842, 60900031, 60900108) before the real one:
+  1. the dt row first published samples on the twin's internal dtype
+     topic, which nothing subscribes to: no sample reached the learner.
+     Fixed by feeding through the input edge (`add_input` + an external
+     `ChannelPublisher`), which is also the realistic sensor path.
+  2. the publish latency under the saturating throughput feed was mostly
+     backlog (it grows with the window index: 715 ms p50 at batch 1).
+     Decision: keep it as `publish_latency_saturated` but report a paced
+     run (feed one window, wait for its publish, 20 windows) as
+     `publish_latency`.
+- Decision: pool 8 for both rows (P2 found no pool effect; the page says
+  8 in that case). `conflate=False`, `max_wait=None` in both rows so no
+  sample is dropped and windows form by size only; the harness asserts
+  equal sample counts (400 per throughput run, 20 x batch per paced run).
+- Job 60900315 (debug, m5290), 5 repeats: dt/bare throughput 0.995-1.052,
+  paced publish p50 bare 35.1-35.3 ms, dt 32.4-33.9 ms. Both on the
+  asyncflow floor (3 tasks per window x about 11.7 ms). The dt row is
+  slightly faster; not explained, most likely phase relative to the 10 ms
+  poll. Reported as measured.
+- Note: P1 jobs record `digital_twins_commit` per run; it moves as I commit
+  harness files, but `bench_dt_insitu.py` itself is unchanged since bd11708.
+- Note: P4 job 60899935 was submitted before the per-job TLS directory
+  change to `run_p4.sh` (commit after eff5dc6); sbatch keeps the submitted
+  copy, so that job uses `$W/tls/` directly. No other job uses that path.

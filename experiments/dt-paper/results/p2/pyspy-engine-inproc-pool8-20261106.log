@@ -1,0 +1,28 @@
+py-spy> Sampling process 200 times a second. Press Control-C to exit.
+
+engine  inproc  batch=   1          45 msg/s
+engine  inproc  batch=   2          90 msg/s
+engine  inproc  batch=   5         226 msg/s
+engine  inproc  batch=  10         449 msg/s
+engine  inproc  batch=  20         903 msg/s
+engine  inproc  batch=  50        2247 msg/s
+engine  inproc  batch= 100        4493 msg/s
+wrote experiments/dt-paper/results/p2/pyspy-engine-inproc-pool8-20261106.json
+
+py-spy> Stopped sampling because process exited
+py-spy> Wrote speedscope file to 'experiments/dt-paper/results/p2/pyspy-engine-inproc-pool8-20261106.speedscope.json'. Samples: 637 Errors: 0
+py-spy> Visit https://www.speedscope.app/ to view
+py-spy> Sampling process 200 times a second. Press Control-C to exit.
+
+engine  inproc  batch=   1          45 msg/s
+engine  inproc  batch=   2          90 msg/s
+engine  inproc  batch=   5         226 msg/s
+engine  inproc  batch=  10         451 msg/s
+engine  inproc  batch=  20         907 msg/s
+engine  inproc  batch=  50        2220 msg/s
+engine  inproc  batch= 100        4571 msg/s
+wrote experiments/dt-paper/results/p2/pyspy-engine-inproc-pool8-20261106.json
+
+py-spy> Stopped sampling because process exited
+py-spy> Wrote raw flamegraph data to 'experiments/dt-paper/results/p2/pyspy-engine-inproc-pool8-20261106.folded'. Samples: 553 Errors: 0
+py-spy> You can use the flamegraph.pl script from https://github.com/brendangregg/flamegraph to generate a SVG

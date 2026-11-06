@@ -118,3 +118,67 @@ cd experiments/dt-paper/e1-overhead/results
 python ../streaming_learner_perf.py
 python ../plot_streaming_perf.py      # -> streaming_perf.png (not in git)
 ```
+
+Flags (2026-11-06): `--workers N` (default: unchanged, `ProcessPoolExecutor()`
+= `os.cpu_count()` workers), `--modes stub,engine`, `--feeds inproc,zmq`,
+`--out PATH` (default `streaming_perf.json`).  The JSON now carries
+`provenance`.
+
+## Perlmutter batch 2026-11-06 (P1–P4)
+
+Branch `exp/pm-batch-20261106`, journal `../JOURNAL-pm-20261106.md`, raw
+results in `../results/p<N>/`, tables from `../summarize_pm_20261106.py`.
+CPU nodes, account m5290, Python 3.13.18, the four `deploy/install.sh` pins.
+
+### P2: the per-task floor is asyncflow's 10 ms run-loop sleep
+
+The learner's engine rows on Perlmutter (about 4.3k msg/s at batch 100,
+7x below the laptop) do **not** depend on the pool size: pool 4, 8, 32,
+128, 256 and the default all give 42-45 msg/s at batch 1 and 4.1-4.7k
+msg/s at batch 100 (`../results/p2/`, 3 repeats each).  The 256-worker
+theory is wrong.
+
+A window costs about 23 ms = 2 tasks x 11.6 ms, the same 11-12 ms that
+every single task costs in `bench_dt_insitu.py` (its p50).  py-spy finds
+the main process idle most of the time (553 active samples in about 20 s
+at 200 Hz).  The cause is radical.asyncflow 0.5.1's `WorkflowEngine` run
+loop (`workflow_manager.py`, the `else: await asyncio.sleep(0.01)`
+branch): after an iteration that submitted or completed something it
+sleeps 10 ms before it looks at the ready queue again, so a task that
+becomes ready meanwhile waits for that sleep; the measured 11.6 ms per
+task is about one sleep plus the pool round trip.  `diag_asyncflow_poll.py` patches only that sleep,
+at run time, and reruns the harnesses unchanged (pool 8, 2 repeats):
+
+| run-loop sleep | learner engine/inproc b=100 | engine/zmq b=100 | in-situ p50 bare / investigator / agent | c=50 req/s bare / agent |
+|---|---|---|---|---|
+| 0.01 (as installed) | 4,346 msg/s | 4,247 | 11.32 / 11.59 / 11.62 ms | 2,445 / 2,269 |
+| 0.001 | 30,422 | 14,973 | 1.61 / 1.67 / 1.66 ms | 4,015 / 3,835 |
+| 0 | 68,099 | 18,833 | 0.62 / 0.65 / 0.63 ms | 3,975 / 3,883 |
+
+At 0.001 the learner hits the laptop's number (30,417 msg/s).  The DT
+rows stay within 0.03-0.3 ms of bare at every setting, so the E1 claim
+holds and gets stronger: the 11 ms that all rows share is the engine's
+poll interval, not the DT layer.  Nothing installed was changed (the pins
+are fixed for the paper runs); the sleep belongs to radical.asyncflow.
+
+### P3: ex-situ learner, bare vs through DT (`bench_dt_exsitu.py`)
+
+Same pool (8 workers), same no-op training / active-learning / criterion
+tasks, criterion met every window.  bare = ROSE `StreamingActiveLearner`
+fed in-process; dt = `StreamingLearnerInvestigator` in a `DTRuntime`, fed
+by an external `ChannelPublisher` through `add_input`.  400 samples per
+throughput run, 20 paced windows per latency run, 5 repeats:
+
+| batch | bare msg/s | dt msg/s | dt/bare | paced publish p50 bare | dt |
+|---|---|---|---|---|---|
+| 1 | 29 | 29 | 1.00 | 35.1 ms | 33.8 ms |
+| 10 | 286 | 287 | 1.00 | 35.2 ms | 33.9 ms |
+| 100 | 2,880 | 3,028 | 1.05 | 35.3 ms | 32.4 ms |
+
+The DT path costs nothing measurable ex-situ: same throughput (dt up to
+5% faster at large windows) and the same publish latency (dt 1-3 ms
+lower, which includes the extra hop through the stream broker).  Both
+rows sit on the asyncflow floor: 3 tasks per window x about 11.7 ms.  The
+dt row being slightly faster is not a DT gain I can explain; it most
+likely reflects where its windows fall relative to the 10 ms run-loop
+poll.  Full table: `../results/summary-pm-20261106.json`.
