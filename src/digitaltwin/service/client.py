@@ -77,7 +77,8 @@ class DTClient(PluginClient):
         `'inference'` runs the twins' components; `'learning'` labels the
         learner tasks of a `StreamingLearnerInvestigator` and aliases
         `'inference'`
-        when it is not configured.
+        when it is not configured.  `"default_engine": "learning"` moves
+        the components onto the `'learning'` role.
 
         Sessions are always persistent (the service forces it), so a
         `lifetime` / `ttl` argument is accepted and ignored.
