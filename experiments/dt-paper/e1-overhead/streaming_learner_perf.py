@@ -91,12 +91,12 @@ async def run_zmq(batch_size, mode, flow):
 
     pub = ZMQ_PS_Client(PUB_ADDR)
     await pub.connect()
-    pub_client = PubSubClient(pub)
+    pub_client = PubSubClient(pub, "e1-perf")
 
     sub = ZMQ_PS_Client(sub_addr=SUB_ADDR)
     await sub.connect()
     queue: asyncio.Queue = asyncio.Queue()
-    await PubSubClient(sub).subscribe_to_dtype(PERF_DTYPE, queue)
+    await PubSubClient(sub, "e1-perf").subscribe_to_dtype(PERF_DTYPE, queue)
 
     async def forward():
         # end of stream: idle timeout (PUB/SUB may drop under load)
@@ -120,11 +120,7 @@ async def run_zmq(batch_size, mode, flow):
     # learner.stop() fires after IDLE_TIMEOUT of silence; the last windows
     # processed before that are already timed, no idle time is included
     for client in (pub, sub):
-        if client.task:
-            client.task.cancel()
-        for soc in (client.pub_soc, client.sub_soc):
-            if soc is not None:
-                soc.close()
+        await client.close()
     return n / elapsed
 
 
