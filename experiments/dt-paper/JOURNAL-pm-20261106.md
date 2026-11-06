@@ -326,3 +326,54 @@ Times are local (PST) unless noted.
   question where it came from). The GPU gains 1.1-1.8x; rebuilding the
   model per call costs 4.6-6x the warm field.
 - P8: P8a done, P8b skipped (see above).
+
+## Close-out
+
+| phase | state | headline |
+|---|---|---|
+| P0 | done | CPU on m5290 (largest balance), GPU on m5290_g |
+| P1 | done | DT 0.86-1.04 x bare throughput (median 0.95), p50 +<=0.35 ms; throughput peaks at pool 4 and falls with pool size |
+| P2 | done | per-task floor is asyncflow 0.5.1's 10 ms run-loop sleep, not the pool size |
+| P3 | done | ex-situ DT/bare 1.00-1.05, same publish latency |
+| P4 | done | cross-node +0.3 ms over loopback, ORBIT +3 ms; one ORBIT task per request in every row; agent burst gap reproduces (0.65-0.81 x, 0.88-0.90 solo) |
+| P5 | done, preliminary | twins linear to 32 (2.7k req/s), saturate at 64; join about 8k inputs/s |
+| P6 | done, preliminary | loss reported after 10.1 s, inference uninterrupted, learning back 2.8 s after restart; reattach 18 ms |
+| P7 | done, preliminary | publish -> served in about 1.5 inferences (16 ms local, 22 ms ORBIT) |
+| P8 | P8a done, P8b skipped | FNO 97 / 122 ms, PINN 13 / 23 ms (GPU / CPU); reload per call 4.6-6x |
+| P9 | done | ff663e3 on radical-experiments/rhapsody 2026_hppss |
+
+**Node-hours** (sacct, all jobs of this session incl. smoke, failed and
+cancelled ones): m5290 3.44, m5290_g 0.09, total **3.53 of 100**.
+No allocation left running (`squeue -u merzky` empty).
+
+**Fix branches:** none. No bug in `src/` blocked a phase; every fix was in
+the harnesses on `exp/pm-batch-20261106`.
+
+**ORBIT isolation:** every ORBIT job's `find ~/.radical/orbit -newer stamp`
+was empty, and nothing there is newer than this session's `env.sh`.
+
+**Tools added:** `py-spy 0.4.3` (E1 venv); the P8 env `$W/xgf/env` (clone of
+cfdaai + `tensorflow[and-cuda]`, the four pins, `.[service,learn]`,
+xgboost, scikit-learn, python-dotenv). `esprima` in
+`$W/cache/jslib` (only to syntax-check the page's chart script).
+
+**Open questions for Andre**
+
+1. radical.asyncflow 0.5.1's 10 ms run-loop sleep (`workflow_manager.py`)
+   sets an 11 ms floor on every task (P2). Report upstream? And why does the
+   laptop not show it (check its asyncflow / ROSE versions)?
+2. The agent's ORBIT burst gap (P4): about 10 % remains even in its own
+   process, with one remote task per request and 1 % of client samples in
+   DT code. Profile the client loop under a burst with the agent alone?
+3. Why burst throughput falls with pool size above 4 (P1)? Not profiled.
+4. Slurm steps from login20 into a `salloc --no-shell` allocation hung
+   today (worked 2026-11-05). All phases ran via sbatch instead.
+5. `~/.conda/pkgs` is 21 GiB of the 40 GiB home quota; `conda clean --all`?
+6. xGFabric: `tk_pinn_eval` cannot run (no `communicate()` on its tar
+   process; wrong file and meta-key names), no PCR model is staged, and
+   `tk_*_eval` rebuilds the model per call (4.6-6x cost). Fix and train,
+   then run P8b?
+7. Where did September's "54 s per inference on CPU" come from? Not
+   reproduced (0.5 s with a per-call rebuild).
+8. P5-P7 are preliminary (one node, no-op work). Repeat at scale for the
+   paper?
