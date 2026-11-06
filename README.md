@@ -205,11 +205,10 @@ the twin's input stream both feeds the learner and is served by the
 inference task, and each window of samples retrains the model the
 inference task runs with.
 
-That class is the *only* thing that selects an engine in v1 -- there is
+That class is the only thing that labels tasks for an engine -- there is
 no `engine=` argument.  The service recognises it by subclass check and
 hands it two role backends: its learner tasks carry the `'learning'`
-label, its inference
-stays on `'task'`.
+label, and its inference stays on the default role.
 
 ```python
 dt = rt.get_plugin('broker', 'dt', config={'engines': {
@@ -221,6 +220,12 @@ dt = rt.get_plugin('broker', 'dt', config={'engines': {
 `'learning'` is optional: left out, it aliases `'inference'` and one endpoint
 serves both.  Both engines are session-shared and built once, in the
 background phase of `twin_create`.
+
+Tasks without a label run on the default role, `'inference'`.  A session
+can move them with `'default_engine': 'learning'` in the same config, and
+a deployment with `DT_DEFAULT_ENGINE=learning` on the broker; the session
+config wins.  The learner's own tasks keep their label either way.  An
+unconfigured `'learning'` role still aliases `'inference'`.
 
 Register the learner's training / active-learning / criterion tasks with
 `as_executable=False`.  ROSE's default makes them shell commands, and a
