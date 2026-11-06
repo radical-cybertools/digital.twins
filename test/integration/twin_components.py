@@ -9,6 +9,7 @@ import asyncio
 from digitaltwin.components import (
     DataType,
     ModelInvestigator,
+    SplitTask,
     TypedData,
     UtilityTask,
 )
@@ -119,6 +120,31 @@ class EchoSink(UtilityTask):
 
     async def main_loop(self, runtime, in_data):
         await runtime.stream.publish(ECHO_DTYPE, in_data.data)
+
+
+class TagSink(UtilityTask):
+    """Terminal component: republishes `(tag, data)`, so one echo stream
+    can carry several branches of a graph apart."""
+
+    def __init__(self, flow, tag: str):
+        super().__init__(flow)
+        self.tag = tag
+
+    async def main_loop(self, runtime, in_data):
+        await runtime.stream.publish(ECHO_DTYPE, (self.tag, in_data.data))
+
+
+EVEN_DTYPE = DataType("even")
+ODD_DTYPE = DataType("odd")
+
+
+class ParitySplit(SplitTask):
+    """Splits integers onto (EVEN, ODD); `None` emits nothing there."""
+
+    async def main_loop(self, runtime, in_data):
+        if in_data.data % 2 == 0:
+            return TypedData(EVEN_DTYPE, in_data.data), None
+        return None, TypedData(ODD_DTYPE, in_data.data)
 
 
 class JoinSink(UtilityTask):

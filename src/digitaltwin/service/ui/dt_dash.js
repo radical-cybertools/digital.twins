@@ -1070,7 +1070,7 @@
       // visible even collapsed, so a rolled-up card still reports what
       // it holds -- real counts, straight off `components`
       if (tw.components) {
-        const utils = tw.components.filter(c => c.kind === 'utility');
+        const utils = tw.components.filter(c => c.kind === 'utility' || c.kind === 'split');
         const persist = utils.filter(c => c.is_persistent).length;
         card.appendChild(el('div', 'dtd-card-util',
           `Utility Tasks ${utils.length} (Persist: ${persist})`));
