@@ -51,3 +51,40 @@ each; warm = median of 50 field evaluations, reload = prepare + field
 P8b (the twin end to end with real surrogates) was not run:
 `tk_pinn_eval` in xGFabric cannot run as is (see the journal) and there is
 no PCR model.
+
+## P8b: the WindField twin end to end with real surrogates
+
+`run_p8b.sbatch` on one A100 node (gpu_debug): ORBIT broker (`--plugins
+dt`), one endpoint for inference and learning, the fake Davis sensor at
+1 s, and `p8b_client.py`, which builds `twin_service_real.py`'s graph and
+probes the agent every 3 s.  The twin trains its own surrogates from
+16-reading batches (simulations from 72 precalculated CSVs), profiles each
+published model, predicts its runtime with the Pi predictor and selects the
+cheapest.  Run 6 (job 60917837), 18 min:
+
+| surrogate | selected from | probes answered | p50 latency |
+|---|---|---|---|
+| (none yet) | 0 s | 99 | 24 ms |
+| FNO | 297 s | 19 | 731 ms |
+| PCR | 372 s | 1 | 19.4 s |
+| PINN | 392 s (to the end) | 228 | 194 ms |
+
+The selector settles on PINN, which is also the cheapest by measurement
+(PINN 194 ms < FNO 731 ms < PCR 19 s per field through the twin).  0 errors
+in 347 probes; all three models retrained 3-4 times; the Pi predictor
+retrained 3 times (MAE 0.47-0.53).
+
+Getting there took six runs and fixes on three layers (journal for all):
+
+- xGFabric (PR radical-collaboration/xGFabric#17): `tk_pinn_eval` could not
+  run; overlapping evals deleted each other's model; the PCR partition
+  returned 10 MB, over ORBIT's 2 MiB return limit; the in-process profiler
+  omitted `sys_write_bytes` (the last one, 3adefa8, is local only so far).
+- rhapsody: the ORBIT backend never delivered an executable task's stdout
+  (ORBIT's notifications leave it out, asyncflow needs it), so the Pi
+  predictor's executable tasks never completed.  Fixed on branch
+  `fix/orbit-exec-stdout`; P8b ran on e491cd2 + that fix, installed into the
+  P8b env only.
+- this harness: the endpoint runs tasks in a spawn process pool
+  (`p8b_endpoint.py`); with rhapsody's default thread pool, concurrent Keras
+  trainings crash in one process.

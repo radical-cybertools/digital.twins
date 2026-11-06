@@ -497,3 +497,13 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
   emits `sys_write_bytes` from `write_chars`); by hand the eval then
   predicts 5.40 s for that profile. Teardown: the endpoint ignored TERM and
   was killed after 15 s; isolation check ran, empty. Run 6 uses the fix.
+- **Run 6, job 60917837 (gpu_debug, 20:46; xGFabric 3adefa8 + rhapsody
+  e491cd2+stdout fix): P8b works end to end.** The twin ran its 18 min and
+  was still `running`; 347 probes, 0 errors. All three surrogates trained
+  repeatedly inside the twin (FNO x 3-4, PINN x 3, PCR x 3 archives), the
+  Pi predictor trained and retrained (baseline MAE 0.456, then 0.527,
+  0.466, 0.492), and the selector switched as profiles arrived: `fno`
+  from 297 s (19 probes, p50 731 ms), `pcr` at 372 s (1 probe, 19.4 s),
+  `pinn` from 392 s to the end (228 probes, p50 194 ms). It settled on the
+  model that is also the cheapest by measurement. Isolation check empty;
+  the endpoint again needed the KILL after TERM.
