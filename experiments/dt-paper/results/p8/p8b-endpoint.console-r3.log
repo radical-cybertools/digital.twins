@@ -1,0 +1,831 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm2/orbit-logs/endpoint-p8b.log
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['rhapsody', 'staging', 'sysinfo', 'queue_info']
+INFO [PluginHost] Loaded plugin: rhapsody
+INFO [PluginHost] Loaded plugin: staging
+INFO [PluginHost] Loaded plugin: sysinfo
+INFO [PluginHost] Loaded plugin: queue_info
+INFO Starting ORBIT endpoint (https://127.0.0.1:8431)
+INFO [Runtime] registered as 'dt_p8b_ep' (role=endpoint, plugins=['rhapsody', 'staging', 'sysinfo', 'queue_info'])
+INFO [rhapsody] Registered session session.dc90cbe5
+INFO ProcessPoolExecutor execution backend started successfully
+INFO [rhapsody] Registered session session.5bdb6c66
+INFO ProcessPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.dc90cbe5.1793973295.telemetry.jsonl
+INFO [session.dc90cbe5] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.5bdb6c66.1793973295.telemetry.jsonl
+INFO [session.5bdb6c66] Session initialization complete
+INFO [sysinfo] Registered session session.f7b4e958 (owner=rhapsody.fa4fe0b8.inference)
+INFO [sysinfo] Unregistered session session.f7b4e958
+INFO [sysinfo] Registered session session.ecf6d3e7 (owner=rhapsody.fa4fe0b8.learning)
+INFO [sysinfo] Unregistered session session.ecf6d3e7
+Do simulation
+[90m2026-11-06 05:55:07.730[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/2/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+Do simulation
+[90m2026-11-06 05:55:07.730[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/1/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+Do simulation
+[90m2026-11-06 05:55:07.730[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.730[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Task /WindField/sim/2 started on nid001093!
+[90m2026-11-06 05:55:07.731[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Task /WindField/sim/1 started on nid001093!
+[90m2026-11-06 05:55:07.731[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Task /WindField/sim/2 finished!
+[90m2026-11-06 05:55:07.731[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Task /WindField/sim/0 started on nid001093!
+[90m2026-11-06 05:55:07.731[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Task /WindField/sim/1 finished!
+[90m2026-11-06 05:55:07.731[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Task /WindField/sim/0 finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:55:07.734[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/3/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+Do simulation
+[90m2026-11-06 05:55:07.735[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/4/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.735[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Task /WindField/sim/3 started on nid001093!
+[90m2026-11-06 05:55:07.735[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Task /WindField/sim/3 finished!
+[90m2026-11-06 05:55:07.735[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Task /WindField/sim/4 started on nid001093!
+[90m2026-11-06 05:55:07.735[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Task /WindField/sim/4 finished!
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:55:07.736[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/5/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:55:07.736[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Task /WindField/sim/5 started on nid001093!
+[90m2026-11-06 05:55:07.736[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Task /WindField/sim/5 finished!
+Do simulation
+[90m2026-11-06 05:55:07.738[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/6/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.738[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Task /WindField/sim/6 started on nid001093!
+[90m2026-11-06 05:55:07.738[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Task /WindField/sim/6 finished!
+Do simulation
+[90m2026-11-06 05:55:07.739[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/7/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.739[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Task /WindField/sim/7 started on nid001093!
+[90m2026-11-06 05:55:07.739[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Task /WindField/sim/7 finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:55:07.746[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/8/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.746[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Task /WindField/sim/8 started on nid001093!
+[90m2026-11-06 05:55:07.747[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Task /WindField/sim/8 finished!
+Do simulation
+[90m2026-11-06 05:55:07.747[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/9/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.747[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Task /WindField/sim/9 started on nid001093!
+[90m2026-11-06 05:55:07.747[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Task /WindField/sim/9 finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:55:07.748[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/10/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.748[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Task /WindField/sim/10 started on nid001093!
+[90m2026-11-06 05:55:07.748[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Task /WindField/sim/10 finished!
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:55:07.750[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/11/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.751[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Task /WindField/sim/11 started on nid001093!
+[90m2026-11-06 05:55:07.751[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Task /WindField/sim/11 finished!
+Do simulation
+[90m2026-11-06 05:55:07.751[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/12/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.751[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Task /WindField/sim/12 started on nid001093!
+[90m2026-11-06 05:55:07.751[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Task /WindField/sim/12 finished!
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:55:07.752[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/13/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:55:07.752[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Task /WindField/sim/13 started on nid001093!
+[90m2026-11-06 05:55:07.752[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Task /WindField/sim/13 finished!
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:55:07.754[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/14/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.754[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Task /WindField/sim/14 started on nid001093!
+[90m2026-11-06 05:55:07.754[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Task /WindField/sim/14 finished!
+Do simulation
+[90m2026-11-06 05:55:07.755[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/sim/15/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:07.755[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Task /WindField/sim/15 started on nid001093!
+[90m2026-11-06 05:55:07.755[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Task /WindField/sim/15 finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Falling back to TensorFlow client; we recommended you install the Cloud TPU client directly with pip install cloud-tpu-client.
+DEBUG Falling back to TensorFlow client; we recommended you install the Cloud TPU client directly with pip install cloud-tpu-client.
+[90m2026-11-06 05:55:09.393[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/pcr/partition/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:09.393[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Task /WindField/pcr/partition/0 started on nid001093!
+INFO partition_pcr_grid: 85x38x4=12920pts -> 8 machines (1615+0r pts/machine)
+[90m2026-11-06 05:55:09.419[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ prepare_pcr_data: Starting (KD-Tree optimized)
+[90m2026-11-06 05:55:09.420[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Grid: 85x38x4=12920pts, 8 machines, radius=1.5m
+[90m2026-11-06 05:55:09.438[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Loaded 16 sensor readings
+DEBUG Started <_ProcessReaper(Local Executor Process Reaper, started daemon 140071096182464)>
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG Started <_ProcessReaper(Local Executor Process Reaper, started daemon 139953024964288)>
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG matplotlib data path: /pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data
+DEBUG matplotlib data path: /pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data
+DEBUG CONFIGDIR=/global/u2/m/merzky/.config/matplotlib
+DEBUG interactive is False
+DEBUG platform is linux
+DEBUG CACHEDIR=/global/u2/m/merzky/.cache/matplotlib
+DEBUG Using fontManager instance from /global/u2/m/merzky/.cache/matplotlib/fontlist-v3.11.0.json
+DEBUG CONFIGDIR=/global/u2/m/merzky/.config/matplotlib
+DEBUG interactive is False
+DEBUG platform is linux
+DEBUG CACHEDIR=/global/u2/m/merzky/.cache/matplotlib
+DEBUG Using fontManager instance from /global/u2/m/merzky/.cache/matplotlib/fontlist-v3.11.0.json
+[90m2026-11-06 05:55:12.229[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/pinn/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:12.229[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Task /WindField/pinn/0 started on nid001093!
+DEBUG Loaded backend Agg version v2.2.
+[90m2026-11-06 05:55:12.332[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:55:12.332[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Task /WindField/fno/0 started on nid001093!
+[90m2026-11-06 05:55:12.333[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ======================================================================
+[90m2026-11-06 05:55:12.333[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ FNO2D training  |  single-file
+[90m2026-11-06 05:55:12.333[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Output dir : /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/0/results
+[90m2026-11-06 05:55:12.333[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ TensorFlow : 2.21.0
+[90m2026-11-06 05:55:13.697[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ GPUs       : [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:2', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:3', device_type='GPU')]
+[90m2026-11-06 05:55:13.698[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ======================================================================
+[90m2026-11-06 05:55:13.698[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Grid: 48x24  modes=(12,6)  hidden=64  layers=4
+[90m2026-11-06 05:55:13.704[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.704[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.704[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.704[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:55:13.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Training: epochs=5  batch=4  lr=0.002  patience=3
+Loading CSVs Progress: 0.0
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.0625
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.125
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.1875
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.25
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.3125
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.375
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.4375
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.5
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.5625
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.625
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.6875
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.75
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.8125
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.875
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.9375
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+[90m2026-11-06 06:00:50.564[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Loaded 16 (ws, snapshot) pairs
+[90m2026-11-06 06:00:50.564[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ WS range : 0.0 – 0.9 m/s (16 unique)
+[90m2026-11-06 06:00:50.565[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ VEL_MAX  : 2.0193 m/s    WS_MAX : 0.95 m/s
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:08.442[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.30  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:09.437[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.48  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:10.360[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.26  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:11.449[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.06  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:12.506[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.21  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+Building grids: 0.0
+Building grids: 0.0625
+Building grids: 0.125
+Building grids: 0.1875
+Building grids: 0.25
+Building grids: 0.3125
+Building grids: 0.375
+Building grids: 0.4375
+Building grids: 0.5
+Building grids: 0.5625
+Building grids: 0.625
+Building grids: 0.6875
+Building grids: 0.75
+Building grids: 0.8125
+Building grids: 0.875
+Building grids: 0.9375
+[90m2026-11-06 06:01:12.589[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Dataset  X=(160, 48, 24, 18)  Y=(160, 48, 24, 2)
+[90m2026-11-06 06:01:12.589[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Split    train=115 / val=21 / test=24
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:13.441[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.21  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793973673.659722 1099302 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973673.664171 1099302 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973673.668639 1099302 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973673.673106 1099302 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:14.411[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.15  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:15.326[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.14  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+[90m2026-11-06 06:01:15.885[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ FNO2D  2,379,810 trainable parameters
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:16.263[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.89  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+[90m2026-11-06 06:01:17.019[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Starting training  (115 train / 21 val samples)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:17.170[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.05  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:18.105[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.46  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:19.013[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.34  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:19.909[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.35  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:20.788[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.95  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:21.717[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.00  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 06:01:22.605[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.85  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+[90m2026-11-06 06:01:22.742[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Total points: 80,000  VEL_MAX=1.8210 m/s  WS_MAX=0.95 m/s
+[90m2026-11-06 06:01:22.782[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   train: 59,999 samples
+[90m2026-11-06 06:01:22.782[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │     val:  8,001 samples
+[90m2026-11-06 06:01:22.783[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │    test: 12,000 samples
+[90m2026-11-06 06:01:22.783[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Collocation: 500 points in (x, y, z, ws)
+[90m2026-11-06 06:01:22.783[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Physics weight alpha = 0.07
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793973684.235091 1099432 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973684.245338 1099432 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973684.254277 1099432 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973684.264420 1099432 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-06 06:01:25.092[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ epoch    0  train=8.8080e-02  val=1.6238e-02  best=inf  pat=0/3
+[90m2026-11-06 06:01:25.323[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ PhysicsMLP3D: 66,946 parameters  (4 blocks x 128 hidden, tanh, skip connections)
+[90m2026-11-06 06:01:26.446[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ 
+Training PhysicsMLP3D for up to 5 epochs ...
+[90m2026-11-06 06:01:48.395[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Epoch    0: train=1.7893e-02  val=1.1356e-02  phys=1.30e-06  div=1.29e-06  best=inf  pat=0/3
+[90m2026-11-06 06:01:51.637[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ epoch    4  train=7.7182e-03  val=1.2884e-02  best=1.2033e-02  pat=2/3
+[90m2026-11-06 06:01:51.638[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Early stop at epoch 4
+[90m2026-11-06 06:01:51.657[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Training done  best_val_mse=1.203293e-02  (0.6 min)
+DEBUG Creating converter from 5 to 3
+[90m2026-11-06 06:01:51.715[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Model saved to /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/0/results
+[90m2026-11-06 06:01:51.812[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ──────────────────────────────────────────────────
+[90m2026-11-06 06:01:51.812[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   RMSE(u)     : 0.2135 m/s
+[90m2026-11-06 06:01:51.812[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   RMSE(v)     : 0.0660 m/s
+[90m2026-11-06 06:01:51.812[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   RMSE(speed) : 0.1932 m/s
+[90m2026-11-06 06:01:51.812[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   MAE(speed)  : 0.1354 m/s
+[90m2026-11-06 06:01:51.813[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ──────────────────────────────────────────────────
+[90m2026-11-06 06:01:52.675[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Plots saved to .
+[90m2026-11-06 06:01:52.675[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ [TIMER] total=0h 6m 40s  (6.7 min)
+[90m2026-11-06 06:01:52.675[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ✓ All done
+[90m2026-11-06 06:01:52.677[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Running tar: tar -czf /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/0/results/fno.tar.gz -C /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/0/results model.weights.h5 test_metrics.json model_meta.json test_metrics.json model_meta.json training_history.csv
+[90m2026-11-06 06:01:53.170[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Task /WindField/fno/0 finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:01:54.148[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:01:54.148[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:01:54.339[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:01:54.339[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:01:54.339[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:01:54.758[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:01:54.759[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:01:54.759[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:01:54.871[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:01:55.153[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:01:55.153[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:01:55.350[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:01:55.351[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:01:55.351[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:01:55.789[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:01:55.789[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:01:55.789[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:01:55.907[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:01:56.151[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:01:56.152[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:01:56.342[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:01:56.342[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:01:56.342[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:01:56.762[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:01:56.763[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:01:56.763[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:01:56.875[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:01:57.155[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:01:57.155[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:01:57.263[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:01:57.263[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:01:57.263[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:01:57.672[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:01:57.672[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:01:57.690[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:01:57.690[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:01:57.690[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:01:57.804[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-06 06:01:57.810[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:01:57.810[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:01:57.811[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:01:57.811[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:01:57.811[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:01:57.944[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:01:57.944[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:01:57.944[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:01:58.154[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:01:58.154[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:01:58.282[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:01:58.282[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:01:58.282[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:01:58.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:01:58.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:01:58.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:01:58.816[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:01:59.156[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:01:59.156[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:01:59.329[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:01:59.329[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:01:59.329[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:01:59.745[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:01:59.745[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:01:59.745[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:01:59.856[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:02:00.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:02:00.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793973720.213619 1100100 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973720.217743 1100100 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973720.221576 1100100 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973720.230604 1100100 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-06 06:02:00.267[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:02:00.267[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:02:00.267[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793973720.329279 1100097 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973720.340642 1100097 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973720.344463 1100097 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973720.348479 1100097 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-06 06:02:00.692[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:00.692[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:00.692[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:00.805[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:02:01.159[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:02:01.159[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:02:01.305[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:02:01.305[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:02:01.305[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:02:01.713[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:01.713[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:01.713[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:01.832[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:02:02.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:02:02.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:02:02.326[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:02:02.326[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:02:02.326[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:02:02.417[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:02.417[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:02.417[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:02.421[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:02.422[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:02.422[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:02.531[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-06 06:02:02.535[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-06 06:02:02.751[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:02.751[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:02.751[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:02.864[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:02:06.430[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:02:06.430[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:02:06.659[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:02:06.659[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:02:06.659[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:02:06.944[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:02:06.944[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:02:07.068[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:02:07.068[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:02:07.068[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793973729.107369 1100096 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973729.132623 1100096 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973729.151332 1100096 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973729.171482 1100096 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793973729.690629 1100098 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973729.694341 1100098 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973729.703791 1100098 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973729.707657 1100098 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-06 06:02:11.347[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:11.347[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:11.347[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:11.460[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:02:11.936[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:11.936[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:11.936[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:12.049[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0.
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf', index=0, name='DejaVu Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 0.33499999999999996
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf', index=0, name='cmmi10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/LastResortHE-Regular.ttf', index=0, name='Last Resort High-Efficiency', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBolIta.ttf', index=0, name='STIXNonUnicode', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBolIta.ttf', index=0, name='STIXGeneral', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFiveSymReg.ttf', index=0, name='STIXSizeFiveSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneral.ttf', index=0, name='STIXGeneral', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmsy10.ttf', index=0, name='cmsy10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf', index=0, name='DejaVu Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 0.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymBol.ttf', index=0, name='STIXSizeOneSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniIta.ttf', index=0, name='STIXNonUnicode', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymReg.ttf', index=0, name='STIXSizeFourSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmb10.ttf', index=0, name='cmb10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmss10.ttf', index=0, name='cmss10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono.ttf', index=0, name='DejaVu Sans Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUni.ttf', index=0, name='STIXNonUnicode', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBol.ttf', index=0, name='STIXGeneral', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansDisplay.ttf', index=0, name='DejaVu Sans Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf', index=0, name='DejaVu Sans', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 1.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf', index=0, name='DejaVu Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmtt10.ttf', index=0, name='cmtt10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBol.ttf', index=0, name='STIXNonUnicode', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymBol.ttf', index=0, name='STIXSizeFourSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmr10.ttf', index=0, name='cmr10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymReg.ttf', index=0, name='STIXSizeThreeSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralItalic.ttf', index=0, name='STIXGeneral', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Oblique.ttf', index=0, name='DejaVu Sans Mono', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymBol.ttf', index=0, name='STIXSizeTwoSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerifDisplay.ttf', index=0, name='DejaVu Serif Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Italic.ttf', index=0, name='DejaVu Serif', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf', index=0, name='DejaVu Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf', index=0, name='DejaVu Serif', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmex10.ttf', index=0, name='cmex10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymReg.ttf', index=0, name='STIXSizeTwoSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-BoldOblique.ttf', index=0, name='DejaVu Sans Mono', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmti10.ttf', index=0, name='cmti10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Bold.ttf', index=0, name='DejaVu Sans Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-BoldOblique.ttf', index=0, name='DejaVu Sans', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 1.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymReg.ttf', index=0, name='STIXSizeOneSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymBol.ttf', index=0, name='STIXSizeThreeSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSans-BoldItalic.ttf', index=0, name='Liberation Sans', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luximr.ttf', index=0, name='Luxi Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSans-Italic.ttf', index=0, name='Liberation Sans', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSans-Regular.ttf', index=0, name='Liberation Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMMardin.otf', index=0, name='Serto Mardin', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMJerusalemItalic.otf', index=0, name='Serto Jerusalem', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxirbi.ttf', index=0, name='Luxi Serif', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationMono-Regular.ttf', index=0, name='Liberation Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationMono-Bold.ttf', index=0, name='Liberation Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMEdessa.otf', index=0, name='Estrangelo Edessa', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxirri.ttf', index=0, name='Luxi Serif', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxisr.ttf', index=0, name='Luxi Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSansNarrow-BoldItalic.ttf', index=0, name='Liberation Sans Narrow', style='italic', variant='normal', weight=700, stretch='condensed', size='scalable')) = 11.535
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationMono-BoldItalic.ttf', index=0, name='Liberation Mono', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMJerusalem.otf', index=0, name='Serto Jerusalem', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luximbi.ttf', index=0, name='Luxi Mono', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMCtesiphon.otf', index=0, name='East Syriac Ctesiphon', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMTurAbdin.otf', index=0, name='Estrangelo TurAbdin', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSerif-BoldItalic.ttf', index=0, name='Liberation Serif', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMQenNeshrin.otf', index=0, name='Estrangelo Quenneshrin', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationMono-Italic.ttf', index=0, name='Liberation Mono', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMJerusalemBold.otf', index=0, name='Serto Jerusalem', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMNisibin.otf', index=0, name='Estrangelo Nisibin', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMTalada.otf', index=0, name='Estrangelo Talada', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxisbi.ttf', index=0, name='Luxi Sans', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMJerusalemOutline.otf', index=0, name='Serto Jerusalem Outline', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMBatnan.otf', index=0, name='Serto Batnan', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSansNarrow-Bold.ttf', index=0, name='Liberation Sans Narrow', style='normal', variant='normal', weight=700, stretch='condensed', size='scalable')) = 10.535
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSerif-Italic.ttf', index=0, name='Liberation Serif', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMMalankara.otf', index=0, name='Serto Malankara', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMAntioch.otf', index=0, name='Estrangelo Antioch', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMMardinBold.otf', index=0, name='Serto Mardin', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSans-Bold.ttf', index=0, name='Liberation Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSansNarrow-Italic.ttf', index=0, name='Liberation Sans Narrow', style='italic', variant='normal', weight=400, stretch='condensed', size='scalable')) = 11.25
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMNisibinOutline.otf', index=0, name='Estrangelo Nisibin Outline', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxirr.ttf', index=0, name='Luxi Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSerif-Regular.ttf', index=0, name='Liberation Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMMidyat.otf', index=0, name='Estrangelo Midyat', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxisri.ttf', index=0, name='Luxi Sans', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMUrhoyBold.otf', index=0, name='Serto Urhoy', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/GohaTibebZemen.otf', index=0, name='Goha-Tibeb Zemen', style='normal', variant='normal', weight=500, stretch='normal', size='scalable')) = 10.145
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSansNarrow-Regular.ttf', index=0, name='Liberation Sans Narrow', style='normal', variant='normal', weight=400, stretch='condensed', size='scalable')) = 10.25
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxisb.ttf', index=0, name='Luxi Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luximb.ttf', index=0, name='Luxi Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMAdiabene.otf', index=0, name='East Syriac Adiabene', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luximri.ttf', index=0, name='Luxi Mono', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMUrhoy.otf', index=0, name='Serto Urhoy', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMKharput.otf', index=0, name='Serto Kharput', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMBatnanBold.otf', index=0, name='Serto Batnan', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxirb.ttf', index=0, name='Luxi Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSerif-Bold.ttf', index=0, name='Liberation Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0 to DejaVu Sans ('/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf') with score of 0.050000.
+DEBUG Using selector: EpollSelector
+DEBUG locator: <matplotlib.ticker.AutoLocator object at 0x7f57041d47d0>
+[90m2026-11-06 06:02:12.096[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:02:12.096[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+DEBUG findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=12.0.
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf', index=0, name='DejaVu Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 0.33499999999999996
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf', index=0, name='cmmi10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/LastResortHE-Regular.ttf', index=0, name='Last Resort High-Efficiency', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBolIta.ttf', index=0, name='STIXNonUnicode', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBolIta.ttf', index=0, name='STIXGeneral', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFiveSymReg.ttf', index=0, name='STIXSizeFiveSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneral.ttf', index=0, name='STIXGeneral', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmsy10.ttf', index=0, name='cmsy10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf', index=0, name='DejaVu Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 0.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymBol.ttf', index=0, name='STIXSizeOneSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniIta.ttf', index=0, name='STIXNonUnicode', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymReg.ttf', index=0, name='STIXSizeFourSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmb10.ttf', index=0, name='cmb10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmss10.ttf', index=0, name='cmss10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono.ttf', index=0, name='DejaVu Sans Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUni.ttf', index=0, name='STIXNonUnicode', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBol.ttf', index=0, name='STIXGeneral', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansDisplay.ttf', index=0, name='DejaVu Sans Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf', index=0, name='DejaVu Sans', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 1.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf', index=0, name='DejaVu Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmtt10.ttf', index=0, name='cmtt10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBol.ttf', index=0, name='STIXNonUnicode', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymBol.ttf', index=0, name='STIXSizeFourSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmr10.ttf', index=0, name='cmr10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymReg.ttf', index=0, name='STIXSizeThreeSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralItalic.ttf', index=0, name='STIXGeneral', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Oblique.ttf', index=0, name='DejaVu Sans Mono', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymBol.ttf', index=0, name='STIXSizeTwoSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerifDisplay.ttf', index=0, name='DejaVu Serif Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Italic.ttf', index=0, name='DejaVu Serif', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf', index=0, name='DejaVu Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf', index=0, name='DejaVu Serif', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmex10.ttf', index=0, name='cmex10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymReg.ttf', index=0, name='STIXSizeTwoSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-BoldOblique.ttf', index=0, name='DejaVu Sans Mono', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/cmti10.ttf', index=0, name='cmti10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Bold.ttf', index=0, name='DejaVu Sans Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-BoldOblique.ttf', index=0, name='DejaVu Sans', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 1.335
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymReg.ttf', index=0, name='STIXSizeOneSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymBol.ttf', index=0, name='STIXSizeThreeSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSans-BoldItalic.ttf', index=0, name='Liberation Sans', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luximr.ttf', index=0, name='Luxi Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSans-Italic.ttf', index=0, name='Liberation Sans', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSans-Regular.ttf', index=0, name='Liberation Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMMardin.otf', index=0, name='Serto Mardin', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMJerusalemItalic.otf', index=0, name='Serto Jerusalem', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxirbi.ttf', index=0, name='Luxi Serif', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationMono-Regular.ttf', index=0, name='Liberation Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationMono-Bold.ttf', index=0, name='Liberation Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMEdessa.otf', index=0, name='Estrangelo Edessa', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxirri.ttf', index=0, name='Luxi Serif', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxisr.ttf', index=0, name='Luxi Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSansNarrow-BoldItalic.ttf', index=0, name='Liberation Sans Narrow', style='italic', variant='normal', weight=700, stretch='condensed', size='scalable')) = 11.535
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationMono-BoldItalic.ttf', index=0, name='Liberation Mono', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMJerusalem.otf', index=0, name='Serto Jerusalem', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luximbi.ttf', index=0, name='Luxi Mono', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMCtesiphon.otf', index=0, name='East Syriac Ctesiphon', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMTurAbdin.otf', index=0, name='Estrangelo TurAbdin', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSerif-BoldItalic.ttf', index=0, name='Liberation Serif', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMQenNeshrin.otf', index=0, name='Estrangelo Quenneshrin', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationMono-Italic.ttf', index=0, name='Liberation Mono', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMJerusalemBold.otf', index=0, name='Serto Jerusalem', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMNisibin.otf', index=0, name='Estrangelo Nisibin', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMTalada.otf', index=0, name='Estrangelo Talada', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxisbi.ttf', index=0, name='Luxi Sans', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMJerusalemOutline.otf', index=0, name='Serto Jerusalem Outline', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMBatnan.otf', index=0, name='Serto Batnan', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSansNarrow-Bold.ttf', index=0, name='Liberation Sans Narrow', style='normal', variant='normal', weight=700, stretch='condensed', size='scalable')) = 10.535
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSerif-Italic.ttf', index=0, name='Liberation Serif', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMMalankara.otf', index=0, name='Serto Malankara', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMAntioch.otf', index=0, name='Estrangelo Antioch', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMMardinBold.otf', index=0, name='Serto Mardin', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSans-Bold.ttf', index=0, name='Liberation Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSansNarrow-Italic.ttf', index=0, name='Liberation Sans Narrow', style='italic', variant='normal', weight=400, stretch='condensed', size='scalable')) = 11.25
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMNisibinOutline.otf', index=0, name='Estrangelo Nisibin Outline', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxirr.ttf', index=0, name='Luxi Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSerif-Regular.ttf', index=0, name='Liberation Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMMidyat.otf', index=0, name='Estrangelo Midyat', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxisri.ttf', index=0, name='Luxi Sans', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMUrhoyBold.otf', index=0, name='Serto Urhoy', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/GohaTibebZemen.otf', index=0, name='Goha-Tibeb Zemen', style='normal', variant='normal', weight=500, stretch='normal', size='scalable')) = 10.145
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSansNarrow-Regular.ttf', index=0, name='Liberation Sans Narrow', style='normal', variant='normal', weight=400, stretch='condensed', size='scalable')) = 10.25
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxisb.ttf', index=0, name='Luxi Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luximb.ttf', index=0, name='Luxi Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMAdiabene.otf', index=0, name='East Syriac Adiabene', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luximri.ttf', index=0, name='Luxi Mono', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMUrhoy.otf', index=0, name='Serto Urhoy', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMKharput.otf', index=0, name='Serto Kharput', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/SyrCOMBatnanBold.otf', index=0, name='Serto Batnan', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/luxirb.ttf', index=0, name='Luxi Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: score(FontEntry(fname='/usr/share/fonts/truetype/LiberationSerif-Bold.ttf', index=0, name='Liberation Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+DEBUG findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=12.0 to DejaVu Sans ('/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf') with score of 0.050000.
+[90m2026-11-06 06:02:12.299[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:02:12.299[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:02:12.299[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:02:12.700[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:12.700[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:12.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:12.810[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG locator: <matplotlib.ticker.AutoLocator object at 0x7fdd28131010>
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 06:02:12.857[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:02:12.858[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:02:12.993[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:02:12.993[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:02:12.993[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 06:02:13.296[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Processed 16 sims in 0h 7m 3s, ws=[0.001417701665498372, 0.05325279072205824, 0.05941443757429454, 0.14373596040472036, 0.15376820101894295, 0.20600864450645728, 0.21025377187728866, 0.2558849370412547, 0.301839477209738, 0.3419517421021807, 0.3534725780604031, 0.4632594000713939, 0.4819876647799969, 0.853744688728584, 0.8937815144994128, 0.9495605193246138]
+Creating machine files: 0 / 8
+Creating machine files: 1 / 8
+Creating machine files: 2 / 8
+Creating machine files: 3 / 8
+Creating machine files: 4 / 8
+Creating machine files: 5 / 8
+Creating machine files: 6 / 8
+Creating machine files: 7 / 8
+[90m2026-11-06 06:02:13.364[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Task /WindField/pcr/partition/0 finished!
+[90m2026-11-06 06:02:13.409[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:13.409[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:13.409[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:13.523[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+ERROR [session.dc90cbe5] return_value too large: 9938047 wire bytes exceed the 2097152 byte limit — stage the result to a file instead
+[90m2026-11-06 06:02:15.153[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 06:02:15.154[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001093!
+[90m2026-11-06 06:02:15.408[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 06:02:15.408[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.0193  WS_MAX=0.9495605193246138
+[90m2026-11-06 06:02:15.408[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793973737.327458 1100099 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973737.331430 1100099 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973737.335191 1100099 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793973737.339770 1100099 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-06 06:02:19.360[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 06:02:19.361[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.01203  epochs = 5
+[90m2026-11-06 06:02:19.361[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 06:02:19.466[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+INFO {
+    "session_id": "session.dc90cbe5",
+    "duration_seconds": 448.547482,
+    "tasks": {
+        "submitted": 1603,
+        "completed": 1602,
+        "failed": 0,
+        "canceled": 1,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 1328.588147,
+        "mean_seconds": 0.828814,
+        "min_seconds": 0.001178,
+        "max_seconds": 426.083615
+    },
+    "resources": {
+        "concurrent/nid001093": {
+            "backend": "concurrent",
+            "node_id": "nid001093",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+{
+    "session_id": "session.dc90cbe5",
+    "duration_seconds": 448.547482,
+    "tasks": {
+        "submitted": 1603,
+        "completed": 1602,
+        "failed": 0,
+        "canceled": 1,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 1328.588147,
+        "mean_seconds": 0.828814,
+        "min_seconds": 0.001178,
+        "max_seconds": 426.083615
+    },
+    "resources": {
+        "concurrent/nid001093": {
+            "backend": "concurrent",
+            "node_id": "nid001093",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+INFO {
+    "session_id": "session.5bdb6c66",
+    "duration_seconds": 448.567002,
+    "tasks": {
+        "submitted": 107,
+        "completed": 107,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 430.112897,
+        "mean_seconds": 4.019747,
+        "min_seconds": 4.002577,
+        "max_seconds": 5.494199
+    },
+    "resources": {
+        "concurrent/nid001093": {
+            "backend": "concurrent",
+            "node_id": "nid001093",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+{
+    "session_id": "session.5bdb6c66",
+    "duration_seconds": 448.567002,
+    "tasks": {
+        "submitted": 107,
+        "completed": 107,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 430.112897,
+        "mean_seconds": 4.019747,
+        "min_seconds": 4.002577,
+        "max_seconds": 5.494199
+    },
+    "resources": {
+        "concurrent/nid001093": {
+            "backend": "concurrent",
+            "node_id": "nid001093",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fb6f9b85e90> at 0x7fb2b491d400> was created in a different Context
+INFO Received shutdown signal
+INFO Endpoint stopping
+INFO Endpoint stopped
+[90m2026-11-06 06:03:06.663[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Epoch    4: train=1.0143e-02  val=1.0971e-02  phys=1.17e-06  div=1.15e-06  best=1.0985e-02  pat=0/3
+DEBUG Creating converter from 5 to 3
+[90m2026-11-06 06:03:06.693[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Model meta saved -> /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/pinn/0/results/pinn.model_meta.json
+[90m2026-11-06 06:03:06.700[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ === Final Test Results ===
+[90m2026-11-06 06:03:06.700[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ RMSE_u: 0.256 m/s
+[90m2026-11-06 06:03:06.700[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ RMSE_v: 0.088 m/s
+[90m2026-11-06 06:03:06.700[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ RMSE_speed: 0.238 m/s
+[90m2026-11-06 06:03:06.700[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Model saved to /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/pinn/0/results/pinn.weights.h5
+[90m2026-11-06 06:03:06.705[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Training history saved -> /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/pinn/0/results/training_history.csv
+[90m2026-11-06 06:03:06.771[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Running tar: tar -czf /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/pinn/0/results/pinn.tar.gz -C /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60903642/WindField/pinn/0/results pinn.weights.h5 pinn.normalization.json pinn.model_meta.json pinn.run.json
+[90m2026-11-06 06:03:06.912[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Task /WindField/pinn/0 finished!
+INFO Concurrent execution backend shutdown complete

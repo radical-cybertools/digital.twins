@@ -428,3 +428,15 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
   Not pushed: it goes beyond the approved PINN fix; asking Andre whether
   it joins PR #17. The precheck now also runs 2 x 4 overlapping evals per
   model in separate processes. Run 3 uses both.
+- Run 3, job 60903642 (gpu_debug, 10 min, xGFabric 56490dc): precheck
+  passes incl. 2 x 8 overlapping evals per model in separate processes;
+  no interim-dir error. 3 real FNO inferences from 417 s (8.0-9.2 s each:
+  each lands on a fresh spawn worker that imports TF first). Twin failed at
+  443 s in the PCR investigator: `tk_pcr_partition`'s ~10 MB return value
+  exceeds the ORBIT rhapsody plugin's 2 MiB limit (endpoint log:
+  "return_value too large: 9938047 wire bytes exceed the 2097152 byte
+  limit -- stage the result to a file instead"), so `do_train` got None.
+  The September playground shows the same: partition finished, no PCR model.
+- Fix, local only: xGFabric 438d0d3, the partition writes `machine_<i>.pkl`
+  to its OUTPUT_DIR and returns the paths; `tk_do_pcr` loads its file (a
+  dict is still accepted). Run 4 uses it.
