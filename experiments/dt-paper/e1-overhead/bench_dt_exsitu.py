@@ -4,8 +4,9 @@ Two rows on the same local process pool and the same no-op tasks (a
 training, an active-learning and an always-met criterion task per window,
 all `as_executable=False` function tasks):
 
-  bare   ROSE's `StreamingActiveLearner` fed in-process (`attach_source`),
-         as in `streaming_learner_perf.py` engine mode
+  bare   ROSE's `SequentialActiveLearner` on a `rose.Stream` fed in-process
+         (`attach_source`, `skip_simulation_step=True`), as in
+         `streaming_learner_perf.py` engine mode
   dt     a `StreamingLearnerInvestigator` subclass in a `DTRuntime`, fed
          through the twin's input edge: an external `ChannelPublisher`
          (as a sensor script opens one) publishes every sample on a
@@ -50,7 +51,8 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 from radical.asyncflow import WorkflowEngine  # type: ignore
-from rose.al.streaming_learner import StreamingActiveLearner  # type: ignore
+from rose import Stream  # type: ignore
+from rose.al.active_learner import SequentialActiveLearner  # type: ignore
 
 from digitaltwin import (
     CODEC_JSON,
@@ -103,10 +105,14 @@ def window_latencies(feed_t, pub_t, bs):
     return out
 
 
-async def run_bare(flow, bs, n):
-    learner = StreamingActiveLearner(flow, batch_size=bs, max_wait=None,
-                                     conflate=False)
+def bare_learner(flow, bs):
+    learner = SequentialActiveLearner(flow)
     register(learner)
+    return learner, Stream(batch_size=bs, max_wait=None, conflate=False)
+
+
+async def run_bare(flow, bs, n):
+    learner, stream = bare_learner(flow, bs)
     feed_t, pub_t = [], []
     learner.on_model_ready(lambda state: pub_t.append(time.perf_counter()))
 
@@ -115,19 +121,17 @@ async def run_bare(flow, bs, n):
             feed_t.append(time.perf_counter())
             yield i
 
-    learner.attach_source(source())
+    stream.attach_source(source())
     count = 0
     t_last = None
-    async for state in learner.start():
+    async for state in learner.start(stream=stream, skip_simulation_step=True):
         count += state.window_size
         t_last = time.perf_counter()
     return count, t_last - feed_t[0], window_latencies(feed_t, pub_t, bs)
 
 
 async def run_bare_paced(flow, bs, windows):
-    learner = StreamingActiveLearner(flow, batch_size=bs, max_wait=None,
-                                     conflate=False)
-    register(learner)
+    learner, stream = bare_learner(flow, bs)
     published = asyncio.Event()
     pub_t = []
 
@@ -140,7 +144,8 @@ async def run_bare_paced(flow, bs, windows):
 
     async def consume():
         nonlocal count
-        async for state in learner.start():
+        async for state in learner.start(stream=stream,
+                                         skip_simulation_step=True):
             count += state.window_size
 
     consumer = asyncio.ensure_future(consume())
@@ -150,7 +155,7 @@ async def run_bare_paced(flow, bs, windows):
             published.clear()
             for i in range(bs):
                 t_feed = time.perf_counter()
-                await learner.feed(w * bs + i)
+                await stream.feed(w * bs + i)
             await asyncio.wait_for(published.wait(), DRAIN_TIMEOUT)
             lat.append(pub_t[-1] - t_feed)
     finally:

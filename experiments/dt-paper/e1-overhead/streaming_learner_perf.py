@@ -1,9 +1,13 @@
-"""Throughput benchmark for ROSE's StreamingActiveLearner.
+"""Throughput benchmark for ROSE's stream-driven learner.
+
+A `SequentialActiveLearner` started on a `rose.Stream` with
+`skip_simulation_step=True` (window -> training -> active learning, the
+shape of the former `StreamingActiveLearner`).
 
 Measures raw msg/sec over batch size for two feed paths:
-  - inproc:  items pushed straight into the learner via feed()
+  - inproc:  items pushed straight into the stream (attach_source)
   - zmq:     items published through the DT ZMQ broker (XSUB/XPUB proxy)
-             and forwarded to feed() by a PubSubClient subscriber
+             and forwarded to Stream.feed() by a PubSubClient subscriber
 
 and two task payloads:
   - stub:    task submission replaced by an async no-op
@@ -22,7 +26,8 @@ import time
 from unittest.mock import MagicMock
 
 from radical.asyncflow import WorkflowEngine
-from rose.al.streaming_learner import StreamingActiveLearner
+from rose import Stream
+from rose.al.active_learner import SequentialActiveLearner
 
 from digitaltwin.components import DataType
 from digitaltwin.streaming import PubSubClient, ZMQ_Broker, ZMQ_PS_Client
@@ -50,44 +55,43 @@ async def _stub_register(task_obj, deps=None):
 
 
 def make_learner(batch_size, mode, flow):
+    stream = Stream(batch_size=batch_size)
     if mode == "stub":
-        learner = StreamingActiveLearner(
-            MagicMock(spec=WorkflowEngine), batch_size=batch_size
-        )
+        learner = SequentialActiveLearner(MagicMock(spec=WorkflowEngine))
         learner.training_function = {"func": training}
         learner.active_learn_function = {"func": active_learn}
         learner._register_task = _stub_register
     else:
-        learner = StreamingActiveLearner(flow, batch_size=batch_size)
+        learner = SequentialActiveLearner(flow)
         learner.training_task(as_executable=False)(training)
         learner.active_learn_task(as_executable=False)(active_learn)
-    return learner
+    return learner, stream
 
 
-async def consume(learner):
+async def consume(learner, stream):
     """Drain the learner; return (n_items, elapsed until last window)."""
     n = 0
     t0 = t_last = time.perf_counter()
-    async for state in learner.start():
+    async for state in learner.start(stream=stream, skip_simulation_step=True):
         n += state.window_size
         t_last = time.perf_counter()
     return n, t_last - t0
 
 
 async def run_inproc(batch_size, mode, flow):
-    learner = make_learner(batch_size, mode, flow)
+    learner, stream = make_learner(batch_size, mode, flow)
 
     async def source():
         for i in range(N_MSGS[mode]):
             yield i
 
-    learner.attach_source(source())
-    n, elapsed = await consume(learner)
+    stream.attach_source(source())
+    n, elapsed = await consume(learner, stream)
     return n / elapsed
 
 
 async def run_zmq(batch_size, mode, flow):
-    learner = make_learner(batch_size, mode, flow)
+    learner, stream = make_learner(batch_size, mode, flow)
 
     pub = ZMQ_PS_Client(PUB_ADDR)
     await pub.connect()
@@ -106,7 +110,7 @@ async def run_zmq(batch_size, mode, flow):
             except asyncio.TimeoutError:
                 learner.stop()
                 return
-            await learner.feed(td.data)
+            await stream.feed(td.data)
 
     async def publish():
         for i in range(N_MSGS[mode]):
@@ -114,7 +118,7 @@ async def run_zmq(batch_size, mode, flow):
 
     fwd = asyncio.ensure_future(forward())
     pub_task = asyncio.ensure_future(publish())
-    n, elapsed = await consume(learner)
+    n, elapsed = await consume(learner, stream)
     await pub_task
     fwd.cancel()
     # learner.stop() fires after IDLE_TIMEOUT of silence; the last windows
