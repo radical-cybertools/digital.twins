@@ -294,3 +294,8 @@ Times are local (PST) unless noted.
   which the page rules out (no commits there). Open question for Andre:
   fix `tk_pinn_eval` in xGFabric (communicate() on the tar process; file
   and meta-key names) and train / stage a PCR model, then run P8b.
+- Update (Andre, 2026-11-06): session IDs are not secrets; a client
+  still needs the broker certificate (and token) to use one. The entry
+  above is therefore not an incident and the history needs no rewrite;
+  the redaction commit cb82078 stays (harmless). Tokens, keys and certs
+  remain off limits; those were never committed.
