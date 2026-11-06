@@ -22,8 +22,10 @@ Updated after every job (sacct elapsed x nodes).
 | 60927071 | s1-p3 | m5290 | 1 | 00:01:03 | 0.018 | 0.04 | 0.00 |
 | 60927270 | s1-p3re | m5290 | 1 | 00:01:05 | 0.018 | 0.05 | 0.00 |
 | 60927438 | s1-p3spy | m5290 | 1 | 00:00:24 | 0.007 | 0.06 | 0.00 |
-| 60930960 | s1-p7 | m5290 | 1 | 00:02:43 | 0.045 | 0.11 | 0.00 |
-| 60930964 | s1-p6 | m5290 | 1 | 00:06:01 | 0.100 | 0.21 | 0.00 |
+| 60930958 | s1-p5 | m5290 | 1 | 00:16:54 | 0.282 | 0.34 | 0.00 |
+| 60930960 | s1-p7 | m5290 | 1 | 00:02:43 | 0.045 | 0.39 | 0.00 |
+| 60930964 | s1-p6 | m5290 | 1 | 00:06:01 | 0.100 | 0.49 | 0.00 |
+| 60930968 | s1-p2 | m5290 | 1 | 00:08:02 | 0.134 | 0.62 | 0.00 |
 
 ## S0: build the stack (done)
 
@@ -139,3 +141,20 @@ Updated after every job (sacct elapsed x nodes).
   learning resumed 3.0 s (round 1 2.8 s), reattach 0.02 s, first answer
   0.02-0.03 s. Unchanged by the stack, as expected: it is set by the
   broker's grace, not by task overhead.
+
+## S1 P2: learner pool sweep on the stack (done)
+
+- Job 60930968 (debug, 8:02), same sweep as round 1 (engine mode, both
+  feeds, pool 4/8/32/128/256/default, 3 repeats, py-spy at default and 8).
+- **The floor is gone:** pool 8, engine/inproc: 692 msg/s at batch 1 (one
+  window = 2 tasks in 1.4 ms, about 0.7 ms per task; round 1 43 msg/s,
+  11.6 ms per task), 50,757 msg/s at batch 100 (round 1 4,337; laptop on
+  0.5.1 30,417). No profile needed for a residual floor.
+- **Pool size now matters** (round 1 could not see it under the floor):
+  pools 4-8 are fastest; the default `ProcessPoolExecutor()` (256 workers on
+  a CPU node) is 3.3x slower at batch 1 (207 vs 692) and 1.6x at batch 100
+  (31,377 vs 50,757). The round-1 "256-worker theory" was right in direction
+  after all, only masked.
+- **engine/zmq caps at about 13-14k msg/s** (pool 8, batch 100: 13,700),
+  the same as P3's dt row (13,011): the ex-situ DT cost of P3 is the ZMQ
+  stream transport, which a hand-wired learner fed through ZMQ pays as well.
