@@ -1,0 +1,510 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm2/orbit-logs/endpoint-p8b.log
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['rhapsody', 'staging', 'sysinfo', 'queue_info']
+INFO [PluginHost] Loaded plugin: rhapsody
+INFO [PluginHost] Loaded plugin: staging
+INFO [PluginHost] Loaded plugin: sysinfo
+INFO [PluginHost] Loaded plugin: queue_info
+INFO Starting ORBIT endpoint (https://127.0.0.1:8431)
+INFO [Runtime] registered as 'dt_p8b_ep' (role=endpoint, plugins=['rhapsody', 'staging', 'sysinfo', 'queue_info'])
+INFO [rhapsody] Registered session session.cb419fb2
+INFO ProcessPoolExecutor execution backend started successfully
+INFO [rhapsody] Registered session session.2af4e14c
+INFO ProcessPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.cb419fb2.1793972603.telemetry.jsonl
+INFO [session.cb419fb2] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.2af4e14c.1793972603.telemetry.jsonl
+INFO [session.2af4e14c] Session initialization complete
+INFO [sysinfo] Registered session session.71a73dcd (owner=rhapsody.bf90c779.inference)
+INFO [sysinfo] Unregistered session session.71a73dcd
+INFO [sysinfo] Registered session session.b9b9dc28 (owner=rhapsody.bf90c779.learning)
+INFO [sysinfo] Unregistered session session.b9b9dc28
+Do simulation
+[90m2026-11-06 05:43:36.015[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/1/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+Do simulation
+[90m2026-11-06 05:43:36.015[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.015[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Task /WindField/sim/0 started on nid001312!
+[90m2026-11-06 05:43:36.015[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Task /WindField/sim/1 started on nid001312!
+[90m2026-11-06 05:43:36.015[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Task /WindField/sim/0 finished!
+[90m2026-11-06 05:43:36.015[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Task /WindField/sim/1 finished!
+Do simulation
+[90m2026-11-06 05:43:36.015[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/2/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.016[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Task /WindField/sim/2 started on nid001312!
+[90m2026-11-06 05:43:36.016[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Task /WindField/sim/2 finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:43:36.019[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/4/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+Do simulation
+[90m2026-11-06 05:43:36.019[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/3/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.019[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Task /WindField/sim/4 started on nid001312!
+[90m2026-11-06 05:43:36.019[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Task /WindField/sim/3 started on nid001312!
+[90m2026-11-06 05:43:36.019[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Task /WindField/sim/4 finished!
+[90m2026-11-06 05:43:36.020[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Task /WindField/sim/3 finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:43:36.020[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/5/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.021[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Task /WindField/sim/5 started on nid001312!
+[90m2026-11-06 05:43:36.021[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Task /WindField/sim/5 finished!
+Do simulation
+[90m2026-11-06 05:43:36.023[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/6/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+Do simulation
+[90m2026-11-06 05:43:36.023[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/7/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.023[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Task /WindField/sim/6 started on nid001312!
+[90m2026-11-06 05:43:36.023[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Task /WindField/sim/6 finished!
+[90m2026-11-06 05:43:36.024[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Task /WindField/sim/7 started on nid001312!
+[90m2026-11-06 05:43:36.024[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Task /WindField/sim/7 finished!
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:43:36.030[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/8/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:43:36.030[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Task /WindField/sim/8 started on nid001312!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:43:36.031[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Task /WindField/sim/8 finished!
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:43:36.033[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/9/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+Do simulation
+[90m2026-11-06 05:43:36.034[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/10/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.034[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Task /WindField/sim/9 started on nid001312!
+[90m2026-11-06 05:43:36.034[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Task /WindField/sim/9 finished!
+[90m2026-11-06 05:43:36.034[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Task /WindField/sim/10 started on nid001312!
+[90m2026-11-06 05:43:36.034[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Task /WindField/sim/10 finished!
+Do simulation
+[90m2026-11-06 05:43:36.034[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/11/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.035[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Task /WindField/sim/11 started on nid001312!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:43:36.035[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Task /WindField/sim/11 finished!
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:43:36.037[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/12/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+Do simulation
+[90m2026-11-06 05:43:36.037[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/13/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.038[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Task /WindField/sim/12 started on nid001312!
+[90m2026-11-06 05:43:36.038[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Task /WindField/sim/13 started on nid001312!
+[90m2026-11-06 05:43:36.038[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Task /WindField/sim/12 finished!
+[90m2026-11-06 05:43:36.038[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Task /WindField/sim/13 finished!
+DEBUG Using selector: EpollSelector
+Do simulation
+[90m2026-11-06 05:43:36.039[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/14/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:43:36.039[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Task /WindField/sim/14 started on nid001312!
+[90m2026-11-06 05:43:36.039[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Task /WindField/sim/14 finished!
+Do simulation
+[90m2026-11-06 05:43:36.041[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/sim/15/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:36.042[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Task /WindField/sim/15 started on nid001312!
+[90m2026-11-06 05:43:36.042[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Task /WindField/sim/15 finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Falling back to TensorFlow client; we recommended you install the Cloud TPU client directly with pip install cloud-tpu-client.
+DEBUG Falling back to TensorFlow client; we recommended you install the Cloud TPU client directly with pip install cloud-tpu-client.
+[90m2026-11-06 05:43:37.965[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/pcr/partition/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:37.966[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Task /WindField/pcr/partition/0 started on nid001312!
+INFO partition_pcr_grid: 85x38x4=12920pts -> 8 machines (1615+0r pts/machine)
+[90m2026-11-06 05:43:37.992[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ prepare_pcr_data: Starting (KD-Tree optimized)
+[90m2026-11-06 05:43:37.992[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Grid: 85x38x4=12920pts, 8 machines, radius=1.5m
+[90m2026-11-06 05:43:38.015[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Loaded 16 sensor readings
+DEBUG Started <_ProcessReaper(Local Executor Process Reaper, started daemon 140216625788608)>
+DEBUG Started <_ProcessReaper(Local Executor Process Reaper, started daemon 140606194624192)>
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG matplotlib data path: /pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data
+DEBUG matplotlib data path: /pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data
+DEBUG CONFIGDIR=/global/u2/m/merzky/.config/matplotlib
+DEBUG CONFIGDIR=/global/u2/m/merzky/.config/matplotlib
+DEBUG interactive is False
+DEBUG platform is linux
+DEBUG interactive is False
+DEBUG platform is linux
+DEBUG CACHEDIR=/global/u2/m/merzky/.cache/matplotlib
+DEBUG CACHEDIR=/global/u2/m/merzky/.cache/matplotlib
+DEBUG Using fontManager instance from /global/u2/m/merzky/.cache/matplotlib/fontlist-v3.11.0.json
+DEBUG Using fontManager instance from /global/u2/m/merzky/.cache/matplotlib/fontlist-v3.11.0.json
+DEBUG Loaded backend Agg version v2.2.
+[90m2026-11-06 05:43:41.346[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/pinn/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:41.347[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Task /WindField/pinn/0 started on nid001312!
+[90m2026-11-06 05:43:41.361[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:43:41.362[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Task /WindField/fno/0 started on nid001312!
+[90m2026-11-06 05:43:41.362[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ======================================================================
+[90m2026-11-06 05:43:41.362[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ FNO2D training  |  single-file
+[90m2026-11-06 05:43:41.362[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Output dir : /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/0/results
+[90m2026-11-06 05:43:41.362[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ TensorFlow : 2.21.0
+[90m2026-11-06 05:43:42.644[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ GPUs       : [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:2', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:3', device_type='GPU')]
+[90m2026-11-06 05:43:42.645[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ======================================================================
+[90m2026-11-06 05:43:42.645[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Grid: 48x24  modes=(12,6)  hidden=64  layers=4
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.651[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.652[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.652[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:43:42.652[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Training: epochs=5  batch=4  lr=0.002  patience=3
+Loading CSVs Progress: 0.0
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.0625
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.125
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.1875
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.25
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.3125
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.375
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.4375
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.5
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.5625
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.625
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.6875
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.75
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.8125
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.875
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.9375
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+[90m2026-11-06 05:48:25.833[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Loaded 16 (ws, snapshot) pairs
+[90m2026-11-06 05:48:25.834[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ WS range : 0.1 – 1.0 m/s (16 unique)
+[90m2026-11-06 05:48:25.834[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ VEL_MAX  : 1.9911 m/s    WS_MAX : 0.99 m/s
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:28.713[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.69  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:29.692[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.95  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:30.619[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.80  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:31.529[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.94  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:32.457[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.54  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:33.363[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.99  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:34.248[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.96  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:35.129[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.51  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:36.004[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.12  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:36.883[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.68  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:37.757[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.74  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:38.648[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.83  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:39.534[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.99  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:40.422[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.57  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:41.302[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.34  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:48:42.186[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.66  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+[90m2026-11-06 05:48:42.325[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Total points: 80,000  VEL_MAX=1.8609 m/s  WS_MAX=0.99 m/s
+[90m2026-11-06 05:48:42.365[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   train: 59,999 samples
+[90m2026-11-06 05:48:42.366[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │     val:  8,001 samples
+[90m2026-11-06 05:48:42.366[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │    test: 12,000 samples
+[90m2026-11-06 05:48:42.366[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Collocation: 500 points in (x, y, z, ws)
+[90m2026-11-06 05:48:42.366[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Physics weight alpha = 0.07
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793972923.954368  287700 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972923.959855  287700 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972923.964131  287700 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972923.968676  287700 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-06 05:48:44.968[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ PhysicsMLP3D: 66,946 parameters  (4 blocks x 128 hidden, tanh, skip connections)
+Building grids: 0.0
+Building grids: 0.0625
+Building grids: 0.125
+Building grids: 0.1875
+Building grids: 0.25
+Building grids: 0.3125
+Building grids: 0.375
+Building grids: 0.4375
+Building grids: 0.5
+Building grids: 0.5625
+Building grids: 0.625
+Building grids: 0.6875
+Building grids: 0.75
+Building grids: 0.8125
+Building grids: 0.875
+Building grids: 0.9375
+[90m2026-11-06 05:48:46.031[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Dataset  X=(160, 48, 24, 18)  Y=(160, 48, 24, 2)
+[90m2026-11-06 05:48:46.031[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Split    train=115 / val=21 / test=24
+[90m2026-11-06 05:48:46.098[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ 
+Training PhysicsMLP3D for up to 5 epochs ...
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793972927.121929  287831 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972927.126621  287831 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972927.130408  287831 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972927.134802  287831 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-06 05:48:49.140[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ FNO2D  2,379,810 trainable parameters
+[90m2026-11-06 05:48:50.233[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Starting training  (115 train / 21 val samples)
+[90m2026-11-06 05:48:58.483[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ epoch    0  train=5.3665e-02  val=1.0308e-02  best=inf  pat=0/3
+[90m2026-11-06 05:49:07.232[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Epoch    0: train=2.3404e-02  val=1.0709e-02  phys=1.18e-06  div=1.17e-06  best=inf  pat=0/3
+[90m2026-11-06 05:49:24.470[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ epoch    4  train=7.3667e-03  val=8.9795e-03  best=9.1437e-03  pat=0/3
+[90m2026-11-06 05:49:24.496[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Training done  best_val_mse=8.979550e-03  (0.6 min)
+DEBUG Creating converter from 5 to 3
+[90m2026-11-06 05:49:24.556[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Model saved to /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/0/results
+[90m2026-11-06 05:49:24.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ──────────────────────────────────────────────────
+[90m2026-11-06 05:49:24.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   RMSE(u)     : 0.1801 m/s
+[90m2026-11-06 05:49:24.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   RMSE(v)     : 0.0831 m/s
+[90m2026-11-06 05:49:24.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   RMSE(speed) : 0.1721 m/s
+[90m2026-11-06 05:49:24.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   MAE(speed)  : 0.1216 m/s
+[90m2026-11-06 05:49:24.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ──────────────────────────────────────────────────
+[90m2026-11-06 05:49:25.556[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Plots saved to .
+[90m2026-11-06 05:49:25.556[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ [TIMER] total=0h 5m 44s  (5.7 min)
+[90m2026-11-06 05:49:25.557[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ✓ All done
+[90m2026-11-06 05:49:25.558[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Running tar: tar -czf /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/0/results/fno.tar.gz -C /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/0/results model.weights.h5 test_metrics.json model_meta.json test_metrics.json model_meta.json training_history.csv
+[90m2026-11-06 05:49:25.990[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Task /WindField/fno/0 finished!
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:49:27.838[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:49:27.838[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001312!
+[90m2026-11-06 05:49:28.054[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 05:49:28.054[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=1.9911  WS_MAX=0.9929411554892934
+[90m2026-11-06 05:49:28.054[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 05:49:28.496[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 05:49:28.496[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00898  epochs = 5
+[90m2026-11-06 05:49:28.496[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 05:49:28.627[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-06 05:49:31.000[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:49:31.000[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001312!
+[90m2026-11-06 05:49:31.150[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:49:31.150[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001312!
+[90m2026-11-06 05:49:31.178[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 05:49:31.178[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=1.9911  WS_MAX=0.9929411554892934
+[90m2026-11-06 05:49:31.178[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 05:49:31.277[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 05:49:31.277[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=1.9911  WS_MAX=0.9929411554892934
+[90m2026-11-06 05:49:31.277[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793972973.537753  288494 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972973.542440  288494 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972973.547622  288494 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972973.552572  288494 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793972973.630304  288498 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972973.635045  288498 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972973.639273  288498 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972973.643106  288498 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-06 05:49:35.445[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:49:35.445[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001312!
+[90m2026-11-06 05:49:35.654[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 05:49:35.654[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=1.9911  WS_MAX=0.9929411554892934
+[90m2026-11-06 05:49:35.654[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 05:49:35.797[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 05:49:35.797[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00898  epochs = 5
+[90m2026-11-06 05:49:35.797[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 05:49:35.806[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 05:49:35.806[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00898  epochs = 5
+[90m2026-11-06 05:49:35.807[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 05:49:35.911[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-06 05:49:35.922[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+DEBUG Using selector: EpollSelector
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793972977.329598  288496 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972977.333990  288496 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972977.337623  288496 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972977.342153  288496 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+INFO {
+    "session_id": "session.2af4e14c",
+    "duration_seconds": 382.073942,
+    "tasks": {
+        "submitted": 90,
+        "completed": 90,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 362.307418,
+        "mean_seconds": 4.025638,
+        "min_seconds": 4.002668,
+        "max_seconds": 5.769737
+    },
+    "resources": {
+        "concurrent/nid001312": {
+            "backend": "concurrent",
+            "node_id": "nid001312",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+{
+    "session_id": "session.2af4e14c",
+    "duration_seconds": 382.073942,
+    "tasks": {
+        "submitted": 90,
+        "completed": 90,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 362.307418,
+        "mean_seconds": 4.025638,
+        "min_seconds": 4.002668,
+        "max_seconds": 5.769737
+    },
+    "resources": {
+        "concurrent/nid001312": {
+            "backend": "concurrent",
+            "node_id": "nid001312",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+INFO {
+    "session_id": "session.cb419fb2",
+    "duration_seconds": 382.159674,
+    "tasks": {
+        "submitted": 1356,
+        "completed": 1352,
+        "failed": 2,
+        "canceled": 2,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 1117.185193,
+        "mean_seconds": 0.823883,
+        "min_seconds": 0.001029,
+        "max_seconds": 359.885813
+    },
+    "resources": {
+        "concurrent/nid001312": {
+            "backend": "concurrent",
+            "node_id": "nid001312",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+{
+    "session_id": "session.cb419fb2",
+    "duration_seconds": 382.159674,
+    "tasks": {
+        "submitted": 1356,
+        "completed": 1352,
+        "failed": 2,
+        "canceled": 2,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 1117.185193,
+        "mean_seconds": 0.823883,
+        "min_seconds": 0.001029,
+        "max_seconds": 359.885813
+    },
+    "resources": {
+        "concurrent/nid001312": {
+            "backend": "concurrent",
+            "node_id": "nid001312",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7f2605969df0> at 0x7f21bce89f80> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.2af4e14c
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7f2605969df0> at 0x7f21c0174b40> was created in a different Context
+INFO Received shutdown signal
+INFO Endpoint stopping
+INFO Endpoint stopped
+[90m2026-11-06 05:50:26.133[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Epoch    4: train=9.3197e-03  val=1.0426e-02  phys=8.51e-07  div=8.44e-07  best=1.0465e-02  pat=0/3
+DEBUG Creating converter from 5 to 3
+[90m2026-11-06 05:50:26.162[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Model meta saved -> /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/pinn/0/results/pinn.model_meta.json
+[90m2026-11-06 05:50:26.170[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ === Final Test Results ===
+[90m2026-11-06 05:50:26.170[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ RMSE_u: 0.243 m/s
+[90m2026-11-06 05:50:26.170[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ RMSE_v: 0.102 m/s
+[90m2026-11-06 05:50:26.170[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ RMSE_speed: 0.240 m/s
+[90m2026-11-06 05:50:26.170[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Model saved to /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/pinn/0/results/pinn.weights.h5
+[90m2026-11-06 05:50:26.174[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Training history saved -> /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/pinn/0/results/training_history.csv
+[90m2026-11-06 05:50:26.242[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Running tar: tar -czf /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/pinn/0/results/pinn.tar.gz -C /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902985/WindField/pinn/0/results pinn.weights.h5 pinn.normalization.json pinn.model_meta.json pinn.run.json
+[90m2026-11-06 05:50:26.384[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Task /WindField/pinn/0 finished!
+[90m2026-11-06 05:50:34.731[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Processed 16 sims in 0h 6m 56s, ws=[0.11938699801515718, 0.3375087847100491, 0.5078177669365836, 0.5375346636007166, 0.5740299688618274, 0.6556967489499195, 0.6772573052979232, 0.6907440232514042, 0.7428107165580916, 0.8031022373368054, 0.8263447172506612, 0.9369608245726955, 0.9533671767969008, 0.9588960079783192, 0.9853799171357287, 0.9929411554892934]
+Creating machine files: 0 / 8
+Creating machine files: 1 / 8
+Creating machine files: 2 / 8
+Creating machine files: 3 / 8
+Creating machine files: 4 / 8
+Creating machine files: 5 / 8
+Creating machine files: 6 / 8
+Creating machine files: 7 / 8
+[90m2026-11-06 05:50:34.793[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Task /WindField/pcr/partition/0 finished!
+INFO Concurrent execution backend shutdown complete

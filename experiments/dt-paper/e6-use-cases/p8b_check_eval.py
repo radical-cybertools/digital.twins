@@ -19,6 +19,9 @@ def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--xgf", default=os.environ.get("XGF_DIR"))
     p.add_argument("--models", default="/pscratch/sd/m/merzky/xgf_playground/WindField")
+    p.add_argument("--concurrent", type=int, default=4,
+                   help="then N overlapping evals per model in separate "
+                        "processes (the twin's endpoint runs them so)")
     args = p.parse_args()
 
     sys.path.insert(0, args.xgf)
@@ -51,7 +54,44 @@ def main() -> int:
             print(json.dumps({"model": name, "ok": False,
                               "error": f"{type(exc).__name__}: {exc}"}), flush=True)
         ok = ok and good
+
+    if args.concurrent > 1:
+        import multiprocessing
+        from concurrent.futures import ProcessPoolExecutor
+
+        ctx = multiprocessing.get_context("spawn")
+        for name, tar in (("fno", "fno/0/results/fno.tar.gz"),
+                          ("pinn", "pinn/0/results/pinn.tar.gz")):
+            cfg = dict(config, INVESTIGATOR_NAME=name)
+            path = os.path.join(args.models, tar)
+            with ProcessPoolExecutor(args.concurrent, mp_context=ctx) as pool:
+                futs = [pool.submit(_eval, args.xgf, name, cfg, path)
+                        for _ in range(args.concurrent * 2)]
+                res = []
+                for f in futs:
+                    try:
+                        res.append(f.result())
+                    except Exception as exc:
+                        res.append(f"{type(exc).__name__}: {exc}")
+            good = all(r == [[38, 85]] * 3 for r in res)
+            print(json.dumps({"model": name, "concurrent": args.concurrent,
+                              "calls": len(res), "ok": good,
+                              "errors": [r for r in res if not isinstance(r, list)][:3]}),
+                  flush=True)
+            ok = ok and good
     return 0 if ok else 1
+
+
+def _eval(xgf, name, cfg, path):
+    sys.path.insert(0, xgf)
+    os.chdir(xgf)
+    import numpy as np
+
+    if name == "fno":
+        from tasks.do_fno.main import tk_fno_eval as fn
+    else:
+        from tasks.do_pinn.main import tk_pinn_eval as fn
+    return [list(np.shape(o)) for o in fn(cfg, path, 0.5)]
 
 
 if __name__ == "__main__":

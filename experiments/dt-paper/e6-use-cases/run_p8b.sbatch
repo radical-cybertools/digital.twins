@@ -35,7 +35,7 @@ GPU_LD="$NV${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 echo "xGFabric $(git -C $XGF_DIR rev-parse --short HEAD) ($(git -C $XGF_DIR rev-parse --abbrev-ref HEAD)), playground $PLAYGROUND_DIR"
 
 # 1. precheck
-LD_LIBRARY_PATH=$GPU_LD PLAYGROUND_DIR=$W/xgf/check-$SLURM_JOB_ID \
+LD_LIBRARY_PATH=$GPU_LD TF_FORCE_GPU_ALLOW_GROWTH=true PLAYGROUND_DIR=$W/xgf/check-$SLURM_JOB_ID \
   $PY $E/p8b_check_eval.py --xgf $XGF_DIR > $R/p8b-check-eval$TAG.log 2>&1
 rc=$?; echo "precheck rc=$rc"; grep '^{' $R/p8b-check-eval$TAG.log
 [ $rc = 0 ] || { tail -20 $R/p8b-check-eval$TAG.log; exit 5; }

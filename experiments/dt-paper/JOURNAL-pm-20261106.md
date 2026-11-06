@@ -415,3 +415,16 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
   `p8b_endpoint.py` runs `radical-orbit-endpoint.py` unchanged but gives
   the backend a spawn-based `ProcessPoolExecutor` (8 workers) when none is
   passed. Run 2 uses it.
+- Run 2, job 60902985 (gpu_debug, 8.5 min): FNO and PINN trained on the GPU
+  inside the twin (both archives written), the agent served its first
+  real FNO inference at 363 s (846 ms), then the twin failed at 375 s:
+  `FileNotFoundError .../WindField/fno/INFERENCE/interim`. Cause (xGFabric):
+  every `tk_*_eval` call extracts into the same INFERENCE interim dir and
+  `close_task(clean=True)` deletes it, so overlapping evals race (here:
+  stream-driven inferences at the 1 s sensor cadence plus the 3 s probes;
+  September's 5 s cadence made overlaps rare).
+- Fix, local only so far: xGFabric commit 56490dc on fix/pinn-eval, a
+  `tempfile.mkdtemp` interim dir per eval call in tk_fno/pinn/pcr_eval.
+  Not pushed: it goes beyond the approved PINN fix; asking Andre whether
+  it joins PR #17. The precheck now also runs 2 x 4 overlapping evals per
+  model in separate processes. Run 3 uses both.
