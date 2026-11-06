@@ -377,3 +377,41 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
    reproduced (0.5 s with a per-call rebuild).
 8. P5-P7 are preliminary (one node, no-op work). Repeat at scale for the
    paper?
+
+## P8b: the WindField twin with real surrogates (after Andre's "go")
+
+- Andre (2026-11-06): fix P8b; push the xGFabric fix as a branch **with
+  PR** (overrides the page's "no commits there" for this fix).
+- xGFabric `fix/pinn-eval` (0ac3f59, off feature/dt-framework d9b6db5):
+  `tk_pinn_eval` waits for its tar process, loads `pinn.weights.h5` /
+  `pinn.model_meta.json`, reads `hidden_dim` / `n_hidden_layers` /
+  `best_val_loss`. Verified in job 60902704's precheck: xGFabric's own
+  `tk_pinn_eval` on the September `pinn.tar.gz` returns three 38 x 85
+  fields (0.29 s); `tk_fno_eval` too. Pushed; PR
+  radical-collaboration/xGFabric#17 into feature/dt-framework.
+- Finding: the "no PCR model" blocker does not apply: the twin trains FNO,
+  PINN and PCR itself from 16-reading sensor batches, with simulations
+  taken from 72 precalculated CSVs (`/global/cfs/cdirs/m5290/precalc_sims`).
+- Harness (`e6-use-cases/`): `p8b_check_eval.py` (precheck),
+  `p8b_sensor.py` (xGFabric's fake Davis records, `--interval`, 1 s
+  instead of 5 s), `p8b_client.py` (imports `twin_service_real.py`
+  unchanged, builds its graph, probes `get_inference` every 3 s and
+  records latency and the answering `arch`), `run_p8b.sbatch` (one GPU
+  node: broker `--plugins dt`, endpoint concurrent + notify window 0 +
+  the env's CUDA wheel libs + `TF_FORCE_GPU_ALLOW_GROWTH`, ORBIT data plane
+  as in the demo, throwaway TLS, playground in `$W/xgf/`, isolation check;
+  `demo/Sep_04_endpoint.sh` is not used because it points at
+  `~/.radical/orbit`).
+- Run 1, job 60902704 (gpu_debug, 9 min): twin `failed` at 456 s, before
+  any model was published (152 probes, all `na`, 25 ms p50). FNO
+  training (GPU, epoch 0 done) and PINN training started 4 s apart and
+  crashed TensorFlow ("Input to reshape is a tensor with 1 values, but the
+  requested shape has 20736"). Cause: the endpoint's rhapsody plugin builds
+  `ConcurrentExecutionBackend()` without an executor, i.e. a
+  `ThreadPoolExecutor`, so concurrent Keras trainings share one process;
+  September ran on dragon, one process per task. PCR's data preparation
+  finished (7 min 32 s). Isolation check empty.
+- Decision: no dragon (page rule), no installed change: new
+  `p8b_endpoint.py` runs `radical-orbit-endpoint.py` unchanged but gives
+  the backend a spawn-based `ProcessPoolExecutor` (8 workers) when none is
+  passed. Run 2 uses it.

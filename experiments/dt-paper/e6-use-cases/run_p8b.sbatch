@@ -70,7 +70,7 @@ kill -0 $BP || { echo "broker died"; tail -20 $W/digital_twins/$R/p8b-broker.con
 LD_LIBRARY_PATH=$GPU_LD RADICAL_ORBIT_LOG_FILE=$L/endpoint-p8b.log \
 RADICAL_ORBIT_RHAPSODY_BACKEND=concurrent RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW=0 TF_FORCE_GPU_ALLOW_GROWTH=true \
 XGF_WORKSPACE=$PLAYGROUND_DIR \
-  $PY $ENV/bin/radical-orbit-endpoint.py -n dt_p8b_ep -u $URL -p default --tunnel none \
+  $PY $W/digital_twins/$E/p8b_endpoint.py -n dt_p8b_ep -u $URL -p default --tunnel none \
   > $W/digital_twins/$R/p8b-endpoint.console$TAG.log 2>&1 &
 EP=$!
 sleep 20

@@ -1,0 +1,16 @@
+[90m2026-11-06 05:30:38.136[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/check-60902704/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:30:38.136[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001300!
+[90m2026-11-06 05:30:38.485[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-06 05:30:38.485[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-06 05:30:38.485[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-06 05:30:46.916[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-06 05:30:46.916[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-06 05:30:46.916[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-06 05:30:47.017[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+{"model": "fno", "ok": true, "shapes": [[38, 85], [38, 85], [38, 85]], "seconds": 8.890374549897388}
+[90m2026-11-06 05:30:47.026[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/check-60902704/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:30:47.026[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001300!
+[90m2026-11-06 05:30:47.287[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-06 05:30:47.287[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-06 05:30:47.314[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+{"model": "pinn", "ok": true, "shapes": [[38, 85], [38, 85], [38, 85]], "seconds": 0.2927678740816191}

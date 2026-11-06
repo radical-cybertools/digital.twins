@@ -1,0 +1,2246 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm2/orbit-logs/endpoint-p8b.log
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['rhapsody', 'staging', 'sysinfo', 'queue_info']
+INFO [PluginHost] Loaded plugin: rhapsody
+INFO [PluginHost] Loaded plugin: staging
+INFO [PluginHost] Loaded plugin: sysinfo
+INFO [PluginHost] Loaded plugin: queue_info
+INFO Starting ORBIT endpoint (https://127.0.0.1:8431)
+INFO [Runtime] registered as 'dt_p8b_ep' (role=endpoint, plugins=['rhapsody', 'staging', 'sysinfo', 'queue_info'])
+INFO [rhapsody] Registered session session.c50d49db
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO [rhapsody] Registered session session.081557e2
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.c50d49db.1793971883.telemetry.jsonl
+INFO [session.c50d49db] Session initialization complete
+INFO Telemetry checkpoint file: telemetry-output/session.081557e2.1793971883.telemetry.jsonl
+INFO [session.081557e2] Session initialization complete
+INFO [sysinfo] Registered session session.b1736147 (owner=rhapsody.f7da086d.inference)
+INFO [sysinfo] Unregistered session session.b1736147
+INFO [sysinfo] Registered session session.19871393 (owner=rhapsody.f7da086d.learning)
+INFO [sysinfo] Unregistered session session.19871393
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+Do simulation
+[90m2026-11-06 05:31:35.219[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/7/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.222[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Task /WindField/sim/7 started on nid001300!
+[90m2026-11-06 05:31:35.222[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.223[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/1/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.224[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/13/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.225[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/4/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.226[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/5/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.223[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/7][0m │ Task /WindField/sim/7 finished!
+[90m2026-11-06 05:31:35.226[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/12/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.225[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/9/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.227[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/3/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.227[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/10/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.228[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/15/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.226[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/2/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.226[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/6/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.227[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/8/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.229[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Task /WindField/sim/12 started on nid001300!
+[90m2026-11-06 05:31:35.229[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Task /WindField/sim/5 started on nid001300!
+[90m2026-11-06 05:31:35.225[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Task /WindField/sim/0 started on nid001300!
+[90m2026-11-06 05:31:35.229[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Task /WindField/sim/9 started on nid001300!
+[90m2026-11-06 05:31:35.228[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Task /WindField/sim/13 started on nid001300!
+[90m2026-11-06 05:31:35.227[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Task /WindField/sim/1 started on nid001300!
+[90m2026-11-06 05:31:35.231[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Task /WindField/sim/2 started on nid001300!
+[90m2026-11-06 05:31:35.231[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/12][0m │ Task /WindField/sim/12 finished!
+[90m2026-11-06 05:31:35.231[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Task /WindField/sim/6 started on nid001300!
+[90m2026-11-06 05:31:35.228[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/14/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.231[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/0][0m │ Task /WindField/sim/0 finished!
+[90m2026-11-06 05:31:35.228[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Task /WindField/sim/4 started on nid001300!
+[90m2026-11-06 05:31:35.232[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/13][0m │ Task /WindField/sim/13 finished!
+[90m2026-11-06 05:31:35.231[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Task /WindField/sim/15 started on nid001300!
+[90m2026-11-06 05:31:35.231[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Task /WindField/sim/8 started on nid001300!
+[90m2026-11-06 05:31:35.232[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Task /WindField/sim/3 started on nid001300!
+[90m2026-11-06 05:31:35.232[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/6][0m │ Task /WindField/sim/6 finished!
+[90m2026-11-06 05:31:35.233[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Task /WindField/sim/14 started on nid001300!
+[90m2026-11-06 05:31:35.232[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/1][0m │ Task /WindField/sim/1 finished!
+[90m2026-11-06 05:31:35.232[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/2][0m │ Task /WindField/sim/2 finished!
+[90m2026-11-06 05:31:35.231[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/5][0m │ Task /WindField/sim/5 finished!
+[90m2026-11-06 05:31:35.230[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Task /WindField/sim/10 started on nid001300!
+[90m2026-11-06 05:31:35.229[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/sim/11/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:35.234[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/4][0m │ Task /WindField/sim/4 finished!
+[90m2026-11-06 05:31:35.235[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/15][0m │ Task /WindField/sim/15 finished!
+[90m2026-11-06 05:31:35.232[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/9][0m │ Task /WindField/sim/9 finished!
+[90m2026-11-06 05:31:35.239[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/10][0m │ Task /WindField/sim/10 finished!
+[90m2026-11-06 05:31:35.235[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/8][0m │ Task /WindField/sim/8 finished!
+[90m2026-11-06 05:31:35.240[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Task /WindField/sim/11 started on nid001300!
+[90m2026-11-06 05:31:35.236[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/3][0m │ Task /WindField/sim/3 finished!
+[90m2026-11-06 05:31:35.236[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/14][0m │ Task /WindField/sim/14 finished!
+[90m2026-11-06 05:31:35.242[0m │ [94mINFO[0m │ [38;5;165m[/WindField/sim/11][0m │ Task /WindField/sim/11 finished!
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Falling back to TensorFlow client; we recommended you install the Cloud TPU client directly with pip install cloud-tpu-client.
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:31:38.674[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/pcr/partition/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:38.674[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Task /WindField/pcr/partition/0 started on nid001300!
+INFO partition_pcr_grid: 85x38x4=12920pts -> 8 machines (1615+0r pts/machine)
+[90m2026-11-06 05:31:38.703[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ prepare_pcr_data: Starting (KD-Tree optimized)
+[90m2026-11-06 05:31:38.706[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Grid: 85x38x4=12920pts, 8 machines, radius=1.5m
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+[90m2026-11-06 05:31:38.730[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Loaded 16 sensor readings
+DEBUG Creating converter from 7 to 5
+DEBUG Creating converter from 5 to 7
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG matplotlib data path: /pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/matplotlib/mpl-data
+DEBUG CONFIGDIR=/global/u2/m/merzky/.config/matplotlib
+DEBUG interactive is False
+DEBUG platform is linux
+DEBUG CACHEDIR=/global/u2/m/merzky/.cache/matplotlib
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using fontManager instance from /global/u2/m/merzky/.cache/matplotlib/fontlist-v3.11.0.json
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Loaded backend Agg version v2.2.
+[90m2026-11-06 05:31:41.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/pinn/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:41.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/fno/0/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-06 05:31:41.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Task /WindField/pinn/0 started on nid001300!
+[90m2026-11-06 05:31:41.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Task /WindField/fno/0 started on nid001300!
+[90m2026-11-06 05:31:41.157[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ======================================================================
+[90m2026-11-06 05:31:41.158[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ FNO2D training  |  single-file
+[90m2026-11-06 05:31:41.158[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Output dir : /pscratch/sd/m/merzky/dt-pm2/xgf/playground-60902704/WindField/fno/0/results
+[90m2026-11-06 05:31:41.158[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ TensorFlow : 2.21.0
+[90m2026-11-06 05:31:42.492[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ GPUs       : [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:2', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:3', device_type='GPU')]
+[90m2026-11-06 05:31:42.492[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ ======================================================================
+[90m2026-11-06 05:31:42.492[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Grid: 48x24  modes=(12,6)  hidden=64  layers=4
+[90m2026-11-06 05:31:42.497[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.497[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:31:42.497[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.498[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.498[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.498[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.498[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.498[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.499[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.499[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.499[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.499[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=0 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.500[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.500[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.500[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.500[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │   ws=1 m/s → 1 file(s)
+[90m2026-11-06 05:31:42.500[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Training: epochs=5  batch=4  lr=0.002  patience=3
+Loading CSVs Progress: 0.0
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.0625
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+Loading CSVs Progress: 0.125
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.1875
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.25
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Loading CSVs Progress: 0.3125
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+Loading CSVs Progress: 0.375
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Loading CSVs Progress: 0.4375
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.5
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Loading CSVs Progress: 0.5625
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.625
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.6875
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.75
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Loading CSVs Progress: 0.8125
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Loading CSVs Progress: 0.875
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Loading CSVs Progress: 0.9375
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:37:57.953[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Loaded 16 (ws, snapshot) pairs
+[90m2026-11-06 05:37:57.954[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ WS range : 0.0 – 1.0 m/s (16 unique)
+[90m2026-11-06 05:37:57.954[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ VEL_MAX  : 2.6915 m/s    WS_MAX : 0.99 m/s
+Building grids: 0.0
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:12.567[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.21  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:38:13.601[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.81  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:14.629[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.99  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:38:15.642[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.25  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:16.661[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.85  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+Building grids: 0.0625
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Building grids: 0.125
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:17.660[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.47  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+Building grids: 0.1875
+DEBUG Using selector: EpollSelector
+Building grids: 0.25
+DEBUG Using selector: EpollSelector
+Building grids: 0.3125
+Building grids: 0.375
+Building grids: 0.4375
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Building grids: 0.5
+DEBUG Using selector: EpollSelector
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+Building grids: 0.5625
+[90m2026-11-06 05:38:18.767[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.46  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+Building grids: 0.625
+Building grids: 0.6875
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+Building grids: 0.75
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+Building grids: 0.8125
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:19.934[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.07  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+Building grids: 0.875
+Building grids: 0.9375
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:38:20.653[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Dataset  X=(160, 48, 24, 18)  Y=(160, 48, 24, 2)
+[90m2026-11-06 05:38:20.653[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Split    train=115 / val=21 / test=24
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1793972301.660014 1365246 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972301.664664 1365246 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972301.669100 1365246 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1793972301.673548 1365246 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:22.130[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.46  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:23.171[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.10  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:38:24.043[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ FNO2D  2,379,810 trainable parameters
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:24.184[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.37  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:25.186[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.30  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+[90m2026-11-06 05:38:25.399[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ Starting training  (115 train / 21 val samples)
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:26.202[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.49  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:27.229[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.46  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:28.229[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.03  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Spatial filtering: 7994513 -> 1553385 points (kept 19.4% within x=[8.3,176.5], y=[8.1,82.1], z=[0.5,5.0]m)
+DEBUG Velocity filter: 1553385 -> 1553385 points (removed 0 with |U| < 0 m/s)
+[90m2026-11-06 05:38:29.230[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   ws=  0.74  spatial=1,553,385  after |U|>=0=1,553,385 (removed 0)  sampled=5,000
+[90m2026-11-06 05:38:29.459[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Total points: 80,000  VEL_MAX=2.5262 m/s  WS_MAX=0.99 m/s
+[90m2026-11-06 05:38:29.500[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │   train: 59,999 samples
+[90m2026-11-06 05:38:29.501[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │     val:  8,001 samples
+[90m2026-11-06 05:38:29.501[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │    test: 12,000 samples
+[90m2026-11-06 05:38:29.502[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Collocation: 500 points in (x, y, z, ws)
+[90m2026-11-06 05:38:29.502[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ Physics weight alpha = 0.07
+[90m2026-11-06 05:38:29.599[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ PhysicsMLP3D: 66,946 parameters  (4 blocks x 128 hidden, tanh, skip connections)
+[90m2026-11-06 05:38:29.610[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/0][0m │ 
+Training PhysicsMLP3D for up to 5 epochs ...
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+[90m2026-11-06 05:38:37.950[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/0][0m │ epoch    0  train=3.4791e-02  val=9.1683e-03  best=inf  pat=0/3
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+DEBUG Using selector: EpollSelector
+W0000 00:00:1793972339.525962 1365237 local_rendezvous.cc:412] Local rendezvous is aborting with status: INVALID_ARGUMENT: Input to reshape is a tensor with 1 values, but the requested shape has 20736
+W0000 00:00:1793972339.525963 1365246 local_rendezvous.cc:412] Local rendezvous is aborting with status: INVALID_ARGUMENT: Input to reshape is a tensor with 20736 values, but the requested shape has 1
+INFO {
+    "session_id": "session.c50d49db",
+    "duration_seconds": 466.571349,
+    "tasks": {
+        "submitted": 1689,
+        "completed": 1686,
+        "failed": 2,
+        "canceled": 1,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 1343.967934,
+        "mean_seconds": 0.795718,
+        "min_seconds": 0.00091,
+        "max_seconds": 444.278165
+    },
+    "resources": {
+        "concurrent/nid001300": {
+            "backend": "concurrent",
+            "node_id": "nid001300",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+{
+    "session_id": "session.c50d49db",
+    "duration_seconds": 466.571349,
+    "tasks": {
+        "submitted": 1689,
+        "completed": 1686,
+        "failed": 2,
+        "canceled": 1,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 1343.967934,
+        "mean_seconds": 0.795718,
+        "min_seconds": 0.00091,
+        "max_seconds": 444.278165
+    },
+    "resources": {
+        "concurrent/nid001300": {
+            "backend": "concurrent",
+            "node_id": "nid001300",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+INFO {
+    "session_id": "session.081557e2",
+    "duration_seconds": 466.589678,
+    "tasks": {
+        "submitted": 113,
+        "completed": 113,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 453.440472,
+        "mean_seconds": 4.012748,
+        "min_seconds": 4.002276,
+        "max_seconds": 4.598773
+    },
+    "resources": {
+        "concurrent/nid001300": {
+            "backend": "concurrent",
+            "node_id": "nid001300",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+{
+    "session_id": "session.081557e2",
+    "duration_seconds": 466.589678,
+    "tasks": {
+        "submitted": 113,
+        "completed": 113,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 453.440472,
+        "mean_seconds": 4.012748,
+        "min_seconds": 4.002276,
+        "max_seconds": 4.598773
+    },
+    "resources": {
+        "concurrent/nid001300": {
+            "backend": "concurrent",
+            "node_id": "nid001300",
+            "cpu_percent": null,
+            "memory_percent": null,
+            "gpu_percent": 0.0,
+            "disk_read_bytes": null,
+            "disk_write_bytes": null,
+            "net_sent_bytes": null,
+            "net_recv_bytes": null
+        }
+    }
+}
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7f62b2cc98a0> at 0x7f5e6c380300> was created in a different Context
+[90m2026-11-06 05:39:11.230[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Processed 16 sims in 0h 7m 32s, ws=[0.02869442861024163, 0.06522970010005613, 0.1000580068254987, 0.2087524760650039, 0.24731681016352958, 0.3025944554038843, 0.3698690010917626, 0.45646632864146064, 0.4566810009860577, 0.46095343071181416, 0.4670110071047092, 0.486232873483206, 0.7397534605977101, 0.808436609545455, 0.850585873937065, 0.9901398423894541]
+Creating machine files: 0 / 8
+Creating machine files: 1 / 8
+Creating machine files: 2 / 8
+Creating machine files: 3 / 8
+Creating machine files: 4 / 8
+Creating machine files: 5 / 8
+Creating machine files: 6 / 8
+Creating machine files: 7 / 8
+[90m2026-11-06 05:39:11.286[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pcr/partition/0][0m │ Task /WindField/pcr/partition/0 finished!
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.c50d49db
+ERROR Failed to detach context
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/__init__.py", line 127, in detach
+    _RUNTIME_CONTEXT.detach(token)
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/opentelemetry/context/contextvars_context.py", line 40, in detach
+    self._current_context.reset(token)
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7f62b2cc98a0> at 0x7f5e68e91e00> was created in a different Context
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.081557e2
+INFO Received shutdown signal
+INFO Endpoint stopping
+INFO Endpoint stopped
+ERROR Future exception was never retrieved
+future: <Future finished exception=InvalidArgumentError()>
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/rhapsody/backends/execution/concurrent.py", line 117, in _execute_task
+    return await self._execute_function(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/rhapsody/backends/execution/concurrent.py", line 163, in _execute_function
+    result = await loop.run_in_executor(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/rhapsody/backends/execution/concurrent.py", line 144, in _run_in_thread
+    return asyncio.run(func(*args, **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xGFabric/tasks/do_fno/fno_investigator.py", line 86, in do_fno
+    return tk_do_fno(config, sims)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xGFabric/tasks/do_fno/main.py", line 49, in tk_do_fno
+    fno_main_entry(sims_list, env["OUTPUT_DIR"], fno_config, logger)
+  File "/pscratch/sd/m/merzky/dt-pm2/xGFabric/tasks/do_fno/train_fno.py", line 381, in fno_main_entry
+    np.mean([float(loss_fn(yb, fno(xb, training=False))) for xb, yb in ds_vl])
+                               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/pscratch/sd/m/merzky/dt-pm2/xGFabric/tasks/do_fno/train_fno.py", line 129, in call
+    v = self.lift(x)
+        ^^^^^^^^^^^^
+tensorflow.python.framework.errors_impl.InvalidArgumentError: Exception encountered when calling Dense.call().
+
+[1m{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 20736 values, but the requested shape has 1 [Op:Reshape][0m
+
+Arguments received by Dense.call():
+  • inputs=tf.Tensor(shape=(1, 48, 24, 18), dtype=float32)
+  • training=False
+ERROR Future exception was never retrieved
+future: <Future finished exception=InvalidArgumentError()>
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/rhapsody/backends/execution/concurrent.py", line 117, in _execute_task
+    return await self._execute_function(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/rhapsody/backends/execution/concurrent.py", line 163, in _execute_function
+    result = await loop.run_in_executor(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/rhapsody/backends/execution/concurrent.py", line 144, in _run_in_thread
+    return asyncio.run(func(*args, **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xGFabric/tasks/do_pinn/pinn_investigator.py", line 84, in do_pinn
+    return tk_do_pinn(config, sims)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xGFabric/tasks/do_pinn/main.py", line 49, in tk_do_pinn
+    pinn_main_entry(sims_list, env["OUTPUT_DIR"], pinn_config, logger)
+  File "/pscratch/sd/m/merzky/dt-pm2/xGFabric/tasks/do_pinn/MPWB2_CFD.py", line 423, in pinn_main_entry
+    grads = tape.gradient(total_loss, model.trainable_variables)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/eager/backprop.py", line 1066, in gradient
+    flat_grad = imperative_grad.imperative_grad(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/eager/imperative_grad.py", line 67, in imperative_grad
+    return pywrap_tfe.TFE_Py_TapeGradient(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/eager/backprop.py", line 148, in _gradient_function
+    return grad_fn(mock_op, *out_grads)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/ops/math_grad.py", line 1507, in _DivNoNanGrad
+    return _ReduceGradientArgs(x, y, gx, gy)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/ops/math_grad.py", line 144, in _ReduceGradientArgs
+    gy = _ReduceGradientArg(gy, by)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/ops/math_grad.py", line 135, in _ReduceGradientArg
+    grad = array_ops.reshape(grad, shape)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/ops/weak_tensor_ops.py", line 88, in wrapper
+    return op(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py", line 167, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/pscratch/sd/m/merzky/dt-pm2/xgf/env/lib/python3.12/site-packages/tensorflow/python/framework/ops.py", line 6027, in raise_from_not_ok_status
+    raise core._status_to_exception(e) from None  # pylint: disable=protected-access
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tensorflow.python.framework.errors_impl.InvalidArgumentError: {{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 1 values, but the requested shape has 20736 [Op:Reshape] name: 
