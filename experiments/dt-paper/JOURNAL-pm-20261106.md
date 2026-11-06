@@ -299,3 +299,9 @@ Times are local (PST) unless noted.
   above is therefore not an incident and the history needs no rewrite;
   the redaction commit cb82078 stays (harmless). Tokens, keys and certs
   remain off limits; those were never committed.
+- 04:58 Decision (Andre: "go with option 2"): the 2 h gpu_regular job
+  60898696 had waited 1 h 45 min with 338 of about 5,200 pending GPU jobs
+  ahead. `run_p8a.sbatch` gets env knobs (DEVS, REPS, CPU_REPS, BUDGET,
+  TAG); job 60901615 on gpu_debug (`-q debug -C gpu`, 30 min): GPU x 3
+  repeats per model, CPU x 1 with a 60 s budget per loop, files tagged
+  `-dbg`. 60898696 stays queued for the full CPU comparison.
