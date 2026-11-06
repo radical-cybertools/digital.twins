@@ -216,3 +216,20 @@ Times are local (PST) unless noted.
   own stamp), job 60901098 (2 nodes, nid007062/007071): cross-node 21.9-22.4
   ms, loopback 21.1-22.2 ms, inference 14.5-15.0 ms; at 10 ms 66-68 % seen.
   Isolation check empty.
+
+## P6: E5 endpoint and client loss (done, preliminary)
+
+- New harness `e5-persistence/bench_endpoint_loss.py`, batch script
+  `run_p6.sh`. Decisions: the twins are the integration tests' R8 pair;
+  loss is "twin `failed` with `last_error`" (that is what the service
+  reports); since a lost engine poisons its session (R8 test), recovery =
+  endpoint restart + new session + new learner twin until it serves a
+  learned model; probes every 0.5 s on both twins during the loss window.
+- Smoke 1 (job 60900385): every twin failed to initialize, "Broker URL
+  required": the broker's `dt` plugin needs `RADICAL_ORBIT_BROKER_URL` in
+  its own environment (the integration conftest sets it too). Fixed in
+  `run_p6.sh`. Smoke 2 (job 60901042, 1 kill + 1 reattach) passed.
+- Full run job 60901152 (regular, nid006920): 10/10 kills, 10/10
+  reattaches. Detect 10.09 s (10.05-10.16), all 200 probes per twin
+  answered during the window, endpoint up 1.25 s, learning resumed 2.82 s
+  (2.81-3.07), reattach 18 ms, first answer 26 ms. Isolation check empty.
