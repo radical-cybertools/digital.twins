@@ -1117,7 +1117,7 @@ async def test_add_data_split_task_needs_a_split_task(stream_clients):
     runtime = DTRuntime(None, await stream_clients("splits"))
 
     with pytest.raises(AssertionError):
-        runtime.add_data_split_task(_Persistent(None), A, (B,))
+        runtime.add_data_split_task(_Persistent(_FakeFlow()), A, (B,))
 
     await runtime.stop()
 
