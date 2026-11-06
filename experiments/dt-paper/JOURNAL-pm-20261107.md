@@ -37,6 +37,8 @@ Updated after every job (sacct elapsed x nodes).
 | 60932999 | s2-r3 | m5290 | 2 | 00:00:29 | 0.016 | 1.44 | 0.00 |
 | 60933102 | s2-r1a | m5290 | 2 | 00:21:38 | 0.721 | 2.16 | 0.00 |
 | 60933103 | s2-r1b | m5290 | 2 | 00:18:29 | 0.616 | 2.77 | 0.00 |
+| 60933104 | s2-r3 | m5290 | 2 | 00:08:41 | 0.289 | 3.06 | 0.00 |
+| 60934116 | s2-r3re | m5290 | 2 | 00:07:41 | 0.256 | 3.32 | 0.00 |
 
 ## S0: build the stack (done)
 
@@ -272,3 +274,30 @@ Updated after every job (sacct elapsed x nodes).
   517-547 ms at 100 ms; inference p50 345-350 ms; versions seen 100 % at
   1 s, 29 % at 100 ms (the interval is shorter than one remote inference).
   Same shape as on the cluster: about 1.5 inferences.
+
+## S2 R3: endpoint loss through the radical.3 dt service (done)
+
+- Job 60933104 (debug, 2 nodes): learning endpoint `pm_p6_learn_<job>` on
+  node A (owned by `bench_endpoint_loss.py`), inference endpoint
+  `pm_p6_inf_<job>` on node B, twins created in the broker's dt service on
+  radical.3. The harness already takes `--broker`; no flag needed.
+  Isolation check empty.
+- Run 1: 10/10 kills detected (median 10.9 s, 10.2-11.6; the broker's
+  grace, as on the cluster: 10.1 / 10.4 s), endpoint up 2.3 s, learning
+  resumed 8.0 s (7.8-8.5; cluster 2.8 / 3.0 s: the WAN), 10/10 reattaches
+  (attach 1.07 s, first answer 1.60 s; cluster 0.02 s).
+- **New, contradicts P6:** in 4/10 kills (those with the fast 10.4 s
+  detection) in-situ inference stopped for the whole session: the learner
+  twin's probe timed out (`HTTP 504 ... get_inference timed out`, the 5 s
+  probe timeout) and the inference-only sibling's probe failed with `HTTP 409
+  ... was closed during get_inference`; the sibling's probe after the loss
+  was reported failed too, while `twin_list` still showed it `running`. On
+  the cluster (P6, both rounds) every probe of both twins answered.
+- Rerun once unchanged (job 60934116; run 1's files kept as
+  `endpoint-loss-remote-run1-*`): holds, 8/10 kills now show it; detection,
+  recovery and reattach the same. Both reported.
+- Not explained: the dt service's logs are on radical.3, out of reach from
+  here. Open question for Andre: after an engine endpoint is lost, does the
+  service let a pending `get_inference` of any twin in that session hang or
+  fail until the session is recreated (whereas the loopback broker does
+  not)? The sibling uses only the inference endpoint, which stayed up.
