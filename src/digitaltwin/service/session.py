@@ -43,9 +43,10 @@ except ImportError as _exc:  # the 'learn' extra (ROSE) is optional
     StreamingLearnerInvestigator = None
 
 # The two reserved roles.  They name function, not placement: every twin
-# component's tasks run on 'inference'; only a StreamingLearnerInvestigator
-# labels its learner tasks 'learning', and only when the session configured
-# a backend for that role.  One engine per session carries both backends;
+# component's tasks run on the default role ('inference' unless moved, see
+# ENV_DEFAULT_ENGINE); only a StreamingLearnerInvestigator labels its
+# learner tasks 'learning', and only when the session configured a backend
+# for that role.  One engine per session carries both backends;
 # asyncflow routes per task on the label.
 ROLE_INFERENCE = "inference"
 ROLE_LEARNING = "learning"
@@ -57,6 +58,13 @@ ROLES = (ROLE_INFERENCE, ROLE_LEARNING)
 # default moves everything else -- the inference half included -- onto
 # the learning backend.
 ENV_DEFAULT_ENGINE = "DT_DEFAULT_ENGINE"
+
+
+def default_engine_setting() -> str:
+    """The deployment-wide default role."""
+
+    return os.environ.get(ENV_DEFAULT_ENGINE) or ROLE_INFERENCE
+
 
 # co-located-demo default -- 'dragon_v3' (the rhapsody default) would
 # break every demo on a laptop
@@ -210,6 +218,10 @@ class TwinInstance:
         self.stream = stream
 
     def fail(self, error: BaseException | str) -> None:
+        # the first failure is the cause; what follows is fallout
+        if self._state == STATE_FAILED:
+            return
+
         self._state = STATE_FAILED
         self._last_error = (
             error if isinstance(error, str) else f"{type(error).__name__}: {error}"
@@ -548,29 +560,13 @@ class DTSession(PluginSession):
 
         Precedence: the session config's `default_engine`, then
         `DT_DEFAULT_ENGINE`, then `'inference'`.  An unconfigured role
-        aliases `'inference'`, as it does everywhere else.
-
-        Raises:
-            ValueError: for a name that is not a role.
+        aliases `'inference'`, as it does everywhere else.  The plugin
+        refuses a name that is not a role at `register_session`.
         """
 
-        name = (self.config.get("default_engine")
-                or os.environ.get(ENV_DEFAULT_ENGINE)
-                or ROLE_INFERENCE)
-
-        if name not in ROLES:
-            raise ValueError(
-                f"default_engine must be one of {ROLES}, got {name!r}")
+        name = self.config.get("default_engine") or default_engine_setting()
 
         return name if self.configured(name) else ROLE_INFERENCE
-
-    def _default_engine_or_error(self) -> str:
-        """`default_engine()` for listings, which must not raise."""
-
-        try:
-            return self.default_engine()
-        except ValueError as exc:
-            return f"invalid: {exc}"
 
     async def engine(self, name: str = ROLE_INFERENCE) -> WorkflowEngine:
         """The session-shared engine, with role `name` built and attached.
@@ -840,7 +836,7 @@ class DTSession(PluginSession):
             "active": self.is_active,
             "age": round(time.time() - self.created, 3),
             "engines": sorted(self._backends),
-            "default_engine": self._default_engine_or_error(),
+            "default_engine": self.default_engine(),
             "endpoints": {
                 ROLE_INFERENCE: self._engine_endpoint(ROLE_INFERENCE),
                 ROLE_LEARNING: (
@@ -864,12 +860,11 @@ class DTSession(PluginSession):
             if self._plugin is None:
                 raise RuntimeError("session is not attached to a dt plugin")
 
-            # a bad default fails the twin with a clear reason, before
-            # any engine is built.  Bound before the builds await, too:
-            # every component's unlabeled tasks run on the default role,
-            # so an endpoint lost while this twin initializes must fail
-            # it (R8), and `endpoints_lost` only looks at `twin.engines`
-            twin.engines.add(self.default_engine())
+            # bound before the builds await: every component's unlabeled
+            # tasks run on the default role, so an endpoint lost while this
+            # twin initializes must fail it (R8), and `endpoints_lost` only
+            # looks at `twin.engines`
+            twin.engines = {self.default_engine()}
 
             async with asyncio.timeout(TWIN_INIT_TIMEOUT):
                 # A configured 'learning' backend is built here as well,
@@ -935,7 +930,7 @@ class DTSession(PluginSession):
         Role injection lives here: a `StreamingLearnerInvestigator`
         additionally receives the `'learning'` backend name as
         `learn_backend`, so its learner tasks carry that label and run on
-        the learning hardware while its inference stays on `'inference'`.
+        the learning hardware while its inference stays on the default role.
         The class *is* the marker -- there is no user-facing role selector
         in v1.
 
@@ -958,7 +953,7 @@ class DTSession(PluginSession):
 
         if _is_learner(package.cls):
             # no 'learning' backend configured: the label is omitted and
-            # the learner's tasks ride the default ('inference') backend
+            # the learner's tasks ride the default backend
             has_learning = ROLE_LEARNING in self._backends
             extra["learn_backend"] = ROLE_LEARNING if has_learning else None
             if has_learning:

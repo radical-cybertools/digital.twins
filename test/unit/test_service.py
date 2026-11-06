@@ -1047,11 +1047,13 @@ def test_default_engine_unconfigured_role_aliases_inference(monkeypatch):
     assert DTSession("s1").default_engine() == "inference"
 
 
-def test_default_engine_rejects_unknown_roles(monkeypatch):
+def test_register_session_rejects_a_bad_deployment_default(client, monkeypatch):
     monkeypatch.setenv(ENV_DEFAULT_ENGINE, "gpu")
 
-    with pytest.raises(ValueError, match="default_engine"):
-        DTSession("s1", _DUAL).default_engine()
+    resp = client.post("/dt/register_session", json={})
+
+    assert resp.status_code == 400
+    assert "default_engine" in resp.text
 
 
 @pytest.mark.parametrize("value", ["gpu", None, ""])
@@ -1094,3 +1096,44 @@ async def test_a_loss_during_init_fails_a_twin_on_the_default_role():
     assert twin.state == "failed"
     assert twin.runtime is None
     assert "hpc1" in twin.last_error
+
+
+async def test_default_engine_moves_the_engines_default_backend():
+    session = DTSession("s1", {**_dual(inference="ep1", learning="hpc1"),
+                               "default_engine": "learning"})
+    _slow_build(session, 0)
+
+    flow = await session.engine("learning")
+
+    assert flow._default_backend_name == "learning"
+    await session.close()
+
+
+async def test_a_twin_is_bound_only_to_the_default_role():
+    """R8: a twin on the 'learning' default does not use the inference
+    endpoint, so losing that endpoint must not fail it."""
+
+    session = DTSession("s1", {**_dual(inference="ep1", learning="hpc1"),
+                               "default_engine": "learning"})
+    _slow_build(session, 0)
+
+    class _Plugin:
+        async def connect_stream(self, twin_id, timeout):
+            return _FakeStream()
+
+    session._plugin = _Plugin()
+    twin = session.twins["t1"] = TwinInstance("t1")
+    await session._init_twin(twin)
+
+    assert twin.engines == {"learning"}
+    assert session.endpoints_lost({"ep1"}) == ()
+    await session.close()
+
+
+def test_the_first_failure_of_a_twin_is_kept():
+    twin = TwinInstance("t1")
+
+    twin.fail("engine endpoint lost: hpc1")
+    twin.fail("timed out")
+
+    assert twin.last_error == "engine endpoint lost: hpc1"

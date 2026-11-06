@@ -51,7 +51,7 @@ from ..streaming import (
     connect_stream_client,
 )
 from .client import DTClient
-from .session import VERBS, DTSession, ROLES
+from .session import VERBS, DTSession, ROLES, default_engine_setting
 
 log = logging.getLogger("radical.orbit")
 
@@ -211,12 +211,14 @@ class PluginDT(Plugin):
         if config is not None and not isinstance(config, dict):
             raise http_exception(ValueError("'config' must be an object"))
 
-        # by key presence: an explicit null is not "unset" -- it would
+        # the one validation point, and for the deployment default too.
+        # By key presence: an explicit null is not "unset" -- it would
         # silently inherit the deployment default
-        if "default_engine" in (config or {}) and config["default_engine"] not in ROLES:
+        default = (config or {}).get("default_engine",
+                                     default_engine_setting())
+        if default not in ROLES:
             raise http_exception(ValueError(
-                f"'default_engine' must be one of {ROLES},"
-                f" got {config['default_engine']!r}"))
+                f"'default_engine' must be one of {ROLES}, got {default!r}"))
 
         owner = self._request_owner(request)
         sid, lifetime, ttl = self._normalize_session_policy(data)
