@@ -185,6 +185,30 @@ def p5():
     SUMMARY["p5"] = out
 
 
+def p7():
+    out = {}
+    for layout in ("local", "orbit-cross", "orbit-loop"):
+        pts = {}
+        for f, d in load(f"p7/update-pm-{layout}-*-r*-{D}.json"):
+            for pt in d["points"]:
+                pts.setdefault(pt["interval_s"], []).append(pt)
+        if not pts:
+            continue
+        print(f"\n### P7 {layout}: publish -> first answer with the new model, median (min–max) of repeats\n")
+        print("| interval | versions seen | answered p50 ms | answered p90 ms | inference p50 ms |")
+        print("|---|---|---|---|---|")
+        out[layout] = {}
+        for iv in sorted(pts, reverse=True):
+            g = lambda k1, k2: mmm([pt[k1][k2] for pt in pts[iv] if pt[k1]])  # noqa: E731
+            seen = mmm([pt["versions_seen"] / pt["versions"] for pt in pts[iv]])
+            out[layout][str(iv)] = {"seen": seen, "answered_p50": g("answered", "p50_ms"),
+                                    "answered_p90": g("answered", "p90_ms"),
+                                    "inference_p50": g("inference", "p50_ms")}
+            print(f"| {iv * 1e3:g} ms | {fmt(seen, 2, 100)} % | {fmt(g('answered', 'p50_ms'), 2)} | "
+                  f"{fmt(g('answered', 'p90_ms'), 2)} | {fmt(g('inference', 'p50_ms'), 2)} |")
+    SUMMARY["p7"] = out
+
+
 if __name__ == "__main__":
     phases = [a for a in sys.argv[1:] if not a.startswith("--")] or ["p1", "p2", "p3"]
     for ph in phases:

@@ -26,6 +26,7 @@ export RADICAL_ORBIT_BROKER_KEY=$T/broker_key.pem
 export RADICAL_ORBIT_BROKER_TOKEN=$(cat $T/broker.token)
 
 touch $W/orbit-stamp-p6
+export RADICAL_ORBIT_BROKER_URL=$URL   # the dt plugin builds engines from it
 RADICAL_ORBIT_LOG_FILE=$L/broker-p6.log \
   radical-orbit-broker.py --host 127.0.0.1 --port $PORT --plugins dt \
   > $R/broker-p6.console.log 2>&1 &
