@@ -254,8 +254,9 @@ class DTClient(PluginClient):
         `channel`; the twin receives the channel's traffic, decoded by
         `codec` (`json` for plain scripts and instruments, `raw` for
         bytes, `cloudpickle` only inside one trust domain).  Delivery is
-        the stream's contract: at most once, newest kept under pressure.
-        The call returns once the binding is live.
+        the stream's contract: at most once.  The call returns once the
+        twin has subscribed; on ZMQ that subscription reaches a connected
+        publisher shortly after.
         """
 
         return self._verb(twin_id, "add_input", dtype, channel, codec)["state"]
