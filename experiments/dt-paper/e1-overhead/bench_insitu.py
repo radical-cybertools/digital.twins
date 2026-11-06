@@ -9,7 +9,7 @@ milliseconds per sequential prediction and wins under concurrency.
 Run it against the integration stack (see `test/integration/conftest.py`
 for how that stack is started, or start one by hand)::
 
-    python perf/bench_insitu.py both \\
+    python experiments/dt-paper/e1-overhead/bench_insitu.py both \\
         --broker https://127.0.0.1:8031 --endpoint dt_test_task_ep
 
 The server-side notification window is an *endpoint* setting and is the

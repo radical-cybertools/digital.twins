@@ -170,6 +170,7 @@ async def test_stream_config_travels_and_reopens_the_endpoint(broker, stream_cli
 
 async def test_stream_config_rejects_a_foreign_backend_kind():
     # the seam: another backend's endpoint is not this backend's to open
+    pytest.importorskip("radical.orbit")
     with pytest.raises(ValueError):
         await PubSubConfig("twin-a", kind="orbit").connect()
 
