@@ -1,8 +1,8 @@
-"""Streaming learner demo: sensor stream -> ROSE StreamingActiveLearner.
+"""Streaming learner demo: sensor stream -> stream-driven ROSE learner.
 
 Mirrors rose_example, but the learner is retriggered per data window
 instead of running once: sensor data arriving via ON_INPUT is fed into
-the learner, every window of 5 items runs one train/active/criterion
+the learner's `rose.Stream`, every window of 5 items runs one train/active/criterion
 iteration, and each time the criterion is met the model is published.
 
 Start local_broker.py first, then run this script.
@@ -19,7 +19,8 @@ from radical.asyncflow import WorkflowEngine
 from radical.asyncflow.logging import init_default_logger
 from rhapsody.backends import ConcurrentExecutionBackend
 
-from rose.al.streaming_learner import StreamingActiveLearner
+from rose import Stream
+from rose.al.active_learner import SequentialActiveLearner
 from rose.metrics import MEAN_SQUARED_ERROR_MSE
 
 from digitaltwin.components import *
@@ -38,7 +39,8 @@ class StreamingInvestigator(ModelInvestigator):
         self.flow = flow
 
         # learn on windows of 5 sensor readings; drop backlog (latest wins)
-        self.learner = StreamingActiveLearner(flow, batch_size=5, max_wait=2.0, conflate=True)
+        self.stream = Stream(batch_size=5, max_wait=2.0, conflate=True)
+        self.learner = SequentialActiveLearner(flow)
         self._code_path = f"{sys.executable} {os.getcwd()}"
 
         @self.learner.training_task
@@ -61,7 +63,7 @@ class StreamingInvestigator(ModelInvestigator):
         self.inference_task = inference_task
 
     async def on_input(self, data: TypedData):
-        await self.learner.feed(data.data)
+        await self.stream.feed(data.data)
 
     async def main_loop(self, runtime: RuntimeAPI):
         runtime.set_inference_task(self.inference_task)
@@ -78,10 +80,11 @@ class StreamingInvestigator(ModelInvestigator):
             )
         )
 
-        async for state in self.learner.start():
+        # the window is the training task's first argument: no simulation
+        async for state in self.learner.start(stream=self.stream, skip_simulation_step=True):
             print(
                 f"Window {state.iteration} ({state.window_size} items): "
-                f"mse={state.metric_value:.4f} publish={state.should_stop}"
+                f"mse={state.metric_value:.4f} publish={state.model_ready}"
             )
 
 

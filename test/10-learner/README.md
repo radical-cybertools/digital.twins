@@ -4,7 +4,8 @@ Digital twin application:
 - sensor: a stream of raw readings (persistent component, running inline
   on the service loop and publishing through its injected stream client)
 - calibration learner: a `StreamingLearnerInvestigator` -- a ROSE
-  `StreamingActiveLearner` embedded in a model investigator
+  `SequentialActiveLearner`, driven by a `rose.Stream`, embedded in a
+  model investigator
 - data sink
 
 One stream drives both halves of the twin.  Every reading feeds the

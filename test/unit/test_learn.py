@@ -217,6 +217,48 @@ async def test_the_criterion_state_shows_up_in_the_twins_metrics(
         await runtime.stop()
 
 
+async def test_a_learner_without_a_criterion_publishes_every_window(
+        flow, stream_clients):
+    """ROSE's `model_ready`: with no criterion to gate on, every window's
+    model is publishable -- and nothing lands in `metrics`."""
+
+    class Ungated(StreamingLearnerInvestigator):
+        def __init__(self, flow):
+            super().__init__(flow, batch_size=BATCH, max_wait=5.0)
+            self.published = 0
+
+            @self.learner.training_task(as_executable=False)
+            async def training(window, *args):
+                return {"slope": SLOPE}
+
+            @self.learner.active_learn_task(as_executable=False)
+            async def active_learn(model, *args):
+                return None
+
+            async def infer(in_data, slope=0.0):
+                return TypedData(Y, slope * in_data.data)
+
+            self.inference_task = infer
+
+        def published_model(self, state):
+            self.published += 1
+            return super().published_model(state)
+
+    runtime = DTRuntime(flow, await stream_clients("twin-ungated"))
+    learner = Ungated(flow)
+    runtime.add_task(Counter(flow), TRUTHY, X, is_persistent=True)
+    runtime.add_investigator(learner, X, Y)
+    runtime.start()
+
+    try:
+        assert await _await_learned(runtime) == pytest.approx(3.0 * SLOPE)
+        assert learner.published == learner.windows >= 1
+        assert learner.metrics == {}
+
+    finally:
+        await runtime.stop()
+
+
 @pytest.mark.parametrize("value, expected", [
     # significant figures, not decimal places: a 1e-8 criterion threshold
     # is an ordinary target, and decimal rounding would wire it as 0.0
