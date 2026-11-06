@@ -198,6 +198,10 @@ class PluginDT(Plugin):
         pilots, survive single-endpoint loss (tasks requeue; keep them
         idempotent), and share one dispatcher session per DT session.
 
+        `"telemetry"` turns on engine-side telemetry for the session's
+        engine (`WorkflowEngine.start_telemetry`): `checkpoint_path` is
+        a directory on the service host, written when the session closes.
+
         `"default_engine"` names the role that tasks without a routing
         label run on (`'inference'` unless set; the broker-wide default
         comes from `DT_DEFAULT_ENGINE`).  A learner still labels its own
@@ -210,6 +214,13 @@ class PluginDT(Plugin):
         config = data.get("config")
         if config is not None and not isinstance(config, dict):
             raise http_exception(ValueError("'config' must be an object"))
+
+        telemetry = (config or {}).get("telemetry")
+        if telemetry is not None and not (
+                isinstance(telemetry, dict) and set(telemetry) == {"checkpoint_path"}
+                and isinstance(telemetry["checkpoint_path"], str)):
+            raise http_exception(ValueError(
+                "'telemetry' must be {'checkpoint_path': <directory>}"))
 
         # the one validation point, and for the deployment default too.
         # By key presence: an explicit null is not "unset" -- it would
@@ -264,6 +275,12 @@ class PluginDT(Plugin):
         config = data.get("config")
         if config is not None and not isinstance(config, dict):
             raise http_exception(ValueError("'config' must be an object"))
+
+        # `workflow_scope`: true (group under the twin id) or a name (#36)
+        scope = (config or {}).get("workflow_scope")
+        if scope is not None and not isinstance(scope, (bool, str)):
+            raise http_exception(ValueError(
+                "'workflow_scope' must be a boolean or a string"))
 
         return await self._forward(
             sid, DTSession.twin_create, twin_id=twin_id, config=config

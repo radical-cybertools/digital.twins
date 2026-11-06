@@ -6,6 +6,7 @@ stream-broker supervisor directly.
 """
 
 import asyncio
+import uuid
 
 from typing import Optional
 
@@ -1016,6 +1017,55 @@ async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
     assert len(twin.runtime.inputs) == 1
 
     await twin.close()
+
+
+# -- engine-side telemetry and workflow scopes (#36) ---------------------------
+
+@pytest.mark.parametrize("telemetry", ["on", {}, {"checkpoint_path": 3},
+                                       {"checkpoint_interval": 0}])
+def test_register_session_rejects_a_bad_telemetry_block(client, telemetry):
+    resp = client.post("/dt/register_session",
+                       json={"config": {"telemetry": telemetry}})
+
+    assert resp.status_code == 400
+    assert "telemetry" in resp.text
+
+
+def test_register_session_accepts_a_telemetry_block(client):
+    resp = client.post("/dt/register_session", json={"config": {
+        "telemetry": {"checkpoint_path": "/tmp/t"}}})
+
+    assert resp.status_code == 200
+
+
+def test_twin_create_rejects_a_bad_workflow_scope(client):
+    sid = client.post("/dt/register_session", json={}).json()["sid"]
+    resp = client.post(f"/dt/twin_create/{sid}", json={
+        "twin_id": str(uuid.uuid4()), "config": {"workflow_scope": 3}})
+
+    assert resp.status_code == 400
+    assert "workflow_scope" in resp.text
+
+
+async def test_a_failed_telemetry_start_shuts_the_engine_down(monkeypatch):
+    session = DTSession("s1", {"telemetry": {"checkpoint_path": "/x"}})
+    _slow_build(session, 0)
+    stopped = []
+
+    async def start_telemetry(self, **kwargs):
+        raise RuntimeError("no such directory")
+
+    async def shutdown_engine(flow):
+        stopped.append(flow)
+
+    monkeypatch.setattr(_FakeFlow, "start_telemetry", start_telemetry,
+                        raising=False)
+    session._shutdown_engine = shutdown_engine
+
+    with pytest.raises(RuntimeError, match="no such directory"):
+        await session.engine()
+
+    assert len(stopped) == 1
 
 
 # -- barriers and split tasks through the verbs (#30) --------------------------

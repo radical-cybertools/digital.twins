@@ -119,14 +119,34 @@ def hook_engine(flow: Any, owner: Optional["DTRuntime"] = None) -> None:
     if inner is None or getattr(flow, "_dt_uid_hook", False):
         return
 
+    # asyncflow runs a block from a task of its own, outside the context of
+    # the twin that submitted it: block uid -> owner carries the twin across
+    blocks: dict[str, "DTRuntime"] = {}
+
     def hooked(comp_fut, comp_type, comp_desc, *args, **kwargs):
+        ctx = getattr(flow, "_workflow_id_ctx", None)
+        scope = ctx.get() if ctx is not None else None
+        who = _OWNER.get() or blocks.get(scope) or owner
+
+        # A twin with a workflow id (#36) tags every task it submits, as
+        # `workflow_scope()` does for a standalone run -- unless the task
+        # already carries one, explicitly or from a scope the component
+        # opened itself.  A block's uid in that context is no such scope.
+        # asyncflow reads the key inside the call below.
+        wid = getattr(who, "workflow_id", None)
+        if (wid and isinstance(comp_desc, dict)
+                and not comp_desc.get("_explicit_workflow_id")
+                and (scope is None or scope.startswith("block."))):
+            comp_desc["_explicit_workflow_id"] = wid
+
         result = inner(comp_fut, comp_type, comp_desc, *args, **kwargs)
         try:
             uid = comp_desc.get("uid")
-            who = _OWNER.get() or owner
             # blocks are not tasks and never appear in `task_status`
             if who is not None and isinstance(uid, str) and uid.startswith("task."):
                 who.note_task(uid, _COMPONENT.get())
+            elif who is not None and isinstance(uid, str) and uid.startswith("block."):
+                blocks[uid] = who
         except Exception as exc:                       # never break a submit
             logger.debug("uid capture failed: %s", exc)
 
@@ -684,6 +704,11 @@ class DTRuntime:
 
         self.flow = flow
         self.streamer = streamer
+
+        # When set, every task this twin submits carries it as its asyncflow
+        # workflow id (see `hook_engine`): per-twin grouping in telemetry
+        # without a `workflow_scope()` around code the twin does not own.
+        self.workflow_id: Optional[str] = None
 
         # A digital twin workflow has nodes and edges:
         #  - nodes: the actual DTypes

@@ -82,6 +82,10 @@ ENGINE_BUILD_DRAIN_TIMEOUT = 5.0
 # own bound.  [P0-interim] large but finite -- see the plan's section 3.
 DEFAULT_INFERENCE_TIMEOUT = 600.0
 
+# above the 5 s + 5 s drain inside `TelemetryManager.stop`, whose final
+# flush comes last
+TELEMETRY_STOP_TIMEOUT = 15.0
+
 STATE_INITIALIZING = "initializing"
 STATE_FAILED = "failed"
 STATE_CLOSED = "closed"
@@ -648,6 +652,15 @@ class DTSession(PluginSession):
         try:
             if name == ROLE_INFERENCE:
                 flow = await WorkflowEngine.create(backend=backend)
+                telemetry = self.config.get("telemetry")
+                if telemetry is not None:
+                    # engine-side events: the only place asyncflow's own
+                    # task lifecycle and workflow ids are recorded
+                    try:
+                        await flow.start_telemetry(**telemetry)
+                    except BaseException:
+                        await self._shutdown_engine(flow)
+                        raise
             else:
                 # the engine exists once the 'inference' role is built; a
                 # role-only build rides on it and attaches its backend.
@@ -693,6 +706,16 @@ class DTSession(PluginSession):
         except Exception as exc:
             log.warning("[dt] session %s: engine shutdown: %s",
                         self.sid, exc)
+
+        # after the shutdown, which ends the last tasks, and asyncflow does
+        # not stop telemetry itself: the checkpoint file is written here
+        telemetry = getattr(flow, "_telemetry", None)
+        if telemetry is not None:
+            try:
+                await asyncio.wait_for(telemetry.stop(), TELEMETRY_STOP_TIMEOUT)
+            except Exception as exc:
+                log.warning("[dt] session %s: telemetry stop: %s",
+                            self.sid, exc)
 
     async def _create_backend(self, name: str):
         cfg  = self._engine_config(name)
@@ -918,7 +941,16 @@ class DTSession(PluginSession):
                     await stream.close()
                     return
 
-                twin.ready(DTRuntime(flow, stream), stream)
+                runtime = DTRuntime(flow, stream)
+
+                # opt-in per twin (#36): `workflow_scope: true` groups the
+                # twin's tasks under its id, a string under that name
+                scope = twin.config.get("workflow_scope")
+                if scope:
+                    runtime.workflow_id = (twin.twin_id if scope is True
+                                           else str(scope))
+
+                twin.ready(runtime, stream)
 
             log.info("[dt] twin %s ready", twin.twin_id)
 
