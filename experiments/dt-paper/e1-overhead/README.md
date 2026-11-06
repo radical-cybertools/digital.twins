@@ -42,6 +42,16 @@ Laptop smoke run (2026-11-02, local pool of 8, n=100, 50 concurrent):
 | DT investigator     | 11.21 ms | 1265 req/s |
 | DT agent + selector | 11.14 ms | 1248 req/s |
 
+Perlmutter (2026-11-05, one CPU node `nid200018`, Python 3.13.18,
+Slurm job 60879182, local pool, n=1000; median of 3 repeats per row,
+raw data in `results/insitu-pm-pool*-c*-r[123]-20261105.json`):
+
+| row                 | pool 8, c=50         | pool 8, c=500        | pool 64, c=50        | pool 64, c=500       |
+|---------------------|----------------------|----------------------|----------------------|----------------------|
+| bare asyncflow task | 11.44 ms, 2434 req/s | 11.65 ms, 4449 req/s | 11.89 ms, 2181 req/s | 11.91 ms, 3528 req/s |
+| DT investigator     | 11.53 ms, 2408 req/s | 11.67 ms, 4345 req/s | 11.91 ms, 2084 req/s | 11.87 ms, 3261 req/s |
+| DT agent + selector | 11.53 ms, 2435 req/s | 11.66 ms, 3928 req/s | 11.94 ms, 2069 req/s | 11.96 ms, 3253 req/s |
+
 ## `bench_insitu.py` — in-situ inference latency
 
 The harness behind the compute-placement decision: one no-op asyncflow
