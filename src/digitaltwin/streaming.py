@@ -472,7 +472,6 @@ class ZMQ_PS_Client(PubSubBackend):
         # An XPUB sees the subscriptions the broker forwards, which is what
         # `wait_for_subscriber` needs; it publishes exactly like a PUB.
         self._watch = watch_subscriptions
-        self._subscriptions: set[bytes] = set()
 
         self._ctx = zmq.asyncio.Context()
         self.pub_soc: Optional[zmq.asyncio.Socket] = (
@@ -558,36 +557,35 @@ class ZMQ_PS_Client(PubSubBackend):
         await self.pub_soc.send_multipart([topic_b, message_b])
 
     async def wait_for_subscriber(self, topic: str, timeout: float) -> bool:
-        """Wait until the broker has forwarded a subscription covering
-        `topic` to this publisher (ZMQ matches topics by prefix).
+        """Wait until the broker has forwarded a subscription to exactly
+        `topic` to this publisher: delivery is by exact topic, so a shorter
+        prefix on the wire does not mean anyone receives `topic`.
 
         Needs `watch_subscriptions`; without it there is nothing to watch
-        and the answer is True, as before.
+        and the answer is True, as before.  The broker forwards only the
+        first subscriber of a topic, so this cannot wait for a second one.
         """
+
+        self._check_open()
 
         if not self._watch or self.pub_soc is None:
             return True
 
         await self._await_running("wait_for_subscriber")
 
-        wanted = topic.encode("utf-8")
+        # first byte: 1 subscribe, 0 unsubscribe; the rest is the topic
+        wanted = b"\x01" + topic.encode("utf-8")
         loop = asyncio.get_running_loop()
         deadline = loop.time() + timeout
 
-        while not any(wanted.startswith(sub) for sub in self._subscriptions):
+        while True:
             remaining = deadline - loop.time()
             if remaining <= 0:
                 return False
             if not await self.pub_soc.poll(remaining * 1000, zmq.POLLIN):
                 return False
-            frame = await self.pub_soc.recv()
-            # first byte: 1 subscribe, 0 unsubscribe; the rest is the prefix
-            if frame[:1] == b"\x01":
-                self._subscriptions.add(frame[1:])
-            elif frame[:1] == b"\x00":
-                self._subscriptions.discard(frame[1:])
-
-        return True
+            if await self.pub_soc.recv() == wanted:
+                return True
 
     async def subscribe(self, topic, callback, raw=False, **backend_params):
         """Subscribe *callback* to *topic*.
@@ -1010,10 +1008,12 @@ class ChannelPublisher:
         Then, for up to `ready_timeout`, it waits until a twin bound to
         the channel can receive what is published (#40): on ZMQ the first
         messages would otherwise be dropped.  A channel nobody has bound
-        yet costs the full `ready_timeout` once; 0 skips the wait.
+        yet costs the full `ready_timeout` once; 0 skips the wait.  A second
+        twin bound to the same channel is not waited for.
         """
 
         PubSubClient.check_channel(channel)
+        check_codec(codec)
         config = config or PubSubConfig.resolve()
 
         backend = await config.connect_backend(
@@ -1026,8 +1026,8 @@ class ChannelPublisher:
                 await backend.close()
                 raise
             if not ready:
-                logger.debug("channel %r: no subscriber within %.1fs",
-                             channel, ready_timeout)
+                logger.warning("channel %r: no subscriber within %.1fs, "
+                               "messages may be lost", channel, ready_timeout)
 
         return cls(backend, channel, codec)
 
