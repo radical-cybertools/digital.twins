@@ -12,9 +12,18 @@ Updated after every job (sacct elapsed x nodes).
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
 | 60926305 | s1-smoke | m5290 | 1 | 00:01:03 | 0.018 | 0.02 | 0.00 |
+| 60927053 | s1-p1 | m5290 | 1 | 00:00:00 | 0.000 | 0.02 | 0.00 |
+| 60927054 | s1-p2 | m5290 | 1 | 00:00:00 | 0.000 | 0.02 | 0.00 |
+| 60927057 | s1-p4 | m5290 | 2 | 00:00:00 | 0.000 | 0.02 | 0.00 |
+| 60927061 | s1-p5 | m5290 | 1 | 00:00:00 | 0.000 | 0.02 | 0.00 |
+| 60927064 | s1-p6 | m5290 | 1 | 00:00:00 | 0.000 | 0.02 | 0.00 |
+| 60927067 | s1-p7 | m5290 | 1 | 00:00:00 | 0.000 | 0.02 | 0.00 |
+| 60927070 | s1-p7o | m5290 | 2 | 00:00:00 | 0.000 | 0.02 | 0.00 |
 | 60927071 | s1-p3 | m5290 | 1 | 00:01:03 | 0.018 | 0.04 | 0.00 |
 | 60927270 | s1-p3re | m5290 | 1 | 00:01:05 | 0.018 | 0.05 | 0.00 |
 | 60927438 | s1-p3spy | m5290 | 1 | 00:00:24 | 0.007 | 0.06 | 0.00 |
+| 60930960 | s1-p7 | m5290 | 1 | 00:02:43 | 0.045 | 0.11 | 0.00 |
+| 60930964 | s1-p6 | m5290 | 1 | 00:06:01 | 0.100 | 0.21 | 0.00 |
 
 ## S0: build the stack (done)
 
@@ -111,3 +120,22 @@ Updated after every job (sacct elapsed x nodes).
   60930964, P2 60930968, P1 60930971. debug's submit limit is 5 jobs per
   user, so P4 and P7o go in as slots free (`$W/logs/s1-feeder.sh`), which
   then repoints S2's dependency at all seven debug jobs and releases it.
+
+## S1 P7: model-update propagation, local (done)
+
+- Job 60930960 (debug, 2:43), pool 8, 3 repeats, same harness as round 1.
+- Answered p50 0.73 / 0.67 / 0.63 ms at 1 s / 100 ms / 10 ms intervals
+  (round 1: 16.65 / 16.35 / 16.21 ms), inference p50 0.59-0.60 ms (round 1
+  11.5 ms); versions seen 100 / 98.5 / 100 % (round 1 100 / 100 / 93.6 %).
+  Still about one inference time: the in-flight request finishes, the next
+  one uses the new model.
+
+## S1 P6: endpoint loss and client reattach (done)
+
+- Job 60930964 (debug, 6:01), loopback, broker `--plugins dt` (orbit 0.8),
+  10 kills / 10 reattaches. Isolation check empty.
+- Detect 10.4 s (round 1 10.1 s: the broker's suspect -> lost grace),
+  in-situ answers 210/210 per twin during the windows, endpoint up 1.5 s,
+  learning resumed 3.0 s (round 1 2.8 s), reattach 0.02 s, first answer
+  0.02-0.03 s. Unchanged by the stack, as expected: it is set by the
+  broker's grace, not by task overhead.
