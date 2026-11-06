@@ -77,7 +77,7 @@
 
 (() => {
 
-  const VERSION = '0.11.0';
+  const VERSION = '0.12.0';
   const SCHEMA  = 'dt-dash-recording/1';
 
   // -------------------------------------------------------------------------
@@ -141,18 +141,13 @@
   // -------------------------------------------------------------------------
   const POLL_INTERVAL = 1.0;    // admin/sessions poll period, live mode
   const POLL_TIMEOUT  = 10.0;   // and the deadline on one such request
-  const FLIGHT        = 1.0;    // create / destroy / spawn arc duration
   const FADE          = 0.9;    // completed task tile fade-out
   const MARKER_TTL    = 2.6;    // state-transition marker lifetime
   const PULSE_TTL     = 0.7;    // stream pulse ring lifetime
-  const GLOW          = 0.5;    // on-landing halo
-  const PULSE_FLIGHT  = 0.5;    // sensor sample / task result hop
-  const CALL_ARCS_MAX = 3;      // client-call arcs drawn per poll per verb
   const GONE_LINGER   = 9.0;    // a closed twin's card stays this long
   const GONE_FADE     = 3.6;    // ... fading out over the last of it
   const OWNERS_MAX    = 4000;   // uid -> twin entries kept from the polls
   const OWNER_WAIT    = 2.2;    // ... and how long a task waits for its own
-  const CARD_ANCHOR   = 0.67;   // where down a card its arcs meet it
   const SPARK_MAX     = 24;     // sparkline points kept per metric
   const TASK_MAX      = 400;    // tile slots per endpoint lane
   const TASK_TTL      = 300;    // drop a task nothing has mentioned since
@@ -181,12 +176,10 @@
       // `task_components`; bounded together with `owners`
       taskComp:  new Map(),
       counts:    { inference: zeroCount(), learning: zeroCount() },
-      flights:   [],
       markers:   [],
       snapshots: 0,
       events:    0,
       reported:  null,      // model time of the last state listing
-      probe:     null,      // {t, twin} of the last get_inference served
       // '<twin>|<dtype>' -> {twin, dtype, t, count}: every stream
       // publisher we have seen, which is what the sensors lane draws
       publishers: new Map(),
@@ -277,13 +270,12 @@
       }
     }
 
-    // the poll may be exactly the one a task's arcs were waiting for
+    // the poll may be exactly the one a task's attribution was waiting for
     armTasks(w);
 
     for (const [id, tw] of w.twins) {
       if (seen.has(id) || tw.gone !== null) continue;
       tw.gone = w.t;
-      flight(w, 'destroy', { twin: id });
       marker(w, id, 'closed', C.grey);
     }
   }
@@ -300,19 +292,12 @@
       };
       w.twins.set(id, tw);
       // A twin that was already there when we attached is not a `create`
-      // we witnessed: only the ones appearing in a *later* poll get an arc.
-      if (w.snapshots > 1) {
-        flight(w, 'create', { twin: id });
-        marker(w, id, 'create', C.cyan);
-      }
+      // we witnessed: only the ones appearing in a *later* poll get a marker.
+      if (w.snapshots > 1) marker(w, id, 'create', C.cyan);
     } else if (tw.state !== t.state) {
       tw.prev   = tw.state;
       tw.tState = w.t;
       marker(w, id, t.state, STATE_TEXT[t.state] || C.text_dim);
-      // The state going back the other way.  Same inferred fidelity as
-      // the create / destroy arcs: what the client actually receives is a
-      // `twin_list` response, and this is the transition inside it.
-      flight(w, 'report', { twin: id, label: t.state });
     }
 
     tw.sid        = s.sid;
@@ -322,7 +307,6 @@
     tw.gone       = null;
     applyMetrics(tw, t.metrics);
     if (Array.isArray(t.components)) tw.components = t.components;
-    applyCalls(w, tw, t.calls);
     applyTasks(w, id, t.tasks, t.task_components);
     applyOutputs(tw, t.outputs);
   }
@@ -392,42 +376,6 @@
     }
   }
 
-  // The service counts each verb it answered per twin.  The difference
-  // between two polls is a number of completed round trips: a request that
-  // reached the twin and an answer that went back.  That is all a client
-  // call leaves behind -- the verbs are synchronous and nothing is pushed
-  // -- so this is the only honest source for the two client-ward arcs.
-  function applyCalls(w, tw, calls) {
-    if (!calls || typeof calls !== 'object') return;
-
-    const before = tw.calls || {};
-
-    for (const [verb, count] of Object.entries(calls)) {
-      const delta = count - (before[verb] || 0);
-      // the first poll of an already-busy twin is a total, not a burst
-      if (delta <= 0 || !tw.calls) continue;
-
-      for (let i = 0; i < Math.min(delta, CALL_ARCS_MAX); i++) {
-        flight(w, 'call', { twin: tw.id, label: verb });
-        // only `get_inference` carries an answer worth drawing; the rest
-        // return a state a client does not wait on
-        if (verb === 'get_inference') {
-          // after the request, not with it: one round trip, drawn as one
-          flight(w, 'answer', { twin: tw.id, delay: FLIGHT * 0.6 });
-          // and the beat in which the twin was serving a probe.  A twin
-          // answers `get_inference` by running its investigator's inference
-          // task, which is a *task-engine* task -- the ex-situ engine only
-          // ever gets training windows.  Which tile that was cannot be
-          // known (a `task_status` carries no verb), so
-          // the task lane says only when, and says it dimly.
-          w.probe = { t: w.t, twin: tw.id };
-        }
-      }
-    }
-
-    tw.calls = calls;
-  }
-
   // ---- events: rhapsody task status, and DT stream pulses -----------------
 
   function applyEvent(w, ev) {
@@ -487,8 +435,8 @@
       if (!lane) return;                 // an endpoint no session of ours has
       task = { uid, lane, state, t0: w.t, seen: w.t, tEnd: null,
                slot: nextSlot(w, lane),
-               // when its arcs left, and when the returning one is due:
-               // both wait for the poll that says whose task this is
+               // when its owner was settled, and whether its end is still
+               // held for that: both wait for the poll that says whose it is
                armed: null, due: null };
       w.tasks.set(uid, task);
       w.taskTotal++;
@@ -537,25 +485,22 @@
     if (keepFrom > 0) hist.splice(0, keepFrom);
   }
 
-  // A task's arcs wait for the poll that says whose it is.  The notification
-  // beats that poll by up to a full period -- the task is submitted, ORBIT
-  // reports it running within milliseconds, and `admin/sessions` is only
-  // sampled at 1 Hz -- so an arc drawn on arrival would leave the broker's
-  // edge for want of a join that is about to land.  It waits, and after
-  // `OWNER_WAIT` it goes anyway, from the edge, claiming nothing.
+  // A task waits for the poll that says whose it is.  The notification beats
+  // that poll by up to a full period -- the task is submitted, ORBIT reports
+  // it running within milliseconds, and `admin/sessions` is only sampled at
+  // 1 Hz -- so a finished task keeps its tile until the join lands (see
+  // `expire`), and after `OWNER_WAIT` it gives up, claiming nothing.
   function armTasks(w) {
     for (const t of w.tasks.values()) {
       const known = w.owners.has(t.uid);
 
       if (t.armed === null && (known || w.t - t.t0 > OWNER_WAIT)) {
         t.armed = w.t;
-        flight(w, 'spawn', { task: t });
       }
 
       if (t.due !== null && t.armed !== null
           && (known || w.t - t.due > OWNER_WAIT)) {
         t.due = null;
-        flight(w, 'result', { task: t, dur: PULSE_FLIGHT });
       }
     }
   }
@@ -605,8 +550,7 @@
 
     // One publisher per dtype: multiple twins that emit the same channel
     // share a row.  Counts and last-seen aggregate across them; `twin`
-    // records whichever twin last pulsed so the (now-muted) sample arc
-    // still resolves an origin twin if anything asks.
+    // records whichever twin last pulsed.
     const key = dtype;
     let pub = w.publishers.get(key);
     if (!pub) {
@@ -616,27 +560,9 @@
     pub.twin  = id;
     pub.count++;
     pub.t     = w.t;
-
-    // the message travelling from the publisher to its twin
-    flight(w, 'sample', { twin: id, from: pub.key, dur: PULSE_FLIGHT });
   }
 
-  // ---- inferred verbs: arcs and markers -----------------------------------
-
-  // One arc.  `delay` starts it later than now, which is how a request
-  // and its answer read as one round trip instead of two things crossing.
-  function flight(w, kind, opts = {}) {
-    w.flights.push({
-      kind,
-      twinId: opts.twin || null,
-      task:   opts.task || null,
-      label:  opts.label || null,
-      from:   opts.from || null,
-      dur:    opts.dur || FLIGHT,
-      t0:     w.t + (opts.delay || 0),
-    });
-    if (w.flights.length > 400) w.flights.shift();
-  }
+  // ---- state-transition markers -------------------------------------------
 
   function marker(w, twinId, label, color) {
     w.markers.push({ twinId, label, color, t0: w.t });
@@ -646,7 +572,6 @@
   function expire(w) {
     armTasks(w);
 
-    w.flights = w.flights.filter(f => w.t - f.t0 < f.dur + 0.1);
     w.markers = w.markers.filter(m => w.t - m.t0 < MARKER_TTL);
 
     for (const [uid, t] of w.tasks) {
@@ -816,7 +741,7 @@
     // One poll in flight at a time, the next scheduled from the previous
     // one's completion.  `setInterval` would overlap on a slow broker and
     // deliver snapshots out of order -- which the delta inference reads as
-    // twins vanishing and coming straight back, arcs and all.  Chaining
+    // twins vanishing and coming straight back.  Chaining
     // also stops the period drifting under a loaded tab.
     function schedule() {
       timer = setTimeout(async () => {
@@ -885,7 +810,7 @@
   //  with the canvas: `drawBrokerLane` publishes the interior rect, the
   //  pane publishes each visible card's rect back onto `tw._rect` (canvas
   //  coordinates, `null` when scrolled out), which is what keeps the
-  //  probe geometry and any future arcs honest about visibility.
+  //  tooltip and hit-testing honest about visibility.
   // =========================================================================
 
   const INV_COLOR = { ANN: C.cyan, RNN: C.violet };
@@ -1320,7 +1245,7 @@
     pane.addEventListener('scroll', () => {
       if (lastWorld) {
         // rects follow the scroll on the next frame anyway; this only
-        // keeps them exact for a probe read between frames
+        // keeps them exact for a hover between frames
         for (const tw of lastWorld.twins.values()) {
           const card = cards.get(tw.id);
           if (card === undefined) tw._rect = null;
@@ -1372,9 +1297,6 @@
     // the scrollable DOM pane that owns the twin cards (see `newTwinPane`)
     const pane = newTwinPane(stage, collapsed, seenTwins);
     let hits = [];
-    // what the last frame drew, for `frame()`: the layout and every arc the
-    // renderer resolved, so a test (or a console) sees the real geometry
-    const probe = { t: 0, L: null, arcs: [] };
     let W = 0, H = 0, dpr = 1;
 
     const sink = frame => {
@@ -1653,9 +1575,8 @@
         }
       }
 
-      probe.arcs = [];
       hits = [];
-      const uiArg = { status, hover, probe, collapsed, seenTwins, hits };
+      const uiArg = { status, hover, collapsed, seenTwins, hits };
       render(ctx, W, H, world, uiArg);
       pane.sync(world, uiArg.twinPaneRect, uiArg.twinPaneHead);
       raf = requestAnimationFrame(frame);
@@ -1680,7 +1601,6 @@
 
     return {
       world: () => world,
-      frame: () => probe,
       play,
       connect,
       setStatus,
@@ -1695,11 +1615,6 @@
   function render(ctx, W, H, w, ui) {
     const L = layout(W, H);
 
-    // the probe carries this frame's geometry back out to `frame()`: a test
-    // then reads the arcs the renderer resolved, on the code path a browser
-    // runs, instead of re-deriving them and being wrong in its own way
-    if (ui.probe) { ui.probe.L = L; ui.probe.t = w.t; }
-
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, W, H);
 
@@ -1707,7 +1622,6 @@
     drawSensorLane(ctx, L, w);
     drawBrokerLane(ctx, L, w, ui);
     drawHpcLanes(ctx, L, w, ui);
-    drawFlights(ctx, L, w, ui);
     drawTooltip(ctx, L, w, ui);
   }
 
@@ -1727,17 +1641,10 @@
     const hw = Math.max(Math.round(230 * S), Math.round(inner * 0.33));
     const bw = inner - cw - hw;
 
-    // The left column is now the sensors lane, full height.  The client
-    // frame is gone -- but the create / destroy / call arcs still need an
-    // origin, and `client` here is that virtual anchor: a 1x1 rect on the
-    // broker's left edge, off-canvas from anything drawn.  Arcs then read
-    // as coming in from outside the visible layout, which is where the
-    // client is now (see the note in `flightPath`).
+    // the left column is the sensors lane, full height
     const sensors = { x: M, y: top, w: cw, h: height };
     const broker  = { x: M + cw + G,          y: top, w: bw, h: height };
     const hpc     = { x: M + cw + G + bw + G, y: top, w: hw, h: height };
-    const client  = { x: broker.x - 1, y: broker.y + Math.round(20 * S),
-                      w: 1, h: 1 };
 
     // the HPC super-frame holds the two endpoint role lanes, stacked
     const head = Math.round(26 * S);
@@ -1747,7 +1654,7 @@
     const learning = { x: inference.x, y: inference.y + subH + G,
                        w: inference.w, h: subH };
 
-    return { S, M, G, hd, W, H, client, sensors, broker, hpc,
+    return { S, M, G, hd, W, H, sensors, broker, hpc,
              inference, learning };
   }
 
@@ -2102,8 +2009,7 @@
           C.panel_deep);
 
     // Two pool cards, one per role.  Colour keeps them apart at a glance:
-    // inference = cyan, learning = amber -- the same convention already
-    // used for task-result arcs on the broker lane.  A pool card also
+    // inference = cyan, learning = amber.  A pool card also
     // lists every endpoint any session put in that role, because the role
     // is a per-session answer and two sessions need not agree.
     drawEndpointLane(ctx, L.inference, 'inference',
@@ -2133,8 +2039,7 @@
     return { kind: 'Endpoint', link: `#plugin/${plain[0]}/rhapsody` };
   }
 
-  // Tile geometry, shared by the renderer and the spawn arcs so a task
-  // lands exactly where its tile will be.
+  // Tile geometry for an endpoint lane.
   function laneGeom(r, S) {
     const head = Math.round(24 * S);
     const pad  = Math.round(9 * S);
@@ -2440,163 +2345,6 @@
     });
   }
 
-  // ---- flights: the inferred verbs, and spawned tasks -------------------
-
-  // Arcs are no longer drawn.  Twin lifecycle, calls and results all
-  // read on the cards in place (state pill, agent rows, pool graph and
-  // recent-task table), so the flying animations added noise for no new
-  // information.  The probe still records the resolved arc geometry so
-  // headless tests keep their assertions.
-  function drawFlights(ctx, L, w, ui) {
-    if (!ui || !ui.probe) return;
-
-    for (const f of w.flights) {
-      const k = (w.t - f.t0) / f.dur;
-      if (k < 0 || k > 1) continue;
-
-      const seg = flightPath(L, w, f);
-      if (!seg) continue;
-
-      ui.probe.arcs.push({
-        kind: f.kind, label: f.label, twin: f.twinId,
-        uid:  f.task ? f.task.uid : null,
-        lane: f.task ? f.task.lane : null,
-        owner: f.task ? (w.owners.get(f.task.uid) || null) : null,
-        x0: seg.x0, y0: seg.y0, x1: seg.x1, y1: seg.y1,
-        color: seg.color, k,
-      });
-    }
-  }
-
-  // The card a task's arc leaves from: the twin that submitted it, which the
-  // service recorded at submission and the poll carried here (`applyTasks`).
-  // No candidates, no heuristics -- either the uid is in the map or nothing
-  // is claimed, and what is left then is a slice of the broker lane's right
-  // edge.  A twin that has failed or closed *does* keep its arcs: it really
-  // did submit them, and its card is still on the canvas to say so.
-  //
-  // Always inside the broker lane, never the client's: a task is submitted
-  // by the plugin on a twin's behalf, and an arc leaving the session
-  // sub-lane would say the client submitted it, which never happens.
-  //
-  // Resolved per frame, so an event that arrived before the poll explaining
-  // it starts at the edge and snaps to the card as soon as the map lands --
-  // one frame of honesty rather than a queue of held-back arcs.
-  function originRect(L, w, uid) {
-    const id = uid && w.owners.get(uid);
-    const tw = id && w.twins.get(id);
-
-    if (tw && tw._rect) return { rect: tw._rect, card: true };
-
-    return { card: false,
-             rect: { x: L.broker.x + L.broker.w - 1,
-                     y: L.broker.y + L.broker.h * 0.4,
-                     w: 1, h: L.broker.h * 0.1 } };
-  }
-
-  // Where an arc meets a twin card: on its centre line, low down -- inside
-  // the card, so it belongs to exactly one of them (an edge is shared with
-  // whatever sits next to it), and close enough to the bottom that the curve
-  // is out from under the card almost at once.  Everything that touches a
-  // card meets it here.
-  function cardAnchor(r) {
-    return { x: r.x + r.w / 2, y: r.y + CARD_ANCHOR * r.h };
-  }
-
-  function flightPath(L, w, f) {
-    const S = L.S;
-
-    // a spawned simulation task: its origin -> the endpoint lane's own slot
-    // and, on completion, the same hop back
-    if ((f.kind === 'spawn' || f.kind === 'result') && f.task) {
-      const r = f.task.lane === 'learning' ? L.learning : L.inference;
-      const g = laneGeom(r, S);
-      const p = tilePos(r, g, f.task.slot);
-      const home = originRect(L, w, f.task.uid);
-      const color = f.task.lane === 'learning' ? C.amber : C.cyan;
-
-      const at = { x: p.x + g.tile / 2, y: p.y + g.tile / 2 };
-      // an unattributed task leaves the broker lane's edge instead: that rect
-      // is a sliver, and `onCard` says the bow has no card to clear
-      const to = cardAnchor(home.rect);
-
-      if (f.kind === 'result') {
-        return { x0: at.x, y0: at.y, x1: to.x, y1: to.y,
-                 size: g.tile * 0.9,
-                 color: f.task.state === 'FAILED' ? C.red : C.violet,
-                 label: null, dim: 0.7, onCard: home.card };
-      }
-      return { x0: to.x, y0: to.y, x1: at.x, y1: at.y,
-               size: g.tile * 1.1, color, label: null, onCard: home.card };
-    }
-
-    // a stream message: the publisher's tile -> the twin that published it
-    if (f.kind === 'sample') {
-      const pub = f.from && w.publishers.get(f.from);
-      const tw = w.twins.get(f.twinId);
-      if (!pub || !pub._rect || !tw || !tw._rect) return null;
-
-      const into = cardAnchor(tw._rect);
-
-      return {
-        x0: pub._rect.x + pub._rect.w, y0: pub._rect.y + pub._rect.h / 2,
-        x1: into.x, y1: into.y, onCard: true,
-        size: Math.round(6 * S), color: C.green, label: null, dim: 0.85,
-      };
-    }
-
-    // a create / destroy verb, inferred from the poll delta.  The client
-    // frame is no longer drawn (sessions are data-only now), so `sess._rect`
-    // is never set and `L.client` is a 1x1 virtual anchor on the broker's
-    // left edge -- see `layout`.  Arcs therefore emerge at the broker
-    // boundary as if arriving from off-canvas.
-    const tw   = w.twins.get(f.twinId);
-    const sess = tw && w.sessions.find(s => s.sid === tw.sid);
-    const from = (sess && sess._rect) || L.client;
-    const to   = (tw && tw._rect)
-      || { x: L.broker.x + 20 * S, y: L.broker.y + 34 * S, w: 40 * S, h: 40 * S };
-
-    const a = { x: from.x + from.w, y: from.y + from.h / 2 };
-    const b = cardAnchor(to);
-    const onCard = !!(tw && tw._rect);
-    const size = Math.round(11 * S);
-
-    if (f.kind === 'create') {
-      return { x0: a.x, y0: a.y, x1: b.x, y1: b.y, size,
-               color: C.cyan, label: 'create', onCard };
-    }
-
-    // A client call and the answer to it, one completed round trip.  The
-    // inference round trip is the one a client is actually waiting on, so
-    // both halves of it are amber -- the request colour, told apart from
-    // the green a stream pulses in and the violet a task result returns in.
-    if (f.kind === 'call') {
-      const inference = f.label === 'get_inference';
-      return { x0: a.x, y0: a.y, x1: b.x, y1: b.y,
-               size: Math.round(inference ? 9 * S : 8 * S),
-               color: inference ? C.amber : C.cyan, onCard,
-               label: f.label, dim: inference ? 1 : 0.8 };
-    }
-    if (f.kind === 'answer') {
-      return { x0: b.x, y0: b.y, x1: a.x, y1: a.y,
-               size: Math.round(8 * S), color: C.amber, onCard,
-               label: null, dim: 0.9 };
-    }
-
-    // a state report going back client-ward: dashed and dim, because
-    // unlike a verb it is not a call anyone made -- it is what the next
-    // `twin_list` poll would have carried
-    if (f.kind === 'report') {
-      return { x0: b.x, y0: b.y, x1: a.x, y1: a.y,
-               size: Math.round(7 * S), onCard,
-               color: STATE_TEXT[f.label] || C.text_dim,
-               label: f.label, dash: true, dim: 0.7 };
-    }
-
-    return { x0: b.x, y0: b.y, x1: a.x, y1: a.y, size,
-             color: C.grey, label: 'destroy', onCard };
-  }
-
   // ---- hover tooltip: the full twin id, metrics and last error ----------
 
   function drawTooltip(ctx, L, w, ui) {
@@ -2758,9 +2506,7 @@
           border: 1px solid ${C.unused_brd}; border-radius: 4px;
           padding: 5px 8px; font-family: ${FONT_MONO}; font-size: 11px; }
 .dtd-twinpane { position: absolute; overflow-y: auto; overflow-x: hidden;
-                display: flex; flex-direction: column; gap: 8px;
-                scrollbar-width: thin;
-                scrollbar-color: ${C.unused_brd} transparent; }
+                display: flex; flex-direction: column; gap: 8px; }
 .dtd-card { flex: none; border: 1px solid ${C.grey}; border-radius: 6px;
             background: ${C.panel_deep}; padding: 7px 9px 8px;
             position: relative; }
