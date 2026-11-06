@@ -44,3 +44,33 @@ Updated after every job (sacct elapsed x nodes).
   from the login node hung there).
 - orbit 0.8 keeps the CLI flags the scripts use (`--plugins`, `--host`,
   `--port`; endpoint `-n -u -p --tunnel none`).
+
+## S1: submitted
+
+- Smoke job 60926305 (debug, 1:03): every local harness runs on the stack
+  (in-situ, learner, ex-situ, twins, join, model update); the floor is gone
+  (model-update inference p50 0.58 ms, twins p50 1.4 ms).
+- Submitted together (separate ports, stamps and per-job TLS dirs): P1
+  60927053, P2 60927054, P3 60927071 (debug), P4 60927057 (2 nodes), P5
+  60927061, P6 60927064, P7 60927067, P7o 60927070 (2 nodes).
+
+## S2: prepared
+
+- Login node: `curl -sk https://95.217.193.116:8010/` -> 200, TCP connect
+  0.165 s. Default `broker_cert.pem` and `broker.token` present in
+  `~/.radical/orbit` (checked with `ls` only; not read by me, the processes
+  read them).
+- `experiments/dt-paper/s2/run_s2.sh` (2 nodes): WAN RTT from both nodes
+  (20 x curl `time_connect`), R1 (endpoint `pm_e1_ep_<job>` on node A,
+  `bench_dt_insitu.py` on node B), R2 (`bench_streams.py both` from B), R4
+  (`bench_model_update.py` 1 s / 100 ms from B, 3 repeats), R3
+  (`bench_endpoint_loss.py` on A owning `pm_p6_learn_<job>`, inference
+  endpoint `pm_p6_inf_<job>` on B, 10 kills / 10 reattaches; the harness
+  already takes `--broker`), isolation check around everything.
+- Decision: R1 `--tasks 100` instead of 1000 (5 repeats, c = 1 / 50 / 500
+  as asked). A remote request crosses the WAN twice (client -> radical.3 ->
+  endpoint and back) at about 165 ms per round trip, so 1000 sequential
+  requests per row would take hours; 100 still gives 100 latency samples
+  per row and run.
+- Submitted as job 60927139 with `--dependency=afterany` on all S1 jobs
+  ("after S1").
