@@ -440,3 +440,25 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
 - Fix, local only: xGFabric 438d0d3, the partition writes `machine_<i>.pkl`
   to its OUTPUT_DIR and returns the paths; `tk_do_pcr` loads its file (a
   dict is still accepted). Run 4 uses it.
+- Run 4, job 60904329 (gpu_debug, xGFabric 438d0d3): the twin ran the full
+  20 min without failing. All three surrogates trained inside the twin on
+  the GPU node: FNO x 4, PINN x 3, PCR x 3 (the first PCR models through
+  ORBIT; 8 machines, machine 0 R^2 0.915). 274 probes answered `fno`, p50
+  727 ms (674-9398, the long ones land on cold spawn workers). The job hit
+  its 30 min limit during teardown (after the client finished), so the
+  in-script isolation check did not run; checked by hand: `find
+  ~/.radical/orbit -newer orbit-stamp-p8b` empty, queue empty.
+- But the selector never chose: the agent's profiling loop stalls on its
+  first model. `EndpointInvestigator` (the Pi runtime predictor) trains via
+  an *executable* task (`python3 -m tasks.profiler.endpoint_trainer ...`).
+  radical.orbit 0.7.0's rhapsody plugin sends completion notifications
+  without stdout (`_NOTIFICATION_KEYS`, "clients needing stdout can fetch
+  GET /task/{sid}/{uid}"); rhapsody's ORBIT backend (e491cd2) passes the
+  notification on; asyncflow 0.5.1 `handle_task_success` does
+  `task_fut.set_result(task["stdout"])` -> `KeyError: 'stdout'` in the
+  callback, the future never resolves, the predictor never publishes a
+  model, the agent's `get_inference(profile, pi_PREDICT_RUNTIME)` waits
+  forever, its model list stays empty, and `model_select` returns 0 (FNO)
+  for every request. Present in all four runs (one KeyError each). This is
+  a framework bug: no executable task can complete through ORBIT with the
+  pinned stack; the integration tests only use function tasks.
