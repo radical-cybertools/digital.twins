@@ -1,0 +1,8 @@
+backend: local concurrent pool
+bare asyncflow task          n=1000  mean=   0.79ms  p50=   0.73  p90=   0.83  p99=   1.81  max=   1.99
+bare asyncflow task          500 concurrent requests in 162.3ms (3081 req/s)
+DT investigator              n=1000  mean=   0.79ms  p50=   0.77  p90=   0.89  p99=   1.03  max=   1.36
+DT investigator              500 concurrent requests in 239.0ms (2092 req/s)
+DT agent + selector          n=1000  mean=   0.73ms  p50=   0.72  p90=   0.81  p99=   1.01  max=   1.30
+DT agent + selector          500 concurrent requests in 172.9ms (2891 req/s)
+results: experiments/dt-paper/results/s1/p1-rerun/insitu-pm-pool64-c500-r4-stack-20261107.json

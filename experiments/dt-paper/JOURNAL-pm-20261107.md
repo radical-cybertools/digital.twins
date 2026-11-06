@@ -29,6 +29,8 @@ Updated after every job (sacct elapsed x nodes).
 | 60930971 | s1-p1 | m5290 | 1 | 00:07:05 | 0.118 | 0.74 | 0.00 |
 | 60931235 | s1-p4 | m5290 | 2 | 00:09:32 | 0.318 | 1.06 | 0.00 |
 | 60931654 | s1-p7o | m5290 | 2 | 00:05:56 | 0.198 | 1.25 | 0.00 |
+| 60931928 | s1-p5re | m5290 | 1 | 00:04:24 | 0.073 | 1.33 | 0.00 |
+| 60932356 | s1-p1re | m5290 | 1 | 00:01:55 | 0.032 | 1.36 | 0.00 |
 
 ## S0: build the stack (done)
 
@@ -191,3 +193,28 @@ Updated after every job (sacct elapsed x nodes).
   linearly (64 twins: 2,161 req/s, 28 ms; round 1 2,812 req/s, 21 ms). A
   lower ceiling than round 1 on a faster stack: rerun once unchanged plus a
   py-spy at 16 twins, job 60931928 (`results/s1/p5-rerun/`).
+
+## S1 P1: E1 pool-size sweep (done)
+
+- Job 60930971 (debug, 7:05; round 1 57 min), 90 runs, all rc=0.
+- p50 0.53-0.57 ms at pools 1-16 (round 1 11.2-11.7 ms), rising with pool
+  size to 1.31 ms at 256. DT p50 within 0.12 ms of bare in every cell.
+- Burst throughput peaks at pool 2-4 (c=500: about 4.0k req/s) and falls
+  with pool size (pool 256: 1.8k), as in round 1.
+- DT/bare throughput: median 0.94 (investigator) / 0.94 (agent) over all
+  cells; c=50 0.90-1.01 in every cell. Anomaly: at c=500 the investigator
+  row is 0.67-0.74 x bare at pools 1-128 while the agent row is 0.90-1.02 x.
+  Rerun once unchanged (job 60932356, pools 1/8/64, c=500, 5 repeats,
+  `results/s1/p1-rerun/`): holds (investigator 0.66-0.70 x). Plus each row
+  in its own process (pool 8, c=500, 5 repeats): bare 3,782, investigator
+  3,518 (0.93 x), agent 3,601 (0.95 x). So the in-process dip is row order:
+  the first DT row after the bare row pays something under a 500-request
+  burst; on its own the DT costs 5-7 %. Both reported.
+
+## S1 P7o: model-update propagation through ORBIT (done)
+
+- Job 60931654 (debug, 2 nodes, 5:56), isolation check empty.
+- Answered p50 cross 5.95 / 6.63 / 7.75 ms, loop 6.76 / 7.17 / 7.92 ms at
+  1 s / 100 ms / 10 ms (round 1 cross 22.1 / 22.4 / 21.9 ms); inference p50
+  3.7-5.3 ms (round 1 14.5-15.0); versions seen 100 % even at 10 ms (round
+  1 66-68 %).
