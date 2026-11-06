@@ -6,7 +6,7 @@
 #SBATCH -o /pscratch/sd/m/merzky/dt-pm2/logs/p8b-%j.out
 # P8b: the xGFabric WindField twin end to end with real surrogates, on one
 # A100 node over loopback.
-#   sbatch -A m5290_g -q debug run_p8b.sbatch     (RUNTIME=1200 by default)
+#   sbatch -A m5290_g -q debug run_p8b.sbatch     (RUNTIME=1080 by default)
 # 1. precheck: xGFabric's own tk_fno_eval / tk_pinn_eval on the September
 #    archives (needs the fix/pinn-eval branch checked out in $XGF_DIR)
 # 2. broker (--plugins dt) + endpoint (concurrent, notify window 0, the only
@@ -81,15 +81,18 @@ CUDA_VISIBLE_DEVICES= RADICAL_ORBIT_LOG_FILE=$L/sensor-p8b.log \
 SP=$!
 
 CUDA_VISIBLE_DEVICES= RADICAL_ORBIT_LOG_FILE=$L/client-p8b.log \
-  $PY $W/digital_twins/$E/p8b_client.py --xgf $XGF_DIR --runtime ${RUNTIME:-1200} \
+  $PY $W/digital_twins/$E/p8b_client.py --xgf $XGF_DIR --runtime ${RUNTIME:-1080} \
   --probe ${PROBE:-3} --out $W/digital_twins/$R/p8b-twin-pm$TAG-$D.json \
   > $W/digital_twins/$R/p8b-client$TAG.log 2>&1
 echo "client rc=$?"
 grep -E "summary|first seen|failed" $W/digital_twins/$R/p8b-client$TAG.log
 
-kill -TERM $SP; wait $SP
-kill -TERM $EP; wait $EP
-kill -TERM $BP; wait $BP
+stop() {  # pid: TERM, then KILL after 15 s (run 4 hung here into the time limit)
+  kill -TERM $1 2>/dev/null
+  for i in $(seq 15); do kill -0 $1 2>/dev/null || return 0; sleep 1; done
+  echo "pid $1 still alive after TERM, killing"; kill -KILL $1 2>/dev/null
+}
+stop $SP; stop $EP; stop $BP
 echo "--- GPU use by the endpoint (TF device lines):"
 grep -h -i -E "created device|gpu:0|cuda" $W/digital_twins/$R/p8b-endpoint.console$TAG.log | head -5
 echo "--- playground models:"

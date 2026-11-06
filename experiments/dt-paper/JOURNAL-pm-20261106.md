@@ -462,3 +462,25 @@ xgboost, scikit-learn, python-dotenv). `esprima` in
   for every request. Present in all four runs (one KeyError each). This is
   a framework bug: no executable task can complete through ORBIT with the
   pinned stack; the integration tests only use function tasks.
+- Andre: option 2 (fix it in the stack); rhapsody PR against the branch
+  e491cd2 sits on, else main; the two local xGFabric commits into PR #17.
+  Done for xGFabric: 56490dc and 438d0d3 pushed to fix/pinn-eval, PR #17
+  retitled and its description covers all three fixes.
+- rhapsody: e491cd2 sits on no live branch (it came from PR #87, squash-
+  merged into main, branch deleted; the commit itself is reachable only
+  through merges into feature/flux*), so the fix branch is
+  `fix/orbit-exec-stdout` off origin/main (689ded7), commit 3b783b4:
+  `OrbitExecutionBackend._apply_task_update` fetches a DONE executable's
+  stdout/stderr/exit_code via `RhapsodyClient.get_task` (off the loop)
+  before firing; duplicate DONE fetches once; failed fetch -> FAILED with
+  the reason; shutdown waits for in-flight fetches. 6 new unit tests;
+  `test_terminal_tasks_are_pruned` now sends stdout in its notification
+  (its subject is pruning, not the fetch). Orbit backend tests: 60 passed,
+  1 skipped.
+- P8b build (local only, not pushed): worktree `$W/rhapsody-p8b`, branch
+  p8b/e491cd2-stdout = e491cd2 + the same src change (8e6e341), installed
+  with `--no-deps` into `$W/xgf/env` only. Deviation from the pins for P8b
+  only; the E1 venv and deploy/install.sh keep e491cd2.
+- Slip: I switched branches in the rhapsody checkout while the full unit
+  suite ran from it in the background; reverted within a minute (the suite
+  runs against the installed package; the worktree is used from then on).
