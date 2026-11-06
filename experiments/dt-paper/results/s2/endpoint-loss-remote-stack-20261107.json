@@ -1,0 +1,225 @@
+{
+  "provenance": {
+    "experiment": "E5 endpoint and client loss",
+    "harness": "bench_endpoint_loss.py",
+    "time": "2026-11-06T15:31:00-0800",
+    "host": "nid005411",
+    "python": "3.12.12",
+    "digital_twins_commit": "017dbc2665ff343e68030c4dfb44df8a42cc611c",
+    "digital_twins_dirty": false,
+    "backend": "orbit, concurrent on both endpoints",
+    "slurm_job": "60933104",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "inference": "pm_p6_inf_60933104",
+      "learning": "pm_p6_learn_60933104",
+      "kills": 10,
+      "reattaches": 10,
+      "gap": 2.0,
+      "probe": 0.5,
+      "probe_timeout": 5.0,
+      "learn_timeout": 120.0,
+      "lost_timeout": 120.0,
+      "logs": "/pscratch/sd/m/merzky/dt-pm3/orbit-logs",
+      "out": "experiments/dt-paper/results/s2/endpoint-loss-remote-stack-20261107.json"
+    }
+  },
+  "kills": [
+    {
+      "kill": 0,
+      "first_learned_s": 3.979217767715454,
+      "trained_on": "pm_p6_learn_60933104",
+      "detected": true,
+      "detect_s": 10.382346630096436,
+      "last_error": "engine endpoint lost: pm_p6_learn_60933104",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.5031323432922363,
+      "resume_s": 7.998122215270996,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794007870.2430024,
+          "ok": false,
+          "rtt": 5.181686878204346,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin a361b3ce-ef7a-4cb3-b044-067a7e9560a7: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007875.4247007,
+          "ok": false,
+          "rtt": 5.00994348526001,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 03680b63-826b-4400-a9cb-2ce932f97ea4 was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 1,
+      "first_learned_s": 3.744683027267456,
+      "trained_on": "pm_p6_learn_60933104",
+      "detected": true,
+      "detect_s": 11.452518701553345,
+      "last_error": "engine endpoint lost: pm_p6_learn_60933104",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.7530953884124756,
+      "resume_s": 8.529139995574951,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794007896.688635,
+          "ok": true,
+          "rtt": 0.5243179798126221,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007897.2129602,
+          "ok": true,
+          "rtt": 0.35927724838256836,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794007898.2498233,
+          "ok": true,
+          "rtt": 0.39150452613830566,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007898.641334,
+          "ok": true,
+          "rtt": 0.35761284828186035,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794007899.6783793,
+          "ok": true,
+          "rtt": 0.3948187828063965,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007900.0732038,
+          "ok": true,
+          "rtt": 0.35662341117858887,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794007901.108776,
+          "ok": true,
+          "rtt": 0.3926970958709717,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007901.5014796,
+          "ok": true,
+          "rtt": 0.5348565578460693,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794007902.7158973,
+          "ok": true,
+          "rtt": 0.408355712890625,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007903.1242585,
+          "ok": true,
+          "rtt": 0.3575594425201416,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794007904.1596432,
+          "ok": true,
+          "rtt": 0.3914909362792969,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007904.5511398,
+          "ok": true,
+          "rtt": 0.359478235244751,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794007905.5895946,
+          "ok": true,
+          "rtt": 0.392287015914917,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007905.9818873,
+          "ok": true,
+          "rtt": 0.53775954246521,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794007907.1977105,
+          "ok": true,
+          "rtt": 0.39101576805114746,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007907.5887318,
+          "ok": true,
+          "rtt": 0.35800886154174805,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 2,
+      "first_learned_s": 3.8452954292297363,
+      "trained_on": "pm_p6_learn_60933104",
+      "detected": true,
+      "detect_s": 10.38032341003418,
+      "last_error": "engine endpoint lost: pm_p6_learn_60933104",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.502243995666504,
+      "resume_s": 8.235229253768921,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794007937.9070618,
+          "ok": false,
+          "rtt": 5.180643558502197,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin b7b71680-9937-4047-bbde-d980965c9031: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794007943.0877128,
+          "ok": false,
+          "rtt": 5.008652448654175,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 1fb76890-da5c-41a7-b845-96df4f7b2d7c was closed during get_inference"
+        }
+      ]
+    }
+  ],
+  "reattaches": [],
+  "first_endpoint_up_s": 2.7532601356506348
+}

@@ -1,0 +1,8 @@
+backend: orbit pm_e1_ep_60933102
+bare asyncflow task          n=100  mean= 358.71ms  p50= 358.63  p90= 359.15  p99= 368.87  max= 368.87
+bare asyncflow task          500 concurrent requests in 1014.0ms (493 req/s)
+DT investigator              n=100  mean= 358.70ms  p50= 358.75  p90= 359.06  p99= 359.48  max= 359.48
+DT investigator              500 concurrent requests in 1081.0ms (463 req/s)
+DT agent + selector          n=100  mean= 358.74ms  p50= 358.74  p90= 359.45  p99= 360.11  max= 360.11
+DT agent + selector          500 concurrent requests in 1142.4ms (438 req/s)
+results: experiments/dt-paper/results/s2/insitu-pm-remote-c500-r1-stack-20261107.json

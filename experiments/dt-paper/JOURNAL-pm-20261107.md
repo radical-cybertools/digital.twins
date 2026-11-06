@@ -20,6 +20,7 @@ Updated after every job (sacct elapsed x nodes).
 | 60927067 | s1-p7 | m5290 | 1 | 00:00:00 | 0.000 | 0.02 | 0.00 |
 | 60927070 | s1-p7o | m5290 | 2 | 00:00:00 | 0.000 | 0.02 | 0.00 |
 | 60927071 | s1-p3 | m5290 | 1 | 00:01:03 | 0.018 | 0.04 | 0.00 |
+| 60927139 | s2-remote | m5290 | 2 | 00:00:00 | 0.000 | 0.04 | 0.00 |
 | 60927270 | s1-p3re | m5290 | 1 | 00:01:05 | 0.018 | 0.05 | 0.00 |
 | 60927438 | s1-p3spy | m5290 | 1 | 00:00:24 | 0.007 | 0.06 | 0.00 |
 | 60930958 | s1-p5 | m5290 | 1 | 00:16:54 | 0.282 | 0.34 | 0.00 |
@@ -31,6 +32,11 @@ Updated after every job (sacct elapsed x nodes).
 | 60931654 | s1-p7o | m5290 | 2 | 00:05:56 | 0.198 | 1.25 | 0.00 |
 | 60931928 | s1-p5re | m5290 | 1 | 00:04:24 | 0.073 | 1.33 | 0.00 |
 | 60932356 | s1-p1re | m5290 | 1 | 00:01:55 | 0.032 | 1.36 | 0.00 |
+| 60932997 | s2-r1a | m5290 | 2 | 00:00:54 | 0.030 | 1.39 | 0.00 |
+| 60932998 | s2-r1b | m5290 | 2 | 00:00:54 | 0.030 | 1.42 | 0.00 |
+| 60932999 | s2-r3 | m5290 | 2 | 00:00:29 | 0.016 | 1.44 | 0.00 |
+| 60933102 | s2-r1a | m5290 | 2 | 00:21:38 | 0.721 | 2.16 | 0.00 |
+| 60933103 | s2-r1b | m5290 | 2 | 00:18:29 | 0.616 | 2.77 | 0.00 |
 
 ## S0: build the stack (done)
 
@@ -244,3 +250,25 @@ Updated after every job (sacct elapsed x nodes).
   no file and skipped. The curl output itself showed the compute nodes
   reach the broker (HTTP 200, connect 0.164-0.168 s). Fixed; isolation
   checks of both jobs empty; resubmitted.
+
+## S2 R1 / R2 / R4 through radical.3 (done)
+
+- Jobs 60933102 (R1 repeats 1-3, 21:38) and 60933103 (R1 repeats 4-5, R2,
+  R4, 18:29), 2 debug nodes each; endpoint `pm_e1_ep_<job>` on node A,
+  clients on node B; default credentials; isolation checks empty.
+- WAN: 120 x curl `time_connect` from 4 compute nodes: p50 172.0 ms
+  (164.2-179.6).
+- R1 (`--tasks 100`, 5 repeats): p50 bare / investigator / agent 350.0 /
+  350.1 / 350.2 ms (c=1), 351.7 / 351.6 / 351.5 (c=50), 354.9 / 354.9 / 355.0
+  (c=500). A remote request = 2.03 WAN round trips (client -> radical.3 ->
+  endpoint -> radical.3 -> client); the stack adds about 6 ms on top (P4
+  cross-node on the cluster: 3.5 ms). DT rows equal bare within 0.2 ms.
+  Burst: 86-92 req/s at c=50, 450-493 req/s at c=500 (bounded by the
+  round trip: 500 requests in about 1 s).
+- R2 (`bench_streams.py both`, node B): orbit eventing through radical.3
+  p50 173.4 ms (one round trip), burst 515 msg/s; zmq (local, embedded)
+  0.2 ms, 20k msg/s.
+- R4 (`bench_model_update.py`, 3 repeats): answered p50 506-523 ms at 1 s,
+  517-547 ms at 100 ms; inference p50 345-350 ms; versions seen 100 % at
+  1 s, 29 % at 100 ms (the interval is shorter than one remote inference).
+  Same shape as on the cluster: about 1.5 inferences.
