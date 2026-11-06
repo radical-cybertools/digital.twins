@@ -16,10 +16,7 @@ from dataclasses import dataclass, field
 import sys
 from typing import cast
 
-try:
-    from enum import StrEnum
-except ImportError:
-    from backports.strenum import StrEnum
+from enum import StrEnum
 
 from typing import Any, Callable, Optional
 
