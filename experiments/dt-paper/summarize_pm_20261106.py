@@ -138,6 +138,56 @@ def p3():
     SUMMARY["p3"] = out
 
 
+def p4():
+    rows = ["bare", "investigator", "agent"]
+    cells = {}
+    for f, d in load(f"p4/insitu-pm-orbit-*-c*-r*-{D}.json"):
+        m = re.search(r"orbit-(cross|loop)-c(\d+)-r", f)
+        for row, v in d["rows"].items():
+            cells.setdefault((m.group(1), int(m.group(2)), row), []).append(v)
+    out = {}
+    print("\n### P4: through ORBIT, p50 ms and req/s, median (min–max) of 5 repeats\n")
+    print("| layout | c | " + " | ".join(f"{r} p50" for r in rows) + " | "
+          + " | ".join(f"{r} req/s" for r in rows) + " |")
+    print("|---" * (2 + 2 * len(rows)) + "|")
+    for lay in ("loop", "cross"):
+        for c in (1, 50, 500):
+            p50 = [mmm([v["p50_ms"] for v in cells.get((lay, c, r), [])]) for r in rows]
+            rps = [mmm([v["concurrent_req_per_s"] for v in cells.get((lay, c, r), [])]) for r in rows]
+            out[f"{lay}-c{c}"] = {r: {"p50_ms": a, "req_per_s": b} for r, a, b in zip(rows, p50, rps)}
+            print(f"| {lay} | {c} | " + " | ".join(fmt(x, 2) for x in p50) + " | "
+                  + " | ".join(fmt(x) for x in rps) + " |")
+    print("\n### P4: each row in its own process, c=50 (one run each)\n")
+    print("| layout | row | p50 ms | req/s |")
+    print("|---|---|---|---|")
+    for f, d in load(f"p4/insitu-pm-orbit-*-c50-solo-*-{D}.json"):
+        lay = re.search(r"orbit-(cross|loop)-c50-solo", f).group(1)
+        for row, v in d["rows"].items():
+            out[f"{lay}-solo-{row}"] = {"p50_ms": v["p50_ms"], "req_per_s": v["concurrent_req_per_s"]}
+            print(f"| {lay} | {row} | {v['p50_ms']:.2f} | {v['concurrent_req_per_s']:,.0f} |")
+    print("\n### P4: ORBIT tasks per request (diag_orbit_tasks.py, 20 + 200 + 50 requests)\n")
+    print("| layout | row | tasks | per request |")
+    print("|---|---|---|---|")
+    for f in sorted(glob.glob(str(R / f"p4/diag-tasks-*-{D}.log"))):
+        lay, row = re.search(r"diag-tasks-(cross|loop)-(\w+)-", f).groups()
+        line = [l for l in Path(f).read_text().splitlines() if l.startswith("DIAG ")]
+        if line:
+            n = json.loads(line[0][5:])["counts"]["tasks"]
+            out[f"{lay}-diag-{row}"] = n
+            print(f"| {lay} | {row} | {n} | {n / 270:.3f} |")
+    print("\n### P4: bench_streams.py (p50 ms / burst msg/s)\n")
+    for f in sorted(glob.glob(str(R / f"p4/streams-*-{D}.log"))):
+        lay = re.search(r"streams-(\w+)-", f).group(1)
+        txt = Path(f).read_text()
+        for name in ("zmq", "orbit"):
+            p = re.search(name + r".*?p50=\s*([\d.]+)", txt)
+            b = re.search(name + r".*?\((\d+) msg/s\)", txt)
+            if p and b:
+                out[f"{lay}-streams-{name}"] = {"p50_ms": float(p.group(1)), "msg_per_s": int(b.group(1))}
+                print(f"- {lay} {name}: p50 {p.group(1)} ms, burst {int(b.group(1)):,} msg/s")
+    SUMMARY["p4"] = out
+
+
 def p5():
     tw = {}
     for f, d in load(f"p5/twins-pm-pool64-r*-{D}.json"):

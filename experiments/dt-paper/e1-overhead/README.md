@@ -215,3 +215,39 @@ rows sit on the asyncflow floor: 3 tasks per window x about 11.7 ms.  The
 dt row being slightly faster is not a DT gain I can explain; it most
 likely reflects where its windows fall relative to the 10 ms run-loop
 poll.  Full table: `../results/summary-pm-20261106.json`.
+
+### P4: through ORBIT, cross-node and loopback
+
+2-node job (60900891): broker (`--plugins dt` only, bound to node 0's
+hsn0 address) and client on node 0; endpoint on node 1 ("cross") or node 0
+("loop"), notify window 0, throwaway TLS.  `bench_dt_insitu.py`
+`--tasks 1000`, `--concurrent` 1 / 50 / 500, 5 repeats per layout:
+
+| layout | c | p50 bare / investigator / agent | burst req/s bare / investigator / agent |
+|---|---|---|---|
+| loop | 1 | 14.98 / 14.64 / 14.58 ms | 69 / 67 / 68 |
+| loop | 50 | 14.70 / 14.71 / 14.70 ms | 727 / 656 / 562 |
+| loop | 500 | 14.70 / 14.62 / 14.93 ms | 891 / 703 / 582 |
+| cross | 1 | 15.12 / 14.95 / 15.02 ms | 66 / 69 / 65 |
+| cross | 50 | 15.00 / 14.90 / 15.14 ms | 699 / 659 / 551 |
+| cross | 500 | 15.03 / 14.80 / 14.97 ms | 727 / 712 / 574 |
+
+- **The network hop is cheap:** cross-node p50 is 0.3 ms above loopback.
+  ORBIT costs about 3 ms per request over the local pool (11.7 ms, P1).
+- **Latency:** DT rows equal bare within 0.4 ms at every concurrency.
+- **The agent's burst gap reproduces** (E1 run C: 520 vs 710 req/s): agent
+  at 0.65-0.81 x bare.  It is **not** extra remote work:
+  `diag_orbit_tasks.py` counts exactly one ORBIT task per request in every
+  row (270 for 270 requests; the DT rows have one more, the readiness
+  poll).  py-spy on the client (c=50): DT code is about 1 % of the samples,
+  rhapsody's client about 26 %.  Part of it is order: run alone in its own
+  process (`--rows agent`), the agent reaches 0.88-0.90 x bare (628 vs 697
+  cross, 624 vs 708 loop) instead of 0.79.  The rest is not explained; a
+  burst is 50-500 completions arriving through rhapsody's client, and the
+  agent adds two coroutine hops (selection, investigator) per request on
+  that same loop.  Burst numbers are single-burst timings and noisy (bare
+  ranges 483-750 req/s at c=50).
+- `bench_streams.py`, client on node 1 against the broker on node 0
+  ("cross") vs all on node 0: zmq 0.15 / 0.16 ms p50, 31.7k / 32.2k msg/s;
+  orbit 0.45 / 0.43 ms, 10.0k / 10.4k msg/s (E1 run C loopback 0.49 ms).
+

@@ -1,0 +1,8 @@
+backend: orbit dt_p4_ep1
+bare asyncflow task          n=1000  mean=  15.16ms  p50=  15.00  p90=  15.57  p99=  16.68  max= 171.85
+bare asyncflow task          50 concurrent requests in 71.6ms (699 req/s)
+DT investigator              n=1000  mean=  14.76ms  p50=  14.77  p90=  15.41  p99=  15.97  max=  20.11
+DT investigator              50 concurrent requests in 77.2ms (647 req/s)
+DT agent + selector          n=1000  mean=  14.91ms  p50=  14.91  p90=  15.57  p99=  15.98  max=  17.51
+DT agent + selector          50 concurrent requests in 91.2ms (548 req/s)
+results: experiments/dt-paper/results/p4/insitu-pm-orbit-cross-c50-r2-20261106.json

@@ -244,3 +244,20 @@ Times are local (PST) unless noted.
   and falls monotonically with pool size in all rows: that, not the DT,
   is why pool 64 is slower than pool 8. Cause of the decline not profiled.
 - Consistent with E1 run A, so no rerun.
+
+## P4: E1 through ORBIT (done)
+
+- Job 60900891 (regular, 2 nodes nid006479/006481, about 33 min): broker on
+  node 0's hsn0 address 10.249.17.199:8131 with `--plugins dt` only (no
+  extra plugin needed), per-job TLS in `$W/tls/p4-60900891`, endpoints
+  `dt_p4_ep1` (node 1) then `dt_p4_ep0` (node 0), notify window 0. All
+  runs rc=0. Isolation check empty.
+- Cross-node p50 +0.3 ms over loopback; ORBIT +3 ms over the local pool.
+  DT p50 equal to bare within 0.4 ms.
+- Agent burst gap reproduces E1 run C (0.65-0.81 x bare). Diagnosis: one
+  ORBIT task per request in every row (diag counts), DT code about 1 % of
+  py-spy samples. Solo-process runs give 0.88-0.90 x: part of the gap is
+  row order. The remainder is unexplained (open question: profile the
+  client loop under a burst with the agent row alone). Per the contract
+  the result is reported both ways (in-process and solo), not explained
+  away.
