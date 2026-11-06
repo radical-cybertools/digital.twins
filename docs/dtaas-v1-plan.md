@@ -315,16 +315,16 @@ limited to prerequisites P1-P2.
 - Routes (per-session): `twin_create/{sid}`, `twin_list/{sid}`,
   `twin_close/{sid}/{twin_id}`, `twin_call/{sid}/{twin_id}` carrying
   exactly one graph verb per request (`add_input`, `add_task`,
-  `add_investigator`, `add_agent`, `start`, `stop`, `describe`,
+  `add_investigator`, `add_agent`, `add_data_join`, `add_barrier`,
+  `add_data_split_task`, `start`, `stop`, `describe`,
   `get_inference`; `add_input` carries a dtype, a channel string and
   a codec name, so it ships no artifact at all; `describe` returns
   the serializable graph dict —
-  human-readable rendering is a client concern). Barriers are
-  **local-API only in v1**: `add_barrier` is not a remote verb — the
-  `Barrier` object doesn't fit the `package()` class-shipping
-  convention (post-construction config whose return values the
-  client needs locally, live asyncio primitives), and no remote demo
-  uses it. One admin route: `admin/sessions` (all sessions + twins +
+  human-readable rendering is a client concern). A `Barrier` doesn't
+  fit the `package()` class-shipping convention (post-construction
+  config whose return values the client needs locally, live asyncio
+  primitives), so `add_barrier` ships its spec and the service builds
+  its own. One admin route: `admin/sessions` (all sessions + twins +
   owner + age + state + last error); teardown reuses the ordinary
   `twin_close`/`unregister_session` with a sid from the listing.
   Artifacts: cloudpickle-base64 in JSON, `package()` class-shipping
