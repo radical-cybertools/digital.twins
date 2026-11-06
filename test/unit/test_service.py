@@ -1077,3 +1077,42 @@ async def test_add_data_split_task_verb_registers_the_split():
     assert tuple(split.split_outputs) == (B, C)
 
     await twin.close()
+
+
+def test_add_barrier_refuses_a_subclass():
+    from digitaltwin.service.client import DTClient
+
+    class Custom(Barrier):
+        pass
+
+    client = DTClient.__new__(DTClient)
+
+    with pytest.raises(TypeError, match="plain Barrier"):
+        client.add_barrier("t1", Custom("AB"))
+
+
+async def test_a_barrier_cannot_follow_a_soft_one_or_repeat(stream_clients):
+    runtime = DTRuntime(None, await stream_clients("barriers"))
+
+    first = Barrier("AB", hard=False)
+    first.add_dtype(A)
+    runtime.add_barrier(first)
+
+    second = Barrier("CD")
+    second.add_dtype(A)
+    with pytest.raises(ValueError, match="cannot follow"):
+        runtime.add_barrier(second)
+
+    with pytest.raises(ValueError, match="no dtypes"):
+        runtime.add_barrier(Barrier("EF"))
+
+    await runtime.stop()
+
+
+async def test_add_data_split_task_needs_a_split_task(stream_clients):
+    runtime = DTRuntime(None, await stream_clients("splits"))
+
+    with pytest.raises(AssertionError):
+        runtime.add_data_split_task(_Persistent(None), A, (B,))
+
+    await runtime.stop()

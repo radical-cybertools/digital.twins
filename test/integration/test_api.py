@@ -6,9 +6,9 @@
 # code relying on the DT framework won't work either.
 #
 # The API tests cover the standalone version. This now covers the "as-a-service"
-# version. The components for this test are on-purposely soft linked to the API
-# tests, as the user code shouldn't have to change at all whether running as a
-# service or standalone.
+# version. The components for this test are on-purposely the API tests' own, as
+# the user code shouldn't have to change at all whether running as a service or
+# standalone.
 
 
 import json
@@ -21,12 +21,12 @@ import pytest
 
 from digitaltwin.components import TRUTHY, Barrier
 
-# the linked api_test modules import each other by their own names
-# (`from dtypes import ...`); appended, so this directory's conftest wins
-sys.path.append(str(Path(__file__).resolve().parent.parent / "api_test"))
+# appended, so this directory's conftest wins
+API_TEST = Path(__file__).resolve().parent.parent / "api_test"
+sys.path.append(str(API_TEST))
 
-from api_dtypes import *  # noqa: E402,F403
-from api_sensors import (  # noqa: E402
+from dtypes import *  # noqa: E402,F403
+from sensors import (  # noqa: E402
     Fast4_Sensor,
     Persist_Sensor,
     Fast_Sensor,
@@ -38,7 +38,7 @@ from api_sensors import (  # noqa: E402
     Slow3_Sensor,
     Rand_Sensor,
 )
-from api_components import (  # noqa: E402
+from components import (  # noqa: E402
     AgentTest,
     FlipAgent,
     InvestigatorTest,
@@ -46,13 +46,13 @@ from api_components import (  # noqa: E402
 )
 from digitaltwin.service import register_user_modules  # noqa: E402
 
-import api_components  # noqa: E402
-import api_dtypes  # noqa: E402
-import api_sensors  # noqa: E402
+import components  # noqa: E402
+import dtypes  # noqa: E402
+import sensors  # noqa: E402
 
 pytestmark = pytest.mark.integration
 
-register_user_modules([api_dtypes, api_sensors, api_components])
+register_user_modules([dtypes, sensors, components])
 
 
 def setup(dt, twin):
@@ -109,16 +109,16 @@ def setup(dt, twin):
     hard_only.add_dtype(SLOW_SENSOR_DTYPE)
 
     fast_soft = Barrier("FAST SOFT")  # tests Windowing
-    fast2_window = fast_soft.add_dtype(FAST2_SENSOR_DTYPE, hard=False)
+    fast_soft.add_dtype(FAST2_SENSOR_DTYPE, hard=False)
     fast_soft.add_dtype(SLOW2_SENSOR_DTYPE)
 
     slow_soft = Barrier("SLOW SOFT")  # tests replication
     slow_soft.add_dtype(FAST3_SENSOR_DTYPE)
-    slow3_window = slow_soft.add_dtype(SLOW3_SENSOR_DTYPE, hard=False)
+    slow_soft.add_dtype(SLOW3_SENSOR_DTYPE, hard=False)
 
     soft_only = Barrier("SOFT ONLY", hard=False)
-    fast4_window = soft_only.add_dtype(FAST4_SENSOR_DTYPE)
-    slow4_window = soft_only.add_dtype(SLOW4_SENSOR_DTYPE)
+    soft_only.add_dtype(FAST4_SENSOR_DTYPE)
+    soft_only.add_dtype(SLOW4_SENSOR_DTYPE)
 
     # add each to runtime.
     dt.add_barrier(twin, hard_only)
@@ -132,8 +132,6 @@ def setup(dt, twin):
     # add data split
     st = dt.package(SplitTest)
     dt.add_data_split_task(twin, st, RAND_SENSOR_DTYPE, [POS_NUM, NEG_NUM])
-
-    return fast2_window, slow3_window, fast4_window, slow4_window
 
 
 # what a graph *is*, as opposed to what its loops have done so far: through
@@ -159,8 +157,7 @@ def test_setup(dt, twin_id):
 
     setup(dt, twin_id)
 
-    expected = Path(__file__).resolve().parent / "expected_graph.json"
-    answer = json.loads(expected.read_text())
+    answer = json.loads((API_TEST / "expected_graph.json").read_text())
 
     assert _structure(answer) == _structure(dt.describe(twin_id))
 

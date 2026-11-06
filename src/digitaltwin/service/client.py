@@ -276,8 +276,13 @@ class DTClient(PluginClient):
         soft stream's is a `WindowDataType`).  Only the barrier's spec
         travels -- name, default hardness, and each dtype with its own --
         and the service builds its own `Barrier` from it: a barrier holds
-        asyncio primitives, which belong to the loop that runs them.
+        asyncio primitives, which belong to the loop that runs them.  So
+        a `Barrier` subclass cannot travel and is refused.
         """
+
+        if type(barrier) is not Barrier:
+            raise TypeError("only a plain Barrier can be sent to the service,"
+                            f" got {type(barrier).__name__}")
 
         dtypes = [(dtype, hard) for dtype, hard in barrier.dtypes.items()]
 

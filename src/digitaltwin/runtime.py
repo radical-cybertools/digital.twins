@@ -1304,6 +1304,18 @@ class DTRuntime:
         """
         self._check_mutable()
 
+        if not barrier.dtypes:
+            raise ValueError(f"barrier {barrier.name!r} has no dtypes")
+
+        # a soft dtype leaves a barrier as a window, which no next barrier
+        # takes, and a barrier's name identifies its windows
+        for dtype in barrier.dtypes:
+            for prior in self.barriers.get(dtype, ()):
+                if prior.name == barrier.name or not prior.dtypes[dtype]:
+                    raise ValueError(
+                        f"barrier {barrier.name!r} cannot follow"
+                        f" {prior.name!r} on {dtype}")
+
         # a barrier spans across multiple dtypes.... add in the order that
         # follows.
         for dtype in barrier.dtypes:
@@ -1380,6 +1392,7 @@ class DTRuntime:
         """
 
         self._check_mutable()
+        assert isinstance(task, SplitTask)
         assert input_dtype != TRUTHY
 
         ant_comp = _AnnotatedComponent(task, input_dtype, NULL_DTYPE, False)
