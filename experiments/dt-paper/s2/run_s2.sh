@@ -33,7 +33,7 @@ onB() { srun --overlap -N1 -n1 -w $NB --export=ALL "$@"; }
 rtt() {  # label
   for i in $(seq 20); do
     curl -sk -o /dev/null -m 10 -w '%{http_code} %{time_connect}\n' $URL/
-  done > $R/wan-rtt-$1-$D.txt
+  done > $R/wan-rtt-$1-$J-$D.txt
   echo "$1: http $(cut -d' ' -f1 $R/wan-rtt-$1-$J-$D.txt | sort | uniq -c | tr '\n' ' ')" \
        "connect p50 $(cut -d' ' -f2 $R/wan-rtt-$1-$J-$D.txt | sort -n | sed -n 10p) s"
 }

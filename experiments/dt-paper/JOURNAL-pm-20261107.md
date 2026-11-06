@@ -238,3 +238,9 @@ Updated after every job (sacct elapsed x nodes).
   R1 repeats 1-3; R1 repeats 4-5 + R2 + R4; R3. Each job measures the WAN
   RTT in its own allocation (as the page asks) and has its own isolation
   stamp and check.
+- First S2 debug jobs 60932997 / 60932998 stopped after 54 s, 60932999
+  cancelled: my bug, the RTT loop wrote `wan-rtt-<node>-$D.txt` while the
+  check read `wan-rtt-<node>-<job>-$D.txt`, so the reachability test saw
+  no file and skipped. The curl output itself showed the compute nodes
+  reach the broker (HTTP 200, connect 0.164-0.168 s). Fixed; isolation
+  checks of both jobs empty; resubmitted.
