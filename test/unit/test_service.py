@@ -1052,12 +1052,11 @@ async def test_a_failed_telemetry_start_shuts_the_engine_down(monkeypatch):
     async def shutdown_engine(flow):
         stopped.append(flow)
 
-    monkeypatch.setattr("radical.asyncflow.WorkflowEngine.start_telemetry",
-                        start_telemetry)
+    monkeypatch.setattr(_FakeFlow, "start_telemetry", start_telemetry,
+                        raising=False)
     session._shutdown_engine = shutdown_engine
 
     with pytest.raises(RuntimeError, match="no such directory"):
         await session.engine()
 
     assert len(stopped) == 1
-    await stopped[0].shutdown()
