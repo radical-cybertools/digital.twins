@@ -39,6 +39,7 @@ Updated after every job (sacct elapsed x nodes).
 | 60933103 | s2-r1b | m5290 | 2 | 00:18:29 | 0.616 | 2.77 | 0.00 |
 | 60933104 | s2-r3 | m5290 | 2 | 00:08:41 | 0.289 | 3.06 | 0.00 |
 | 60934116 | s2-r3re | m5290 | 2 | 00:07:41 | 0.256 | 3.32 | 0.00 |
+| 60934573 | s3-service | m5290 | 2 | 00:04:14 | 0.141 | 3.46 | 0.00 |
 
 ## S0: build the stack (done)
 
@@ -301,3 +302,58 @@ Updated after every job (sacct elapsed x nodes).
   service let a pending `get_inference` of any twin in that session hang or
   fail until the session is recreated (whereas the loopback broker does
   not)? The sibling uses only the inference endpoint, which stayed up.
+
+## S3: the service path through radical.3 (done, preliminary)
+
+- New `experiments/dt-paper/s3/s3_service.py` (reuses
+  `bench_endpoint_loss.py`'s twins and reattach cycle) and `run_s3.sh`: the
+  twin (`OffsetModel`) lives in the radical.3 broker's dt plugin, its engine
+  on `pm_s3_ep_<job>` (node A), the client on node B. Job 60934573 (debug,
+  4:14). Isolation check empty. (A first attempt to write the script via a
+  heredoc was refused by a tool hook because of the `find ~/.radical/orbit`
+  line; written with the editor instead.)
+- `get_inference` p50 346.2-346.4 ms over 3 fresh sessions x 100 requests
+  (p99 348-350), i.e. the same two WAN round trips as the client-side path
+  (R1: 350 ms); session + twin creation 1.50-1.51 s; 10/10 reattaches,
+  attach 1.06 s, first answer 1.59 s (the same as R3).
+
+## Close-out (round 2)
+
+| step | state | headline |
+|---|---|---|
+| S0 | done | stack venv first try, pins match STACK.md, Python 3.12.12 |
+| S1 P1 | done (+rerun, solo rows) | p50 0.55 ms (round 1 11.6); DT within 0.12 ms; in-process investigator dip at c=500 is row order (solo 0.93 x) |
+| S1 P2 | done | per-task floor gone (0.7 ms); pools 4-8 fastest, default 256 is 3.3x slower; zmq feed caps at about 13.7k msg/s |
+| S1 P3 | done (+rerun) | ex-situ DT cost visible: dt/bare 0.98 -> 0.35 from batch 1 to 100, the ZMQ stream hop (same cap as P2's zmq row) |
+| S1 P4 | done | ORBIT p50 3.4-4.0 ms (round 1 15); cross-node no slower; burst ceiling unchanged (about 790 req/s); agent solo 0.98 x |
+| S1 P5 | done (+rerun) | E2a: one twin 16x faster, aggregate capped at about 2.2k req/s by dispatch to the shared pool; E2b unchanged (8k inputs/s) |
+| S1 P6 | done | unchanged: detect 10.4 s, resume 3.0 s, reattach 17 ms |
+| S1 P7 / P7o | done | 0.7 ms local (round 1 16), 6-8 ms through ORBIT (round 1 22), all versions seen |
+| S2 R1 / R2 / R4 | done | WAN RTT 172 ms; E1 350 ms (2 RTT + 6 ms), DT = bare; stream event 173 ms; model update 0.5 s |
+| S2 R3 | done (+rerun) | detect / recover / reattach work; in-situ inference of the whole session stalls in 4/10 (rerun 8/10) kills |
+| S3 | done, preliminary | service-path get_inference 346 ms (= 2 RTT); session + twin 1.5 s; reattach 1.06 s |
+
+**Node-hours (round 2):** see the ledger at the top; m5290 total there, m5290_g 0.
+No allocation left running. Every ORBIT job's `~/.radical/orbit` check empty.
+
+**Fix branches:** none. No bug in `src/` blocked a step.
+
+**Open questions for Andre**
+
+1. S2 R3: through the radical.3 dt service an engine-endpoint loss stalls
+   `get_inference` for every twin of the session (learner 504, sibling 409
+   "closed during get_inference" while `twin_list` says `running`); on the
+   cluster's own broker it never does. The service's logs on radical.3 should
+   show why.
+2. S1 P5 / P1: on the paper stack the shared process pool's dispatch caps
+   at about 2.2k tasks/s (pool 64) and burst throughput falls with pool
+   size; round 1 reached 2.8k at 64 twins. A pool per twin, or a smaller
+   pool, is the lever; worth a look in rhapsody's concurrent backend.
+3. S1 P3: the ex-situ DT path is bounded by the ZMQ stream transport (about
+   13k samples/s); a learner fed through ZMQ without the DT hits the same
+   cap. Batch samples per message, or feed in-process when co-located?
+4. S1 P4: the burst ceiling through ORBIT (about 790 req/s) did not move with
+   the stack; it sits in the ORBIT / rhapsody client path.
+5. The stack's rhapsody (3696998) does not contain rhapsody#125 (executable
+   stdout over ORBIT); none of round 2's harnesses needed it, the xGFabric
+   twin (P8b) does.

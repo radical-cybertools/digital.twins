@@ -1,0 +1,14 @@
+repeat 0: session+twin 1.51s, p50 346.2 ms p90 347.0 p99 349.2
+repeat 1: session+twin 1.51s, p50 346.4 ms p90 347.1 p99 348.4
+repeat 2: session+twin 1.50s, p50 346.4 ms p90 347.1 p99 349.9
+reattach 0: attach 1.09s, first answer 1.61s, state running, ok True
+reattach 1: attach 1.05s, first answer 1.57s, state running, ok True
+reattach 2: attach 1.04s, first answer 1.56s, state running, ok True
+reattach 3: attach 1.07s, first answer 1.60s, state running, ok True
+reattach 4: attach 1.07s, first answer 1.60s, state running, ok True
+reattach 5: attach 1.07s, first answer 1.60s, state running, ok True
+reattach 6: attach 1.06s, first answer 1.59s, state running, ok True
+reattach 7: attach 1.03s, first answer 1.55s, state running, ok True
+reattach 8: attach 1.06s, first answer 1.59s, state running, ok True
+reattach 9: attach 1.08s, first answer 1.62s, state running, ok True
+{"p50_ms": 346.3749885559082, "session_and_twin_s": 1.5050592422485352, "reattaches_ok": 10, "reattaches": 10, "attach_s": 1.0640544891357422, "first_answer_s": 1.592771291732788}
