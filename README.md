@@ -118,8 +118,8 @@ memory, and never backpressures a producer.  Loss is visible as a gap in
 the broker-assigned sequence numbers.  ORBIT's `replay` plugin would give
 late joiners history; it is deliberately not integrated in v1.
 
-`perf/bench_streams.py` measures what the choice costs: about a
-millisecond per stream hop on loopback.
+`experiments/dt-paper/e1-overhead/bench_streams.py` measures what the
+choice costs: about a millisecond per stream hop on loopback.
 
 ## Running it as a service (the `dt` ORBIT plugin)
 
