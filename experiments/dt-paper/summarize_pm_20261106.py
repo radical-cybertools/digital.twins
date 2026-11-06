@@ -138,6 +138,53 @@ def p3():
     SUMMARY["p3"] = out
 
 
+def p5():
+    tw = {}
+    for f, d in load(f"p5/twins-pm-pool64-r*-{D}.json"):
+        for pt in d["points"]:
+            tw.setdefault(pt["twins"], []).append(pt)
+    out = {"twins": {}, "join": {}}
+    print("\n### P5 E2a: N twins, pool 64, closed loop, median (min–max) of 3 repeats\n")
+    print("| twins | aggregate req/s | per-twin p50 ms (median twin) | worst twin p50 | p99 (median twin) | worst twin p99 |")
+    print("|---|---|---|---|---|---|")
+    for n in sorted(tw):
+        g = lambda k: mmm([pt[k] for pt in tw[n]])  # noqa: E731
+        out["twins"][str(n)] = {k: g(k) for k in ("req_per_s", "p50_ms_median",
+                                                  "p50_ms_max", "p99_ms_median", "p99_ms_max")}
+        print(f"| {n} | {fmt(g('req_per_s'))} | {fmt(g('p50_ms_median'), 2)} | "
+              f"{fmt(g('p50_ms_max'), 2)} | {fmt(g('p99_ms_median'), 2)} | {fmt(g('p99_ms_max'), 2)} |")
+    js = {}
+    pts = {}
+    for f, d in load(f"p5/join-pm-r*-{D}.json"):
+        for k, best in d["max_sustainable"].items():
+            js.setdefault(int(k), []).append(best)
+        for pt in d["points"]:
+            pts.setdefault((pt["streams"], pt["rate_target"]), []).append(pt)
+    print("\n### P5 E2b: K joined streams, max sustainable rate (p50 below 2x the 10/s base), 3 repeats\n")
+    print("| K | rounds/s (per stream) | inputs/s | p50 ms at that rate | base p50 ms (10/s) |")
+    print("|---|---|---|---|---|")
+    for k in sorted(js):
+        b = [x for x in js[k] if x]
+        g = lambda key: mmm([x[key] for x in b])  # noqa: E731
+        out["join"][str(k)] = {key: g(key) for key in ("rounds_per_s", "inputs_per_s",
+                                                       "p50_ms", "base_p50_ms")}
+        print(f"| {k} | {fmt(g('rounds_per_s'))} | {fmt(g('inputs_per_s'))} | "
+              f"{fmt(g('p50_ms'), 2)} | {fmt(g('base_p50_ms'), 2)} |")
+    print("\n### P5 E2b: p50 latency (ms) per K and rate, median of repeats\n")
+    rates = sorted({r for _, r in pts})
+    print("| K | " + " | ".join(f"{r:g}/s" for r in rates) + " |")
+    print("|---" * (1 + len(rates)) + "|")
+    out["join_grid"] = {}
+    for k in sorted({k for k, _ in pts}):
+        cells = []
+        for r in rates:
+            m = mmm([pt["p50_ms"] for pt in pts.get((k, r), [])])
+            out["join_grid"][f"{k}@{r:g}"] = m
+            cells.append(f"{m['median']:.2f}" if m else "–")
+        print(f"| {k} | " + " | ".join(cells) + " |")
+    SUMMARY["p5"] = out
+
+
 if __name__ == "__main__":
     phases = [a for a in sys.argv[1:] if not a.startswith("--")] or ["p1", "p2", "p3"]
     for ph in phases:

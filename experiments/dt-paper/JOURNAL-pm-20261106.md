@@ -186,3 +186,21 @@ Times are local (PST) unless noted.
   `--host`. Fix: take the first (`head -1`, the 10.249.x HSN address).
   The isolation check ran (`find ~/.radical/orbit -newer stamp` empty).
   Resubmitted as job 60900891 (with the per-job TLS directory).
+
+## P5: E2 scaling (done, preliminary)
+
+- New harnesses (commit 25167fe): `e2-scaling/bench_twins.py` (N
+  `DTRuntime`s with one `Inv` each, shared ZMQ broker and engine, one
+  closed-loop client per twin, 10 s per point) and
+  `e2-scaling/bench_streams_join.py` (K `ChannelPublisher`s, `add_input`
+  per stream, `add_data_join`, `UtilityTask` sink).
+- Decisions: E2a pool fixed at 64 for all N (the offered concurrency is N,
+  up to 64). E2b: the join is clear from the code (`_JoinComponent`, depth-1
+  queues, lockstep), so no barrier fallback was needed; producers publish
+  in rounds; the join's consumer is a `UtilityTask` sink, not an agent, so
+  the number measures the join and the stream path rather than the
+  agent's selection; "latency doubles" is against the p50 at 10 rounds/s.
+- Job 60900350 (regular, nid007066), 3 repeats each. E2a: linear to 32
+  twins (2,681 req/s, p50 11.07 ms), saturates at 64 (2,812 req/s, p50
+  20.9 ms). E2b: max sustainable about 8k inputs/s total for K = 4-16,
+  5k at K=1, 6.4k at K=32; no tuple dropped or misaligned at any rate.
