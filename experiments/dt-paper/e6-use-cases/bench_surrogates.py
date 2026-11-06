@@ -81,6 +81,9 @@ def main() -> int:
     p.add_argument("--warm", type=int, default=50)
     p.add_argument("--reload", type=int, default=10)
     p.add_argument("--wind", type=float, default=0.5)
+    p.add_argument("--budget", type=float, default=240.0,
+                   help="seconds per warm / reload loop; a loop stops early "
+                        "once it is spent (the count is recorded)")
     p.add_argument("--out", required=True)
     args = p.parse_args()
 
@@ -143,17 +146,23 @@ def main() -> int:
     shapes = [list(np.shape(o)) for o in out]
 
     warm = []
+    t_loop = time.perf_counter()
     for _ in range(args.warm):
         t0 = time.perf_counter()
         field(state)
         warm.append(time.perf_counter() - t0)
+        if time.perf_counter() - t_loop > args.budget:
+            break
 
     reload = []
+    t_loop = time.perf_counter()
     for _ in range(args.reload):
         t0 = time.perf_counter()
         s = prepare()
         field(s)
         reload.append(time.perf_counter() - t0)
+        if time.perf_counter() - t_loop > args.budget:
+            break
 
     res = {
         "provenance": provenance(args),

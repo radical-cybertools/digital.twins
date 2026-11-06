@@ -279,3 +279,18 @@ Times are local (PST) unless noted.
   Open question for Andre: rewrite that branch's history, or leave it
   (the sessions are dead).
 - From here on the secret grep runs before every commit of logs.
+
+## P8: decisions while the GPU job queues
+
+- P8a job 60898696 still pending (Priority) in gpu_regular since P0.
+- Decision: `bench_surrogates.py` gets `--budget` (default 240 s per warm /
+  reload loop, the count actually run is recorded), so the CPU comparison
+  cannot overrun the 2 h job if a CPU field evaluation takes tens of
+  seconds. The queued job reads the harness at start, so it picks this up.
+- Decision: **P8b skipped.** The real WindField twin
+  (`twin_service_real.py`) calls `tk_pinn_eval`, which cannot run (see P0),
+  and there is no trained PCR model, so the selector would choose among a
+  broken and a missing surrogate. Making it run means fixing xGFabric,
+  which the page rules out (no commits there). Open question for Andre:
+  fix `tk_pinn_eval` in xGFabric (communicate() on the tar process; file
+  and meta-key names) and train / stage a PCR model, then run P8b.
