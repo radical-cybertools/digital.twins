@@ -155,7 +155,7 @@ class PluginDT(Plugin):
 
     # -- session policy -----------------------------------------------------
 
-    def _normalize_session_policy(self, data: dict) -> tuple:
+    async def _normalize_session_policy(self, data: dict) -> tuple:
         """Force `persistent`.
 
         Twins run for days and clients attach opportunistically; a session
@@ -167,7 +167,7 @@ class PluginDT(Plugin):
         forced["lifetime"] = "persistent"
         forced.pop("ttl", None)
 
-        return super()._normalize_session_policy(forced)
+        return await super()._normalize_session_policy(forced)
 
     def _check_owner(self, sid: str, owner: Optional[str]) -> None:
         """The sid is a bearer capability: any holder may reattach.
@@ -232,11 +232,12 @@ class PluginDT(Plugin):
                 f"'default_engine' must be one of {ROLES}, got {default!r}"))
 
         owner = self._request_owner(request)
-        sid, lifetime, ttl = self._normalize_session_policy(data)
+        sid, lifetime, ttl = await self._normalize_session_policy(data)
 
         if sid is not None and sid in self._sessions:
+            # policy is always `persistent` here, so a reattach cannot
+            # conflict with it (orbit dropped _check_policy_conflict)
             self._check_owner(sid, owner)
-            self._check_policy_conflict(sid, lifetime, ttl)
             self._touch(sid)
             log.info("[dt] reattached session %s", sid)
             return {"sid": sid, "reattached": True}

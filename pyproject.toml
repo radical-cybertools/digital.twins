@@ -19,7 +19,7 @@ dependencies = [
 [project.optional-dependencies]
 # the ORBIT service plugin (`digitaltwin.service`) and its client
 service = [
-    "radical.orbit>=0.7",
+    "radical.orbit>=0.8",
     "rhapsody-py[telemetry]>=0.4.0",
 ]
 # ex-situ learning (`digitaltwin.learn`).  A separate extra rather than
