@@ -178,3 +178,11 @@ Times are local (PST) unless noted.
 - Note: P4 job 60899935 was submitted before the per-job TLS directory
   change to `run_p4.sh` (commit after eff5dc6); sbatch keeps the submitted
   copy, so that job uses `$W/tls/` directly. No other job uses that path.
+
+## P4: first attempt failed
+
+- Job 60899935 (2 nodes, nid004991-2) failed after 20 s: `hsn0` carries two
+  IPv4 addresses (10.249.6.35 and 128.55.73.230), the script passed both to
+  `--host`. Fix: take the first (`head -1`, the 10.249.x HSN address).
+  The isolation check ran (`find ~/.radical/orbit -newer stamp` empty).
+  Resubmitted as job 60900891 (with the per-job TLS directory).

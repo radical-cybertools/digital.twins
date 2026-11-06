@@ -19,7 +19,7 @@ G=$X/e1-overhead/diag_orbit_tasks.py
 L=$W/orbit-logs
 N0=$(hostname -s)
 N1=$(scontrol show hostnames $SLURM_JOB_NODELIST | grep -v "^$N0$" | head -1)
-IP0=$(ip -4 -o addr show hsn0 | awk '{print $4}' | cut -d/ -f1)
+IP0=$(ip -4 -o addr show hsn0 | awk '{print $4}' | cut -d/ -f1 | head -1)
 PORT=8131
 URL=https://$IP0:$PORT
 echo "node0 $N0 ($IP0) node1 $N1  broker $URL"
