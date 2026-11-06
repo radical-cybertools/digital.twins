@@ -1,4 +1,46 @@
-# Performance harnesses
+# E1 Overhead
+
+Do the abstractions cost performance?  (Outline, 2026-10-02.)
+
+- Baseline: xGFabric-style hand-wired workflow on one endpoint.
+- Metrics:
+  - in-situ inference throughput and latency
+  - ex-situ learner throughput
+- Have (single host only):
+  - service inference 20 ms vs 11 ms in-process (`bench_insitu.py`)
+  - stream hop 0.98 ms on ZMQ vs 2.09 ms on ORBIT (`bench_streams.py`)
+- Missing: the baseline comparison; runs on Perlmutter.
+
+## `bench_dt_insitu.py` — in-situ: hand-wired vs DT
+
+The E1 in-situ comparison.  One no-op prediction (an asyncflow function
+task), measured three ways on the same backend: called directly (the
+hand-wired, xGFabric-style baseline), through `DTRuntime.get_inference`
+into a `ModelInvestigator`, and through a `SciAgent` with a model
+selector in front of it (the xGFabric twin shape).  The difference
+between the rows is the DT layer.
+
+```sh
+# local process pool
+python experiments/dt-paper/e1-overhead/bench_dt_insitu.py \
+    --out results/insitu-<host>-<date>.json
+
+# tasks on an ORBIT endpoint (notify window 0, see below)
+python experiments/dt-paper/e1-overhead/bench_dt_insitu.py \
+    --broker https://127.0.0.1:8031 --endpoint dt_test_task_ep \
+    --out results/insitu-orbit-<host>-<date>.json
+```
+
+The JSON records host, python, backend, notify window, Slurm job id and
+the `digital_twins` commit next to the raw latencies.
+
+Laptop smoke run (2026-11-02, local pool of 8, n=100, 50 concurrent):
+
+| row                 | p50      | concurrent |
+|---------------------|----------|------------|
+| bare asyncflow task | 11.09 ms | 1352 req/s |
+| DT investigator     | 11.21 ms | 1265 req/s |
+| DT agent + selector | 11.14 ms | 1248 req/s |
 
 ## `bench_insitu.py` — in-situ inference latency
 
@@ -8,7 +50,7 @@ prediction), plus a 50-way concurrency probe.
 
 ```sh
 # against the integration stack (test/integration/conftest.py starts one)
-python perf/bench_insitu.py both \
+python experiments/dt-paper/e1-overhead/bench_insitu.py both \
     --broker https://127.0.0.1:8031 --endpoint dt_test_task_ep
 ```
 
@@ -37,7 +79,7 @@ of every hop in a twin's graph.  Both rows go through the same
 
 ```sh
 # the zmq row starts its own embedded broker; the orbit row needs a live one
-python perf/bench_streams.py both --broker https://127.0.0.1:8031
+python experiments/dt-paper/e1-overhead/bench_streams.py both --broker https://127.0.0.1:8031
 ```
 
 Loopback, one host, bare-int payloads (2026-08-15):
@@ -67,3 +109,12 @@ frame is msgpacked around the pickle.
 
 Throughput of the streaming active learner (ROSE); unrelated to the
 service path.
+
+Both scripts read and write `streaming_perf.json` in the current
+directory; run them from `results/`:
+
+```sh
+cd experiments/dt-paper/e1-overhead/results
+python ../streaming_learner_perf.py
+python ../plot_streaming_perf.py      # -> streaming_perf.png (not in git)
+```
