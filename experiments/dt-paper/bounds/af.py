@@ -1,6 +1,6 @@
 from concurrent.futures import ProcessPoolExecutor
 from radical.asyncflow import WorkflowEngine, NoopExecutionBackend
-from rhapsody.backends import ConcurrentExecutionBackend, DragonExecutionBackend
+from rhapsody.backends import ConcurrentExecutionBackend
 import time
 import asyncio
 
