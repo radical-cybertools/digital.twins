@@ -218,3 +218,23 @@ Updated after every job (sacct elapsed x nodes).
   1 s / 100 ms / 10 ms (round 1 cross 22.1 / 22.4 / 21.9 ms); inference p50
   3.7-5.3 ms (round 1 14.5-15.0); versions seen 100 % even at 10 ms (round
   1 66-68 %).
+
+## S1 P5: E2a rerun (done) -- S1 complete
+
+- Rerun job 60931928 (debug): holds. One twin 1,327-1,400 req/s at
+  0.68-0.72 ms; aggregate 1.9-2.35k req/s from 2 to 64 twins; 64 twins
+  28.7-29.0 ms p50. py-spy at 16 twins: 41 % of samples in
+  concurrent.futures / multiprocessing and 32 % in rhapsody (dispatch to the
+  one shared process pool), 13 % asyncflow, 4 % DT runtime. The ceiling is
+  the main process feeding one shared pool of 64, not the DT; consistent
+  with P1 (pool 64, c=500: 3.0k req/s). Lower than round 1 (2.8k): the
+  paper stack's concurrent-backend dispatch tops out lower at pool 64.
+
+## S2: split into debug jobs
+
+- S2 (60927139) waited on regular again (Priority, as S1 did for 75 min).
+  Decision (same reasoning as Andre's S1 move): cancel it and run S2 as
+  three debug jobs (2 nodes, 30 min each), `run_s2.sh` with `PARTS` / `KS`:
+  R1 repeats 1-3; R1 repeats 4-5 + R2 + R4; R3. Each job measures the WAN
+  RTT in its own allocation (as the page asks) and has its own isolation
+  stamp and check.
