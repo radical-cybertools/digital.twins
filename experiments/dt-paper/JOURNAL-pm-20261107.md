@@ -11,6 +11,10 @@ Updated after every job (sacct elapsed x nodes).
 
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
+| 60926305 | s1-smoke | m5290 | 1 | 00:01:03 | 0.018 | 0.02 | 0.00 |
+| 60927071 | s1-p3 | m5290 | 1 | 00:01:03 | 0.018 | 0.04 | 0.00 |
+| 60927270 | s1-p3re | m5290 | 1 | 00:01:05 | 0.018 | 0.05 | 0.00 |
+| 60927438 | s1-p3spy | m5290 | 1 | 00:00:24 | 0.007 | 0.06 | 0.00 |
 
 ## S0: build the stack (done)
 
@@ -74,3 +78,24 @@ Updated after every job (sacct elapsed x nodes).
   per row and run.
 - Submitted as job 60927139 with `--dependency=afterany` on all S1 jobs
   ("after S1").
+
+## S1 P3: ex-situ learner on the stack (done)
+
+- Job 60927071 (debug, 1:03; round 1 took 6 min), 5 repeats, pool 8, same
+  harness, sizes, rows as round 1 (now on ROSE's Stream API; ROSE prints
+  a line per window in both rows alike).
+- Result: bare 489 -> 37,588 msg/s (batch 1 -> 100), paced publish flat at
+  about 2.0 ms; dt 480 -> 13,011 msg/s, publish 2.66 -> 11.79 ms. dt/bare
+  0.98 at batch 1, 0.35 at batch 100.
+- **Contradicts round 1** ("no measurable ex-situ cost"): there both rows sat
+  on asyncflow 0.5.1's ~11.7 ms per-task floor (3 tasks per window), which
+  hid a per-sample cost of the DT input path of about 70-80 us. Per the
+  contract, rerun once unchanged: job 60927270 (`results/s1/p3-rerun/`,
+  debug) gives dt/bare 0.955 / 0.342 at batch 1 / 100, dt publish 2.72 /
+  11.84 ms: it holds. Both runs reported.
+- Where it sits (job 60927438, py-spy at 500 Hz on one batch-100 run per
+  row, 4000 samples): in the dt row 26 % of samples are in
+  `digitaltwin.streaming` and 21 % in zmq (the channel publish, receive and
+  decode per sample), 8 % in `digitaltwin.runtime`; in the bare row both are
+  about 1 %. So the cost is the per-sample hop through the stream broker into
+  the twin, not the twin's logic. Folded profiles in `results/s1/p3/`.
