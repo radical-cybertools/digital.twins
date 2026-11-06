@@ -99,3 +99,15 @@ Updated after every job (sacct elapsed x nodes).
   decode per sample), 8 % in `digitaltwin.runtime`; in the bare row both are
   about 1 %. So the cost is the per-sample hop through the stream broker into
   the twin, not the twin's logic. Folded profiles in `results/s1/p3/`.
+
+## S1: moved to debug (Andre, 14:15)
+
+- The seven regular jobs (P1 60927053, P2 60927054, P4 60927057, P5
+  60927061, P6 60927064, P7 60927067, P7o 60927070) waited 75 min without
+  starting; debug jobs started within minutes. Andre: "yes, move them to
+  debug". S2 (60927139) held first, so cancelling did not satisfy its
+  afterany dependency; the seven cancelled (never ran, 0 node-h).
+- Resubmitted with `-q debug -t 00:30:00`: P5 60930958, P7 60930960, P6
+  60930964, P2 60930968, P1 60930971. debug's submit limit is 5 jobs per
+  user, so P4 and P7o go in as slots free (`$W/logs/s1-feeder.sh`), which
+  then repoints S2's dependency at all seven debug jobs and releases it.
