@@ -516,3 +516,31 @@ far below 100 either way.
   round 1 it led by 20 s. The faster `na` path (11 vs 24 ms) is the
   stack's per-task saving. One run only, so preliminary: model arrival times
   depend on training and the sensor stream.
+
+### Round 2b close-out
+
+| phase | status | headline |
+|---|---|---|
+| B0 | done | `ve2b` at `72e4f7c`, pins match `STACK.md`, `_fail_submit` present |
+| B1 | done (3 runs) | 0/30 kills leave the session dead (round 2: 4/10, 8/10); 17/30, exactly the kills that hit a learning submit, pause in-situ inference until the submit fails (about 10.4 s) |
+| B2 | done | P6 unchanged: 10.4 s detect, 3.0 s resume, 10/10 reattach, no stall |
+| B3 | done, preliminary | WindField twin on the stack: FNO 695 ms, PINN 162 ms (round 1: 731 / 194), selector ends on PINN, PCR not served |
+
+Node-hours (round 2b): m5290 0.93, m5290_g 0.34, total 1.27 (ledger above).
+No allocation left running.
+
+Open questions for Andre (round 2b):
+
+1. B1: a learning submit that hangs on the lost endpoint blocks the
+   session's in-situ inference (both twins, the inference endpoint is up)
+   until the broker's endpoint-lost grace fails it. #126 makes it fail
+   cleanly, but should the submit hold the run loop at all? Kill times (UTC)
+   are in `results/b1/*.json` (`kill_utc`) for matching against the radical.3
+   log's "Error in run loop" count, which I could not read from here.
+2. B1: on the cluster (P6, all rounds) no kill ever hit a submit; only
+   through radical.3 (WAN) does the kill land inside one. Is that the WAN
+   stretching the submit, or the dt service's submit path differing from the
+   loopback broker's?
+3. B3: PCR is no longer served because PINN's runtime estimate now arrives
+   first; if the paper wants all three models shown, the client must run
+   longer or PCR must train earlier.
