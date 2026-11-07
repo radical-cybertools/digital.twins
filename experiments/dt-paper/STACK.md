@@ -8,9 +8,9 @@ is the commit that contains this file.
 
 | Repo | Base | Merged PRs | Commit |
 |---|---|---|---|
-| radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation | `cf638d955f6a75137b4fff946053d61ca92a4792` |
-| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT | `1937801012b69ace47f394f5a38e209d5fedaa09` |
-| radical.orbit | `devel` tip (0.8.0) | none | `b10479c30bd979bcd3b5a3f4666766d054c14776` |
+| radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation, #127 slow-submit warning | `30092a71e15e6725a195e2438964f44932397993` |
+| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits | `d5ede5f6e14ca49bc15a031c85cdaa12f9072f48` |
+| radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume | `b915a88a117be33cb009990f190a11e86f6e712b` |
 | ROSE | `main` (Stream API, #98) | none | `9cc47a597063351c6192e3520f1bb0d39dd35230` |
 | digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106` | this branch |
 
@@ -47,6 +47,13 @@ is the commit that contains this file.
   in task notifications); found in P8b.
 - Round 2 numbers (`exp/pm-stack-20261107`) were measured before both; only
   R3 and executable-task runs are affected.
+- **rhapsody #127:** with `batch_window=0` (the DT service's setting) the
+  orbit backend sent each submit inline, so a submit to an endpoint the broker
+  holds as suspect blocked asyncflow's run loop for the grace (~10 s): round 2b
+  R3 paused in-situ inference in 17 of 30 kills. Now sent in the background.
+- **asyncflow #127:** warns when a backend's `submit_tasks` holds the run loop
+  > 1 s. **orbit #166:** calls to a suspect endpoint are held and answered
+  with a retryable 503 on resume instead of a 504 after 30 s.
 
 ## Verified (laptop, 2026-11-06)
 
