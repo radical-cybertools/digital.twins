@@ -397,3 +397,35 @@ far below 100 either way.
     client log is per job (`s2-client-r3-<job>.log`), since three R3 jobs
     may overlap.
   - `s1/ledger.py 2b` fills the table above from jobs named `b0-`..`b3-`.
+
+### B1/B2/B3 submission (2026-11-07 05:50 PST)
+
+- B1: three debug jobs (2 nodes, 30 min), round 2's `run_s2.sh` with
+  `PARTS=r3 ENV_SH=$W/env2b.sh RES=b1 TAG=-run<k>`: 60961770 (run1),
+  60961771 (run2), 60961772 (run3). Broker reachable from the login node
+  first (200, connect 0.174 s).
+- Deviation: I meant to chain the three R3 runs (round 2 ran R3 alone on the
+  broker), but runs 1 and 2 started together before the dependency was set.
+  They use different endpoint names, so they do not collide, but they share
+  the radical.3 broker: a harsher condition than round 2. Decision: let them
+  run, and make run 3 wait for both (`afterany:60961770:60961771`), so at
+  least one run is alone, as in round 2. Reported per run.
+- B2: 60961773 (debug, 1 node, `-t 00:30:00`), round 2's `run_s1_p6.sh` with
+  `ENV_SH=$W/env2b.sh RES=b2`. Loopback broker on its own node, independent of
+  B1.
+- B3 (stretch, GPU): decision: `ve2b` has no TensorFlow, so "P8b on ve2b"
+  means ve2b's stack under the TF env. New venv `$W/ve2b-xgf`: round 1's
+  conda env `dt-pm2/xgf/env` (Python 3.12.13, TF 2.21.0, numpy 2.5.0) as base
+  with `--system-site-packages`, plus the 72e4f7c pins installed into the
+  venv (asyncflow `cf638d9`, rhapsody `1937801`, orbit `b10479c`, ROSE
+  `9cc47a5`, digitaltwin `72e4f7c`; the latter needed `--force-reinstall
+  --no-deps`, since pip took round 1's install as satisfying it). `pip check`
+  clean; the venv's stack shadows the conda env's round-1 packages; TF and
+  numpy come from the conda env. Log `$W/logs/b3-venv.log`. The conda env
+  itself is unchanged.
+- xGFabric: `dt-pm2/xGFabric` on `fix/pinn-eval` `3adefa8` (PR #17, equal to
+  `origin/fix/pinn-eval`). `twin_service_real` imports under ve2b-xgf.
+- `e6-use-cases/run_b3.sbatch`: generated from round 1's final
+  `run_p8b.sbatch` (run 6: RUNTIME 1080, TERM-then-KILL teardown); only
+  venv, paths, result names (`results/b3/`, `D=stack2b-20261107`) and
+  per-job ORBIT log names differ. Job 60961928 (`-A m5290_g -q debug -C gpu`).
