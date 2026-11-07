@@ -8,8 +8,8 @@ is the commit that contains this file.
 
 | Repo | Base | Merged PRs | Commit |
 |---|---|---|---|
-| radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124 | `41e49145fab84247894e98ce4f1637e7b8cedd62` |
-| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15) | `3696998635f9fc19778554fb52548817c95a6923` |
+| radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation | `cf638d955f6a75137b4fff946053d61ca92a4792` |
+| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT | `1937801012b69ace47f394f5a38e209d5fedaa09` |
 | radical.orbit | `devel` tip (0.8.0) | none | `b10479c30bd979bcd3b5a3f4666766d054c14776` |
 | ROSE | `main` (Stream API, #98) | none | `9cc47a597063351c6192e3520f1bb0d39dd35230` |
 | digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106` | this branch |
@@ -36,6 +36,17 @@ is the commit that contains this file.
   stream mode; bare and DT rows pay that alike.
 - **radical.orbit 0.8**: session-scoped notifications, signal forwarding,
   WebSocket compression, tests no longer write `~/.radical/orbit`.
+
+## Update 2026-11-07
+
+- **asyncflow #126:** a backend whose `submit_tasks` raises (a lost endpoint)
+  failed the whole engine, so losing a session's learning endpoint stopped its
+  in-situ inference too (round 2, R3: 4/10 and 8/10 kills through radical.3).
+  Now only the refused tasks fail.
+- **rhapsody #125:** executable tasks through ORBIT never completed (no stdout
+  in task notifications); found in P8b.
+- Round 2 numbers (`exp/pm-stack-20261107`) were measured before both; only
+  R3 and executable-task runs are affected.
 
 ## Verified (laptop, 2026-11-06)
 
