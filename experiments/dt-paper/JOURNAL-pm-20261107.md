@@ -374,6 +374,7 @@ far below 100 either way.
 | 60961771 | b1-r3-run2 | m5290 | 2 | 00:08:40 | 0.289 | 0.57 | 0.00 |
 | 60961772 | b1-r3-run3 | m5290 | 2 | 00:07:43 | 0.257 | 0.83 | 0.00 |
 | 60961773 | b2-p6 | m5290 | 1 | 00:06:06 | 0.102 | 0.93 | 0.00 |
+| 60961928 | b3-p8b | m5290_g | 1 | 00:20:32 | 0.342 | 0.93 | 0.34 |
 
 ### B0: stack venv at 72e4f7c (done)
 
@@ -486,3 +487,32 @@ far below 100 either way.
   both twins answered); learning resumed 3.0 s (3.0-3.3); 10/10 reattaches
   (0.02 s). Round 2: 10.4 s, 3.0 s, 10/10, no stalls. Unchanged, as expected.
   No submit-refused kill on the cluster in either round.
+
+### B3: P8b on the stack (done, preliminary)
+
+- Job 60961928 (`m5290_g`, GPU debug, 1 node, 20:32), `run_b3.sbatch` on
+  `ve2b-xgf`, xGFabric `3adefa8` (PR #17). Precheck rc 0 (FNO and PINN
+  evaluate, 4 concurrent calls each ok). Client rc 0; 353 probes, 0 errors;
+  `twin_list` `running` throughout. TF saw the GPUs in every FNO task (no
+  "could not find cuda drivers"). Isolation check empty. Teardown: the
+  endpoint needed the KILL fallback, as in round 1.
+- Selector sequence (probe `arch`): `na` (no model yet) 0-228 s, FNO from
+  228 s (25 answers), PINN from 319 s to the end (252). Round 1 run 6: `na`
+  0-297 s, FNO from 297 s (19), PCR once at 372 s (a single 19.4 s call),
+  PINN from 392 s (228).
+
+| through the twin, p50 | round 1 run 6 (rhapsody e491cd2 + #125) | 2b (72e4f7c stack) |
+|---|---|---|
+| `na` placeholder (no model) | 24.2 ms (n 99) | 11.0 ms (n 76) |
+| FNO | 731 ms (n 19) | 695 ms (n 25) |
+| PCR | 19,367 ms (n 1) | not served |
+| PINN | 194 ms (n 228) | 162 ms (n 252) |
+| first FNO / first PINN | 297 / 392 s | 228 / 319 s |
+
+- Reading: the WindField twin runs on the paper stack end to end, with #125
+  from the stack instead of a local build. The selector still ends on PINN,
+  the cheapest model. PCR was trained (3 packs in the playground) but PINN's
+  runtime estimate arrived first, so the selector never switched to it; in
+  round 1 it led by 20 s. The faster `na` path (11 vs 24 ms) is the
+  stack's per-task saving. One run only, so preliminary: model arrival times
+  depend on training and the sensor stream.
