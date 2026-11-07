@@ -1,0 +1,695 @@
+{
+  "provenance": {
+    "experiment": "E5 endpoint and client loss",
+    "harness": "bench_endpoint_loss.py",
+    "time": "2026-11-07T05:55:31-0800",
+    "host": "nid004224",
+    "python": "3.12.12",
+    "digital_twins_commit": "5c22e4b947d9ecf8dbfae50ee899aa5ae3877146",
+    "digital_twins_dirty": false,
+    "backend": "orbit, concurrent on both endpoints",
+    "slurm_job": "60961772",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "inference": "pm_p6_inf_60961772",
+      "learning": "pm_p6_learn_60961772",
+      "kills": 10,
+      "reattaches": 10,
+      "gap": 2.0,
+      "probe": 0.5,
+      "probe_timeout": 5.0,
+      "learn_timeout": 120.0,
+      "lost_timeout": 120.0,
+      "logs": "/pscratch/sd/m/merzky/dt-pm3/orbit-logs",
+      "out": "experiments/dt-paper/results/b1/endpoint-loss-remote-run3-stack2b-20261107.json"
+    }
+  },
+  "kills": [
+    {
+      "kill": 0,
+      "first_learned_s": 3.842392683029175,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 10.543323040008545,
+      "kill_t": 1794059741.563677,
+      "kill_utc": "2026-11-07T13:55:41.563Z",
+      "detect_utc": "2026-11-07T13:55:52.107Z",
+      "restart_utc": "2026-11-07T13:55:53.529Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60961772/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.7530837059020996,
+      "resume_s": 8.562326431274414,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059741.5771947,
+          "ok": false,
+          "rtt": 5.178166627883911,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin ce92ad38-408a-4da9-9cec-a47d9ec227ad: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059746.7553709,
+          "ok": false,
+          "rtt": 5.177287578582764,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin c8bd5e36-3caa-4aa5-adea-54d241fa7886: get_inference timed out"
+        }
+      ]
+    },
+    {
+      "kill": 1,
+      "first_learned_s": 4.067646265029907,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 10.543129205703735,
+      "kill_t": 1794059769.4058464,
+      "kill_utc": "2026-11-07T13:56:09.405Z",
+      "detect_utc": "2026-11-07T13:56:19.948Z",
+      "restart_utc": "2026-11-07T13:56:21.370Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60961772/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.7528092861175537,
+      "resume_s": 8.515608549118042,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059769.4197917,
+          "ok": false,
+          "rtt": 5.177938461303711,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin c3d6c8fe-d6be-417a-85bd-6aba69943945: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059774.597741,
+          "ok": false,
+          "rtt": 5.176867485046387,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 3cc2f087-c75d-41b8-b9d9-1e8dfcc43c70: get_inference timed out"
+        }
+      ]
+    },
+    {
+      "kill": 2,
+      "first_learned_s": 3.8416285514831543,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 10.543033123016357,
+      "kill_t": 1794059796.9607863,
+      "kill_utc": "2026-11-07T13:56:36.960Z",
+      "detect_utc": "2026-11-07T13:56:47.503Z",
+      "restart_utc": "2026-11-07T13:56:48.924Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60961772/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.5022192001342773,
+      "resume_s": 8.236437320709229,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059796.9744527,
+          "ok": false,
+          "rtt": 5.178431510925293,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin f4c563f1-4b80-45f6-91c8-fef586db2d0f: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059802.152894,
+          "ok": false,
+          "rtt": 5.176648139953613,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin c560c716-ccd5-4c84-b990-a0f048b2a610: get_inference timed out"
+        }
+      ]
+    },
+    {
+      "kill": 3,
+      "first_learned_s": 3.806927442550659,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 11.283646821975708,
+      "kill_t": 1794059824.197054,
+      "kill_utc": "2026-11-07T13:57:04.197Z",
+      "detect_utc": "2026-11-07T13:57:15.480Z",
+      "restart_utc": "2026-11-07T13:57:29.763Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60961772",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.2522101402282715,
+      "resume_s": 7.840178728103638,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059824.2107568,
+          "ok": true,
+          "rtt": 0.5322299003601074,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059824.7429934,
+          "ok": true,
+          "rtt": 0.3660271167755127,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794059825.78354,
+          "ok": true,
+          "rtt": 0.4181234836578369,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059826.2016702,
+          "ok": true,
+          "rtt": 0.3656787872314453,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794059827.2416227,
+          "ok": true,
+          "rtt": 0.4193146228790283,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059827.6609433,
+          "ok": true,
+          "rtt": 0.3639051914215088,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794059828.6992688,
+          "ok": true,
+          "rtt": 0.41757655143737793,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059829.1168509,
+          "ok": true,
+          "rtt": 0.3630690574645996,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794059830.1545897,
+          "ok": true,
+          "rtt": 0.4215550422668457,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059830.5761518,
+          "ok": true,
+          "rtt": 0.36447954177856445,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794059831.614863,
+          "ok": true,
+          "rtt": 0.4168860912322998,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059832.0317547,
+          "ok": true,
+          "rtt": 0.3617117404937744,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794059833.067815,
+          "ok": true,
+          "rtt": 0.4187917709350586,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059833.486613,
+          "ok": true,
+          "rtt": 0.36466073989868164,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794059834.5256486,
+          "ok": true,
+          "rtt": 0.4162132740020752,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059834.9418683,
+          "ok": true,
+          "rtt": 0.36466002464294434,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 4,
+      "first_learned_s": 4.0295209884643555,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 10.543378591537476,
+      "kill_t": 1794059864.8683994,
+      "kill_utc": "2026-11-07T13:57:44.868Z",
+      "detect_utc": "2026-11-07T13:57:55.411Z",
+      "restart_utc": "2026-11-07T13:57:56.840Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60961772/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.2521541118621826,
+      "resume_s": 8.009116411209106,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059864.8838956,
+          "ok": false,
+          "rtt": 5.177347421646118,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 04bb4b58-14ea-406e-b018-c0698cfb7297: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059870.061249,
+          "ok": false,
+          "rtt": 5.1763293743133545,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin c756cdba-9527-47e0-96bd-297de24ae194: get_inference timed out"
+        }
+      ]
+    },
+    {
+      "kill": 5,
+      "first_learned_s": 4.011843919754028,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 10.54405403137207,
+      "kill_t": 1794059892.1049702,
+      "kill_utc": "2026-11-07T13:58:12.104Z",
+      "detect_utc": "2026-11-07T13:58:22.649Z",
+      "restart_utc": "2026-11-07T13:58:24.069Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60961772/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.25232195854187,
+      "resume_s": 8.082951784133911,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059892.1191223,
+          "ok": false,
+          "rtt": 5.178451776504517,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 8b5bc6cb-50a4-4883-8c7e-3c1d00061f06: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059897.297584,
+          "ok": false,
+          "rtt": 5.177011489868164,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 3c08d8c5-1186-420e-bd15-64981bb2849f: get_inference timed out"
+        }
+      ]
+    },
+    {
+      "kill": 6,
+      "first_learned_s": 4.0144548416137695,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 10.54477858543396,
+      "kill_t": 1794059919.4060607,
+      "kill_utc": "2026-11-07T13:58:39.406Z",
+      "detect_utc": "2026-11-07T13:58:49.950Z",
+      "restart_utc": "2026-11-07T13:58:51.372Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60961772/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.2521426677703857,
+      "resume_s": 8.009621620178223,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059919.419024,
+          "ok": false,
+          "rtt": 5.178073167800903,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 38a9c6be-9a91-4f19-8dba-7ed50373e737: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059924.5971043,
+          "ok": false,
+          "rtt": 5.179307222366333,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 24f14d5f-8e40-4bb2-b54e-2ceaf1a5f648: get_inference timed out"
+        }
+      ]
+    },
+    {
+      "kill": 7,
+      "first_learned_s": 4.018990993499756,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 10.543121337890625,
+      "kill_t": 1794059946.6399024,
+      "kill_utc": "2026-11-07T13:59:06.639Z",
+      "detect_utc": "2026-11-07T13:59:17.183Z",
+      "restart_utc": "2026-11-07T13:59:18.601Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60961772/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.2522449493408203,
+      "resume_s": 8.009207487106323,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059946.653082,
+          "ok": false,
+          "rtt": 5.178382396697998,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 9906f73d-6f89-41ab-aea1-1aa4d79dece6: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059951.8314717,
+          "ok": false,
+          "rtt": 5.177209854125977,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin fbc02aec-758a-4ee7-968a-7670cfd43725: get_inference timed out"
+        }
+      ]
+    },
+    {
+      "kill": 8,
+      "first_learned_s": 4.023437976837158,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 10.543200016021729,
+      "kill_t": 1794059973.8726604,
+      "kill_utc": "2026-11-07T13:59:33.872Z",
+      "detect_utc": "2026-11-07T13:59:44.415Z",
+      "restart_utc": "2026-11-07T13:59:45.836Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60961772/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.2521815299987793,
+      "resume_s": 7.982162952423096,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794059973.8866181,
+          "ok": false,
+          "rtt": 5.178133964538574,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin ea50fd2c-be71-4dfd-b132-24f84ef1ef1e: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794059979.0647585,
+          "ok": false,
+          "rtt": 5.1768248081207275,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 9f773ab5-406c-4013-8b23-1f44802da6f4: get_inference timed out"
+        }
+      ]
+    },
+    {
+      "kill": 9,
+      "first_learned_s": 3.9956696033477783,
+      "trained_on": "pm_p6_learn_60961772",
+      "detected": true,
+      "detect_s": 11.262149572372437,
+      "kill_t": 1794060001.0442922,
+      "kill_utc": "2026-11-07T14:00:01.044Z",
+      "detect_utc": "2026-11-07T14:00:12.306Z",
+      "restart_utc": "2026-11-07T14:00:26.608Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60961772",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.252579689025879,
+      "resume_s": 8.072733402252197,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794060001.0582926,
+          "ok": true,
+          "rtt": 0.531235933303833,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794060001.5895317,
+          "ok": true,
+          "rtt": 0.3637874126434326,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794060002.6275783,
+          "ok": true,
+          "rtt": 0.4159364700317383,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794060003.04352,
+          "ok": true,
+          "rtt": 0.3627004623413086,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794060004.0804787,
+          "ok": true,
+          "rtt": 0.41730403900146484,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794060004.4977884,
+          "ok": true,
+          "rtt": 0.3636794090270996,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794060005.5354712,
+          "ok": true,
+          "rtt": 0.4147942066192627,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794060005.9502683,
+          "ok": true,
+          "rtt": 0.3653573989868164,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794060006.9900672,
+          "ok": true,
+          "rtt": 0.4147365093231201,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794060007.4048092,
+          "ok": true,
+          "rtt": 0.36490535736083984,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794060008.4440453,
+          "ok": true,
+          "rtt": 0.4177360534667969,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794060008.8617864,
+          "ok": true,
+          "rtt": 0.36334657669067383,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794060009.8992822,
+          "ok": true,
+          "rtt": 0.4133949279785156,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794060010.3126824,
+          "ok": true,
+          "rtt": 0.36466240882873535,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794060011.3525217,
+          "ok": true,
+          "rtt": 0.4139211177825928,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794060011.7664475,
+          "ok": true,
+          "rtt": 0.3658792972564697,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "reattaches": [
+    {
+      "reattach": 0,
+      "attach_s": 1.0807061195373535,
+      "first_answer_s": 1.6177082061767578,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 1,
+      "attach_s": 1.0657458305358887,
+      "first_answer_s": 1.5981059074401855,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 2,
+      "attach_s": 1.0627410411834717,
+      "first_answer_s": 1.5945193767547607,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 3,
+      "attach_s": 1.0752222537994385,
+      "first_answer_s": 1.602724313735962,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 4,
+      "attach_s": 1.0631792545318604,
+      "first_answer_s": 1.5960633754730225,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 5,
+      "attach_s": 1.0510492324829102,
+      "first_answer_s": 1.5772922039031982,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 6,
+      "attach_s": 1.0820510387420654,
+      "first_answer_s": 1.6192009449005127,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 7,
+      "attach_s": 1.0244970321655273,
+      "first_answer_s": 1.543168306350708,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 8,
+      "attach_s": 1.0187442302703857,
+      "first_answer_s": 1.5360703468322754,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 9,
+      "attach_s": 1.0520241260528564,
+      "first_answer_s": 1.5791733264923096,
+      "state": "running",
+      "ok": true
+    }
+  ],
+  "first_endpoint_up_s": 2.7535955905914307,
+  "summary": {
+    "kills_ok": 10,
+    "kills": 10,
+    "detect_s": {
+      "median": 10.54335081577301,
+      "min": 10.543033123016357,
+      "max": 11.283646821975708,
+      "n": 10
+    },
+    "resume_s": {
+      "median": 8.04117751121521,
+      "min": 7.840178728103638,
+      "max": 8.562326431274414,
+      "n": 10
+    },
+    "endpoint_up_s": {
+      "median": 2.252283453941345,
+      "min": 2.2521426677703857,
+      "max": 2.7530837059020996,
+      "n": 10
+    },
+    "sibling_all_answered": false,
+    "reattaches_ok": 10,
+    "reattaches": 10,
+    "attach_s": {
+      "median": 1.062960147857666,
+      "min": 1.0187442302703857,
+      "max": 1.0820510387420654,
+      "n": 10
+    },
+    "first_answer_s": {
+      "median": 1.5952913761138916,
+      "min": 1.5360703468322754,
+      "max": 1.6192009449005127,
+      "n": 10
+    }
+  }
+}

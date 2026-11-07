@@ -370,6 +370,10 @@ far below 100 either way.
 
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
+| 60961770 | b1-r3-run1 | m5290 | 2 | 00:08:28 | 0.282 | 0.28 | 0.00 |
+| 60961771 | b1-r3-run2 | m5290 | 2 | 00:08:40 | 0.289 | 0.57 | 0.00 |
+| 60961772 | b1-r3-run3 | m5290 | 2 | 00:07:43 | 0.257 | 0.83 | 0.00 |
+| 60961773 | b2-p6 | m5290 | 1 | 00:06:06 | 0.102 | 0.93 | 0.00 |
 
 ### B0: stack venv at 72e4f7c (done)
 
@@ -429,3 +433,56 @@ far below 100 either way.
   `run_p8b.sbatch` (run 6: RUNTIME 1080, TERM-then-KILL teardown); only
   venv, paths, result names (`results/b3/`, `D=stack2b-20261107`) and
   per-job ORBIT log names differ. Job 60961928 (`-A m5290_g -q debug -C gpu`).
+
+### B1: R3 again through radical.3 (done, 3 runs)
+
+- Jobs 60961770 (run1, 8:28), 60961771 (run2, 8:40), 60961772 (run3, alone
+  on the broker, 7:43); 2 debug nodes each, WAN connect p50 0.170-0.172 s,
+  every R3 rc 0, every isolation check empty. Files
+  `results/b1/endpoint-loss-remote-run<k>-stack2b-20261107.{json,log}`.
+- Counted with the new `s2/r3_stalls.py` (round 2's files give 4 and 8 dead
+  kills with it, as reported then). *dead*: the sibling's probe after the loss
+  was reported still fails (round 2's symptom). *paused*: probes fail only
+  until then.
+
+| run | detected | dead | paused | submit-refused | detect s | resume s | reattach |
+|---|---|---|---|---|---|---|---|
+| round 2 run 1 | 10/10 | 4 | 0 | 0 | 10.9 (10.2-11.6) | 8.0 | 10/10, 1.1 s |
+| round 2 rerun | 10/10 | 8 | 0 | 0 | 10.4 (10.4-11.1) | 8.0 | 10/10, 1.1 s |
+| 2b run 1 | 10/10 | **0** | 5 | 5 | 10.6 (10.4-10.7) | 8.0 | 10/10, 1.1 s |
+| 2b run 2 | 10/10 | **0** | 4 | 4 | 10.6 (10.5-10.6) | 7.9 | 10/10, 1.1 s |
+| 2b run 3 (alone) | 10/10 | **0** | 8 | 8 | 10.5 (10.5-11.3) | 8.0 | 10/10, 1.1 s |
+
+- The fix works for what it targets: in 30 kills no session died, and the
+  sibling answered after every loss. The refused submit now surfaces as the
+  learner twin's own `last_error` (`HTTP 504 — [pm_p6_learn_<job>/rhapsody]
+  submit 1 task(s) — endpoint lost`), which never happened in round 2 (there
+  it took the engine down instead).
+- **Not the expected 0 stalls.** Paused kills are exactly the submit-refused
+  ones (17/17). In each, both in-situ probes (learner twin, then the
+  inference-only sibling) time out at the 5 s probe timeout (`get_inference
+  timed out`), back to back, for the whole 10.4 s until the submit fails;
+  then the twin is marked failed and the sibling's next probe answers. In the
+  13 kills that did not hit a submit every probe answered in 0.36-0.53 s, as
+  on the cluster. Reading: while the refused submit to the dead endpoint
+  hangs (until the broker's endpoint-lost grace), the session's other
+  inference does not run; #126 makes it fail cleanly afterwards instead of
+  killing the engine. Not verified: the broker log is out of reach. Same
+  cause as round 2 (the submit path), different outcome. Kill times (UTC) are
+  in each JSON (`kill_utc`) and in the logs, for matching against the
+  radical.3 log's "Error in run loop" count.
+- The run1/run2 overlap did not change the picture: run 3, alone, has the
+  most paused kills (8). No rerun beyond the three planned: all three agree.
+- Open question for Andre (round 2b #1): should a hanging submit on one
+  backend block the session's other backend? A fix would make the submit not
+  hold the run loop (or bound it), so the inference engine keeps serving
+  while the learning endpoint's loss is pending.
+
+### B2: P6 on the cluster, regression check (done)
+
+- Job 60961773 (debug, 1 node, 6:06), round 2's `run_s1_p6.sh` on ve2b,
+  `results/b2/`. Isolation check empty. bench rc 0.
+- 10/10 kills detected, 10.4 s (10.3-10.4); 0 dead, 0 paused (every probe of
+  both twins answered); learning resumed 3.0 s (3.0-3.3); 10/10 reattaches
+  (0.02 s). Round 2: 10.4 s, 3.0 s, 10/10, no stalls. Unchanged, as expected.
+  No submit-refused kill on the cluster in either round.

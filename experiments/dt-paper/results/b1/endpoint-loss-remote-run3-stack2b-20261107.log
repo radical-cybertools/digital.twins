@@ -1,0 +1,57 @@
+kill 0: at 2026-11-07T13:55:41.563Z, detect 10.5s (RuntimeError: HTTP 504 — [pm_p6_learn_60961772/rhapsody] submit 1 task(s) — endpoint lost); learner answered 0/1, sibling 0/1 (after: True); endpoint up 2.8s, learning resumed 8.6s
+kill 1: at 2026-11-07T13:56:09.405Z, detect 10.5s (RuntimeError: HTTP 504 — [pm_p6_learn_60961772/rhapsody] submit 1 task(s) — endpoint lost); learner answered 0/1, sibling 0/1 (after: True); endpoint up 2.8s, learning resumed 8.5s
+kill 2: at 2026-11-07T13:56:36.960Z, detect 10.5s (RuntimeError: HTTP 504 — [pm_p6_learn_60961772/rhapsody] submit 1 task(s) — endpoint lost); learner answered 0/1, sibling 0/1 (after: True); endpoint up 2.5s, learning resumed 8.2s
+kill 3: at 2026-11-07T13:57:04.197Z, detect 11.3s (engine endpoint lost: pm_p6_learn_60961772); learner answered 8/8, sibling 8/8 (after: True); endpoint up 2.3s, learning resumed 7.8s
+kill 4: at 2026-11-07T13:57:44.868Z, detect 10.5s (RuntimeError: HTTP 504 — [pm_p6_learn_60961772/rhapsody] submit 1 task(s) — endpoint lost); learner answered 0/1, sibling 0/1 (after: True); endpoint up 2.3s, learning resumed 8.0s
+kill 5: at 2026-11-07T13:58:12.104Z, detect 10.5s (RuntimeError: HTTP 504 — [pm_p6_learn_60961772/rhapsody] submit 1 task(s) — endpoint lost); learner answered 0/1, sibling 0/1 (after: True); endpoint up 2.3s, learning resumed 8.1s
+kill 6: at 2026-11-07T13:58:39.406Z, detect 10.5s (RuntimeError: HTTP 504 — [pm_p6_learn_60961772/rhapsody] submit 1 task(s) — endpoint lost); learner answered 0/1, sibling 0/1 (after: True); endpoint up 2.3s, learning resumed 8.0s
+kill 7: at 2026-11-07T13:59:06.639Z, detect 10.5s (RuntimeError: HTTP 504 — [pm_p6_learn_60961772/rhapsody] submit 1 task(s) — endpoint lost); learner answered 0/1, sibling 0/1 (after: True); endpoint up 2.3s, learning resumed 8.0s
+kill 8: at 2026-11-07T13:59:33.872Z, detect 10.5s (RuntimeError: HTTP 504 — [pm_p6_learn_60961772/rhapsody] submit 1 task(s) — endpoint lost); learner answered 0/1, sibling 0/1 (after: True); endpoint up 2.3s, learning resumed 8.0s
+kill 9: at 2026-11-07T14:00:01.044Z, detect 11.3s (engine endpoint lost: pm_p6_learn_60961772); learner answered 8/8, sibling 8/8 (after: True); endpoint up 2.3s, learning resumed 8.1s
+reattach 0: attach 1.08s, first answer 1.62s, state running, ok True
+reattach 1: attach 1.07s, first answer 1.60s, state running, ok True
+reattach 2: attach 1.06s, first answer 1.59s, state running, ok True
+reattach 3: attach 1.08s, first answer 1.60s, state running, ok True
+reattach 4: attach 1.06s, first answer 1.60s, state running, ok True
+reattach 5: attach 1.05s, first answer 1.58s, state running, ok True
+reattach 6: attach 1.08s, first answer 1.62s, state running, ok True
+reattach 7: attach 1.02s, first answer 1.54s, state running, ok True
+reattach 8: attach 1.02s, first answer 1.54s, state running, ok True
+reattach 9: attach 1.05s, first answer 1.58s, state running, ok True
+{
+  "kills_ok": 10,
+  "kills": 10,
+  "detect_s": {
+    "median": 10.54335081577301,
+    "min": 10.543033123016357,
+    "max": 11.283646821975708,
+    "n": 10
+  },
+  "resume_s": {
+    "median": 8.04117751121521,
+    "min": 7.840178728103638,
+    "max": 8.562326431274414,
+    "n": 10
+  },
+  "endpoint_up_s": {
+    "median": 2.252283453941345,
+    "min": 2.2521426677703857,
+    "max": 2.7530837059020996,
+    "n": 10
+  },
+  "sibling_all_answered": false,
+  "reattaches_ok": 10,
+  "reattaches": 10,
+  "attach_s": {
+    "median": 1.062960147857666,
+    "min": 1.0187442302703857,
+    "max": 1.0820510387420654,
+    "n": 10
+  },
+  "first_answer_s": {
+    "median": 1.5952913761138916,
+    "min": 1.5360703468322754,
+    "max": 1.6192009449005127,
+    "n": 10
+  }
+}

@@ -3,9 +3,11 @@
 
 A kill is *stalled* when in-situ inference stopped after the learning
 endpoint was killed: any learner or sibling probe failed, or the sibling's
-probe after the loss was reported failed (the round-2 R3 symptom).  One line
-per file, plus each stalled kill's probe errors and, where recorded
-(round 2b), its UTC kill time.
+probe after the loss was reported failed.  Stalled kills split into *dead*
+(the sibling's probe after the loss was reported still fails: the session's
+inference is gone, the round-2 R3 symptom) and *paused* (probes failed only
+until the loss was reported).  One line per file, plus each stalled kill's
+probe errors, `last_error` and, where recorded (round 2b), its UTC kill time.
 
     python experiments/dt-paper/s2/r3_stalls.py results/s2/endpoint-loss-*.json ...
 """
@@ -32,14 +34,18 @@ def main() -> int:
         re = d.get("reattaches", [])
         print(f"{Path(f).name}: kills {len(kills)}/{len(d['kills'])}, "
               f"detected {sum(k['detected'] for k in kills)}, "
-              f"stalled {len(stalled)}, "
+              f"stalled {len(stalled)} (dead {sum(not k['sibling_after_ok'] for k in stalled)}, "
+              f"paused {sum(k['sibling_after_ok'] for k in stalled)}), "
+              f"submit-refused {sum('submit' in (k['last_error'] or '') for k in kills)}, "
               f"detect {med([k['detect_s'] for k in kills])} s, "
               f"resume {med([k['resume_s'] for k in kills])} s, "
               f"reattach {sum(bool(r.get('ok')) for r in re)}/{len(re)} "
               f"(attach {med([r['attach_s'] for r in re if r.get('ok')])} s)")
         for k in stalled:
             errs = sorted({p["error"][:90] for p in k["probes"] if not p["ok"]})
-            print(f"  stalled kill {k['kill']} at {k.get('kill_utc', '?')}: {errs}")
+            kind = "paused" if k["sibling_after_ok"] else "dead"
+            print(f"  {kind} kill {k['kill']} at {k.get('kill_utc', '?')}: "
+                  f"last_error {(k['last_error'] or '')[:80]!r}; probes {errs}")
         if kills and "kill_utc" in kills[0]:
             print("  kill times (UTC): " + ", ".join(k["kill_utc"] for k in kills))
     return 0
