@@ -1,0 +1,8 @@
+twins=  1     1381 req/s  p50   0.70 (max   0.70) ms  p99   0.85 (max   0.85) ms
+twins=  2     2188 req/s  p50   0.87 (max   0.87) ms  p99   1.23 (max   1.23) ms
+twins=  4     2153 req/s  p50   1.80 (max   1.81) ms  p99   2.50 (max   2.53) ms
+twins=  8     2193 req/s  p50   3.60 (max   3.60) ms  p99   4.69 (max   4.81) ms
+twins= 16     2238 req/s  p50   7.07 (max   7.09) ms  p99   7.90 (max   8.04) ms
+twins= 32     2385 req/s  p50  12.84 (max  12.86) ms  p99  15.21 (max  15.60) ms
+twins= 64     2220 req/s  p50  27.71 (max  27.82) ms  p99  30.72 (max  31.42) ms
+results: experiments/dt-paper/results/s1/p5/twins-pm-pool64-r2-stack-20261107.json

@@ -1,0 +1,7 @@
+py-spy> Sampling process 200 times a second. Press Control-C to exit.
+
+twins= 16     1679 req/s  p50   8.91 (max   8.96) ms  p99  15.56 (max  16.09) ms
+
+py-spy> Stopped sampling because process exited
+py-spy> Wrote raw flamegraph data to 'experiments/dt-paper/results/s1/p5-rerun/pyspy-twins-n16-stack-20261107.folded'. Samples: 3496 Errors: 4
+py-spy> You can use the flamegraph.pl script from https://github.com/brendangregg/flamegraph to generate a SVG

@@ -1,0 +1,57 @@
+kill 0: detect 10.4s (engine endpoint lost: pm_p6_learn_60934116); learner answered 0/1, sibling 0/1 (after: False); endpoint up 2.8s, learning resumed 8.5s
+kill 1: detect 10.4s (engine endpoint lost: pm_p6_learn_60934116); learner answered 0/1, sibling 0/1 (after: False); endpoint up 2.8s, learning resumed 8.5s
+kill 2: detect 10.4s (engine endpoint lost: pm_p6_learn_60934116); learner answered 0/1, sibling 0/1 (after: False); endpoint up 2.5s, learning resumed 8.2s
+kill 3: detect 10.4s (engine endpoint lost: pm_p6_learn_60934116); learner answered 0/1, sibling 0/1 (after: False); endpoint up 2.3s, learning resumed 8.0s
+kill 4: detect 10.4s (engine endpoint lost: pm_p6_learn_60934116); learner answered 0/1, sibling 0/1 (after: False); endpoint up 2.3s, learning resumed 8.0s
+kill 5: detect 10.4s (engine endpoint lost: pm_p6_learn_60934116); learner answered 0/1, sibling 0/1 (after: False); endpoint up 2.3s, learning resumed 8.0s
+kill 6: detect 10.4s (engine endpoint lost: pm_p6_learn_60934116); learner answered 0/1, sibling 0/1 (after: False); endpoint up 2.3s, learning resumed 8.0s
+kill 7: detect 10.4s (engine endpoint lost: pm_p6_learn_60934116); learner answered 0/1, sibling 0/1 (after: False); endpoint up 2.3s, learning resumed 7.9s
+kill 8: detect 11.1s (engine endpoint lost: pm_p6_learn_60934116); learner answered 8/8, sibling 8/8 (after: True); endpoint up 2.3s, learning resumed 7.8s
+kill 9: detect 11.1s (engine endpoint lost: pm_p6_learn_60934116); learner answered 8/8, sibling 8/8 (after: True); endpoint up 2.3s, learning resumed 8.0s
+reattach 0: attach 1.10s, first answer 1.65s, state running, ok True
+reattach 1: attach 1.06s, first answer 1.59s, state running, ok True
+reattach 2: attach 1.07s, first answer 1.60s, state running, ok True
+reattach 3: attach 1.09s, first answer 1.63s, state running, ok True
+reattach 4: attach 1.07s, first answer 1.61s, state running, ok True
+reattach 5: attach 1.07s, first answer 1.61s, state running, ok True
+reattach 6: attach 1.05s, first answer 1.58s, state running, ok True
+reattach 7: attach 1.05s, first answer 1.57s, state running, ok True
+reattach 8: attach 1.08s, first answer 1.61s, state running, ok True
+reattach 9: attach 1.06s, first answer 1.65s, state running, ok True
+{
+  "kills_ok": 10,
+  "kills": 10,
+  "detect_s": {
+    "median": 10.378343343734741,
+    "min": 10.37472915649414,
+    "max": 11.109071493148804,
+    "n": 10
+  },
+  "resume_s": {
+    "median": 7.980391025543213,
+    "min": 7.754446506500244,
+    "max": 8.462732791900635,
+    "n": 10
+  },
+  "endpoint_up_s": {
+    "median": 2.252397656440735,
+    "min": 2.252208948135376,
+    "max": 2.752967357635498,
+    "n": 10
+  },
+  "sibling_all_answered": false,
+  "reattaches_ok": 10,
+  "reattaches": 10,
+  "attach_s": {
+    "median": 1.0699056386947632,
+    "min": 1.04856276512146,
+    "max": 1.1023991107940674,
+    "n": 10
+  },
+  "first_answer_s": {
+    "median": 1.6082898378372192,
+    "min": 1.5699458122253418,
+    "max": 1.6495747566223145,
+    "n": 10
+  }
+}

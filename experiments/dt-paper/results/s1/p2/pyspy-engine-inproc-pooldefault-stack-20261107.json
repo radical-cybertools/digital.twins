@@ -1,0 +1,42 @@
+{
+  "engine/inproc": [
+    194.07598315195892,
+    710.0363054225768,
+    1833.3887275821494,
+    3613.3126071330767,
+    6658.7299081784195,
+    15937.502679791347,
+    25097.14635749727
+  ],
+  "batch_sizes": [
+    1,
+    2,
+    5,
+    10,
+    20,
+    50,
+    100
+  ],
+  "provenance": {
+    "experiment": "E1 ROSE streaming learner throughput",
+    "harness": "streaming_learner_perf.py",
+    "time": "2026-11-06T14:45:12-0800",
+    "host": "nid007117",
+    "python": "3.12.12",
+    "digital_twins_commit": "ef56c19ba6f1c7b5e733b8b32379cfddbded9993",
+    "digital_twins_dirty": false,
+    "backend": "local concurrent pool (256 workers)",
+    "cpu_count": 256,
+    "slurm_job": "60930968",
+    "args": {
+      "workers": null,
+      "modes": [
+        "engine"
+      ],
+      "feeds": [
+        "inproc"
+      ],
+      "out": "experiments/dt-paper/results/s1/p2/pyspy-engine-inproc-pooldefault-stack-20261107.json"
+    }
+  }
+}
