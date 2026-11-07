@@ -357,3 +357,43 @@ No allocation left running. Every ORBIT job's `~/.radical/orbit` check empty.
 5. The stack's rhapsody (3696998) does not contain rhapsody#125 (executable
    stdout over ORBIT); none of round 2's harnesses needed it, the xGFabric
    twin (P8b) does.
+
+## Round 2b
+
+Following the page's "Round 2b" section (rerun R3 and P6 with the R3 fix,
+asyncflow#126). Branch `exp/pm-stack2b-20261107` off `72e4f7c`, venv
+`$W/ve2b`, env `$W/env2b.sh` (`D=stack2b-20261107`). Same contract as round 2.
+Budget: decision: counted separately from round 2's 3.46 node-hours; it stays
+far below 100 either way.
+
+### Round 2b ledger
+
+| job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
+|---|---|---|---|---|---|---|---|
+
+### B0: stack venv at 72e4f7c (done)
+
+- 2026-11-07 05:30 `git fetch`; `exp/pm-stack2b-20261107` at `72e4f7c`
+  (`paper/dtaas`: install.sh pins asyncflow `cf638d9` (#126), rhapsody
+  `1937801` (#125); orbit `b10479c`, ROSE `9cc47a5` unchanged).
+- Decision: merged `exp/pm-stack-20261107` (round 2's harness scripts,
+  results and this journal; it touches only `experiments/`) into the new
+  branch, so R3 and P6 run the exact round-2 scripts and this journal
+  continues. No conflict: `72e4f7c` changes only `deploy/install.sh` and
+  `STACK.md`.
+- `module load cray-python/3.12.12; DT_PYTHON=python3.12 DT_REF=72e4f7c
+  ./deploy/install.sh endpoint $W/ve2b`: rc 0, first try (log
+  `$W/logs/b0-install.log`). Python 3.12.12. Installed: digitaltwin
+  `72e4f7c`, radical.asyncflow `cf638d9`, rhapsody-py `1937801`,
+  radical.orbit `b10479c`, rose-surrogate-explorer `9cc47a5`. The page's
+  check (`_fail_submit` in `workflow_manager`) passes; rhapsody's
+  `_fetch_output_then_fire` (#125) is present in `backends/execution/orbit.py`.
+- Harness changes for round 2b (no change to what is measured):
+  - `bench_endpoint_loss.py`: each kill record now also has `kill_t`,
+    `kill_utc`, `detect_utc`, `restart_utc`, and the `kill` line prints the
+    UTC kill time, so the radical.3 broker log can be matched (B1).
+  - `run_s2.sh`, `run_s1_p6.sh`: `ENV_SH` (env file, default round 2's),
+    `RES` (results subdir) and, for R3, `TAG` in the output name; R3's
+    client log is per job (`s2-client-r3-<job>.log`), since three R3 jobs
+    may overlap.
+  - `s1/ledger.py 2b` fills the table above from jobs named `b0-`..`b3-`.

@@ -7,6 +7,7 @@
 # Round 2 S2: runs through the shared paper/dtaas broker on radical.3.
 #   sbatch -A m5290 -q debug --export=ALL,PARTS=r1,KS="1 2 3" run_s2.sh
 #   PARTS: any of r1 r2 r4 r3 (default all); KS: R1 repeats (default 1-5).
+#   Round 2b: ENV_SH=$W/env2b.sh (the ve2b venv), RES=<results subdir>, TAG=<run tag>.
 #   The WAN RTT is measured in every job (once per allocation).
 # Node A (the batch node) hosts the endpoints, node B the clients.  The
 # broker is shared: never restarted, every endpoint named pm_*_<jobid>.
@@ -15,11 +16,11 @@
 # RADICAL_ORBIT_BROKER_{CERT,KEY,TOKEN} is set.  Every process logs to
 # its own RADICAL_ORBIT_LOG_FILE; ~/.radical/orbit is checked around it all.
 set -uo pipefail
-source /pscratch/sd/m/merzky/dt-pm3/env.sh
+source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm3/env.sh}
 unset RADICAL_ORBIT_BROKER_CERT RADICAL_ORBIT_BROKER_KEY RADICAL_ORBIT_BROKER_TOKEN
 export RADICAL_ORBIT_BROKER_URL=https://95.217.193.116:8010
 URL=$RADICAL_ORBIT_BROKER_URL
-R=$X/results/s2; mkdir -p $R
+R=$X/results/${RES:-s2}; mkdir -p $R
 L=$W/orbit-logs
 J=$SLURM_JOB_ID
 NA=$(hostname -s)
@@ -104,11 +105,11 @@ DT_TEST_ENDPOINT_TAG=$EI \
   > $R/endpoint-$EI.console.log 2>&1 &
 EPI=$!
 sleep 25
-RADICAL_ORBIT_LOG_FILE=$L/s2-client-r3.log \
+RADICAL_ORBIT_LOG_FILE=$L/s2-client-r3-$J.log \
   python $X/e5-persistence/bench_endpoint_loss.py --broker $URL --inference $EI \
   --learning pm_p6_learn_$J --kills ${KILLS:-10} --reattaches ${REATTACHES:-10} \
-  --logs $L --out $R/endpoint-loss-remote-$D.json > $R/endpoint-loss-remote-$D.log 2>&1
-echo "R3 rc=$?"; grep -E "^kill|^reattach|FAILED" $R/endpoint-loss-remote-$D.log
+  --logs $L --out $R/endpoint-loss-remote${TAG:-}-$D.json > $R/endpoint-loss-remote${TAG:-}-$D.log 2>&1
+echo "R3 rc=$?"; grep -E "^kill|^reattach|FAILED" $R/endpoint-loss-remote${TAG:-}-$D.log
 stop $EPI
 fi
 

@@ -10,8 +10,8 @@
 # for the whole job, bench_endpoint_loss.py owns the learning endpoint.
 #   sbatch -A m5290 -q regular run_p6.sh
 set -uo pipefail
-source /pscratch/sd/m/merzky/dt-pm3/env.sh
-R=$X/results/s1/p6; mkdir -p $R
+source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm3/env.sh}
+R=$X/results/${RES:-s1/p6}; mkdir -p $R
 L=$W/orbit-logs
 PORT=8231
 URL=https://127.0.0.1:$PORT

@@ -189,6 +189,11 @@ def probe(dt, twin, expect, timeout):
     return {"t": t0, "ok": ok, "rtt": time.time() - t0, "error": err}
 
 
+def utc(t):
+    """Epoch seconds as an ISO-8601 UTC string (to match remote broker logs)."""
+    return time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(t)) + f".{int(t % 1 * 1e3):03d}Z"
+
+
 def kill_cycle(runtime, ep, args, k):
     cfg = engines(inference=args.inference, learning=args.learning)
     dt = runtime.get_plugin("broker", "dt", config=cfg)
@@ -241,6 +246,10 @@ def kill_cycle(runtime, ep, args, k):
         "trained_on": first.get("trained_on"),
         "detected": detected,
         "detect_s": t_detect,
+        "kill_t": t_kill,
+        "kill_utc": utc(t_kill),
+        "detect_utc": utc(t_kill + t_detect),
+        "restart_utc": utc(t_restart),
         "last_error": entry and entry.get("last_error"),
         "learner_probes": len(lp),
         "learner_answered": sum(p["ok"] for p in lp),
@@ -252,7 +261,7 @@ def kill_cycle(runtime, ep, args, k):
         "resume_s": t_resume,
         "probes": probes,
     }
-    print(f"kill {k}: detect {t_detect:.1f}s ({rec['last_error']}); "
+    print(f"kill {k}: at {rec['kill_utc']}, detect {t_detect:.1f}s ({rec['last_error']}); "
           f"learner answered {rec['learner_answered']}/{len(lp)}, sibling "
           f"{rec['sibling_answered']}/{len(sp)} (after: {after['ok']}); "
           f"endpoint up {t_up:.1f}s, learning resumed {t_resume:.1f}s",
