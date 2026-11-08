@@ -8,7 +8,7 @@ is the commit that contains this file.
 
 | Repo | Base | Merged PRs | Commit |
 |---|---|---|---|
-| radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation, #127 slow-submit warning | `30092a71e15e6725a195e2438964f44932397993` |
+| radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation, #127 slow-submit warning | `7e74fcc4491267dc88676a95604a402d2d1d3cab` |
 | rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits | `d5ede5f6e14ca49bc15a031c85cdaa12f9072f48` |
 | radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume | `b915a88a117be33cb009990f190a11e86f6e712b` |
 | ROSE | `main` (Stream API, #98) | none | `9cc47a597063351c6192e3520f1bb0d39dd35230` |

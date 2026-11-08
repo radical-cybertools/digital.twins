@@ -39,7 +39,7 @@ GH="https://github.com/radical-cybertools"
 # no 10 ms poll), cancel fixes (#119, #121-#124), submit-failure isolation
 # (#126: a refused submit fails its own tasks, not the engine), slow-submit
 # warning (#127)
-ASYNCFLOW="radical.asyncflow @ git+$GH/radical.asyncflow@30092a71e15e6725a195e2438964f44932397993"
+ASYNCFLOW="radical.asyncflow @ git+$GH/radical.asyncflow@7e74fcc4491267dc88676a95604a402d2d1d3cab"
 # rhapsody paper/dtaas: main + OrbitDataBackend (#96), idempotent cancels
 # (#91), telemetry teardown (#77), concurrent cancel (#123), Dragon 0.15
 # sizing and PMI (#113, #114), executable stdout through ORBIT (#125),
