@@ -575,3 +575,20 @@ counted separately, as in 2b.
   chained: C1 run1 -> run2 -> run3 -> C3 R1 (repeats 1-3) -> C3 R1 (repeats
   4-5). Round 2's R1 needed 18-22 min per job, so R1 is split in two debug
   jobs. C2 (P6) and C3's P4 use local brokers and run alongside.
+
+### C1-C3 submission (2026-11-08)
+
+- C1: 60992306 -> 60992307 -> 60992308 (`afterany` chain, debug, 2 nodes,
+  `PARTS=r3 RES=c1 TAG=-run<k>`). C2: 60992309. C3 P4: 60992310 (debug,
+  2 nodes, `-t 00:30:00`, `RES=c3/p4`). C3 R1: 60992489 (repeats 1-3) ->
+  60992562 (repeats 4-5), after C1 run 3, `PARTS=r1 CS="1 50" RES=c3/r1`,
+  queued by a feeder as debug submit slots freed. Broker reachable from the
+  login node first (200, connect 0.168 s).
+
+### C2: P6 on the cluster, regression check (done)
+
+- Job 60992309 (debug, 1 node, 6:07), `results/c2/`, isolation check empty,
+  bench rc 0.
+- 10/10 kills detected at 10.3 s (10.3-10.4); every probe of both twins
+  answered (0 dead, 0 paused); learning resumed 3.0 s (3.0-3.3); 10/10
+  reattaches (0.02 s). Round 2: 10.4 / 3.0 s; 2b: 10.4 / 3.0 s. Unchanged.
