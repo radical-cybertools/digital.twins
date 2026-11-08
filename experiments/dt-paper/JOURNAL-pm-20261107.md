@@ -562,6 +562,8 @@ counted separately, as in 2b.
 | 60992308 | c1-r3-run3 | m5290 | 2 | 00:07:37 | 0.254 | 0.84 | 0.00 |
 | 60992309 | c2-p6 | m5290 | 1 | 00:06:07 | 0.102 | 0.95 | 0.00 |
 | 60992310 | c3-p4 | m5290 | 2 | 00:09:55 | 0.331 | 1.28 | 0.00 |
+| 60992489 | c3-r1a | m5290 | 2 | 00:14:46 | 0.492 | 1.77 | 0.00 |
+| 60992562 | c3-r1b | m5290 | 2 | 00:10:19 | 0.344 | 2.11 | 0.00 |
 
 ### C0: venv and scripts (2026-11-08)
 
@@ -648,3 +650,44 @@ counted separately, as in 2b.
 - Diag task counts identical to round 2 (one ORBIT task per request, every
   row). Solo rows at c=50: bare 783 / 764, investigator 668 / 631, agent
   758 / 773 req/s (cross / loop).
+
+### C3, part 2: R1 through radical.3 (done)
+
+- Jobs 60992489 (repeats 1-3, 14:46) and 60992562 (repeats 4-5, 10:19),
+  chained after C1, alone on the broker; c = 1 and 50, `--tasks 100` as in
+  round 2; every rc 0; WAN connect p50 0.171-0.172 s (round 2: 172 ms);
+  isolation checks empty. `results/c3/r1/`.
+
+| c | row | round 2 p50 ms | 2c p50 ms | change | round 2 req/s | 2c req/s |
+|---|---|---|---|---|---|---|
+| 1 | bare | 349.99 (349.33-358.88) | 347.82 (344.79-351.41) | -2.17 | 3 | 3 |
+| 1 | investigator | 350.09 (349.20-358.85) | 347.84 (344.79-351.41) | -2.25 | 3 | 3 |
+| 1 | agent | 350.17 (349.41-358.82) | 348.02 (344.71-351.54) | -2.14 | 3 | 3 |
+| 50 | bare | 351.66 (343.05-356.51) | 351.86 (349.33-356.84) | +0.20 | 86 | 87 |
+| 50 | investigator | 351.63 (342.65-356.38) | 352.02 (349.14-356.68) | +0.39 | 88 | 87 |
+| 50 | agent | 351.47 (342.66-356.42) | 351.95 (349.15-356.63) | +0.47 | 92 | 91 |
+
+- Unchanged: every change is under 0.7% and inside round 2's own repeat
+  spread (up to 9.5 ms on 350 ms). DT rows within 0.2 ms of bare, as before.
+
+### Round 2c close-out
+
+| phase | status | headline |
+|---|---|---|
+| C0 | done | `ve2c` at `259fa2d`, pins match, rhapsody#127 check passes; py-spy added |
+| C1 | done (3 runs) | 0 dead, 0 paused in 30 kills (2b: 17 paused); 16 kills hit a submit and inference kept answering (480/480 probes, max 0.55 s); detection later, 10.7 / 11.1 / 11.5 s (2b 10.5-10.6), not explained |
+| C2 | done | P6 unchanged (10.3 s detect, 3.0 s resume, 10/10, no stall) |
+| C3 | done | P4 and R1 unchanged: p50 within -0.32..+0.48 ms on the cluster and -2.2..+0.5 ms on 350 ms through radical.3; bare c=50 burst bimodal in both rounds |
+
+No allocation left running. Every isolation check empty.
+
+Open questions for Andre (round 2c):
+
+1. C1: detection through radical.3 is 10.7 / 11.1 / 11.5 s per run (median;
+   nearly constant within a run), later than 2b's 10.5-10.6 s and rising run
+   by run. Is that orbit#166 (suspect endpoint held until resume) or the
+   broker's state after many kills? Kill times (UTC) are in
+   `results/c1/*.json` for the radical.3 log.
+2. P4 (all rounds): the bare row's c=50 burst is bimodal (about 500 or about
+   800 req/s per repeat), on cluster and loopback alike; the DT rows are not.
+   Cause unknown; it does not affect the DT-vs-bare claim at c=1 or c=500.
