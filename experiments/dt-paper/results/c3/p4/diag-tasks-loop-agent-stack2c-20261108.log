@@ -1,0 +1,4 @@
+backend: orbit dt_p4_ep0
+DT agent + selector          n=200  mean=   3.36ms  p50=   3.32  p90=   3.68  p99=   4.51  max=   4.90
+DT agent + selector          50 concurrent requests in 140.0ms (357 req/s)
+DIAG {"counts": {"submit_calls": 222, "tasks": 271, "send_batches": 223, "sent_tasks": 271}, "task_names": {"predict": 271}, "argv": ["--broker", "https://10.249.20.42:8131", "--endpoint", "dt_p4_ep0", "--tasks", "200", "--concurrent", "50", "--rows", "agent"]}

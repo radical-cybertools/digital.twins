@@ -557,6 +557,7 @@ counted separately, as in 2b.
 
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
+| 60992308 | c1-r3-run3 | m5290 | 2 | 00:07:37 | 0.254 | 0.25 | 0.00 |
 
 ### C0: venv and scripts (2026-11-08)
 
@@ -592,3 +593,54 @@ counted separately, as in 2b.
 - 10/10 kills detected at 10.3 s (10.3-10.4); every probe of both twins
   answered (0 dead, 0 paused); learning resumed 3.0 s (3.0-3.3); 10/10
   reattaches (0.02 s). Round 2: 10.4 / 3.0 s; 2b: 10.4 / 3.0 s. Unchanged.
+
+### C1: R3 through radical.3, three runs (done)
+
+- Jobs 60992306 (run1, 9:31), 60992307 (run2, 8:11), 60992308 (run3, 7:37),
+  chained, each alone on the broker; 2 debug nodes each; WAN connect p50
+  0.171-0.174 s; R3 rc 0; isolation checks empty. Files
+  `results/c1/endpoint-loss-remote-run<k>-stack2c-20261108.{json,log}`.
+
+| run | detected | dead | paused | kill hit a submit | detect s | resume s | reattach |
+|---|---|---|---|---|---|---|---|
+| 2b run 1 | 10/10 | 0 | 5 | 5 | 10.6 (10.4-10.7) | 8.0 | 10/10, 1.1 s |
+| 2b run 2 | 10/10 | 0 | 4 | 4 | 10.6 (10.5-10.6) | 7.9 | 10/10, 1.1 s |
+| 2b run 3 | 10/10 | 0 | 8 | 8 | 10.5 (10.5-11.3) | 8.0 | 10/10, 1.1 s |
+| 2c run 1 | 10/10 | **0** | **0** | 0 | 10.7 (10.7-10.8) | 7.9 | 10/10, 1.1 s |
+| 2c run 2 | 10/10 | **0** | **0** | 7 | 11.1 (11.0-11.1) | 7.9 | 10/10, 1.1 s |
+| 2c run 3 | 10/10 | **0** | **0** | 9 | 11.5 (11.5-11.5) | 8.2 | 10/10, 1.1 s |
+
+- As expected: 0 dead and 0 paused in all 30 kills. 16 kills hit a learning
+  submit (the learner's `last_error` is the refused submit, `HTTP 504 ...
+  submit 1 task(s) — endpoint lost`), and in those every probe of both twins
+  answered too: 480/480 probes over the three runs, max probe RTT 0.55 s
+  (2b paused kills: 5 s probe timeouts back to back).
+- One shift: detection is later than in 2b and grows per run (median 10.7 /
+  11.1 / 11.5 s, vs 10.5-10.6 s). Within each run it is nearly constant. The
+  kills that hit a submit are now reported when the backgrounded submit
+  fails, rather than at the broker's endpoint-lost event; that may account
+  for it, but run 1 (no submit hit) is at 10.7 s too. Not explained; the
+  broker log is out of reach. Reported, not tuned.
+- Note on the counter: run 1 has 0 submit hits, so `submit-refused` stays a
+  usable count (an early look at run 1 alone made me think the refused submit
+  no longer left its own error; runs 2-3 show it does).
+
+### C3, part 1: P4 through ORBIT on the cluster (done)
+
+- Job 60992310 (debug, 2 nodes, 9:55), round 2's `run_s1_p4.sh` on ve2c,
+  `results/c3/p4/`, every rc 0, isolation check empty. Compared with
+  `s1/compare_insitu.py` (new: median and min-max per layout, c and row,
+  round A vs B).
+- p50 per request: every row within -0.32..+0.48 ms of round 2 (cross-node
+  3.48-4.08 ms, loopback 3.49-4.14 ms), inside the repeat spreads (round 2's
+  own min-max spans up to 1.1 ms). No systematic direction: cross-node rows
+  are 0.07-0.48 ms slower, loopback rows 0.03-0.32 ms faster.
+- Burst req/s at c=500: -2..+8% (bare cross 789 vs 729, loop 772 vs 722).
+- The one large median change, bare at c=50 (cross 495 vs 794, loop 506 vs
+  785), is bimodality in both rounds: each repeat lands near 500 or near 800
+  req/s (round 2: 487 517 812 802 794 / 475 522 810 785 790; 2c: 495 493 826
+  797 472 / 506 498 781 767 502). 2c drew 3 low of 5, round 2 drew 2. Not a
+  change; the bimodality itself is a property of the bare row (round 2 too).
+- Diag task counts identical to round 2 (one ORBIT task per request, every
+  row). Solo rows at c=50: bare 783 / 764, investigator 668 / 631, agent
+  758 / 773 req/s (cross / loop).

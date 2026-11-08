@@ -1,0 +1,1479 @@
+{
+  "provenance": {
+    "experiment": "E5 endpoint and client loss",
+    "harness": "bench_endpoint_loss.py",
+    "time": "2026-11-07T23:48:50-0800",
+    "host": "nid006591",
+    "python": "3.12.12",
+    "digital_twins_commit": "f0b84191d13c8196aa2335783984864d72cb10b0",
+    "digital_twins_dirty": false,
+    "backend": "orbit, concurrent on both endpoints",
+    "slurm_job": "60992307",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "inference": "pm_p6_inf_60992307",
+      "learning": "pm_p6_learn_60992307",
+      "kills": 10,
+      "reattaches": 10,
+      "gap": 2.0,
+      "probe": 0.5,
+      "probe_timeout": 5.0,
+      "learn_timeout": 120.0,
+      "lost_timeout": 120.0,
+      "logs": "/pscratch/sd/m/merzky/dt-pm3/orbit-logs",
+      "out": "experiments/dt-paper/results/c1/endpoint-loss-remote-run2-stack2c-20261108.json"
+    }
+  },
+  "kills": [
+    {
+      "kill": 0,
+      "first_learned_s": 3.623126983642578,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.062204837799072,
+      "kill_t": 1794124140.9835734,
+      "kill_utc": "2026-11-08T07:49:00.983Z",
+      "detect_utc": "2026-11-08T07:49:12.045Z",
+      "restart_utc": "2026-11-08T07:49:13.439Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60992307/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.753485918045044,
+      "resume_s": 8.073684692382812,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124140.9990287,
+          "ok": true,
+          "rtt": 0.5230212211608887,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124141.522057,
+          "ok": true,
+          "rtt": 0.35765576362609863,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124142.5500681,
+          "ok": true,
+          "rtt": 0.40669941902160645,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124142.9567745,
+          "ok": true,
+          "rtt": 0.3597850799560547,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124143.987011,
+          "ok": true,
+          "rtt": 0.40497803688049316,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124144.3919957,
+          "ok": true,
+          "rtt": 0.35965728759765625,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124145.4217932,
+          "ok": true,
+          "rtt": 0.40672802925109863,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124145.8285267,
+          "ok": true,
+          "rtt": 0.35784220695495605,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124146.85658,
+          "ok": true,
+          "rtt": 0.4083669185638428,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124147.2649527,
+          "ok": true,
+          "rtt": 0.35848355293273926,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124148.2935045,
+          "ok": true,
+          "rtt": 0.4081864356994629,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124148.7016962,
+          "ok": true,
+          "rtt": 0.35849809646606445,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124149.7305436,
+          "ok": true,
+          "rtt": 0.4101431369781494,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124150.1406922,
+          "ok": true,
+          "rtt": 0.35887694358825684,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124151.16998,
+          "ok": true,
+          "rtt": 0.3534994125366211,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124151.523485,
+          "ok": true,
+          "rtt": 0.35216283798217773,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 1,
+      "first_learned_s": 3.612412214279175,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.048303842544556,
+      "kill_t": 1794124168.595045,
+      "kill_utc": "2026-11-08T07:49:28.595Z",
+      "detect_utc": "2026-11-08T07:49:39.643Z",
+      "restart_utc": "2026-11-08T07:49:41.034Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60992307/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.753310441970825,
+      "resume_s": 8.105432033538818,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124168.6113942,
+          "ok": true,
+          "rtt": 0.5219571590423584,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124169.1333573,
+          "ok": true,
+          "rtt": 0.35793185234069824,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124170.161486,
+          "ok": true,
+          "rtt": 0.4070241451263428,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124170.5685148,
+          "ok": true,
+          "rtt": 0.35921669006347656,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124171.5979116,
+          "ok": true,
+          "rtt": 0.4066455364227295,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124172.0045624,
+          "ok": true,
+          "rtt": 0.35819387435913086,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124173.0326161,
+          "ok": true,
+          "rtt": 0.4065065383911133,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124173.4391282,
+          "ok": true,
+          "rtt": 0.3594396114349365,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124174.4685307,
+          "ok": true,
+          "rtt": 0.40841102600097656,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124174.876947,
+          "ok": true,
+          "rtt": 0.35852503776550293,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124175.9055173,
+          "ok": true,
+          "rtt": 0.4054253101348877,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124176.3109481,
+          "ok": true,
+          "rtt": 0.35671234130859375,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124177.3378787,
+          "ok": true,
+          "rtt": 0.4052269458770752,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124177.7431107,
+          "ok": true,
+          "rtt": 0.35764336585998535,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124178.7708585,
+          "ok": true,
+          "rtt": 0.35204243659973145,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124179.1229067,
+          "ok": true,
+          "rtt": 0.35042476654052734,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 2,
+      "first_learned_s": 3.636983633041382,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.115056276321411,
+      "kill_t": 1794124196.2517538,
+      "kill_utc": "2026-11-08T07:49:56.251Z",
+      "detect_utc": "2026-11-08T07:50:07.366Z",
+      "restart_utc": "2026-11-08T07:50:21.809Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992307",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.502763509750366,
+      "resume_s": 7.842635631561279,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124196.2671854,
+          "ok": true,
+          "rtt": 0.5231566429138184,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124196.7903483,
+          "ok": true,
+          "rtt": 0.35684847831726074,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124197.8171463,
+          "ok": true,
+          "rtt": 0.4054405689239502,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124198.2225926,
+          "ok": true,
+          "rtt": 0.35927724838256836,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124199.2517831,
+          "ok": true,
+          "rtt": 0.4051527976989746,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124199.6569417,
+          "ok": true,
+          "rtt": 0.3579368591308594,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124200.6846914,
+          "ok": true,
+          "rtt": 0.4103541374206543,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124201.0950508,
+          "ok": true,
+          "rtt": 0.3593149185180664,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124202.124449,
+          "ok": true,
+          "rtt": 0.4095032215118408,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124202.5339577,
+          "ok": true,
+          "rtt": 0.35726499557495117,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124203.561363,
+          "ok": true,
+          "rtt": 0.4055361747741699,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124203.9669054,
+          "ok": true,
+          "rtt": 0.3572564125061035,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124204.9939826,
+          "ok": true,
+          "rtt": 0.40915751457214355,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124205.4031453,
+          "ok": true,
+          "rtt": 0.3569071292877197,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124206.4299312,
+          "ok": true,
+          "rtt": 0.40744948387145996,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124206.8373861,
+          "ok": true,
+          "rtt": 0.35948634147644043,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 3,
+      "first_learned_s": 3.6066935062408447,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.056802988052368,
+      "kill_t": 1794124236.7293918,
+      "kill_utc": "2026-11-08T07:50:36.729Z",
+      "detect_utc": "2026-11-08T07:50:47.786Z",
+      "restart_utc": "2026-11-08T07:50:49.178Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60992307/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.502721071243286,
+      "resume_s": 7.840455532073975,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124236.7438853,
+          "ok": true,
+          "rtt": 0.5259850025177002,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124237.269878,
+          "ok": true,
+          "rtt": 0.3606102466583252,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124238.300721,
+          "ok": true,
+          "rtt": 0.4046177864074707,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124238.7053442,
+          "ok": true,
+          "rtt": 0.3605353832244873,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124239.7359507,
+          "ok": true,
+          "rtt": 0.40523648262023926,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124240.1411932,
+          "ok": true,
+          "rtt": 0.36013078689575195,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124241.1713057,
+          "ok": true,
+          "rtt": 0.4063739776611328,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124241.5776854,
+          "ok": true,
+          "rtt": 0.3587050437927246,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124242.6064086,
+          "ok": true,
+          "rtt": 0.4065821170806885,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124243.0129974,
+          "ok": true,
+          "rtt": 0.3569610118865967,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124244.040059,
+          "ok": true,
+          "rtt": 0.40749239921569824,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124244.447557,
+          "ok": true,
+          "rtt": 0.3562781810760498,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124245.4739075,
+          "ok": true,
+          "rtt": 0.40905284881591797,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124245.8829665,
+          "ok": true,
+          "rtt": 0.35908961296081543,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124246.912351,
+          "ok": true,
+          "rtt": 0.3521871566772461,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124247.2645438,
+          "ok": true,
+          "rtt": 0.35161828994750977,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 4,
+      "first_learned_s": 3.633636474609375,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.062785387039185,
+      "kill_t": 1794124264.1367238,
+      "kill_utc": "2026-11-08T07:51:04.136Z",
+      "detect_utc": "2026-11-08T07:51:15.199Z",
+      "restart_utc": "2026-11-08T07:51:16.590Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60992307/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.5024237632751465,
+      "resume_s": 7.823923587799072,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124264.150628,
+          "ok": true,
+          "rtt": 0.5251681804656982,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124264.6758022,
+          "ok": true,
+          "rtt": 0.357851505279541,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124265.7038112,
+          "ok": true,
+          "rtt": 0.41031861305236816,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124266.1141346,
+          "ok": true,
+          "rtt": 0.35870933532714844,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124267.1431496,
+          "ok": true,
+          "rtt": 0.40947842597961426,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124267.5526335,
+          "ok": true,
+          "rtt": 0.35773730278015137,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124268.5805817,
+          "ok": true,
+          "rtt": 0.40767812728881836,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124268.988265,
+          "ok": true,
+          "rtt": 0.3589165210723877,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124270.017513,
+          "ok": true,
+          "rtt": 0.4072842597961426,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124270.424803,
+          "ok": true,
+          "rtt": 0.3610508441925049,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124271.456043,
+          "ok": true,
+          "rtt": 0.40662527084350586,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124271.8626745,
+          "ok": true,
+          "rtt": 0.35790371894836426,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124272.8913536,
+          "ok": true,
+          "rtt": 0.4062771797180176,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124273.2976358,
+          "ok": true,
+          "rtt": 0.3575725555419922,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124274.3253286,
+          "ok": true,
+          "rtt": 0.35164952278137207,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124274.6769838,
+          "ok": true,
+          "rtt": 0.35207581520080566,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 5,
+      "first_learned_s": 3.6090633869171143,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.05888032913208,
+      "kill_t": 1794124291.4978552,
+      "kill_utc": "2026-11-08T07:51:31.497Z",
+      "detect_utc": "2026-11-08T07:51:42.556Z",
+      "restart_utc": "2026-11-08T07:51:43.949Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60992307/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.502347469329834,
+      "resume_s": 7.843239068984985,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124291.511548,
+          "ok": true,
+          "rtt": 0.5261199474334717,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124292.0376737,
+          "ok": true,
+          "rtt": 0.3589599132537842,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124293.0665956,
+          "ok": true,
+          "rtt": 0.40561747550964355,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124293.4722192,
+          "ok": true,
+          "rtt": 0.3573892116546631,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124294.4995487,
+          "ok": true,
+          "rtt": 0.40885424613952637,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124294.9084086,
+          "ok": true,
+          "rtt": 0.3592045307159424,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124295.9378314,
+          "ok": true,
+          "rtt": 0.4077746868133545,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124296.3456118,
+          "ok": true,
+          "rtt": 0.358917236328125,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124297.3744774,
+          "ok": true,
+          "rtt": 0.4067070484161377,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124297.7811902,
+          "ok": true,
+          "rtt": 0.36066174507141113,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124298.811884,
+          "ok": true,
+          "rtt": 0.40578413009643555,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124299.217674,
+          "ok": true,
+          "rtt": 0.3590872287750244,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124300.2469065,
+          "ok": true,
+          "rtt": 0.4087488651275635,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124300.6556609,
+          "ok": true,
+          "rtt": 0.35909533500671387,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124301.684958,
+          "ok": true,
+          "rtt": 0.35091066360473633,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124302.0358717,
+          "ok": true,
+          "rtt": 0.3506741523742676,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 6,
+      "first_learned_s": 3.6293482780456543,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.123973608016968,
+      "kill_t": 1794124318.9076457,
+      "kill_utc": "2026-11-08T07:51:58.907Z",
+      "detect_utc": "2026-11-08T07:52:10.031Z",
+      "restart_utc": "2026-11-08T07:52:24.463Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992307",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.502354860305786,
+      "resume_s": 7.89617657661438,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124318.9223142,
+          "ok": true,
+          "rtt": 0.5258874893188477,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124319.4482076,
+          "ok": true,
+          "rtt": 0.3578827381134033,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124320.476137,
+          "ok": true,
+          "rtt": 0.40770530700683594,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124320.8838472,
+          "ok": true,
+          "rtt": 0.3584885597229004,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124321.9120743,
+          "ok": true,
+          "rtt": 0.408383846282959,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124322.3204644,
+          "ok": true,
+          "rtt": 0.3587768077850342,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124323.349303,
+          "ok": true,
+          "rtt": 0.4055440425872803,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124323.754852,
+          "ok": true,
+          "rtt": 0.3609929084777832,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124324.7859857,
+          "ok": true,
+          "rtt": 0.40575337409973145,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124325.1917448,
+          "ok": true,
+          "rtt": 0.3581242561340332,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124326.220034,
+          "ok": true,
+          "rtt": 0.40788936614990234,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124326.6279297,
+          "ok": true,
+          "rtt": 0.36071252822875977,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124327.6587274,
+          "ok": true,
+          "rtt": 0.40768957138061523,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124328.0664225,
+          "ok": true,
+          "rtt": 0.35817480087280273,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124329.0947578,
+          "ok": true,
+          "rtt": 0.407548189163208,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124329.5023117,
+          "ok": true,
+          "rtt": 0.359393835067749,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 7,
+      "first_learned_s": 3.6322531700134277,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.127896070480347,
+      "kill_t": 1794124359.465442,
+      "kill_utc": "2026-11-08T07:52:39.465Z",
+      "detect_utc": "2026-11-08T07:52:50.593Z",
+      "restart_utc": "2026-11-08T07:53:05.019Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992307",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.7525339126586914,
+      "resume_s": 8.088943243026733,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124359.4791105,
+          "ok": true,
+          "rtt": 0.5277566909790039,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124360.006873,
+          "ok": true,
+          "rtt": 0.35849976539611816,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124361.0355744,
+          "ok": true,
+          "rtt": 0.40386056900024414,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124361.4394398,
+          "ok": true,
+          "rtt": 0.3608090877532959,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124362.4703596,
+          "ok": true,
+          "rtt": 0.4078943729400635,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124362.8782592,
+          "ok": true,
+          "rtt": 0.3584713935852051,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124363.9068573,
+          "ok": true,
+          "rtt": 0.4102818965911865,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124364.3171446,
+          "ok": true,
+          "rtt": 0.3592970371246338,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124365.346434,
+          "ok": true,
+          "rtt": 0.40891051292419434,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124365.7553506,
+          "ok": true,
+          "rtt": 0.35803937911987305,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124366.7836473,
+          "ok": true,
+          "rtt": 0.40887022018432617,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124367.192523,
+          "ok": true,
+          "rtt": 0.3589131832122803,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124368.2217336,
+          "ok": true,
+          "rtt": 0.40778446197509766,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124368.629523,
+          "ok": true,
+          "rtt": 0.3572237491607666,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124369.6568344,
+          "ok": true,
+          "rtt": 0.40779733657836914,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124370.064638,
+          "ok": true,
+          "rtt": 0.3587965965270996,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 8,
+      "first_learned_s": 3.634279489517212,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.057803869247437,
+      "kill_t": 1794124400.2284992,
+      "kill_utc": "2026-11-08T07:53:20.228Z",
+      "detect_utc": "2026-11-08T07:53:31.286Z",
+      "restart_utc": "2026-11-08T07:53:32.678Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60992307/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.502265214920044,
+      "resume_s": 7.832362651824951,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124400.2426245,
+          "ok": true,
+          "rtt": 0.5241127014160156,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124400.766743,
+          "ok": true,
+          "rtt": 0.3590848445892334,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124401.7959805,
+          "ok": true,
+          "rtt": 0.4057471752166748,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124402.2017338,
+          "ok": true,
+          "rtt": 0.35856175422668457,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124403.2303083,
+          "ok": true,
+          "rtt": 0.4088902473449707,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124403.6392038,
+          "ok": true,
+          "rtt": 0.3602328300476074,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124404.6695747,
+          "ok": true,
+          "rtt": 0.405834436416626,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124405.0754151,
+          "ok": true,
+          "rtt": 0.3567981719970703,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124406.1023345,
+          "ok": true,
+          "rtt": 0.41069889068603516,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124406.513039,
+          "ok": true,
+          "rtt": 0.3590965270996094,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124407.5424201,
+          "ok": true,
+          "rtt": 0.40662455558776855,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124407.9490504,
+          "ok": true,
+          "rtt": 0.3595259189605713,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124408.9784365,
+          "ok": true,
+          "rtt": 0.40694379806518555,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124409.385386,
+          "ok": true,
+          "rtt": 0.3587684631347656,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124410.4146354,
+          "ok": true,
+          "rtt": 0.350419282913208,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124410.765061,
+          "ok": true,
+          "rtt": 0.3511214256286621,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 9,
+      "first_learned_s": 3.618955373764038,
+      "trained_on": "pm_p6_learn_60992307",
+      "detected": true,
+      "detect_s": 11.064045906066895,
+      "kill_t": 1794124427.6017637,
+      "kill_utc": "2026-11-08T07:53:47.601Z",
+      "detect_utc": "2026-11-08T07:53:58.665Z",
+      "restart_utc": "2026-11-08T07:54:00.054Z",
+      "last_error": "RuntimeError: HTTP 504 \u2014 [pm_p6_learn_60992307/rhapsody] submit 1 task(s) \u2014 endpoint lost",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.7529501914978027,
+      "resume_s": 8.092623949050903,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794124427.6160386,
+          "ok": true,
+          "rtt": 0.5229589939117432,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124428.1390028,
+          "ok": true,
+          "rtt": 0.35806989669799805,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124429.1673467,
+          "ok": true,
+          "rtt": 0.4065437316894531,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124429.5738957,
+          "ok": true,
+          "rtt": 0.3591349124908447,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124430.6032374,
+          "ok": true,
+          "rtt": 0.40924859046936035,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124431.0124912,
+          "ok": true,
+          "rtt": 0.3584108352661133,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124432.0409608,
+          "ok": true,
+          "rtt": 0.410768985748291,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124432.4517353,
+          "ok": true,
+          "rtt": 0.35810327529907227,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124433.479944,
+          "ok": true,
+          "rtt": 0.410602331161499,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124433.890552,
+          "ok": true,
+          "rtt": 0.3584887981414795,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124434.91908,
+          "ok": true,
+          "rtt": 0.4074862003326416,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124435.3265722,
+          "ok": true,
+          "rtt": 0.3586156368255615,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124436.355458,
+          "ok": true,
+          "rtt": 0.4089634418487549,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124436.7644274,
+          "ok": true,
+          "rtt": 0.3587219715118408,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794124437.7933304,
+          "ok": true,
+          "rtt": 0.3508632183074951,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794124438.1441998,
+          "ok": true,
+          "rtt": 0.3513457775115967,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "reattaches": [
+    {
+      "reattach": 0,
+      "attach_s": 1.1486406326293945,
+      "first_answer_s": 1.6832034587860107,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 1,
+      "attach_s": 1.1030592918395996,
+      "first_answer_s": 1.6439716815948486,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 2,
+      "attach_s": 1.121335744857788,
+      "first_answer_s": 1.655893087387085,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 3,
+      "attach_s": 1.1541321277618408,
+      "first_answer_s": 1.6842942237854004,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 4,
+      "attach_s": 1.0635097026824951,
+      "first_answer_s": 1.5942370891571045,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 5,
+      "attach_s": 1.114851713180542,
+      "first_answer_s": 1.6464297771453857,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 6,
+      "attach_s": 1.1010465621948242,
+      "first_answer_s": 1.6349520683288574,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 7,
+      "attach_s": 1.132023811340332,
+      "first_answer_s": 1.6537764072418213,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 8,
+      "attach_s": 1.0917940139770508,
+      "first_answer_s": 1.613553524017334,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 9,
+      "attach_s": 1.0873405933380127,
+      "first_answer_s": 1.618607521057129,
+      "state": "running",
+      "ok": true
+    }
+  ],
+  "first_endpoint_up_s": 3.004124641418457,
+  "summary": {
+    "kills_ok": 10,
+    "kills": 10,
+    "detect_s": {
+      "median": 11.062495112419128,
+      "min": 11.048303842544556,
+      "max": 11.127896070480347,
+      "n": 10
+    },
+    "resume_s": {
+      "median": 7.869707822799683,
+      "min": 7.823923587799072,
+      "max": 8.105432033538818,
+      "n": 10
+    },
+    "endpoint_up_s": {
+      "median": 2.502742290496826,
+      "min": 2.502265214920044,
+      "max": 2.753485918045044,
+      "n": 10
+    },
+    "sibling_all_answered": true,
+    "reattaches_ok": 10,
+    "reattaches": 10,
+    "attach_s": {
+      "median": 1.1089555025100708,
+      "min": 1.0635097026824951,
+      "max": 1.1541321277618408,
+      "n": 10
+    },
+    "first_answer_s": {
+      "median": 1.6452007293701172,
+      "min": 1.5942370891571045,
+      "max": 1.6842942237854004,
+      "n": 10
+    }
+  }
+}

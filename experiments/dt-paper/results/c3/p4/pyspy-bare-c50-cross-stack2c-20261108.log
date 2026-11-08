@@ -1,0 +1,18 @@
+py-spy> Sampling process 200 times a second. Press Control-C to exit.
+
+backend: orbit dt_p4_ep1
+bare asyncflow task          n=1000  mean=   4.52ms  p50=   4.53  p90=   5.04  p99=   6.31  max=  10.12
+bare asyncflow task          50 concurrent requests in 85.0ms (588 req/s)
+
+py-spy> Stopped sampling because process exited
+py-spy> Wrote speedscope file to 'experiments/dt-paper/results/c3/p4/pyspy-bare-c50-cross-stack2c-20261108.speedscope'. Samples: 1284 Errors: 2
+py-spy> Visit https://www.speedscope.app/ to view
+py-spy> Sampling process 200 times a second. Press Control-C to exit.
+
+backend: orbit dt_p4_ep1
+bare asyncflow task          n=1000  mean=   5.08ms  p50=   5.06  p90=   5.38  p99=   5.92  max= 128.44
+bare asyncflow task          50 concurrent requests in 74.2ms (673 req/s)
+
+py-spy> Stopped sampling because process exited
+py-spy> Wrote raw flamegraph data to 'experiments/dt-paper/results/c3/p4/pyspy-bare-c50-cross-stack2c-20261108.folded'. Samples: 1394 Errors: 1
+py-spy> You can use the flamegraph.pl script from https://github.com/brendangregg/flamegraph to generate a SVG

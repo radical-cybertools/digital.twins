@@ -1,0 +1,1479 @@
+{
+  "provenance": {
+    "experiment": "E5 endpoint and client loss",
+    "harness": "bench_endpoint_loss.py",
+    "time": "2026-11-07T23:35:18-0800",
+    "host": "nid004476",
+    "python": "3.12.12",
+    "digital_twins_commit": "4a7081e80014aa24ade6072804174b1e201817f5",
+    "digital_twins_dirty": false,
+    "backend": "orbit, concurrent on both endpoints",
+    "slurm_job": "60992306",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "inference": "pm_p6_inf_60992306",
+      "learning": "pm_p6_learn_60992306",
+      "kills": 10,
+      "reattaches": 10,
+      "gap": 2.0,
+      "probe": 0.5,
+      "probe_timeout": 5.0,
+      "learn_timeout": 120.0,
+      "lost_timeout": 120.0,
+      "logs": "/pscratch/sd/m/merzky/dt-pm3/orbit-logs",
+      "out": "experiments/dt-paper/results/c1/endpoint-loss-remote-run1-stack2c-20261108.json"
+    }
+  },
+  "kills": [
+    {
+      "kill": 0,
+      "first_learned_s": 3.516176462173462,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.705394744873047,
+      "kill_t": 1794123329.0622807,
+      "kill_utc": "2026-11-08T07:35:29.062Z",
+      "detect_utc": "2026-11-08T07:35:39.767Z",
+      "restart_utc": "2026-11-08T07:35:54.605Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.752603530883789,
+      "resume_s": 7.937861442565918,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123329.0764096,
+          "ok": true,
+          "rtt": 0.504986047744751,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123329.5814028,
+          "ok": true,
+          "rtt": 0.34626197814941406,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123330.5955036,
+          "ok": true,
+          "rtt": 0.36419034004211426,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123330.9596975,
+          "ok": true,
+          "rtt": 0.34629178047180176,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123331.9734604,
+          "ok": true,
+          "rtt": 0.3664071559906006,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123332.3398738,
+          "ok": true,
+          "rtt": 0.3474142551422119,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123333.355455,
+          "ok": true,
+          "rtt": 0.3684237003326416,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123333.7238836,
+          "ok": true,
+          "rtt": 0.3461930751800537,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123334.7376335,
+          "ok": true,
+          "rtt": 0.36931395530700684,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123335.1069536,
+          "ok": true,
+          "rtt": 0.3449079990386963,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123336.1190012,
+          "ok": true,
+          "rtt": 0.36991405487060547,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123336.488918,
+          "ok": true,
+          "rtt": 0.34668660163879395,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123337.5031412,
+          "ok": true,
+          "rtt": 0.36889100074768066,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123337.8720374,
+          "ok": true,
+          "rtt": 0.3451380729675293,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123338.8850117,
+          "ok": true,
+          "rtt": 0.3704376220703125,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123339.2554545,
+          "ok": true,
+          "rtt": 0.34446191787719727,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 1,
+      "first_learned_s": 3.49851393699646,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.705411672592163,
+      "kill_t": 1794123369.453001,
+      "kill_utc": "2026-11-08T07:36:09.453Z",
+      "detect_utc": "2026-11-08T07:36:20.158Z",
+      "restart_utc": "2026-11-08T07:36:34.999Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 3.0027782917022705,
+      "resume_s": 8.210862874984741,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123369.4681578,
+          "ok": true,
+          "rtt": 0.5046741962432861,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123369.9728389,
+          "ok": true,
+          "rtt": 0.34569740295410156,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123370.9861343,
+          "ok": true,
+          "rtt": 0.37124156951904297,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123371.3573816,
+          "ok": true,
+          "rtt": 0.34602880477905273,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123372.3712153,
+          "ok": true,
+          "rtt": 0.3699159622192383,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123372.7411377,
+          "ok": true,
+          "rtt": 0.34601283073425293,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123373.754675,
+          "ok": true,
+          "rtt": 0.36537647247314453,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123374.1200566,
+          "ok": true,
+          "rtt": 0.34311962127685547,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123375.1307664,
+          "ok": true,
+          "rtt": 0.3698906898498535,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123375.5006635,
+          "ok": true,
+          "rtt": 0.3449108600616455,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123376.5132082,
+          "ok": true,
+          "rtt": 0.370297908782959,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123376.8835113,
+          "ok": true,
+          "rtt": 0.3453071117401123,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123377.8964334,
+          "ok": true,
+          "rtt": 0.36913537979125977,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123378.2655742,
+          "ok": true,
+          "rtt": 0.34535789489746094,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123379.2787,
+          "ok": true,
+          "rtt": 0.36821985244750977,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123379.6469247,
+          "ok": true,
+          "rtt": 0.3441755771636963,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 2,
+      "first_learned_s": 3.515192985534668,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.713359117507935,
+      "kill_t": 1794123410.3080285,
+      "kill_utc": "2026-11-08T07:36:50.308Z",
+      "detect_utc": "2026-11-08T07:37:01.021Z",
+      "restart_utc": "2026-11-08T07:37:15.856Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 3.002455234527588,
+      "resume_s": 8.210318326950073,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123410.322294,
+          "ok": true,
+          "rtt": 0.5043604373931885,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123410.8266602,
+          "ok": true,
+          "rtt": 0.34527087211608887,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123411.8397672,
+          "ok": true,
+          "rtt": 0.36852025985717773,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123412.2082922,
+          "ok": true,
+          "rtt": 0.34717249870300293,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123413.2227743,
+          "ok": true,
+          "rtt": 0.36870718002319336,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123413.591488,
+          "ok": true,
+          "rtt": 0.34445762634277344,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123414.603751,
+          "ok": true,
+          "rtt": 0.3685634136199951,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123414.9723206,
+          "ok": true,
+          "rtt": 0.34551191329956055,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123415.98525,
+          "ok": true,
+          "rtt": 0.3710310459136963,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123416.3562868,
+          "ok": true,
+          "rtt": 0.347947359085083,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123417.3715706,
+          "ok": true,
+          "rtt": 0.36855292320251465,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123417.740127,
+          "ok": true,
+          "rtt": 0.34483861923217773,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123418.7527676,
+          "ok": true,
+          "rtt": 0.3702559471130371,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123419.123029,
+          "ok": true,
+          "rtt": 0.34627199172973633,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123420.1370375,
+          "ok": true,
+          "rtt": 0.3696577548980713,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123420.506701,
+          "ok": true,
+          "rtt": 0.3473093509674072,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 3,
+      "first_learned_s": 3.513047933578491,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.716290712356567,
+      "kill_t": 1794123450.9916644,
+      "kill_utc": "2026-11-08T07:37:30.991Z",
+      "detect_utc": "2026-11-08T07:37:41.707Z",
+      "restart_utc": "2026-11-08T07:37:56.537Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.7526748180389404,
+      "resume_s": 7.956745624542236,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123451.00552,
+          "ok": true,
+          "rtt": 0.5048203468322754,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123451.510347,
+          "ok": true,
+          "rtt": 0.3461430072784424,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123452.5238256,
+          "ok": true,
+          "rtt": 0.37009310722351074,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123452.8939242,
+          "ok": true,
+          "rtt": 0.34601378440856934,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123453.907966,
+          "ok": true,
+          "rtt": 0.3690342903137207,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123454.2770057,
+          "ok": true,
+          "rtt": 0.3454709053039551,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123455.2903454,
+          "ok": true,
+          "rtt": 0.3678622245788574,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123455.6582136,
+          "ok": true,
+          "rtt": 0.345841646194458,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123456.6712065,
+          "ok": true,
+          "rtt": 0.369370698928833,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123457.0405824,
+          "ok": true,
+          "rtt": 0.34665966033935547,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123458.0547187,
+          "ok": true,
+          "rtt": 0.37001538276672363,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123458.4247394,
+          "ok": true,
+          "rtt": 0.34600281715393066,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123459.4383178,
+          "ok": true,
+          "rtt": 0.3703644275665283,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123459.8086874,
+          "ok": true,
+          "rtt": 0.3467752933502197,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123460.8230734,
+          "ok": true,
+          "rtt": 0.3703269958496094,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123461.1934056,
+          "ok": true,
+          "rtt": 0.34595155715942383,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 4,
+      "first_learned_s": 3.5161213874816895,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.722596406936646,
+      "kill_t": 1794123491.4204946,
+      "kill_utc": "2026-11-08T07:38:11.420Z",
+      "detect_utc": "2026-11-08T07:38:22.143Z",
+      "restart_utc": "2026-11-08T07:38:36.970Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.752781629562378,
+      "resume_s": 7.964417219161987,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123491.438533,
+          "ok": true,
+          "rtt": 0.5001840591430664,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123491.938724,
+          "ok": true,
+          "rtt": 0.34522080421447754,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123492.9515011,
+          "ok": true,
+          "rtt": 0.37105226516723633,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123493.3225584,
+          "ok": true,
+          "rtt": 0.34666919708251953,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123494.3364825,
+          "ok": true,
+          "rtt": 0.37270331382751465,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123494.7091923,
+          "ok": true,
+          "rtt": 0.3463733196258545,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123495.7229927,
+          "ok": true,
+          "rtt": 0.37001919746398926,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123496.093018,
+          "ok": true,
+          "rtt": 0.34470534324645996,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123497.1051605,
+          "ok": true,
+          "rtt": 0.3708946704864502,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123497.4760606,
+          "ok": true,
+          "rtt": 0.3467066287994385,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123498.4902613,
+          "ok": true,
+          "rtt": 0.3715646266937256,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123498.8618317,
+          "ok": true,
+          "rtt": 0.3460519313812256,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123499.875451,
+          "ok": true,
+          "rtt": 0.37134838104248047,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123500.2468028,
+          "ok": true,
+          "rtt": 0.34555983543395996,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123501.259698,
+          "ok": true,
+          "rtt": 0.3698239326477051,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123501.629528,
+          "ok": true,
+          "rtt": 0.34621405601501465,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 5,
+      "first_learned_s": 3.5185606479644775,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.769211530685425,
+      "kill_t": 1794123531.8655937,
+      "kill_utc": "2026-11-08T07:38:51.865Z",
+      "detect_utc": "2026-11-08T07:39:02.634Z",
+      "restart_utc": "2026-11-08T07:39:17.413Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.5020875930786133,
+      "resume_s": 7.708434820175171,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123531.8789864,
+          "ok": true,
+          "rtt": 0.5055046081542969,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123532.384497,
+          "ok": true,
+          "rtt": 0.3448827266693115,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123533.3967452,
+          "ok": true,
+          "rtt": 0.43028974533081055,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123533.8270404,
+          "ok": true,
+          "rtt": 0.3441956043243408,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123534.838557,
+          "ok": true,
+          "rtt": 0.37071704864501953,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123535.2092798,
+          "ok": true,
+          "rtt": 0.3463163375854492,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123536.2228284,
+          "ok": true,
+          "rtt": 0.3696553707122803,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123536.592487,
+          "ok": true,
+          "rtt": 0.34633421897888184,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123537.606227,
+          "ok": true,
+          "rtt": 0.3689441680908203,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123537.9751773,
+          "ok": true,
+          "rtt": 0.3466472625732422,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123538.9891586,
+          "ok": true,
+          "rtt": 0.3696720600128174,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123539.3588357,
+          "ok": true,
+          "rtt": 0.3439054489135742,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123540.369886,
+          "ok": true,
+          "rtt": 0.3690304756164551,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123540.7389214,
+          "ok": true,
+          "rtt": 0.34627485275268555,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123541.7525604,
+          "ok": true,
+          "rtt": 0.3705625534057617,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123542.1231282,
+          "ok": true,
+          "rtt": 0.34415340423583984,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 6,
+      "first_learned_s": 3.5186216831207275,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.718676090240479,
+      "kill_t": 1794123572.0485132,
+      "kill_utc": "2026-11-08T07:39:32.048Z",
+      "detect_utc": "2026-11-08T07:39:42.767Z",
+      "restart_utc": "2026-11-08T07:39:57.597Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.502253532409668,
+      "resume_s": 7.7207255363464355,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123572.0617988,
+          "ok": true,
+          "rtt": 0.5052430629730225,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123572.5670476,
+          "ok": true,
+          "rtt": 0.34575796127319336,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123573.5800998,
+          "ok": true,
+          "rtt": 0.3675203323364258,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123573.9476235,
+          "ok": true,
+          "rtt": 0.3477609157562256,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123574.9628615,
+          "ok": true,
+          "rtt": 0.37119603157043457,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123575.3340633,
+          "ok": true,
+          "rtt": 0.3475322723388672,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123576.3487742,
+          "ok": true,
+          "rtt": 0.3707551956176758,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123576.7195356,
+          "ok": true,
+          "rtt": 0.346759557723999,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123577.7335598,
+          "ok": true,
+          "rtt": 0.37204813957214355,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123578.1056132,
+          "ok": true,
+          "rtt": 0.3453793525695801,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123579.1182601,
+          "ok": true,
+          "rtt": 0.3697524070739746,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123579.4880192,
+          "ok": true,
+          "rtt": 0.34670186042785645,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123580.5021276,
+          "ok": true,
+          "rtt": 0.36801934242248535,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123580.870152,
+          "ok": true,
+          "rtt": 0.34502577781677246,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123581.8830416,
+          "ok": true,
+          "rtt": 0.36962890625,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123582.2526758,
+          "ok": true,
+          "rtt": 0.34738612174987793,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 7,
+      "first_learned_s": 3.5266194343566895,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.714411497116089,
+      "kill_t": 1794123612.2640417,
+      "kill_utc": "2026-11-08T07:40:12.264Z",
+      "detect_utc": "2026-11-08T07:40:22.978Z",
+      "restart_utc": "2026-11-08T07:40:37.814Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.752290964126587,
+      "resume_s": 7.953389644622803,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123612.2799869,
+          "ok": true,
+          "rtt": 0.5018589496612549,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123612.7818522,
+          "ok": true,
+          "rtt": 0.3453693389892578,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123613.7945292,
+          "ok": true,
+          "rtt": 0.37003636360168457,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123614.1645706,
+          "ok": true,
+          "rtt": 0.34670209884643555,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123615.1783543,
+          "ok": true,
+          "rtt": 0.37229299545288086,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123615.5506527,
+          "ok": true,
+          "rtt": 0.3476259708404541,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123616.5655358,
+          "ok": true,
+          "rtt": 0.37070679664611816,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123616.936246,
+          "ok": true,
+          "rtt": 0.34653353691101074,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123617.9501595,
+          "ok": true,
+          "rtt": 0.37032079696655273,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123618.3204858,
+          "ok": true,
+          "rtt": 0.3443870544433594,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123619.332243,
+          "ok": true,
+          "rtt": 0.3719911575317383,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123619.7042406,
+          "ok": true,
+          "rtt": 0.3453400135040283,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123620.716845,
+          "ok": true,
+          "rtt": 0.37020134925842285,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123621.0870516,
+          "ok": true,
+          "rtt": 0.34488892555236816,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123622.0992863,
+          "ok": true,
+          "rtt": 0.36777782440185547,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123622.4670696,
+          "ok": true,
+          "rtt": 0.3442697525024414,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 8,
+      "first_learned_s": 3.512960195541382,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.723522424697876,
+      "kill_t": 1794123652.69199,
+      "kill_utc": "2026-11-08T07:40:52.691Z",
+      "detect_utc": "2026-11-08T07:41:03.415Z",
+      "restart_utc": "2026-11-08T07:41:18.242Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.5022213459014893,
+      "resume_s": 7.728309869766235,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123652.7080672,
+          "ok": true,
+          "rtt": 0.502598762512207,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123653.2106721,
+          "ok": true,
+          "rtt": 0.34600257873535156,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123654.223971,
+          "ok": true,
+          "rtt": 0.37328100204467773,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123654.597266,
+          "ok": true,
+          "rtt": 0.34677600860595703,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123655.6113584,
+          "ok": true,
+          "rtt": 0.3681368827819824,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123655.9795015,
+          "ok": true,
+          "rtt": 0.3458826541900635,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123656.9936206,
+          "ok": true,
+          "rtt": 0.37046027183532715,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123657.3640857,
+          "ok": true,
+          "rtt": 0.3461298942565918,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123658.3779464,
+          "ok": true,
+          "rtt": 0.3727753162384033,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123658.750727,
+          "ok": true,
+          "rtt": 0.3468811511993408,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123659.7650056,
+          "ok": true,
+          "rtt": 0.3716006278991699,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123660.1366122,
+          "ok": true,
+          "rtt": 0.34595298767089844,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123661.1500738,
+          "ok": true,
+          "rtt": 0.36896181106567383,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123661.5190408,
+          "ok": true,
+          "rtt": 0.34539365768432617,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123662.5323114,
+          "ok": true,
+          "rtt": 0.3689911365509033,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123662.9013078,
+          "ok": true,
+          "rtt": 0.34685587882995605,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 9,
+      "first_learned_s": 3.535635471343994,
+      "trained_on": "pm_p6_learn_60992306",
+      "detected": true,
+      "detect_s": 10.707647323608398,
+      "kill_t": 1794123693.0987492,
+      "kill_utc": "2026-11-08T07:41:33.098Z",
+      "detect_utc": "2026-11-08T07:41:43.806Z",
+      "restart_utc": "2026-11-08T07:41:58.648Z",
+      "last_error": "engine endpoint lost: pm_p6_learn_60992306",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.5023322105407715,
+      "resume_s": 7.719883918762207,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794123693.1130948,
+          "ok": true,
+          "rtt": 0.5049927234649658,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123693.6180925,
+          "ok": true,
+          "rtt": 0.3462200164794922,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123694.632222,
+          "ok": true,
+          "rtt": 0.3679077625274658,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123695.0001333,
+          "ok": true,
+          "rtt": 0.3452181816101074,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123696.0125291,
+          "ok": true,
+          "rtt": 0.37184858322143555,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123696.3843837,
+          "ok": true,
+          "rtt": 0.3455088138580322,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123697.3970466,
+          "ok": true,
+          "rtt": 0.3691415786743164,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123697.766193,
+          "ok": true,
+          "rtt": 0.34597086906433105,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123698.779461,
+          "ok": true,
+          "rtt": 0.3677661418914795,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123699.1472385,
+          "ok": true,
+          "rtt": 0.34415388107299805,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123700.1587434,
+          "ok": true,
+          "rtt": 0.36930298805236816,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123700.5280492,
+          "ok": true,
+          "rtt": 0.3449246883392334,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123701.5406237,
+          "ok": true,
+          "rtt": 0.3709406852722168,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123701.9115758,
+          "ok": true,
+          "rtt": 0.34465718269348145,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794123702.9237049,
+          "ok": true,
+          "rtt": 0.3701901435852051,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794123703.2939003,
+          "ok": true,
+          "rtt": 0.34491634368896484,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "reattaches": [
+    {
+      "reattach": 0,
+      "attach_s": 1.1045515537261963,
+      "first_answer_s": 1.638073444366455,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 1,
+      "attach_s": 1.1176369190216064,
+      "first_answer_s": 1.6412920951843262,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 2,
+      "attach_s": 1.0617084503173828,
+      "first_answer_s": 1.5723295211791992,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 3,
+      "attach_s": 1.130943775177002,
+      "first_answer_s": 1.6596853733062744,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 4,
+      "attach_s": 1.0809972286224365,
+      "first_answer_s": 1.6094489097595215,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 5,
+      "attach_s": 1.0690724849700928,
+      "first_answer_s": 1.596994400024414,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 6,
+      "attach_s": 1.2515451908111572,
+      "first_answer_s": 1.7850403785705566,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 7,
+      "attach_s": 1.1228270530700684,
+      "first_answer_s": 1.6465733051300049,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 8,
+      "attach_s": 1.0946094989776611,
+      "first_answer_s": 1.617586374282837,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 9,
+      "attach_s": 1.1177101135253906,
+      "first_answer_s": 1.6285412311553955,
+      "state": "running",
+      "ok": true
+    }
+  ],
+  "first_endpoint_up_s": 3.003253221511841,
+  "summary": {
+    "kills_ok": 10,
+    "kills": 10,
+    "detect_s": {
+      "median": 10.715351104736328,
+      "min": 10.705394744873047,
+      "max": 10.769211530685425,
+      "n": 10
+    },
+    "resume_s": {
+      "median": 7.94562554359436,
+      "min": 7.708434820175171,
+      "max": 8.210862874984741,
+      "n": 10
+    },
+    "endpoint_up_s": {
+      "median": 2.752447247505188,
+      "min": 2.5020875930786133,
+      "max": 3.0027782917022705,
+      "n": 10
+    },
+    "sibling_all_answered": true,
+    "reattaches_ok": 10,
+    "reattaches": 10,
+    "attach_s": {
+      "median": 1.1110942363739014,
+      "min": 1.0617084503173828,
+      "max": 1.2515451908111572,
+      "n": 10
+    },
+    "first_answer_s": {
+      "median": 1.6333073377609253,
+      "min": 1.5723295211791992,
+      "max": 1.7850403785705566,
+      "n": 10
+    }
+  }
+}

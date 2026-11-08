@@ -1,0 +1,4 @@
+backend: orbit dt_p4_ep0
+bare asyncflow task          n=200  mean=   3.29ms  p50=   3.25  p90=   3.56  p99=   5.25  max=   5.58
+bare asyncflow task          50 concurrent requests in 66.0ms (758 req/s)
+DIAG {"counts": {"submit_calls": 221, "tasks": 270, "send_batches": 222, "sent_tasks": 270}, "task_names": {"predict": 270}, "argv": ["--broker", "https://10.249.20.42:8131", "--endpoint", "dt_p4_ep0", "--tasks", "200", "--concurrent", "50", "--rows", "bare"]}
