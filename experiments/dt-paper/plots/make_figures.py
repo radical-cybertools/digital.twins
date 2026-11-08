@@ -465,7 +465,7 @@ def main():
         fig = plt.figure(figsize=(WIDTH, height), layout="constrained")
         func(fig)
         path = os.path.join(args.out, f"{name}.pdf")
-        fig.savefig(path)
+        fig.savefig(path, metadata={"CreationDate": None})  # reproducible
         plt.close(fig)
         print(path)
 
