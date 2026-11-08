@@ -12,8 +12,8 @@
 # carry node 0's name and hsn0 address.  Broker: --plugins dt only.
 # ~/.radical/orbit is checked against a stamp before and after.
 set -uo pipefail
-source /pscratch/sd/m/merzky/dt-pm3/env.sh
-R=$X/results/s1/p4; mkdir -p $R
+source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm3/env.sh}
+R=$X/results/${RES:-s1/p4}; mkdir -p $R
 B=$X/e1-overhead/bench_dt_insitu.py
 S=$X/e1-overhead/bench_streams.py
 G=$X/e1-overhead/diag_orbit_tasks.py

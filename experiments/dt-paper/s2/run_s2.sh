@@ -6,7 +6,8 @@
 #SBATCH -o /pscratch/sd/m/merzky/dt-pm3/logs/s2-%j.out
 # Round 2 S2: runs through the shared paper/dtaas broker on radical.3.
 #   sbatch -A m5290 -q debug --export=ALL,PARTS=r1,KS="1 2 3" run_s2.sh
-#   PARTS: any of r1 r2 r4 r3 (default all); KS: R1 repeats (default 1-5).
+#   PARTS: any of r1 r2 r4 r3 (default all); KS: R1 repeats (default 1-5);
+#   CS: R1 concurrency levels (default 1 50 500).
 #   Round 2b: ENV_SH=$W/env2b.sh (the ve2b venv), RES=<results subdir>, TAG=<run tag>.
 #   The WAN RTT is measured in every job (once per allocation).
 # Node A (the batch node) hosts the endpoints, node B the clients.  The
@@ -70,7 +71,7 @@ if has r1 || has r2 || has r4; then
 E1=pm_e1_ep_$J
 start_ep $E1
 has r1 && for k in ${KS:-1 2 3 4 5}; do
-  for c in 1 50 500; do
+  for c in ${CS:-1 50 500}; do
     f=$R/insitu-pm-remote-c$c-r$k-$D
     RADICAL_ORBIT_LOG_FILE=$L/s2-client-r1.log onB \
       python $X/e1-overhead/bench_dt_insitu.py --broker $URL --endpoint $E1 \

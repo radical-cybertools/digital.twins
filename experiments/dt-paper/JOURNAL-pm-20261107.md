@@ -544,3 +544,34 @@ Open questions for Andre (round 2b):
 3. B3: PCR is no longer served because PINN's runtime estimate now arrives
    first; if the paper wants all three models shown, the client must run
    longer or PCR must train earlier.
+
+## Round 2c
+
+Following the page's "Round 2c" section (the R3 pause fix: rhapsody#127
+background immediate submits, asyncflow#127 run-loop warning, orbit#166 503
+on resume). Branch `exp/pm-stack2c-20261108` off `259fa2d`, venv `$W/ve2c`,
+env `$W/env2c.sh` (`D=stack2c-20261108`). Same contract as round 2; budget
+counted separately, as in 2b.
+
+### Round 2c ledger
+
+| job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
+|---|---|---|---|---|---|---|---|
+
+### C0: venv and scripts (2026-11-08)
+
+- `exp/pm-stack2c-20261108` at `259fa2d` (`paper/dtaas`: asyncflow
+  `7e74fcc`, rhapsody `d5ede5f`, orbit `b915a88`, ROSE `9cc47a5`); merged
+  `exp/pm-stack2b-20261107` (only `experiments/`), as in 2b. No conflict.
+- `DT_PYTHON=python3.12 DT_REF=259fa2d ./deploy/install.sh endpoint $W/ve2c`:
+  rc 0, first try (`$W/logs/c0-install.log`), Python 3.12.12. Installed pins
+  match the page; the page's check (`_spawn_send(self._send_batch` in
+  rhapsody's orbit backend) passes. Added `py-spy` 0.4.3 to ve2c (P4 profiles
+  with it; round 2's venv had the same version).
+- Scripts: `run_s1_p4.sh` takes `ENV_SH`/`RES` like P6; `run_s2.sh` takes
+  `CS` (R1 concurrency levels; C3 runs c = 1 and 50 only, as the page says);
+  `ledger.py 2c`.
+- Decision: every job that uses the shared radical.3 broker runs alone on it,
+  chained: C1 run1 -> run2 -> run3 -> C3 R1 (repeats 1-3) -> C3 R1 (repeats
+  4-5). Round 2's R1 needed 18-22 min per job, so R1 is split in two debug
+  jobs. C2 (P6) and C3's P4 use local brokers and run alongside.
