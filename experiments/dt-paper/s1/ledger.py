@@ -18,7 +18,7 @@ JOURNAL = Path(__file__).resolve().parents[1] / "JOURNAL-pm-20261107.md"
 ROUNDS = {  # round: (start, job-name prefixes, heading the table follows)
     "2": ("2026-11-06T12:50", ("s1-", "s2-", "s3-"), "## Node-hour ledger"),
     "2b": ("2026-11-07T05:30", ("b0-", "b1-", "b2-", "b3-"), "## Round 2b"),
-    "2c": ("2026-11-08T00:00", ("c1-", "c2-", "c3-"), "## Round 2c"),
+    "2c": ("2026-11-07T20:00", ("c1-", "c2-", "c3-"), "## Round 2c"),
 }
 HEAD = ("| job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |\n"
         "|---|---|---|---|---|---|---|---|\n")
