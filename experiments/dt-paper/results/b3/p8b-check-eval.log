@@ -1,0 +1,175 @@
+[90m2026-11-07 05:49:39.819[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:49:39.820[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:49:40.046[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:49:40.047[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:49:40.047[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059385.610411 1430960 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059385.615638 1430960 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059385.620256 1430960 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059385.624690 1430960 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-07 05:49:48.515[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:49:48.515[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:49:48.515[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:49:48.618[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+{"model": "fno", "ok": true, "shapes": [[38, 85], [38, 85], [38, 85]], "seconds": 8.808542010956444}
+[90m2026-11-07 05:49:48.627[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:49:48.628[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+[90m2026-11-07 05:49:48.758[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:49:48.758[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:49:48.785[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+{"model": "pinn", "ok": true, "shapes": [[38, 85], [38, 85], [38, 85]], "seconds": 0.16340898699127138}
+[90m2026-11-07 05:49:54.672[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:49:54.672[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:49:54.682[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:49:54.682[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:49:54.695[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:49:54.696[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:49:54.701[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:49:54.702[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:49:54.786[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:49:54.786[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:49:54.786[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-07 05:49:54.786[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:49:54.787[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:49:54.787[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-07 05:49:54.796[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:49:54.796[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:49:54.796[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-07 05:49:54.802[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:49:54.802[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:49:54.803[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059400.414617 1431463 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059400.415049 1431460 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.440548 1431460 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.440619 1431463 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.458814 1431460 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.461195 1431463 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.481464 1431460 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.490258 1431463 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059400.602132 1431465 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.607439 1431465 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.613160 1431465 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059400.615298 1431464 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.617997 1431465 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.620669 1431464 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.626644 1431464 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059400.630770 1431464 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-07 05:50:02.493[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:50:02.494[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:50:02.494[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:50:02.541[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:50:02.542[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:50:02.542[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:50:02.571[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:50:02.571[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:50:02.571[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:50:02.604[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-07 05:50:02.611[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:02.611[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:02.623[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:50:02.623[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:50:02.623[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:50:02.654[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-07 05:50:02.662[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:02.662[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:02.682[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-07 05:50:02.689[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:02.689[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:02.719[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:50:02.719[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:50:02.719[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-07 05:50:02.737[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-07 05:50:02.744[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/fno/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:02.744[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:02.764[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:50:02.764[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:50:02.764[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-07 05:50:02.790[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:50:02.790[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:50:02.790[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-07 05:50:02.845[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ TF version  : 2.21.0
+[90m2026-11-07 05:50:02.845[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO grid    : 48×24  VEL_MAX=2.6915  WS_MAX=0.958294420070522
+[90m2026-11-07 05:50:02.845[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ Imports OK
+[90m2026-11-07 05:50:03.117[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:50:03.117[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:50:03.117[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:50:03.173[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:50:03.173[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:50:03.173[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:50:03.200[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:50:03.200[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:50:03.200[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:50:03.228[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-07 05:50:03.237[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ FNO2D loaded  (2,379,810 params)
+[90m2026-11-07 05:50:03.237[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │   best_val_mse = 0.00912  epochs = 5
+[90m2026-11-07 05:50:03.237[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ ✓ FNO2D ready
+[90m2026-11-07 05:50:03.282[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-07 05:50:03.308[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+[90m2026-11-07 05:50:03.347[0m │ [94mINFO[0m │ [38;5;165m[/WindField/fno/INFERENCE][0m │ Task /WindField/fno/INFERENCE finished!
+{"model": "fno", "concurrent": 4, "calls": 8, "ok": true, "errors": []}
+[90m2026-11-07 05:50:11.097[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:11.097[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:11.105[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:11.105[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:11.112[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:11.112[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:11.124[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:11.124[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059416.212774 1433402 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.244847 1433402 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.261140 1433402 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059416.268638 1433407 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.276561 1433402 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059416.284828 1433406 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.293381 1433407 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.303255 1433406 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.310245 1433407 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.313862 1433406 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1794059416.319743 1433405 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.320283 1433407 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.320604 1433406 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.326257 1433405 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.332671 1433405 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+W0000 00:00:1794059416.336342 1433405 gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was false.
+[90m2026-11-07 05:50:17.248[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:50:17.249[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:50:17.274[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+[90m2026-11-07 05:50:17.279[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:17.279[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:17.291[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:50:17.291[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:50:17.295[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:50:17.295[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:50:17.302[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:50:17.303[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:50:17.317[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+[90m2026-11-07 05:50:17.321[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+[90m2026-11-07 05:50:17.322[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:17.322[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:17.326[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:17.326[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:17.330[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+[90m2026-11-07 05:50:17.335[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Logger configured successfully - Console: INFO, File: /pscratch/sd/m/merzky/dt-pm3/xgf-b3/check-60961928/WindField/pinn/INFERENCE/logs/task_log.txt (INFO), Structured: disabled, Style: modern
+[90m2026-11-07 05:50:17.335[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE started on nid001085!
+[90m2026-11-07 05:50:17.391[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:50:17.391[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:50:17.412[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+[90m2026-11-07 05:50:17.437[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:50:17.437[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:50:17.440[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:50:17.440[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:50:17.448[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ PINN loaded  (66,946 params)
+[90m2026-11-07 05:50:17.448[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │   best_val_loss = 0.00908  epochs = 5
+[90m2026-11-07 05:50:17.460[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+[90m2026-11-07 05:50:17.461[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+[90m2026-11-07 05:50:17.467[0m │ [94mINFO[0m │ [38;5;165m[/WindField/pinn/INFERENCE][0m │ Task /WindField/pinn/INFERENCE finished!
+{"model": "pinn", "concurrent": 4, "calls": 8, "ok": true, "errors": []}

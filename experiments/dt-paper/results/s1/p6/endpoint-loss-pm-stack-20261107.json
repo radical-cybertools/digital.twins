@@ -1,0 +1,3259 @@
+{
+  "provenance": {
+    "experiment": "E5 endpoint and client loss",
+    "harness": "bench_endpoint_loss.py",
+    "time": "2026-11-06T14:24:51-0800",
+    "host": "nid006168",
+    "python": "3.12.12",
+    "digital_twins_commit": "ab38106ed604f8916d5aaeb01f73d2d8e8ff1a1b",
+    "digital_twins_dirty": false,
+    "backend": "orbit, concurrent on both endpoints",
+    "slurm_job": "60930964",
+    "args": {
+      "broker": "https://127.0.0.1:8231",
+      "inference": "dt_p6_inference_ep",
+      "learning": "dt_p6_learning_ep",
+      "kills": 10,
+      "reattaches": 10,
+      "gap": 2.0,
+      "probe": 0.5,
+      "probe_timeout": 5.0,
+      "learn_timeout": 120.0,
+      "lost_timeout": 120.0,
+      "logs": "/pscratch/sd/m/merzky/dt-pm3/orbit-logs",
+      "out": "experiments/dt-paper/results/s1/p6/endpoint-loss-pm-stack-20261107.json"
+    }
+  },
+  "kills": [
+    {
+      "kill": 0,
+      "first_learned_s": 1.029085397720337,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.366263389587402,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5023586750030518,
+      "resume_s": 3.048415422439575,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794003896.781929,
+          "ok": true,
+          "rtt": 0.007936477661132812,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003896.7898712,
+          "ok": true,
+          "rtt": 0.006812095642089844,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003897.2979693,
+          "ok": true,
+          "rtt": 0.008586406707763672,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003897.3065608,
+          "ok": true,
+          "rtt": 0.006824016571044922,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003897.8144665,
+          "ok": true,
+          "rtt": 0.008318185806274414,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003897.8227901,
+          "ok": true,
+          "rtt": 0.007147312164306641,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003898.3312156,
+          "ok": true,
+          "rtt": 0.007770538330078125,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003898.338989,
+          "ok": true,
+          "rtt": 0.006269693374633789,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003898.846564,
+          "ok": true,
+          "rtt": 0.008115530014038086,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003898.8546848,
+          "ok": true,
+          "rtt": 0.006059169769287109,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003899.3622534,
+          "ok": true,
+          "rtt": 0.008320808410644531,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003899.37058,
+          "ok": true,
+          "rtt": 0.006886005401611328,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003899.878687,
+          "ok": true,
+          "rtt": 0.00872802734375,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003899.8874176,
+          "ok": true,
+          "rtt": 0.007418394088745117,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003900.3959744,
+          "ok": true,
+          "rtt": 0.009672403335571289,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003900.4056528,
+          "ok": true,
+          "rtt": 0.007339000701904297,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003900.9142168,
+          "ok": true,
+          "rtt": 0.00814199447631836,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003900.922364,
+          "ok": true,
+          "rtt": 0.0069658756256103516,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003901.4307082,
+          "ok": true,
+          "rtt": 0.008076190948486328,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003901.438787,
+          "ok": true,
+          "rtt": 0.006174564361572266,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003901.9461377,
+          "ok": true,
+          "rtt": 0.008248567581176758,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003901.9543912,
+          "ok": true,
+          "rtt": 0.0072667598724365234,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003902.4632416,
+          "ok": true,
+          "rtt": 0.007993936538696289,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003902.4712384,
+          "ok": true,
+          "rtt": 0.0063915252685546875,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003902.979202,
+          "ok": true,
+          "rtt": 0.007417201995849609,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003902.9866245,
+          "ok": true,
+          "rtt": 0.007273197174072266,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003903.4953437,
+          "ok": true,
+          "rtt": 0.010188817977905273,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003903.5055375,
+          "ok": true,
+          "rtt": 0.006542205810546875,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003904.0132117,
+          "ok": true,
+          "rtt": 0.00696110725402832,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003904.0201778,
+          "ok": true,
+          "rtt": 0.006980419158935547,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003904.5282216,
+          "ok": true,
+          "rtt": 0.007880687713623047,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003904.5361073,
+          "ok": true,
+          "rtt": 0.007265567779541016,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003905.044663,
+          "ok": true,
+          "rtt": 0.008385419845581055,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003905.0530534,
+          "ok": true,
+          "rtt": 0.0065615177154541016,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003905.561185,
+          "ok": true,
+          "rtt": 0.008502006530761719,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003905.569692,
+          "ok": true,
+          "rtt": 0.007430553436279297,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003906.0786796,
+          "ok": true,
+          "rtt": 0.008142471313476562,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003906.0868251,
+          "ok": true,
+          "rtt": 0.0074613094329833984,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003906.5954185,
+          "ok": true,
+          "rtt": 0.007403135299682617,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003906.6028273,
+          "ok": true,
+          "rtt": 0.0061953067779541016,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003907.1104004,
+          "ok": true,
+          "rtt": 0.007911920547485352,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003907.1183178,
+          "ok": true,
+          "rtt": 0.0068378448486328125,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 1,
+      "first_learned_s": 1.0271885395050049,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.382491111755371,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5019917488098145,
+      "resume_s": 3.049718141555786,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794003926.5948274,
+          "ok": true,
+          "rtt": 0.0075376033782958984,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003926.6023703,
+          "ok": true,
+          "rtt": 0.007429599761962891,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003927.1110919,
+          "ok": true,
+          "rtt": 0.008370637893676758,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003927.1194658,
+          "ok": true,
+          "rtt": 0.0075380802154541016,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003927.6281762,
+          "ok": true,
+          "rtt": 0.00932455062866211,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003927.6375048,
+          "ok": true,
+          "rtt": 0.008349180221557617,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003928.1472082,
+          "ok": true,
+          "rtt": 0.007525444030761719,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003928.1547363,
+          "ok": true,
+          "rtt": 0.0060422420501708984,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003928.6619883,
+          "ok": true,
+          "rtt": 0.008845090866088867,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003928.6708395,
+          "ok": true,
+          "rtt": 0.006407260894775391,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003929.1786828,
+          "ok": true,
+          "rtt": 0.009012222290039062,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003929.1877003,
+          "ok": true,
+          "rtt": 0.006451129913330078,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003929.6955001,
+          "ok": true,
+          "rtt": 0.008890628814697266,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003929.7043958,
+          "ok": true,
+          "rtt": 0.006810426712036133,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003930.212543,
+          "ok": true,
+          "rtt": 0.008710861206054688,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003930.2212596,
+          "ok": true,
+          "rtt": 0.007224559783935547,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003930.7299924,
+          "ok": true,
+          "rtt": 0.009660959243774414,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003930.7396588,
+          "ok": true,
+          "rtt": 0.008569002151489258,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003931.2496746,
+          "ok": true,
+          "rtt": 0.008478879928588867,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003931.2581594,
+          "ok": true,
+          "rtt": 0.0068149566650390625,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003931.7663949,
+          "ok": true,
+          "rtt": 0.008959293365478516,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003931.775357,
+          "ok": true,
+          "rtt": 0.006787538528442383,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003932.2835202,
+          "ok": true,
+          "rtt": 0.008633852005004883,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003932.292159,
+          "ok": true,
+          "rtt": 0.007622957229614258,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003932.80122,
+          "ok": true,
+          "rtt": 0.009036779403686523,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003932.8102617,
+          "ok": true,
+          "rtt": 0.009170770645141602,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003933.3206906,
+          "ok": true,
+          "rtt": 0.009641885757446289,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003933.3303375,
+          "ok": true,
+          "rtt": 0.00841379165649414,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003933.840128,
+          "ok": true,
+          "rtt": 0.008450031280517578,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003933.8485837,
+          "ok": true,
+          "rtt": 0.006474971771240234,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003934.3563395,
+          "ok": true,
+          "rtt": 0.008231401443481445,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003934.364576,
+          "ok": true,
+          "rtt": 0.007413387298583984,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003934.8735352,
+          "ok": true,
+          "rtt": 0.008914470672607422,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003934.8824558,
+          "ok": true,
+          "rtt": 0.007388591766357422,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003935.3912368,
+          "ok": true,
+          "rtt": 0.00853419303894043,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003935.3997757,
+          "ok": true,
+          "rtt": 0.007883548736572266,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003935.9091034,
+          "ok": true,
+          "rtt": 0.009650707244873047,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003935.9187598,
+          "ok": true,
+          "rtt": 0.00795125961303711,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003936.4280424,
+          "ok": true,
+          "rtt": 0.007843732833862305,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003936.4358912,
+          "ok": true,
+          "rtt": 0.007575035095214844,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003936.9446802,
+          "ok": true,
+          "rtt": 0.008186578750610352,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003936.9528723,
+          "ok": true,
+          "rtt": 0.006976127624511719,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 2,
+      "first_learned_s": 1.0282022953033447,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.414079666137695,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5018789768218994,
+      "resume_s": 3.0525758266448975,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794003956.4143631,
+          "ok": true,
+          "rtt": 0.007846355438232422,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003956.4222152,
+          "ok": true,
+          "rtt": 0.007248401641845703,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003956.930976,
+          "ok": true,
+          "rtt": 0.008698463439941406,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003956.939679,
+          "ok": true,
+          "rtt": 0.00926065444946289,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003957.4502735,
+          "ok": true,
+          "rtt": 0.009370803833007812,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003957.4596496,
+          "ok": true,
+          "rtt": 0.00670313835144043,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003957.96747,
+          "ok": true,
+          "rtt": 0.009387731552124023,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003957.9768627,
+          "ok": true,
+          "rtt": 0.0073604583740234375,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003958.485514,
+          "ok": true,
+          "rtt": 0.008901834487915039,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003958.4944196,
+          "ok": true,
+          "rtt": 0.007081031799316406,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003959.0026941,
+          "ok": true,
+          "rtt": 0.027729511260986328,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003959.0304284,
+          "ok": true,
+          "rtt": 0.010277748107910156,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003959.542094,
+          "ok": true,
+          "rtt": 0.008722305297851562,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003959.5508196,
+          "ok": true,
+          "rtt": 0.007124185562133789,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003960.059214,
+          "ok": true,
+          "rtt": 0.009541749954223633,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003960.0687609,
+          "ok": true,
+          "rtt": 0.00743865966796875,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003960.5774388,
+          "ok": true,
+          "rtt": 0.008846759796142578,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003960.5862906,
+          "ok": true,
+          "rtt": 0.008050918579101562,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003961.0955904,
+          "ok": true,
+          "rtt": 0.011932134628295898,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003961.1075287,
+          "ok": true,
+          "rtt": 0.0075511932373046875,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003961.616167,
+          "ok": true,
+          "rtt": 0.008919000625610352,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003961.6250908,
+          "ok": true,
+          "rtt": 0.007300376892089844,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003962.1336346,
+          "ok": true,
+          "rtt": 0.008337259292602539,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003962.1419768,
+          "ok": true,
+          "rtt": 0.007748126983642578,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003962.6511111,
+          "ok": true,
+          "rtt": 0.009069204330444336,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003962.6601853,
+          "ok": true,
+          "rtt": 0.007614612579345703,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003963.1690722,
+          "ok": true,
+          "rtt": 0.009288787841796875,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003963.178363,
+          "ok": true,
+          "rtt": 0.007696866989135742,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003963.6878757,
+          "ok": true,
+          "rtt": 0.010829448699951172,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003963.698708,
+          "ok": true,
+          "rtt": 0.0070056915283203125,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003964.2069623,
+          "ok": true,
+          "rtt": 0.008541107177734375,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003964.2155085,
+          "ok": true,
+          "rtt": 0.007012128829956055,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003964.7237,
+          "ok": true,
+          "rtt": 0.009057760238647461,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003964.7327628,
+          "ok": true,
+          "rtt": 0.00704646110534668,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003965.2410665,
+          "ok": true,
+          "rtt": 0.008691549301147461,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003965.2497633,
+          "ok": true,
+          "rtt": 0.007616996765136719,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003965.7586098,
+          "ok": true,
+          "rtt": 0.008013725280761719,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003965.7666261,
+          "ok": true,
+          "rtt": 0.007410526275634766,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003966.2752032,
+          "ok": true,
+          "rtt": 0.011044025421142578,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003966.2862527,
+          "ok": true,
+          "rtt": 0.007420778274536133,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003966.7949793,
+          "ok": true,
+          "rtt": 0.008788824081420898,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003966.8037732,
+          "ok": true,
+          "rtt": 0.008904695510864258,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 3,
+      "first_learned_s": 1.0303988456726074,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.389582633972168,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5019824504852295,
+      "resume_s": 3.043734312057495,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794003986.2338116,
+          "ok": true,
+          "rtt": 0.008217096328735352,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003986.242034,
+          "ok": true,
+          "rtt": 0.006654262542724609,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003986.750166,
+          "ok": true,
+          "rtt": 0.009193658828735352,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003986.7593641,
+          "ok": true,
+          "rtt": 0.008557319641113281,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003987.2691376,
+          "ok": true,
+          "rtt": 0.00958871841430664,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003987.2787292,
+          "ok": true,
+          "rtt": 0.0069048404693603516,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003987.7869794,
+          "ok": true,
+          "rtt": 0.008108854293823242,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003987.795091,
+          "ok": true,
+          "rtt": 0.006768465042114258,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003988.303083,
+          "ok": true,
+          "rtt": 0.010679244995117188,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003988.3137674,
+          "ok": true,
+          "rtt": 0.007919788360595703,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003988.8229594,
+          "ok": true,
+          "rtt": 0.008943557739257812,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003988.8319077,
+          "ok": true,
+          "rtt": 0.007555723190307617,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003989.340725,
+          "ok": true,
+          "rtt": 0.008972644805908203,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003989.3497024,
+          "ok": true,
+          "rtt": 0.009375810623168945,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003989.8603654,
+          "ok": true,
+          "rtt": 0.008511066436767578,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003989.8688815,
+          "ok": true,
+          "rtt": 0.006821632385253906,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003990.3769782,
+          "ok": true,
+          "rtt": 0.00913691520690918,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003990.38612,
+          "ok": true,
+          "rtt": 0.007050037384033203,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003990.89446,
+          "ok": true,
+          "rtt": 0.009645938873291016,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003990.904111,
+          "ok": true,
+          "rtt": 0.008122682571411133,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003991.4134626,
+          "ok": true,
+          "rtt": 0.009555578231811523,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003991.4230208,
+          "ok": true,
+          "rtt": 0.008520364761352539,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003991.9328828,
+          "ok": true,
+          "rtt": 0.009460926055908203,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003991.94235,
+          "ok": true,
+          "rtt": 0.007767200469970703,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003992.4512362,
+          "ok": true,
+          "rtt": 0.008368730545043945,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003992.4596102,
+          "ok": true,
+          "rtt": 0.007222414016723633,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003992.9679961,
+          "ok": true,
+          "rtt": 0.008597850799560547,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003992.9765985,
+          "ok": true,
+          "rtt": 0.007039546966552734,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003993.4849303,
+          "ok": true,
+          "rtt": 0.00814366340637207,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003993.4930785,
+          "ok": true,
+          "rtt": 0.006948947906494141,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003994.0013156,
+          "ok": true,
+          "rtt": 0.008194446563720703,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003994.0095153,
+          "ok": true,
+          "rtt": 0.006717681884765625,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003994.5177047,
+          "ok": true,
+          "rtt": 0.009680509567260742,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003994.5273905,
+          "ok": true,
+          "rtt": 0.007965564727783203,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003995.0367718,
+          "ok": true,
+          "rtt": 0.008207321166992188,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003995.0449848,
+          "ok": true,
+          "rtt": 0.006783723831176758,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003995.5531347,
+          "ok": true,
+          "rtt": 0.008163213729858398,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003995.561303,
+          "ok": true,
+          "rtt": 0.007681846618652344,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003996.0702908,
+          "ok": true,
+          "rtt": 0.008857250213623047,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003996.0791538,
+          "ok": true,
+          "rtt": 0.007437229156494141,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794003996.58782,
+          "ok": true,
+          "rtt": 0.008974790573120117,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794003996.5968003,
+          "ok": true,
+          "rtt": 0.007930517196655273,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 4,
+      "first_learned_s": 1.027637004852295,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.380035638809204,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5022118091583252,
+      "resume_s": 3.049482822418213,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794004016.0402725,
+          "ok": true,
+          "rtt": 0.006985902786254883,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004016.047262,
+          "ok": true,
+          "rtt": 0.006940126419067383,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004016.5554008,
+          "ok": true,
+          "rtt": 0.008910655975341797,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004016.5643165,
+          "ok": true,
+          "rtt": 0.00782155990600586,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004017.0734305,
+          "ok": true,
+          "rtt": 0.009535789489746094,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004017.0829694,
+          "ok": true,
+          "rtt": 0.007730245590209961,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004017.5919077,
+          "ok": true,
+          "rtt": 0.009094715118408203,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004017.6010072,
+          "ok": true,
+          "rtt": 0.007378101348876953,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004018.109558,
+          "ok": true,
+          "rtt": 0.008264541625976562,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004018.1178277,
+          "ok": true,
+          "rtt": 0.0069582462310791016,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004018.6260343,
+          "ok": true,
+          "rtt": 0.009544134140014648,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004018.6355834,
+          "ok": true,
+          "rtt": 0.00690460205078125,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004019.1437974,
+          "ok": true,
+          "rtt": 0.008857488632202148,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004019.1526597,
+          "ok": true,
+          "rtt": 0.006633758544921875,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004019.6606665,
+          "ok": true,
+          "rtt": 0.01001119613647461,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004019.6706805,
+          "ok": true,
+          "rtt": 0.00830221176147461,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004020.180334,
+          "ok": true,
+          "rtt": 0.007294178009033203,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004020.1876335,
+          "ok": true,
+          "rtt": 0.007642984390258789,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004020.6965683,
+          "ok": true,
+          "rtt": 0.008886337280273438,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004020.7054594,
+          "ok": true,
+          "rtt": 0.00666499137878418,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004021.2134252,
+          "ok": true,
+          "rtt": 0.008196592330932617,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004021.2216263,
+          "ok": true,
+          "rtt": 0.006449222564697266,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004021.729392,
+          "ok": true,
+          "rtt": 0.008826494216918945,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004021.7382207,
+          "ok": true,
+          "rtt": 0.00705409049987793,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004022.2468445,
+          "ok": true,
+          "rtt": 0.009745121002197266,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004022.2565947,
+          "ok": true,
+          "rtt": 0.008621454238891602,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004022.7665384,
+          "ok": true,
+          "rtt": 0.007908821105957031,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004022.7744496,
+          "ok": true,
+          "rtt": 0.007336854934692383,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004023.2829685,
+          "ok": true,
+          "rtt": 0.008196353912353516,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004023.2911701,
+          "ok": true,
+          "rtt": 0.007368803024291992,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004023.799885,
+          "ok": true,
+          "rtt": 0.008950948715209961,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004023.8088408,
+          "ok": true,
+          "rtt": 0.007855892181396484,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004024.3180487,
+          "ok": true,
+          "rtt": 0.009088516235351562,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004024.3271406,
+          "ok": true,
+          "rtt": 0.0068590641021728516,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004024.8358674,
+          "ok": true,
+          "rtt": 0.010138273239135742,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004024.8460083,
+          "ok": true,
+          "rtt": 0.007837057113647461,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004025.3551598,
+          "ok": true,
+          "rtt": 0.007702827453613281,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004025.3628652,
+          "ok": true,
+          "rtt": 0.006978750228881836,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004025.8710163,
+          "ok": true,
+          "rtt": 0.00812840461730957,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004025.8791475,
+          "ok": true,
+          "rtt": 0.006963491439819336,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004026.3873172,
+          "ok": true,
+          "rtt": 0.008979082107543945,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004026.3963013,
+          "ok": true,
+          "rtt": 0.008286476135253906,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 5,
+      "first_learned_s": 1.0286922454833984,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.389172077178955,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.501901388168335,
+      "resume_s": 3.0502572059631348,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794004045.8596818,
+          "ok": true,
+          "rtt": 0.006736278533935547,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004045.8664215,
+          "ok": true,
+          "rtt": 0.006472587585449219,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004046.3744059,
+          "ok": true,
+          "rtt": 0.00861978530883789,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004046.3830314,
+          "ok": true,
+          "rtt": 0.007288694381713867,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004046.8915026,
+          "ok": true,
+          "rtt": 0.01256418228149414,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004046.9040728,
+          "ok": true,
+          "rtt": 0.007063388824462891,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004047.4123971,
+          "ok": true,
+          "rtt": 0.008734703063964844,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004047.4211364,
+          "ok": true,
+          "rtt": 0.006949424743652344,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004047.9295354,
+          "ok": true,
+          "rtt": 0.00846242904663086,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004047.9380026,
+          "ok": true,
+          "rtt": 0.007870197296142578,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004048.4472065,
+          "ok": true,
+          "rtt": 0.00793600082397461,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004048.4551451,
+          "ok": true,
+          "rtt": 0.0067059993743896484,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004048.963133,
+          "ok": true,
+          "rtt": 0.008531808853149414,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004048.9716675,
+          "ok": true,
+          "rtt": 0.010197877883911133,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004049.4830086,
+          "ok": true,
+          "rtt": 0.008987903594970703,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004049.492002,
+          "ok": true,
+          "rtt": 0.007691144943237305,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004050.0009923,
+          "ok": true,
+          "rtt": 0.007520914077758789,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004050.0085185,
+          "ok": true,
+          "rtt": 0.007622957229614258,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004050.5174875,
+          "ok": true,
+          "rtt": 0.008664608001708984,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004050.526157,
+          "ok": true,
+          "rtt": 0.007723093032836914,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004051.0353947,
+          "ok": true,
+          "rtt": 0.009055852890014648,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004051.0444555,
+          "ok": true,
+          "rtt": 0.007744550704956055,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004051.5535545,
+          "ok": true,
+          "rtt": 0.009579181671142578,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004051.5631368,
+          "ok": true,
+          "rtt": 0.008517026901245117,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004052.072902,
+          "ok": true,
+          "rtt": 0.008770465850830078,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004052.0816786,
+          "ok": true,
+          "rtt": 0.00744318962097168,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004052.5904973,
+          "ok": true,
+          "rtt": 0.008303403854370117,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004052.5988066,
+          "ok": true,
+          "rtt": 0.007184743881225586,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004053.107442,
+          "ok": true,
+          "rtt": 0.008962631225585938,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004053.1164093,
+          "ok": true,
+          "rtt": 0.007300615310668945,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004053.6249745,
+          "ok": true,
+          "rtt": 0.008974552154541016,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004053.6339538,
+          "ok": true,
+          "rtt": 0.008001565933227539,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004054.1436055,
+          "ok": true,
+          "rtt": 0.009577035903930664,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004054.153188,
+          "ok": true,
+          "rtt": 0.00859522819519043,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004054.663087,
+          "ok": true,
+          "rtt": 0.007936716079711914,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004054.6710293,
+          "ok": true,
+          "rtt": 0.006812572479248047,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004055.1793265,
+          "ok": true,
+          "rtt": 0.008878469467163086,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004055.1882102,
+          "ok": true,
+          "rtt": 0.0074155330657958984,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004055.6969018,
+          "ok": true,
+          "rtt": 0.008193254470825195,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004055.7050998,
+          "ok": true,
+          "rtt": 0.00716400146484375,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004056.2136016,
+          "ok": true,
+          "rtt": 0.009289979934692383,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004056.2228978,
+          "ok": true,
+          "rtt": 0.006877899169921875,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 6,
+      "first_learned_s": 1.0286026000976562,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.381583213806152,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5018877983093262,
+      "resume_s": 3.0463995933532715,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794004075.6729205,
+          "ok": true,
+          "rtt": 0.0071032047271728516,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004075.680029,
+          "ok": true,
+          "rtt": 0.0077173709869384766,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004076.189282,
+          "ok": true,
+          "rtt": 0.008428573608398438,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004076.1977162,
+          "ok": true,
+          "rtt": 0.006784200668334961,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004076.7059321,
+          "ok": true,
+          "rtt": 0.008434534072875977,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004076.714372,
+          "ok": true,
+          "rtt": 0.008119583129882812,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004077.2238212,
+          "ok": true,
+          "rtt": 0.007025957107543945,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004077.2308528,
+          "ok": true,
+          "rtt": 0.006004810333251953,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004077.7382848,
+          "ok": true,
+          "rtt": 0.008199214935302734,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004077.74649,
+          "ok": true,
+          "rtt": 0.007271766662597656,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004078.2553368,
+          "ok": true,
+          "rtt": 0.009340047836303711,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004078.2646818,
+          "ok": true,
+          "rtt": 0.007062196731567383,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004078.773219,
+          "ok": true,
+          "rtt": 0.008577346801757812,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004078.7818015,
+          "ok": true,
+          "rtt": 0.007858514785766602,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004079.290949,
+          "ok": true,
+          "rtt": 0.008455038070678711,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004079.2994065,
+          "ok": true,
+          "rtt": 0.008118391036987305,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004079.8090847,
+          "ok": true,
+          "rtt": 0.010793924331665039,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004079.8198838,
+          "ok": true,
+          "rtt": 0.007568359375,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004080.328703,
+          "ok": true,
+          "rtt": 0.008233785629272461,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004080.3369415,
+          "ok": true,
+          "rtt": 0.0071756839752197266,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004080.8454769,
+          "ok": true,
+          "rtt": 0.008525371551513672,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004080.854007,
+          "ok": true,
+          "rtt": 0.007804155349731445,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004081.3632207,
+          "ok": true,
+          "rtt": 0.0088958740234375,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004081.3721218,
+          "ok": true,
+          "rtt": 0.007293701171875,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004081.8806646,
+          "ok": true,
+          "rtt": 0.008228540420532227,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004081.8888988,
+          "ok": true,
+          "rtt": 0.007812023162841797,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004082.3983934,
+          "ok": true,
+          "rtt": 0.010405302047729492,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004082.4088037,
+          "ok": true,
+          "rtt": 0.006934165954589844,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004082.9171674,
+          "ok": true,
+          "rtt": 0.0083465576171875,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004082.92552,
+          "ok": true,
+          "rtt": 0.0067632198333740234,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004083.4337542,
+          "ok": true,
+          "rtt": 0.00845479965209961,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004083.4422143,
+          "ok": true,
+          "rtt": 0.007573366165161133,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004083.9511855,
+          "ok": true,
+          "rtt": 0.008852481842041016,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004083.960043,
+          "ok": true,
+          "rtt": 0.007306575775146484,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004084.468675,
+          "ok": true,
+          "rtt": 0.008836746215820312,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004084.4775174,
+          "ok": true,
+          "rtt": 0.007653236389160156,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004084.9865863,
+          "ok": true,
+          "rtt": 0.010004043579101562,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004084.996595,
+          "ok": true,
+          "rtt": 0.007682085037231445,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004085.5055826,
+          "ok": true,
+          "rtt": 0.008213281631469727,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004085.5138006,
+          "ok": true,
+          "rtt": 0.0076982975006103516,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004086.0230136,
+          "ok": true,
+          "rtt": 0.008517980575561523,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004086.0315378,
+          "ok": true,
+          "rtt": 0.00747227668762207,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 7,
+      "first_learned_s": 1.0265021324157715,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.377157926559448,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5025711059570312,
+      "resume_s": 3.0465164184570312,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794004105.484786,
+          "ok": true,
+          "rtt": 0.0064885616302490234,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004105.491278,
+          "ok": true,
+          "rtt": 0.0072040557861328125,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004105.9997928,
+          "ok": true,
+          "rtt": 0.008694887161254883,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004106.0084913,
+          "ok": true,
+          "rtt": 0.006576061248779297,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004106.5164247,
+          "ok": true,
+          "rtt": 0.007832527160644531,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004106.5242624,
+          "ok": true,
+          "rtt": 0.009412288665771484,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004107.0351193,
+          "ok": true,
+          "rtt": 0.008558034896850586,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004107.043683,
+          "ok": true,
+          "rtt": 0.00718379020690918,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004107.5519755,
+          "ok": true,
+          "rtt": 0.008394479751586914,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004107.5603733,
+          "ok": true,
+          "rtt": 0.006740570068359375,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004108.068394,
+          "ok": true,
+          "rtt": 0.007884025573730469,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004108.0762877,
+          "ok": true,
+          "rtt": 0.0069234371185302734,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004108.5844116,
+          "ok": true,
+          "rtt": 0.008388996124267578,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004108.5928056,
+          "ok": true,
+          "rtt": 0.007236003875732422,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004109.1015666,
+          "ok": true,
+          "rtt": 0.007889509201049805,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004109.1094625,
+          "ok": true,
+          "rtt": 0.0075571537017822266,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004109.6185827,
+          "ok": true,
+          "rtt": 0.009221076965332031,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004109.6278093,
+          "ok": true,
+          "rtt": 0.007086992263793945,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004110.1361227,
+          "ok": true,
+          "rtt": 0.007958412170410156,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004110.1440861,
+          "ok": true,
+          "rtt": 0.006613731384277344,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004110.6518254,
+          "ok": true,
+          "rtt": 0.008282661437988281,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004110.6601133,
+          "ok": true,
+          "rtt": 0.0070116519927978516,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004111.1684043,
+          "ok": true,
+          "rtt": 0.008585453033447266,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004111.1769946,
+          "ok": true,
+          "rtt": 0.008611679077148438,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004111.6870124,
+          "ok": true,
+          "rtt": 0.007847785949707031,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004111.694863,
+          "ok": true,
+          "rtt": 0.007414579391479492,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004112.2035728,
+          "ok": true,
+          "rtt": 0.008412837982177734,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004112.2119906,
+          "ok": true,
+          "rtt": 0.009150028228759766,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004112.7225654,
+          "ok": true,
+          "rtt": 0.009109973907470703,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004112.7316802,
+          "ok": true,
+          "rtt": 0.006983280181884766,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004113.2399423,
+          "ok": true,
+          "rtt": 0.008706808090209961,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004113.2486544,
+          "ok": true,
+          "rtt": 0.0070133209228515625,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004113.757137,
+          "ok": true,
+          "rtt": 0.008836507797241211,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004113.7659786,
+          "ok": true,
+          "rtt": 0.007491111755371094,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004114.274889,
+          "ok": true,
+          "rtt": 0.00871133804321289,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004114.2836053,
+          "ok": true,
+          "rtt": 0.007383108139038086,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004114.7921193,
+          "ok": true,
+          "rtt": 0.00805211067199707,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004114.8001769,
+          "ok": true,
+          "rtt": 0.007798910140991211,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004115.3093283,
+          "ok": true,
+          "rtt": 0.012910604476928711,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004115.3222494,
+          "ok": true,
+          "rtt": 0.0071201324462890625,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004115.830876,
+          "ok": true,
+          "rtt": 0.008173942565917969,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004115.8390524,
+          "ok": true,
+          "rtt": 0.0063936710357666016,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 8,
+      "first_learned_s": 1.0278244018554688,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.374622583389282,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5019690990447998,
+      "resume_s": 3.0487403869628906,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794004135.796302,
+          "ok": true,
+          "rtt": 0.006799936294555664,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004135.8031056,
+          "ok": true,
+          "rtt": 0.006235837936401367,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004136.3108556,
+          "ok": true,
+          "rtt": 0.009689807891845703,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004136.3205514,
+          "ok": true,
+          "rtt": 0.006709575653076172,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004136.8287253,
+          "ok": true,
+          "rtt": 0.008974552154541016,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004136.8377051,
+          "ok": true,
+          "rtt": 0.008434295654296875,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004137.3474708,
+          "ok": true,
+          "rtt": 0.010399818420410156,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004137.3578753,
+          "ok": true,
+          "rtt": 0.008118391036987305,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004137.8673754,
+          "ok": true,
+          "rtt": 0.008606672286987305,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004137.8759875,
+          "ok": true,
+          "rtt": 0.007030963897705078,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004138.3843439,
+          "ok": true,
+          "rtt": 0.008124351501464844,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004138.3924735,
+          "ok": true,
+          "rtt": 0.007384777069091797,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004138.9011183,
+          "ok": true,
+          "rtt": 0.007822990417480469,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004138.9089463,
+          "ok": true,
+          "rtt": 0.007193326950073242,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004139.4176023,
+          "ok": true,
+          "rtt": 0.008580923080444336,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004139.426189,
+          "ok": true,
+          "rtt": 0.008034706115722656,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004139.9359505,
+          "ok": true,
+          "rtt": 0.009307622909545898,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004139.9452634,
+          "ok": true,
+          "rtt": 0.0076444149017333984,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004140.454436,
+          "ok": true,
+          "rtt": 0.007515668869018555,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004140.4619577,
+          "ok": true,
+          "rtt": 0.006989955902099609,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004140.970401,
+          "ok": true,
+          "rtt": 0.008083105087280273,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004140.9784873,
+          "ok": true,
+          "rtt": 0.0068438053131103516,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004141.486832,
+          "ok": true,
+          "rtt": 0.007922887802124023,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004141.494758,
+          "ok": true,
+          "rtt": 0.006654977798461914,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004142.00268,
+          "ok": true,
+          "rtt": 0.007911443710327148,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004142.0105946,
+          "ok": true,
+          "rtt": 0.0067827701568603516,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004142.5186396,
+          "ok": true,
+          "rtt": 0.007950544357299805,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004142.5265937,
+          "ok": true,
+          "rtt": 0.00775599479675293,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004143.0357864,
+          "ok": true,
+          "rtt": 0.009810209274291992,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004143.0456016,
+          "ok": true,
+          "rtt": 0.007433414459228516,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004143.5545294,
+          "ok": true,
+          "rtt": 0.007635354995727539,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004143.5621698,
+          "ok": true,
+          "rtt": 0.008099794387817383,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004144.0715911,
+          "ok": true,
+          "rtt": 0.008719682693481445,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004144.080316,
+          "ok": true,
+          "rtt": 0.0074727535247802734,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004144.5893292,
+          "ok": true,
+          "rtt": 0.00860142707824707,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004144.5979366,
+          "ok": true,
+          "rtt": 0.008289337158203125,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004145.1074998,
+          "ok": true,
+          "rtt": 0.009055852890014648,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004145.116561,
+          "ok": true,
+          "rtt": 0.008217096328735352,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004145.6263402,
+          "ok": true,
+          "rtt": 0.008188247680664062,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004145.6345313,
+          "ok": true,
+          "rtt": 0.007436513900756836,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004146.143403,
+          "ok": true,
+          "rtt": 0.006709098815917969,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004146.1501188,
+          "ok": true,
+          "rtt": 0.007649660110473633,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 9,
+      "first_learned_s": 1.02647066116333,
+      "trained_on": "dt_p6_learning_ep",
+      "detected": true,
+      "detect_s": 10.375199317932129,
+      "last_error": "engine endpoint lost: dt_p6_learning_ep",
+      "learner_probes": 21,
+      "learner_answered": 21,
+      "sibling_probes": 21,
+      "sibling_answered": 21,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 1.5019257068634033,
+      "resume_s": 3.0473153591156006,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794004165.6073942,
+          "ok": true,
+          "rtt": 0.007739067077636719,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004165.6151369,
+          "ok": true,
+          "rtt": 0.0074520111083984375,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004166.1237988,
+          "ok": true,
+          "rtt": 0.00849461555480957,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004166.1322985,
+          "ok": true,
+          "rtt": 0.006994962692260742,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004166.6406426,
+          "ok": true,
+          "rtt": 0.009730815887451172,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004166.6503773,
+          "ok": true,
+          "rtt": 0.00804591178894043,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004167.1597068,
+          "ok": true,
+          "rtt": 0.00766444206237793,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004167.1673741,
+          "ok": true,
+          "rtt": 0.006879091262817383,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004167.6755872,
+          "ok": true,
+          "rtt": 0.008345842361450195,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004167.6839366,
+          "ok": true,
+          "rtt": 0.006291627883911133,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004168.1914296,
+          "ok": true,
+          "rtt": 0.009174585342407227,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004168.200609,
+          "ok": true,
+          "rtt": 0.00643467903137207,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004168.7083561,
+          "ok": true,
+          "rtt": 0.008045196533203125,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004168.7164066,
+          "ok": true,
+          "rtt": 0.007506370544433594,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004169.2254124,
+          "ok": true,
+          "rtt": 0.00937795639038086,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004169.2347937,
+          "ok": true,
+          "rtt": 0.007921934127807617,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004169.743987,
+          "ok": true,
+          "rtt": 0.007648944854736328,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004169.7516384,
+          "ok": true,
+          "rtt": 0.0061228275299072266,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004170.2591422,
+          "ok": true,
+          "rtt": 0.008929729461669922,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004170.2680776,
+          "ok": true,
+          "rtt": 0.007624626159667969,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004170.7771878,
+          "ok": true,
+          "rtt": 0.008502006530761719,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004170.785695,
+          "ok": true,
+          "rtt": 0.0068094730377197266,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004171.293864,
+          "ok": true,
+          "rtt": 0.00813603401184082,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004171.3020055,
+          "ok": true,
+          "rtt": 0.007730007171630859,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004171.811214,
+          "ok": true,
+          "rtt": 0.007482290267944336,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004171.8187022,
+          "ok": true,
+          "rtt": 0.0072286128997802734,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004172.327368,
+          "ok": true,
+          "rtt": 0.00913381576538086,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004172.3365066,
+          "ok": true,
+          "rtt": 0.006997346878051758,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004172.8447685,
+          "ok": true,
+          "rtt": 0.007904291152954102,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004172.8526778,
+          "ok": true,
+          "rtt": 0.007135152816772461,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004173.3613155,
+          "ok": true,
+          "rtt": 0.008386373519897461,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004173.369707,
+          "ok": true,
+          "rtt": 0.007105588912963867,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004173.8783126,
+          "ok": true,
+          "rtt": 0.008155345916748047,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004173.8864737,
+          "ok": true,
+          "rtt": 0.00699162483215332,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004174.3947895,
+          "ok": true,
+          "rtt": 0.008850574493408203,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004174.403643,
+          "ok": true,
+          "rtt": 0.007002353668212891,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004174.912028,
+          "ok": true,
+          "rtt": 0.009653806686401367,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004174.9216864,
+          "ok": true,
+          "rtt": 0.00824737548828125,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004175.4313123,
+          "ok": true,
+          "rtt": 0.009575843811035156,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004175.4408932,
+          "ok": true,
+          "rtt": 0.006593465805053711,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794004175.9487593,
+          "ok": true,
+          "rtt": 0.008107185363769531,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794004175.9568725,
+          "ok": true,
+          "rtt": 0.007966279983520508,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "reattaches": [
+    {
+      "reattach": 0,
+      "attach_s": 0.018162965774536133,
+      "first_answer_s": 0.026363849639892578,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 1,
+      "attach_s": 0.01795172691345215,
+      "first_answer_s": 0.026047468185424805,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 2,
+      "attach_s": 0.017220735549926758,
+      "first_answer_s": 0.025236845016479492,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 3,
+      "attach_s": 0.017332792282104492,
+      "first_answer_s": 0.02595806121826172,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 4,
+      "attach_s": 0.016658306121826172,
+      "first_answer_s": 0.02440476417541504,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 5,
+      "attach_s": 0.016721487045288086,
+      "first_answer_s": 0.02462935447692871,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 6,
+      "attach_s": 0.01711130142211914,
+      "first_answer_s": 0.024974584579467773,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 7,
+      "attach_s": 0.017086505889892578,
+      "first_answer_s": 0.025142431259155273,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 8,
+      "attach_s": 0.016511201858520508,
+      "first_answer_s": 0.025243520736694336,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 9,
+      "attach_s": 0.017032384872436523,
+      "first_answer_s": 0.024748802185058594,
+      "state": "running",
+      "ok": true
+    }
+  ],
+  "first_endpoint_up_s": 1.7522141933441162,
+  "summary": {
+    "kills_ok": 10,
+    "kills": 10,
+    "detect_s": {
+      "median": 10.380809426307678,
+      "min": 10.366263389587402,
+      "max": 10.414079666137695,
+      "n": 10
+    },
+    "resume_s": {
+      "median": 3.048577904701233,
+      "min": 3.043734312057495,
+      "max": 3.0525758266448975,
+      "n": 10
+    },
+    "endpoint_up_s": {
+      "median": 1.5019757747650146,
+      "min": 1.5018789768218994,
+      "max": 1.5025711059570312,
+      "n": 10
+    },
+    "sibling_all_answered": true,
+    "reattaches_ok": 10,
+    "reattaches": 10,
+    "attach_s": {
+      "median": 0.01709890365600586,
+      "min": 0.016511201858520508,
+      "max": 0.018162965774536133,
+      "n": 10
+    },
+    "first_answer_s": {
+      "median": 0.025189638137817383,
+      "min": 0.02440476417541504,
+      "max": 0.026363849639892578,
+      "n": 10
+    }
+  }
+}

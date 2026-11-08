@@ -1,0 +1,532 @@
+{
+  "provenance": {
+    "experiment": "E2b streams join scaling",
+    "harness": "bench_streams_join.py",
+    "time": "2026-11-06T14:28:49-0800",
+    "host": "nid006092",
+    "python": "3.12.12",
+    "digital_twins_commit": "ab38106ed604f8916d5aaeb01f73d2d8e8ff1a1b",
+    "digital_twins_dirty": false,
+    "backend": "embedded ZMQ broker, no execution backend",
+    "slurm_job": "60930958",
+    "args": {
+      "streams": "1,2,4,8,16,32",
+      "rates": "10,50,100,200,500,1000,2000,5000,10000",
+      "seconds": 5.0,
+      "out": "experiments/dt-paper/results/s1/p5/join-pm-r2-stack-20261107.json"
+    }
+  },
+  "points": [
+    {
+      "streams": 1,
+      "rate_target": 10.0,
+      "rounds": 50,
+      "rate_achieved": 10.201965855394409,
+      "joined": 50,
+      "aligned": 50,
+      "p50_ms": 0.9783789864741266,
+      "p90_ms": 1.026578014716506,
+      "inputs_per_s": 10.201965855394409
+    },
+    {
+      "streams": 1,
+      "rate_target": 50.0,
+      "rounds": 250,
+      "rate_achieved": 50.18912861697685,
+      "joined": 250,
+      "aligned": 250,
+      "p50_ms": 0.925746513530612,
+      "p90_ms": 0.9768400341272354,
+      "inputs_per_s": 50.18912861697685
+    },
+    {
+      "streams": 1,
+      "rate_target": 100.0,
+      "rounds": 500,
+      "rate_achieved": 100.1891115581719,
+      "joined": 500,
+      "aligned": 500,
+      "p50_ms": 0.9230559808202088,
+      "p90_ms": 0.9817910613492131,
+      "inputs_per_s": 100.1891115581719
+    },
+    {
+      "streams": 1,
+      "rate_target": 200.0,
+      "rounds": 1000,
+      "rate_achieved": 200.17142071831339,
+      "joined": 1000,
+      "aligned": 1000,
+      "p50_ms": 0.637334946077317,
+      "p90_ms": 0.6795930676162243,
+      "inputs_per_s": 200.17142071831339
+    },
+    {
+      "streams": 1,
+      "rate_target": 500.0,
+      "rounds": 2500,
+      "rate_achieved": 500.13576465124333,
+      "joined": 2500,
+      "aligned": 2500,
+      "p50_ms": 0.38455851608887315,
+      "p90_ms": 0.447381054982543,
+      "inputs_per_s": 500.13576465124333
+    },
+    {
+      "streams": 1,
+      "rate_target": 1000.0,
+      "rounds": 5000,
+      "rate_achieved": 1000.1144753017843,
+      "joined": 5000,
+      "aligned": 5000,
+      "p50_ms": 0.30033400980755687,
+      "p90_ms": 0.35835709422826767,
+      "inputs_per_s": 1000.1144753017843
+    },
+    {
+      "streams": 1,
+      "rate_target": 2000.0,
+      "rounds": 10000,
+      "rate_achieved": 2000.1521868011223,
+      "joined": 10000,
+      "aligned": 10000,
+      "p50_ms": 0.4278580308891833,
+      "p90_ms": 0.5283979699015617,
+      "inputs_per_s": 2000.1521868011223
+    },
+    {
+      "streams": 1,
+      "rate_target": 5000.0,
+      "rounds": 25000,
+      "rate_achieved": 5000.0381883589325,
+      "joined": 25000,
+      "aligned": 25000,
+      "p50_ms": 0.5819319630973041,
+      "p90_ms": 0.6484419573098421,
+      "inputs_per_s": 5000.0381883589325
+    },
+    {
+      "streams": 1,
+      "rate_target": 10000.0,
+      "rounds": 50000,
+      "rate_achieved": 9996.065556574542,
+      "joined": 50000,
+      "aligned": 50000,
+      "p50_ms": 2894.796292996034,
+      "p90_ms": 3436.963240033947,
+      "inputs_per_s": 9996.065556574542
+    },
+    {
+      "streams": 2,
+      "rate_target": 10.0,
+      "rounds": 50,
+      "rate_achieved": 10.201623711634207,
+      "joined": 50,
+      "aligned": 50,
+      "p50_ms": 1.004880468826741,
+      "p90_ms": 1.0909819975495338,
+      "inputs_per_s": 20.403247423268414
+    },
+    {
+      "streams": 2,
+      "rate_target": 50.0,
+      "rounds": 250,
+      "rate_achieved": 50.197097729793306,
+      "joined": 250,
+      "aligned": 250,
+      "p50_ms": 1.0074154706671834,
+      "p90_ms": 1.0809639934450388,
+      "inputs_per_s": 100.39419545958661
+    },
+    {
+      "streams": 2,
+      "rate_target": 100.0,
+      "rounds": 500,
+      "rate_achieved": 100.19110752493991,
+      "joined": 500,
+      "aligned": 500,
+      "p50_ms": 1.0054364684037864,
+      "p90_ms": 1.0645909933373332,
+      "inputs_per_s": 200.38221504987982
+    },
+    {
+      "streams": 2,
+      "rate_target": 200.0,
+      "rounds": 1000,
+      "rate_achieved": 200.17264995023874,
+      "joined": 1000,
+      "aligned": 1000,
+      "p50_ms": 0.6280375528149307,
+      "p90_ms": 0.6872270023450255,
+      "inputs_per_s": 400.34529990047747
+    },
+    {
+      "streams": 2,
+      "rate_target": 500.0,
+      "rounds": 2500,
+      "rate_achieved": 500.09641648219485,
+      "joined": 2500,
+      "aligned": 2500,
+      "p50_ms": 0.38552499609068036,
+      "p90_ms": 0.48416201025247574,
+      "inputs_per_s": 1000.1928329643897
+    },
+    {
+      "streams": 2,
+      "rate_target": 1000.0,
+      "rounds": 5000,
+      "rate_achieved": 1000.16142483803,
+      "joined": 5000,
+      "aligned": 5000,
+      "p50_ms": 0.3962765331380069,
+      "p90_ms": 0.49663602840155363,
+      "inputs_per_s": 2000.32284967606
+    },
+    {
+      "streams": 2,
+      "rate_target": 2000.0,
+      "rounds": 10000,
+      "rate_achieved": 2000.1119174754356,
+      "joined": 10000,
+      "aligned": 10000,
+      "p50_ms": 0.6102279876358807,
+      "p90_ms": 0.8655440760776401,
+      "inputs_per_s": 4000.223834950871
+    },
+    {
+      "streams": 2,
+      "rate_target": 5000.0,
+      "rounds": 25000,
+      "rate_achieved": 5000.028760105024,
+      "joined": 25000,
+      "aligned": 25000,
+      "p50_ms": 1829.6822164556943,
+      "p90_ms": 2549.3504781043157,
+      "inputs_per_s": 10000.057520210048
+    },
+    {
+      "streams": 4,
+      "rate_target": 10.0,
+      "rounds": 50,
+      "rate_achieved": 10.202546080643632,
+      "joined": 50,
+      "aligned": 50,
+      "p50_ms": 1.206993532832712,
+      "p90_ms": 1.2853519292548299,
+      "inputs_per_s": 40.81018432257453
+    },
+    {
+      "streams": 4,
+      "rate_target": 50.0,
+      "rounds": 250,
+      "rate_achieved": 50.18086834876443,
+      "joined": 250,
+      "aligned": 250,
+      "p50_ms": 1.1599920107983053,
+      "p90_ms": 1.2387100141495466,
+      "inputs_per_s": 200.7234733950577
+    },
+    {
+      "streams": 4,
+      "rate_target": 100.0,
+      "rounds": 500,
+      "rate_achieved": 100.15557849260344,
+      "joined": 500,
+      "aligned": 500,
+      "p50_ms": 1.0030160192400217,
+      "p90_ms": 1.130228047259152,
+      "inputs_per_s": 400.62231397041376
+    },
+    {
+      "streams": 4,
+      "rate_target": 200.0,
+      "rounds": 1000,
+      "rate_achieved": 200.19186219544537,
+      "joined": 1000,
+      "aligned": 1000,
+      "p50_ms": 0.9211874566972256,
+      "p90_ms": 1.015624962747097,
+      "inputs_per_s": 800.7674487817815
+    },
+    {
+      "streams": 4,
+      "rate_target": 500.0,
+      "rounds": 2500,
+      "rate_achieved": 500.09991296864126,
+      "joined": 2500,
+      "aligned": 2500,
+      "p50_ms": 0.43110898695886135,
+      "p90_ms": 0.6329009775072336,
+      "inputs_per_s": 2000.399651874565
+    },
+    {
+      "streams": 4,
+      "rate_target": 1000.0,
+      "rounds": 5000,
+      "rate_achieved": 1000.1727636370165,
+      "joined": 5000,
+      "aligned": 5000,
+      "p50_ms": 0.7051670108921826,
+      "p90_ms": 0.8019900415092707,
+      "inputs_per_s": 4000.691054548066
+    },
+    {
+      "streams": 4,
+      "rate_target": 2000.0,
+      "rounds": 10000,
+      "rate_achieved": 2000.1503500948993,
+      "joined": 10000,
+      "aligned": 10000,
+      "p50_ms": 0.4190605250187218,
+      "p90_ms": 0.7855279836803675,
+      "inputs_per_s": 8000.601400379597
+    },
+    {
+      "streams": 4,
+      "rate_target": 5000.0,
+      "rounds": 25000,
+      "rate_achieved": 4950.457062361965,
+      "joined": 25000,
+      "aligned": 25000,
+      "p50_ms": 4323.782498482615,
+      "p90_ms": 4906.47608099971,
+      "inputs_per_s": 19801.82824944786
+    },
+    {
+      "streams": 8,
+      "rate_target": 10.0,
+      "rounds": 50,
+      "rate_achieved": 10.20151946067986,
+      "joined": 50,
+      "aligned": 50,
+      "p50_ms": 1.3438289752230048,
+      "p90_ms": 1.473576994612813,
+      "inputs_per_s": 81.61215568543888
+    },
+    {
+      "streams": 8,
+      "rate_target": 50.0,
+      "rounds": 250,
+      "rate_achieved": 50.181957046714246,
+      "joined": 250,
+      "aligned": 250,
+      "p50_ms": 1.4441804378293455,
+      "p90_ms": 1.525798928923905,
+      "inputs_per_s": 401.45565637371396
+    },
+    {
+      "streams": 8,
+      "rate_target": 100.0,
+      "rounds": 500,
+      "rate_achieved": 100.18608067742629,
+      "joined": 500,
+      "aligned": 500,
+      "p50_ms": 1.2969794915989041,
+      "p90_ms": 1.4484480489045382,
+      "inputs_per_s": 801.4886454194103
+    },
+    {
+      "streams": 8,
+      "rate_target": 200.0,
+      "rounds": 1000,
+      "rate_achieved": 200.16107923091423,
+      "joined": 1000,
+      "aligned": 1000,
+      "p50_ms": 1.1169335339218378,
+      "p90_ms": 1.4061171095818281,
+      "inputs_per_s": 1601.2886338473138
+    },
+    {
+      "streams": 8,
+      "rate_target": 500.0,
+      "rounds": 2500,
+      "rate_achieved": 500.1419178694595,
+      "joined": 2500,
+      "aligned": 2500,
+      "p50_ms": 0.7449589902535081,
+      "p90_ms": 0.7540070218965411,
+      "inputs_per_s": 4001.135342955676
+    },
+    {
+      "streams": 8,
+      "rate_target": 1000.0,
+      "rounds": 5000,
+      "rate_achieved": 1000.1485130554718,
+      "joined": 5000,
+      "aligned": 5000,
+      "p50_ms": 1.5710865263827145,
+      "p90_ms": 2.6676299748942256,
+      "inputs_per_s": 8001.188104443774
+    },
+    {
+      "streams": 8,
+      "rate_target": 2000.0,
+      "rounds": 10000,
+      "rate_achieved": 1999.2435945537677,
+      "joined": 10000,
+      "aligned": 10000,
+      "p50_ms": 3216.363955521956,
+      "p90_ms": 4197.146645979956,
+      "inputs_per_s": 15993.948756430142
+    },
+    {
+      "streams": 16,
+      "rate_target": 10.0,
+      "rounds": 50,
+      "rate_achieved": 10.200673418944909,
+      "joined": 50,
+      "aligned": 50,
+      "p50_ms": 1.6883694916032255,
+      "p90_ms": 1.9721180433407426,
+      "inputs_per_s": 163.21077470311855
+    },
+    {
+      "streams": 16,
+      "rate_target": 50.0,
+      "rounds": 250,
+      "rate_achieved": 50.18958729148406,
+      "joined": 250,
+      "aligned": 250,
+      "p50_ms": 1.7134585068561137,
+      "p90_ms": 1.8335870699957013,
+      "inputs_per_s": 803.033396663745
+    },
+    {
+      "streams": 16,
+      "rate_target": 100.0,
+      "rounds": 500,
+      "rate_achieved": 100.1790185052324,
+      "joined": 500,
+      "aligned": 500,
+      "p50_ms": 1.7235630075447261,
+      "p90_ms": 1.8878240371122956,
+      "inputs_per_s": 1602.8642960837185
+    },
+    {
+      "streams": 16,
+      "rate_target": 200.0,
+      "rounds": 1000,
+      "rate_achieved": 200.15821125532568,
+      "joined": 1000,
+      "aligned": 1000,
+      "p50_ms": 1.6914009465835989,
+      "p90_ms": 2.0353510044515133,
+      "inputs_per_s": 3202.531380085211
+    },
+    {
+      "streams": 16,
+      "rate_target": 500.0,
+      "rounds": 2500,
+      "rate_achieved": 500.158236365103,
+      "joined": 2500,
+      "aligned": 2500,
+      "p50_ms": 1.9350299844518304,
+      "p90_ms": 2.649335074238479,
+      "inputs_per_s": 8002.531781841648
+    },
+    {
+      "streams": 16,
+      "rate_target": 1000.0,
+      "rounds": 5000,
+      "rate_achieved": 999.7923561418776,
+      "joined": 5000,
+      "aligned": 5000,
+      "p50_ms": 2982.6614880003035,
+      "p90_ms": 4040.6452149618417,
+      "inputs_per_s": 15996.677698270041
+    },
+    {
+      "streams": 32,
+      "rate_target": 10.0,
+      "rounds": 50,
+      "rate_achieved": 10.20049745668413,
+      "joined": 50,
+      "aligned": 50,
+      "p50_ms": 2.584443485829979,
+      "p90_ms": 2.6210889918729663,
+      "inputs_per_s": 326.4159186138922
+    },
+    {
+      "streams": 32,
+      "rate_target": 50.0,
+      "rounds": 250,
+      "rate_achieved": 50.179319602298996,
+      "joined": 250,
+      "aligned": 250,
+      "p50_ms": 2.4878305848687887,
+      "p90_ms": 2.5866730138659477,
+      "inputs_per_s": 1605.7382272735679
+    },
+    {
+      "streams": 32,
+      "rate_target": 100.0,
+      "rounds": 500,
+      "rate_achieved": 100.16740826552986,
+      "joined": 500,
+      "aligned": 500,
+      "p50_ms": 2.5048634852282703,
+      "p90_ms": 2.5877250591292977,
+      "inputs_per_s": 3205.3570644969554
+    },
+    {
+      "streams": 32,
+      "rate_target": 200.0,
+      "rounds": 1000,
+      "rate_achieved": 200.1354747847277,
+      "joined": 1000,
+      "aligned": 1000,
+      "p50_ms": 2.3879259824752808,
+      "p90_ms": 2.668502973392606,
+      "inputs_per_s": 6404.335193111287
+    },
+    {
+      "streams": 32,
+      "rate_target": 500.0,
+      "rounds": 2500,
+      "rate_achieved": 499.38058200351287,
+      "joined": 2500,
+      "aligned": 2500,
+      "p50_ms": 2848.3930215006694,
+      "p90_ms": 3965.6002800911665,
+      "inputs_per_s": 15980.178624112412
+    }
+  ],
+  "max_sustainable": {
+    "1": {
+      "rounds_per_s": 5000.0,
+      "inputs_per_s": 5000.0381883589325,
+      "p50_ms": 0.5819319630973041,
+      "base_p50_ms": 0.9783789864741266
+    },
+    "2": {
+      "rounds_per_s": 2000.0,
+      "inputs_per_s": 4000.223834950871,
+      "p50_ms": 0.6102279876358807,
+      "base_p50_ms": 1.004880468826741
+    },
+    "4": {
+      "rounds_per_s": 2000.0,
+      "inputs_per_s": 8000.601400379597,
+      "p50_ms": 0.4190605250187218,
+      "base_p50_ms": 1.206993532832712
+    },
+    "8": {
+      "rounds_per_s": 1000.0,
+      "inputs_per_s": 8001.188104443774,
+      "p50_ms": 1.5710865263827145,
+      "base_p50_ms": 1.3438289752230048
+    },
+    "16": {
+      "rounds_per_s": 500.0,
+      "inputs_per_s": 8002.531781841648,
+      "p50_ms": 1.9350299844518304,
+      "base_p50_ms": 1.6883694916032255
+    },
+    "32": {
+      "rounds_per_s": 200.0,
+      "inputs_per_s": 6404.335193111287,
+      "p50_ms": 2.3879259824752808,
+      "base_p50_ms": 2.584443485829979
+    }
+  }
+}

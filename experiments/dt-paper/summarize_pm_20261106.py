@@ -9,14 +9,16 @@ for the plots on the handover page.
 
 import glob
 import json
+import os
 import re
 import statistics
 import sys
 
 from pathlib import Path
 
-R = Path(__file__).resolve().parent / "results"
-D = "20261106"
+# round 2 (paper stack): PM_RESULTS=results/s1 PM_D=stack-20261107
+R = Path(os.environ.get("PM_RESULTS", Path(__file__).resolve().parent / "results"))
+D = os.environ.get("PM_D", "20261106")
 SUMMARY = {}
 
 

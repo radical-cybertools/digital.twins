@@ -1,0 +1,1708 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm3/orbit-logs/s2-endpoint-pm_p6_inf_60934116.log
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['queue_info', 'sysinfo', 'staging', 'rhapsody', 'globus']
+INFO [PluginHost] Loaded plugin: queue_info
+INFO [PluginHost] Loaded plugin: sysinfo
+INFO [PluginHost] Loaded plugin: staging
+INFO [PluginHost] Loaded plugin: rhapsody
+INFO [PluginHost] Loaded plugin: globus
+INFO Starting ORBIT endpoint (https://95.217.193.116:8010)
+INFO [Runtime] ws_compression=auto: connect 169.6 ms (threshold 10.0 ms) -> deflate on
+INFO [Runtime] registered as 'pm_p6_inf_60934116' (role=endpoint, plugins=['queue_info', 'sysinfo', 'staging', 'rhapsody', 'globus'])
+INFO [rhapsody] Registered session session.90ec2e58
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.90ec2e58.1794008472.telemetry.jsonl
+INFO [session.90ec2e58] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.29b10afb (owner=rhapsody.f11d9009.inference)
+INFO [sysinfo] Unregistered session session.29b10afb
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.90ec2e58",
+    "duration_seconds": 16.122189,
+    "tasks": {
+        "submitted": 17,
+        "completed": 17,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.026905,
+        "mean_seconds": 0.001583,
+        "min_seconds": 0.001151,
+        "max_seconds": 0.002275
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 132.0,
+            "net_recv_bytes": 192.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.90ec2e58
+INFO [rhapsody] Registered session session.650df579
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.650df579.1794008493.telemetry.jsonl
+INFO [session.650df579] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.cef7de8b (owner=rhapsody.285b8307.inference)
+INFO [sysinfo] Unregistered session session.cef7de8b
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.650df579",
+    "duration_seconds": 5.923073,
+    "tasks": {
+        "submitted": 17,
+        "completed": 17,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.026634,
+        "mean_seconds": 0.001567,
+        "min_seconds": 0.001096,
+        "max_seconds": 0.002161
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 66.0,
+            "net_recv_bytes": 1612.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.650df579
+INFO [rhapsody] Registered session session.908a6405
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.908a6405.1794008499.telemetry.jsonl
+INFO [session.908a6405] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.966f6bc6 (owner=rhapsody.4458f008.inference)
+INFO [sysinfo] Unregistered session session.966f6bc6
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.908a6405",
+    "duration_seconds": 16.228796,
+    "tasks": {
+        "submitted": 16,
+        "completed": 16,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.02658,
+        "mean_seconds": 0.001661,
+        "min_seconds": 0.001122,
+        "max_seconds": 0.002488
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88578.0,
+            "net_recv_bytes": 1267.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.908a6405
+INFO [rhapsody] Registered session session.dd8b2e91
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.dd8b2e91.1794008520.telemetry.jsonl
+INFO [session.dd8b2e91] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.c8ac4b2d (owner=rhapsody.5883844c.inference)
+INFO [sysinfo] Unregistered session session.c8ac4b2d
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.dd8b2e91",
+    "duration_seconds": 5.918829,
+    "tasks": {
+        "submitted": 17,
+        "completed": 17,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.028358,
+        "mean_seconds": 0.001668,
+        "min_seconds": 0.001217,
+        "max_seconds": 0.002683
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 264.0,
+            "net_recv_bytes": 1617.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.dd8b2e91
+INFO [rhapsody] Registered session session.3278d7ea
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.3278d7ea.1794008527.telemetry.jsonl
+INFO [session.3278d7ea] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.f3229357 (owner=rhapsody.e14f58d7.inference)
+INFO [sysinfo] Unregistered session session.f3229357
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.3278d7ea",
+    "duration_seconds": 16.228873,
+    "tasks": {
+        "submitted": 15,
+        "completed": 15,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.028998,
+        "mean_seconds": 0.001933,
+        "min_seconds": 0.001324,
+        "max_seconds": 0.004154
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 120.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.3278d7ea
+INFO [rhapsody] Registered session session.bc5ef78b
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.bc5ef78b.1794008547.telemetry.jsonl
+INFO [session.bc5ef78b] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.d9a1e9a9 (owner=rhapsody.b1219b94.inference)
+INFO [sysinfo] Unregistered session session.d9a1e9a9
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.bc5ef78b",
+    "duration_seconds": 5.911519,
+    "tasks": {
+        "submitted": 17,
+        "completed": 17,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.03056,
+        "mean_seconds": 0.001798,
+        "min_seconds": 0.001286,
+        "max_seconds": 0.002907
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 528.0,
+            "net_recv_bytes": 672.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.bc5ef78b
+INFO [rhapsody] Registered session session.b97a8a5d
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.b97a8a5d.1794008553.telemetry.jsonl
+INFO [session.b97a8a5d] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.bf2ca948 (owner=rhapsody.c50e31b9.inference)
+INFO [sysinfo] Unregistered session session.bf2ca948
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.b97a8a5d",
+    "duration_seconds": 16.040203,
+    "tasks": {
+        "submitted": 15,
+        "completed": 15,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.02865,
+        "mean_seconds": 0.00191,
+        "min_seconds": 0.001422,
+        "max_seconds": 0.002918
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 132.0,
+            "net_recv_bytes": 319.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.b97a8a5d
+INFO [rhapsody] Registered session session.ed79a318
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.ed79a318.1794008573.telemetry.jsonl
+INFO [session.ed79a318] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.b6a48232 (owner=rhapsody.36f3c288.inference)
+INFO [sysinfo] Unregistered session session.b6a48232
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.ed79a318",
+    "duration_seconds": 5.936577,
+    "tasks": {
+        "submitted": 18,
+        "completed": 18,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.032809,
+        "mean_seconds": 0.001823,
+        "min_seconds": 0.00121,
+        "max_seconds": 0.003337
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 262.0,
+            "net_recv_bytes": 460.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.ed79a318
+INFO [rhapsody] Registered session session.a6f054a1
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.a6f054a1.1794008580.telemetry.jsonl
+INFO [session.a6f054a1] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.9234063c (owner=rhapsody.ddab6f46.inference)
+INFO [sysinfo] Unregistered session session.9234063c
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.a6f054a1",
+    "duration_seconds": 16.223322,
+    "tasks": {
+        "submitted": 15,
+        "completed": 15,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.029099,
+        "mean_seconds": 0.00194,
+        "min_seconds": 0.001332,
+        "max_seconds": 0.004243
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 132.0,
+            "net_recv_bytes": 316.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.a6f054a1
+INFO [rhapsody] Registered session session.80788fcb
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.80788fcb.1794008600.telemetry.jsonl
+INFO [session.80788fcb] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.bde958f3 (owner=rhapsody.fbc49512.inference)
+INFO [sysinfo] Unregistered session session.bde958f3
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.80788fcb",
+    "duration_seconds": 5.94499,
+    "tasks": {
+        "submitted": 18,
+        "completed": 18,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.032438,
+        "mean_seconds": 0.001802,
+        "min_seconds": 0.001307,
+        "max_seconds": 0.00294
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 472.0,
+            "net_recv_bytes": 1019.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.80788fcb
+INFO [rhapsody] Registered session session.77aabb56
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.77aabb56.1794008606.telemetry.jsonl
+INFO [session.77aabb56] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.35d77ccd (owner=rhapsody.b40e11cf.inference)
+INFO [sysinfo] Unregistered session session.35d77ccd
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.77aabb56",
+    "duration_seconds": 16.238529,
+    "tasks": {
+        "submitted": 16,
+        "completed": 16,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.0283,
+        "mean_seconds": 0.001769,
+        "min_seconds": 0.001304,
+        "max_seconds": 0.002755
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.5,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 19456.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88855.0,
+            "net_recv_bytes": 912.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.77aabb56
+INFO [rhapsody] Registered session session.cb478ffd
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.cb478ffd.1794008627.telemetry.jsonl
+INFO [session.cb478ffd] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.8c0e5b24 (owner=rhapsody.28d815d3.inference)
+INFO [sysinfo] Unregistered session session.8c0e5b24
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.cb478ffd",
+    "duration_seconds": 5.98985,
+    "tasks": {
+        "submitted": 17,
+        "completed": 17,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.032736,
+        "mean_seconds": 0.001926,
+        "min_seconds": 0.001349,
+        "max_seconds": 0.00347
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 66.0,
+            "net_recv_bytes": 466.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.cb478ffd
+INFO [rhapsody] Registered session session.28c123de
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.28c123de.1794008633.telemetry.jsonl
+INFO [session.28c123de] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.3586c5e5 (owner=rhapsody.59b13e16.inference)
+INFO [sysinfo] Unregistered session session.3586c5e5
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.28c123de",
+    "duration_seconds": 16.245762,
+    "tasks": {
+        "submitted": 15,
+        "completed": 15,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.032613,
+        "mean_seconds": 0.002174,
+        "min_seconds": 0.00132,
+        "max_seconds": 0.007482
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 328.0,
+            "net_recv_bytes": 184.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.28c123de
+INFO [rhapsody] Registered session session.3fff30e4
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.3fff30e4.1794008653.telemetry.jsonl
+INFO [session.3fff30e4] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.6df2117b (owner=rhapsody.4f9dd285.inference)
+INFO [sysinfo] Unregistered session session.6df2117b
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.3fff30e4",
+    "duration_seconds": 5.926611,
+    "tasks": {
+        "submitted": 18,
+        "completed": 18,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.031083,
+        "mean_seconds": 0.001727,
+        "min_seconds": 0.001362,
+        "max_seconds": 0.002683
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 1386.0,
+            "net_recv_bytes": 3112.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.3fff30e4
+INFO [rhapsody] Registered session session.90eafb6b
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.90eafb6b.1794008660.telemetry.jsonl
+INFO [session.90eafb6b] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.581f636a (owner=rhapsody.8bec5e79.inference)
+INFO [sysinfo] Unregistered session session.581f636a
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.90eafb6b",
+    "duration_seconds": 16.229715,
+    "tasks": {
+        "submitted": 15,
+        "completed": 15,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.026529,
+        "mean_seconds": 0.001769,
+        "min_seconds": 0.001396,
+        "max_seconds": 0.002612
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 240.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.90eafb6b
+INFO [rhapsody] Registered session session.5369ae9c
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.5369ae9c.1794008680.telemetry.jsonl
+INFO [session.5369ae9c] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.d03f94f1 (owner=rhapsody.29c8f484.inference)
+INFO [sysinfo] Unregistered session session.d03f94f1
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.5369ae9c",
+    "duration_seconds": 5.887102,
+    "tasks": {
+        "submitted": 17,
+        "completed": 17,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.030696,
+        "mean_seconds": 0.001806,
+        "min_seconds": 0.001397,
+        "max_seconds": 0.002957
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88660.0,
+            "net_recv_bytes": 1668.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.5369ae9c
+INFO [rhapsody] Registered session session.4cd08d11
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.4cd08d11.1794008686.telemetry.jsonl
+INFO [session.4cd08d11] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.0185de02 (owner=rhapsody.8eedfee1.inference)
+INFO [sysinfo] Unregistered session session.0185de02
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.4cd08d11",
+    "duration_seconds": 31.374789,
+    "tasks": {
+        "submitted": 101,
+        "completed": 101,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.170694,
+        "mean_seconds": 0.00169,
+        "min_seconds": 0.001162,
+        "max_seconds": 0.003906
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88846.0,
+            "net_recv_bytes": 1734.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.4cd08d11
+INFO [rhapsody] Registered session session.85919881
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.85919881.1794008721.telemetry.jsonl
+INFO [session.85919881] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.513300ba (owner=rhapsody.33ff88a7.inference)
+INFO [sysinfo] Unregistered session session.513300ba
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.85919881",
+    "duration_seconds": 5.704589,
+    "tasks": {
+        "submitted": 17,
+        "completed": 17,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.031223,
+        "mean_seconds": 0.001837,
+        "min_seconds": 0.001383,
+        "max_seconds": 0.003037
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 222.0,
+            "net_recv_bytes": 336.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.85919881
+INFO [rhapsody] Registered session session.9be775a8
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.9be775a8.1794008727.telemetry.jsonl
+INFO [session.9be775a8] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.016674a1 (owner=rhapsody.c1610a1d.inference)
+INFO [sysinfo] Unregistered session session.016674a1
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.9be775a8",
+    "duration_seconds": 31.37817,
+    "tasks": {
+        "submitted": 100,
+        "completed": 100,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.170644,
+        "mean_seconds": 0.001706,
+        "min_seconds": 0.001217,
+        "max_seconds": 0.002953
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 330.0,
+            "net_recv_bytes": 701.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.9be775a8
+INFO [rhapsody] Registered session session.a5f4a507
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.a5f4a507.1794008761.telemetry.jsonl
+INFO [session.a5f4a507] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.80e75b89 (owner=rhapsody.99b5a4ae.inference)
+INFO [sysinfo] Unregistered session session.80e75b89
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.a5f4a507",
+    "duration_seconds": 5.946837,
+    "tasks": {
+        "submitted": 17,
+        "completed": 17,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.031974,
+        "mean_seconds": 0.001881,
+        "min_seconds": 0.001392,
+        "max_seconds": 0.002991
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 595.0,
+            "net_recv_bytes": 1032.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.a5f4a507
+INFO [rhapsody] Registered session session.3da9ce65
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.3da9ce65.1794008768.telemetry.jsonl
+INFO [session.3da9ce65] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.bb23db27 (owner=rhapsody.a7e7be9c.inference)
+INFO [sysinfo] Unregistered session session.bb23db27
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.3da9ce65",
+    "duration_seconds": 6.365752,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.003711,
+        "mean_seconds": 0.001855,
+        "min_seconds": 0.001783,
+        "max_seconds": 0.001928
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 264.0,
+            "net_recv_bytes": 450.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.3da9ce65
+INFO [rhapsody] Registered session session.f1bf9205
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.f1bf9205.1794008776.telemetry.jsonl
+INFO [session.f1bf9205] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.9ffdfd74 (owner=rhapsody.41094c07.inference)
+INFO [sysinfo] Unregistered session session.9ffdfd74
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.f1bf9205",
+    "duration_seconds": 6.298731,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.004149,
+        "mean_seconds": 0.002074,
+        "min_seconds": 0.002065,
+        "max_seconds": 0.002084
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 89782.0,
+            "net_recv_bytes": 2484.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.f1bf9205
+INFO [rhapsody] Registered session session.6345703a
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.6345703a.1794008784.telemetry.jsonl
+INFO [session.6345703a] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.894be3f0 (owner=rhapsody.6b5e0005.inference)
+INFO [sysinfo] Unregistered session session.894be3f0
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.6345703a",
+    "duration_seconds": 6.362928,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.004202,
+        "mean_seconds": 0.002101,
+        "min_seconds": 0.001893,
+        "max_seconds": 0.002309
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88132.0,
+            "net_recv_bytes": 942.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.6345703a
+INFO [rhapsody] Registered session session.8efa43c8
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.8efa43c8.1794008792.telemetry.jsonl
+INFO [session.8efa43c8] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.8343762f (owner=rhapsody.264080aa.inference)
+INFO [sysinfo] Unregistered session session.8343762f
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.8efa43c8",
+    "duration_seconds": 6.360678,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.004177,
+        "mean_seconds": 0.002089,
+        "min_seconds": 0.001744,
+        "max_seconds": 0.002433
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88774.0,
+            "net_recv_bytes": 1600.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.8efa43c8
+INFO [rhapsody] Registered session session.fa4311b2
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.fa4311b2.1794008800.telemetry.jsonl
+INFO [session.fa4311b2] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.567bb51d (owner=rhapsody.8a234a06.inference)
+INFO [sysinfo] Unregistered session session.567bb51d
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.fa4311b2",
+    "duration_seconds": 6.363675,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.004219,
+        "mean_seconds": 0.00211,
+        "min_seconds": 0.002097,
+        "max_seconds": 0.002122
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88396.0,
+            "net_recv_bytes": 1366.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.fa4311b2
+INFO [rhapsody] Registered session session.26736d5c
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.26736d5c.1794008808.telemetry.jsonl
+INFO [session.26736d5c] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.eda5f0a0 (owner=rhapsody.86f52484.inference)
+INFO [sysinfo] Unregistered session session.eda5f0a0
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.26736d5c",
+    "duration_seconds": 6.350256,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.004296,
+        "mean_seconds": 0.002148,
+        "min_seconds": 0.001965,
+        "max_seconds": 0.002331
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 88198.0,
+            "net_recv_bytes": 1168.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.26736d5c
+INFO [rhapsody] Registered session session.ed3411bc
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.ed3411bc.1794008816.telemetry.jsonl
+INFO [session.ed3411bc] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.369857ff (owner=rhapsody.a83a8e8c.inference)
+INFO [sysinfo] Unregistered session session.369857ff
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.ed3411bc",
+    "duration_seconds": 6.293175,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.004393,
+        "mean_seconds": 0.002196,
+        "min_seconds": 0.002008,
+        "max_seconds": 0.002385
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 460.0,
+            "net_recv_bytes": 772.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.ed3411bc
+INFO [rhapsody] Registered session session.fc636048
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.fc636048.1794008824.telemetry.jsonl
+INFO [session.fc636048] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.a3004170 (owner=rhapsody.46ac74fe.inference)
+INFO [sysinfo] Unregistered session session.a3004170
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.fc636048",
+    "duration_seconds": 6.286563,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.004071,
+        "mean_seconds": 0.002035,
+        "min_seconds": 0.001863,
+        "max_seconds": 0.002208
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 222.0,
+            "net_recv_bytes": 345.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.fc636048
+INFO [rhapsody] Registered session session.80aba484
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.80aba484.1794008832.telemetry.jsonl
+INFO [session.80aba484] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.b2a4c15b (owner=rhapsody.465f1c95.inference)
+INFO [sysinfo] Unregistered session session.b2a4c15b
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.80aba484",
+    "duration_seconds": 6.378737,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.004186,
+        "mean_seconds": 0.002093,
+        "min_seconds": 0.001997,
+        "max_seconds": 0.002189
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 462.0,
+            "net_recv_bytes": 576.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.80aba484
+INFO [rhapsody] Registered session session.a77fe605
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.a77fe605.1794008840.telemetry.jsonl
+INFO [session.a77fe605] Session initialization complete
+WARNING pynvml initialization failed on nid006625 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.c33e92dc (owner=rhapsody.52cbef01.inference)
+INFO [sysinfo] Unregistered session session.c33e92dc
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.a77fe605",
+    "duration_seconds": 6.398036,
+    "tasks": {
+        "submitted": 2,
+        "completed": 2,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.06239,
+        "mean_seconds": 0.031195,
+        "min_seconds": 0.001966,
+        "max_seconds": 0.060424
+    },
+    "resources": {
+        "concurrent/nid006625": {
+            "backend": "concurrent",
+            "node_id": "nid006625",
+            "cpu_percent": 0.0,
+            "memory_percent": 5.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 198.0,
+            "net_recv_bytes": 378.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.a77fe605
+srun: forcing job termination
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+[2026-11-06T23:47:31.482] error: *** STEP 60934116.1 ON nid006625 CANCELLED AT 2026-11-06T23:47:31 DUE to SIGNAL Killed ***
+srun: error: nid006625: task 0: Killed
+srun: Terminating StepId=60934116.1

@@ -1,0 +1,655 @@
+{
+  "provenance": {
+    "experiment": "E5 endpoint and client loss",
+    "harness": "bench_endpoint_loss.py",
+    "time": "2026-11-06T15:41:08-0800",
+    "host": "nid006558",
+    "python": "3.12.12",
+    "digital_twins_commit": "6897b404676533d358dd2f067aa94cbcf3996338",
+    "digital_twins_dirty": false,
+    "backend": "orbit, concurrent on both endpoints",
+    "slurm_job": "60934116",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "inference": "pm_p6_inf_60934116",
+      "learning": "pm_p6_learn_60934116",
+      "kills": 10,
+      "reattaches": 10,
+      "gap": 2.0,
+      "probe": 0.5,
+      "probe_timeout": 5.0,
+      "learn_timeout": 120.0,
+      "lost_timeout": 120.0,
+      "logs": "/pscratch/sd/m/merzky/dt-pm3/orbit-logs",
+      "out": "experiments/dt-paper/results/s2/endpoint-loss-remote-stack-20261107.json"
+    }
+  },
+  "kills": [
+    {
+      "kill": 0,
+      "first_learned_s": 3.977976083755493,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 10.37882661819458,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.752967357635498,
+      "resume_s": 8.462732791900635,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008478.8750672,
+          "ok": false,
+          "rtt": 5.179900646209717,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin f85a0bd3-a457-4208-8c2f-d00f7e73b42d: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008484.0549781,
+          "ok": false,
+          "rtt": 5.0082080364227295,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 12d87bd2-bf5c-47b0-aad0-30bc588e4ca5 was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 1,
+      "first_learned_s": 3.9696247577667236,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 10.37759780883789,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.7527873516082764,
+      "resume_s": 8.457133769989014,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008505.9854865,
+          "ok": false,
+          "rtt": 5.180008888244629,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 11a1b895-35ca-4d0d-a0fb-074bcfca66fc: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008511.165505,
+          "ok": false,
+          "rtt": 5.007358074188232,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 21c2fac1-4033-43fe-899c-c9509ac13dca was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 2,
+      "first_learned_s": 3.9663689136505127,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 10.379289627075195,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.5022542476654053,
+      "resume_s": 8.196628332138062,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008533.0950167,
+          "ok": false,
+          "rtt": 5.179293870925903,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin a9a66c29-e47c-4f17-b20a-bef4224b8c6e: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008538.274319,
+          "ok": false,
+          "rtt": 5.007894277572632,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 4f758469-6a53-4713-a046-52f5706c1eb4 was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 3,
+      "first_learned_s": 3.7774276733398438,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 10.376596212387085,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.252248764038086,
+      "resume_s": 7.974833250045776,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008559.7430217,
+          "ok": false,
+          "rtt": 5.179301738739014,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 55747060-0293-40a0-b2af-2a7b8a488d6d: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008564.9223294,
+          "ok": false,
+          "rtt": 5.007496356964111,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin d24cacf6-1745-4a60-93dd-328b958bee19 was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 4,
+      "first_learned_s": 3.966609001159668,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 10.37472915649414,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.252208948135376,
+      "resume_s": 7.980745077133179,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008586.361801,
+          "ok": false,
+          "rtt": 5.18011212348938,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 63771edf-948f-4bd1-8b09-23cb7f63c394: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008591.5419223,
+          "ok": false,
+          "rtt": 5.004603624343872,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin f0bb2d85-9a8d-47a5-aa47-7e6e35cc4584 was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 5,
+      "first_learned_s": 3.984199047088623,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 10.379629850387573,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.252476215362549,
+      "resume_s": 8.027758121490479,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008613.0018477,
+          "ok": false,
+          "rtt": 5.179528474807739,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin a665f35e-2cff-45d5-81bf-b4f7646f21a3: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008618.1813853,
+          "ok": false,
+          "rtt": 5.009720802307129,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin ebc061c6-3777-4f8c-a614-a8be76dddf9a was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 6,
+      "first_learned_s": 3.989231824874878,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 10.37529993057251,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.252319097518921,
+      "resume_s": 7.964547872543335,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008639.702156,
+          "ok": false,
+          "rtt": 5.178133487701416,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin 3ea0e414-2ba3-4af8-bf41-f0c97780e12d: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008644.880299,
+          "ok": false,
+          "rtt": 5.007693529129028,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin bf493d10-765f-4426-9fbc-32f6bdd297e3 was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 7,
+      "first_learned_s": 3.964503049850464,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 10.377860069274902,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 1,
+      "learner_answered": 0,
+      "sibling_probes": 1,
+      "sibling_answered": 0,
+      "sibling_state": "running",
+      "sibling_after_ok": false,
+      "endpoint_up_s": 2.2522618770599365,
+      "resume_s": 7.92651629447937,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008666.3157282,
+          "ok": false,
+          "rtt": 5.178951263427734,
+          "error": "RuntimeError: HTTP 504 \u2014 [broker/dt] get_inference \u2014 twin bf1d6214-b5b4-4bae-b82f-e1e6376ccdb9: get_inference timed out"
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008671.494688,
+          "ok": false,
+          "rtt": 5.009777545928955,
+          "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 198c1784-8a26-47ff-87ba-89c4cc724690 was closed during get_inference"
+        }
+      ]
+    },
+    {
+      "kill": 8,
+      "first_learned_s": 3.9294652938842773,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 11.109071493148804,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.2524831295013428,
+      "resume_s": 7.754446506500244,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008692.8402543,
+          "ok": true,
+          "rtt": 0.5272300243377686,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008693.3674912,
+          "ok": true,
+          "rtt": 0.359633207321167,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008694.4021983,
+          "ok": true,
+          "rtt": 0.3981308937072754,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008694.8003345,
+          "ok": true,
+          "rtt": 0.35771775245666504,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008695.8343964,
+          "ok": true,
+          "rtt": 0.39519190788269043,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008696.229596,
+          "ok": true,
+          "rtt": 0.3592665195465088,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008697.2638454,
+          "ok": true,
+          "rtt": 0.3971278667449951,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008697.6609805,
+          "ok": true,
+          "rtt": 0.36060094833374023,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008698.6975498,
+          "ok": true,
+          "rtt": 0.3950932025909424,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008699.092649,
+          "ok": true,
+          "rtt": 0.37378859519958496,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008700.1426394,
+          "ok": true,
+          "rtt": 0.39634275436401367,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008700.5389886,
+          "ok": true,
+          "rtt": 0.3588063716888428,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008701.5726054,
+          "ok": true,
+          "rtt": 0.39829444885253906,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008701.970905,
+          "ok": true,
+          "rtt": 0.3568100929260254,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008703.0045485,
+          "ok": true,
+          "rtt": 0.396378755569458,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008703.4009323,
+          "ok": true,
+          "rtt": 0.3585197925567627,
+          "error": null
+        }
+      ]
+    },
+    {
+      "kill": 9,
+      "first_learned_s": 3.931224822998047,
+      "trained_on": "pm_p6_learn_60934116",
+      "detected": true,
+      "detect_s": 11.092325925827026,
+      "last_error": "engine endpoint lost: pm_p6_learn_60934116",
+      "learner_probes": 8,
+      "learner_answered": 8,
+      "sibling_probes": 8,
+      "sibling_answered": 8,
+      "sibling_state": "running",
+      "sibling_after_ok": true,
+      "endpoint_up_s": 2.252237319946289,
+      "resume_s": 7.980036973953247,
+      "probes": [
+        {
+          "twin": "learner",
+          "t": 1794008733.340517,
+          "ok": true,
+          "rtt": 0.5201797485351562,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008733.8607063,
+          "ok": true,
+          "rtt": 0.3600327968597412,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008734.8959367,
+          "ok": true,
+          "rtt": 0.3967101573944092,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008735.2926526,
+          "ok": true,
+          "rtt": 0.35908079147338867,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008736.3266203,
+          "ok": true,
+          "rtt": 0.3969254493713379,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008736.7235515,
+          "ok": true,
+          "rtt": 0.3577847480773926,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008737.7564933,
+          "ok": true,
+          "rtt": 0.3982090950012207,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008738.154709,
+          "ok": true,
+          "rtt": 0.3598167896270752,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008739.1923604,
+          "ok": true,
+          "rtt": 0.3927185535430908,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008739.5850847,
+          "ok": true,
+          "rtt": 0.3563053607940674,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008740.6163836,
+          "ok": true,
+          "rtt": 0.39710402488708496,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008741.0134947,
+          "ok": true,
+          "rtt": 0.35970306396484375,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008742.0514247,
+          "ok": true,
+          "rtt": 0.39392805099487305,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008742.4453595,
+          "ok": true,
+          "rtt": 0.35928797721862793,
+          "error": null
+        },
+        {
+          "twin": "learner",
+          "t": 1794008743.4819171,
+          "ok": true,
+          "rtt": 0.40050435066223145,
+          "error": null
+        },
+        {
+          "twin": "sibling",
+          "t": 1794008743.8824275,
+          "ok": true,
+          "rtt": 0.3587186336517334,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "reattaches": [
+    {
+      "reattach": 0,
+      "attach_s": 1.1023991107940674,
+      "first_answer_s": 1.6468369960784912,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 1,
+      "attach_s": 1.061661720275879,
+      "first_answer_s": 1.5937769412994385,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 2,
+      "attach_s": 1.0659308433532715,
+      "first_answer_s": 1.5973808765411377,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 3,
+      "attach_s": 1.0931143760681152,
+      "first_answer_s": 1.633260726928711,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 4,
+      "attach_s": 1.0748083591461182,
+      "first_answer_s": 1.6088645458221436,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 5,
+      "attach_s": 1.0738804340362549,
+      "first_answer_s": 1.607715129852295,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 6,
+      "attach_s": 1.0497517585754395,
+      "first_answer_s": 1.5767247676849365,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 7,
+      "attach_s": 1.04856276512146,
+      "first_answer_s": 1.5699458122253418,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 8,
+      "attach_s": 1.0762991905212402,
+      "first_answer_s": 1.6104607582092285,
+      "state": "running",
+      "ok": true
+    },
+    {
+      "reattach": 9,
+      "attach_s": 1.062380075454712,
+      "first_answer_s": 1.6495747566223145,
+      "state": "running",
+      "ok": true
+    }
+  ],
+  "first_endpoint_up_s": 2.7534115314483643,
+  "summary": {
+    "kills_ok": 10,
+    "kills": 10,
+    "detect_s": {
+      "median": 10.378343343734741,
+      "min": 10.37472915649414,
+      "max": 11.109071493148804,
+      "n": 10
+    },
+    "resume_s": {
+      "median": 7.980391025543213,
+      "min": 7.754446506500244,
+      "max": 8.462732791900635,
+      "n": 10
+    },
+    "endpoint_up_s": {
+      "median": 2.252397656440735,
+      "min": 2.252208948135376,
+      "max": 2.752967357635498,
+      "n": 10
+    },
+    "sibling_all_answered": false,
+    "reattaches_ok": 10,
+    "reattaches": 10,
+    "attach_s": {
+      "median": 1.0699056386947632,
+      "min": 1.04856276512146,
+      "max": 1.1023991107940674,
+      "n": 10
+    },
+    "first_answer_s": {
+      "median": 1.6082898378372192,
+      "min": 1.5699458122253418,
+      "max": 1.6495747566223145,
+      "n": 10
+    }
+  }
+}

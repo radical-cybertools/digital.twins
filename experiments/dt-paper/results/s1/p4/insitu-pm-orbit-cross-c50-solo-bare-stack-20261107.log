@@ -1,0 +1,4 @@
+backend: orbit dt_p4_ep1
+bare asyncflow task          n=1000  mean=   3.68ms  p50=   3.63  p90=   4.08  p99=   4.69  max= 116.44
+bare asyncflow task          50 concurrent requests in 60.7ms (824 req/s)
+results: experiments/dt-paper/results/s1/p4/insitu-pm-orbit-cross-c50-solo-bare-stack-20261107.json
