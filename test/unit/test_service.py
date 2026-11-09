@@ -253,7 +253,8 @@ def test_the_package_version_is_looked_up_once(monkeypatch):
     calls = []
     real = wire.metadata.version
     monkeypatch.setattr(wire.metadata, "version",
-                        lambda name: calls.append(name) or real(name))
+                        lambda name: (name == "digitaltwin" and calls.append(name))
+                        or real(name))
     wire._dt_version.cache_clear()
     try:
         for _ in range(100):
