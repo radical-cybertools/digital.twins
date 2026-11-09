@@ -245,6 +245,24 @@ def test_the_stamp_pins_digitaltwin_too():
     assert "digitaltwin" in version_stamp()
 
 
+def test_the_package_version_is_looked_up_once(monkeypatch):
+    # every call is stamped and checked; a metadata lookup per call costs a
+    # sys.path scan each time
+    from digitaltwin.service import wire
+
+    calls = []
+    real = wire.metadata.version
+    monkeypatch.setattr(wire.metadata, "version",
+                        lambda name: calls.append(name) or real(name))
+    wire._dt_version.cache_clear()
+    try:
+        for _ in range(100):
+            check_versions(version_stamp())
+        assert calls == ["digitaltwin"]
+    finally:
+        wire._dt_version.cache_clear()
+
+
 def test_package_instantiates_with_the_injected_engine():
     class Component:
         def __init__(self, flow, a, b=0):
