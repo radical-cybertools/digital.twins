@@ -246,15 +246,17 @@ def test_the_stamp_pins_digitaltwin_too():
 
 
 def test_the_package_version_is_looked_up_once(monkeypatch):
-    # every call is stamped and checked; a metadata lookup per call costs a
-    # sys.path scan each time
     from digitaltwin.service import wire
 
     calls = []
     real = wire.metadata.version
-    monkeypatch.setattr(wire.metadata, "version",
-                        lambda name: (name == "digitaltwin" and calls.append(name))
-                        or real(name))
+
+    def counting(name):
+        if name == "digitaltwin":
+            calls.append(name)
+        return real(name)
+
+    monkeypatch.setattr(wire.metadata, "version", counting)
     wire._dt_version.cache_clear()
     try:
         for _ in range(100):
