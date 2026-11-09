@@ -65,6 +65,7 @@ N_WARM = 20
 N_MEAS = 200
 N_CONCURRENT = 50
 READY_TIMEOUT = 30.0
+N_BURSTS = 1          # --bursts: back-to-back bursts per row (round 3)
 
 
 class Inv(ModelInvestigator):
@@ -114,17 +115,23 @@ async def run_row(label, call, n_meas, n_conc) -> dict:
 
     report(label, latencies)
 
-    start = time.perf_counter()
-    answers = await asyncio.gather(*[call(i) for i in range(n_conc)])
-    elapsed = time.perf_counter() - start
-    assert answers == list(range(n_conc)), label
+    bursts = []
+    for _ in range(N_BURSTS):
+        start = time.perf_counter()
+        answers = await asyncio.gather(*[call(i) for i in range(n_conc)])
+        elapsed = time.perf_counter() - start
+        assert answers == list(range(n_conc)), label
+        bursts.append(elapsed)
 
-    print(f"{label:28s} {n_conc} concurrent requests in {elapsed * 1000:.1f}ms "
-          f"({n_conc / elapsed:.0f} req/s)")
+        print(f"{label:28s} {n_conc} concurrent requests in {elapsed * 1000:.1f}ms "
+              f"({n_conc / elapsed:.0f} req/s)")
 
-    return {"latencies_s": latencies,
-            "concurrent": n_conc,
-            "concurrent_s": elapsed}
+    row = {"latencies_s": latencies,
+           "concurrent": n_conc,
+           "concurrent_s": bursts[0]}
+    if N_BURSTS > 1:
+        row["bursts_s"] = bursts
+    return row
 
 
 async def wait_ready(runtime):
@@ -201,6 +208,7 @@ def provenance(args, backend_label) -> dict:
 
 
 async def main() -> None:
+    global N_BURSTS
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--broker", default=os.environ.get("RADICAL_ORBIT_BROKER_URL"),
@@ -215,11 +223,15 @@ async def main() -> None:
     parser.add_argument("--tasks", type=int, default=N_MEAS)
     parser.add_argument("--concurrent", type=int, default=N_CONCURRENT)
     parser.add_argument("--rows", default="bare,investigator,agent")
+    parser.add_argument("--bursts", type=int, default=N_BURSTS,
+                        help="back-to-back bursts per row; the first is "
+                             "concurrent_s, all are in bursts_s")
     parser.add_argument("--out", help="write results as JSON here")
 
     args = parser.parse_args()
     args.backends = [b for b in args.backends.split(",") if b]
     rows = [r for r in args.rows.split(",") if r]
+    N_BURSTS = args.bursts
 
     backend_label, backend = await make_backend(args)
     flow = await WorkflowEngine.create(backend=backend)
