@@ -688,6 +688,13 @@ Open questions for Andre (round 2c):
    by run. Is that orbit#166 (suspect endpoint held until resume) or the
    broker's state after many kills? Kill times (UTC) are in
    `results/c1/*.json` for the radical.3 log.
+   **Answered 2026-11-09 (laptop):** the broker declares the loss 10 s after
+   every kill (radical.3 broker log, CET, 1 s resolution: run 1 kill
+   07:35:29 UTC, lost 07:35:39; run 3 kill 07:57:52, lost 07:58:02).  The
+   harness sees it in its polling loop (two WAN probes, a `twin` call, a
+   0.5 s sleep): in all 2c kills in the 8th iteration, and the iteration
+   grew from 1.34 to 1.38 to 1.44 s across the runs.  Measurement
+   resolution, not a stack change.
 2. P4 (all rounds): the bare row's c=50 burst is bimodal (about 500 or about
    800 req/s per repeat), on cluster and loopback alike; the DT rows are not.
    Cause unknown; it does not affect the DT-vs-bare claim at c=1 or c=500.
