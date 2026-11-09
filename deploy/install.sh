@@ -38,18 +38,20 @@ GH="https://github.com/radical-cybertools"
 # asyncflow paper/dtaas: main + hot path (#100), tickless run loop (#110,
 # no 10 ms poll), cancel fixes (#119, #121-#124), submit-failure isolation
 # (#126: a refused submit fails its own tasks, not the engine), slow-submit
-# warning (#127)
-ASYNCFLOW="radical.asyncflow @ git+$GH/radical.asyncflow@7e74fcc4491267dc88676a95604a402d2d1d3cab"
+# warning (#127), finished tasks released (#128)
+ASYNCFLOW="radical.asyncflow @ git+$GH/radical.asyncflow@24667a5eae6872f9863e31ca631d8af2bc945f04"
 # rhapsody paper/dtaas: main + OrbitDataBackend (#96), idempotent cancels
 # (#91), telemetry teardown (#77), concurrent cancel (#123), Dragon 0.15
 # sizing and PMI (#113, #114), executable stdout through ORBIT (#125),
-# immediate submits sent in the background (#127).  The [telemetry] extra is required: the ORBIT
+# immediate submits sent in the background (#127), finished tasks released
+# and opt-in telemetry bound (#134, cherry-picked: its base is a newer main).  The [telemetry] extra is required: the ORBIT
 # plugin calls `session.start_telemetry()` whenever it exists, and that path
 # hard-imports opentelemetry.
-RHAPSODY="rhapsody-py[telemetry] @ git+$GH/rhapsody@d5ede5f6e14ca49bc15a031c85cdaa12f9072f48"
+RHAPSODY="rhapsody-py[telemetry] @ git+$GH/rhapsody@28c8fa7cc7aa884a932316750874dbac4f056da3"
 # orbit paper/dtaas: devel (0.8.0) + calls held for a suspect endpoint are
-# failed (503) on resume (#166)
-ORBIT="radical.orbit @ git+$GH/radical.orbit@b915a88a117be33cb009990f190a11e86f6e712b"
+# failed (503) on resume (#166), finished tasks released after 1 h and
+# telemetry bounded (#167)
+ORBIT="radical.orbit @ git+$GH/radical.orbit@7904852ee6e0b23a4fb5277a735082216cc60493"
 # ROSE paper/dtaas: main with the Stream API (#98).  The dist name is
 # `rose-surrogate-explorer`; a `rose @ ...` direct URL is rejected by pip
 ROSE="rose-surrogate-explorer @ git+$GH/ROSE@9cc47a597063351c6192e3520f1bb0d39dd35230"

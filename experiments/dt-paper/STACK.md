@@ -8,11 +8,11 @@ is the commit that contains this file.
 
 | Repo | Base | Merged PRs | Commit |
 |---|---|---|---|
-| radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation, #127 slow-submit warning | `7e74fcc4491267dc88676a95604a402d2d1d3cab` |
-| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits | `d5ede5f6e14ca49bc15a031c85cdaa12f9072f48` |
-| radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume | `b915a88a117be33cb009990f190a11e86f6e712b` |
+| radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation, #127 slow-submit warning, #128 finished tasks released | `24667a5eae6872f9863e31ca631d8af2bc945f04` |
+| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits, #134 finished tasks released (cherry-picked) | `28c8fa7cc7aa884a932316750874dbac4f056da3` |
+| radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume, #167 finished tasks released | `7904852ee6e0b23a4fb5277a735082216cc60493` |
 | ROSE | `main` (Stream API, #98) | none | `9cc47a597063351c6192e3520f1bb0d39dd35230` |
-| digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106` | this branch |
+| digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106`, #59 cached version stamp | this branch |
 
 - **Python 3.12** on every host.  The DT service compares the Python minor
   version across hosts and rejects skew; radical.3 has 3.12.3.
@@ -54,6 +54,15 @@ is the commit that contains this file.
 - **asyncflow #127:** warns when a backend's `submit_tasks` holds the run loop
   > 1 s. **orbit #166:** calls to a suspect endpoint are held and answered
   with a retryable 503 on resume instead of a 504 after 30 s.
+
+## Update 2026-11-10: finished tasks are released
+
+The E5 long-run dry run (radical.3) grew about 60 MB/h on the inference
+endpoint and 20 MB/h on the broker: every layer kept every task for the
+life of a session.  asyncflow #128, rhapsody #134, orbit #167 and
+digital.twins #59 release finished tasks (orbit keeps them queryable for
+1 h; rhapsody telemetry is bounded when orbit asks for it).  rhapsody #134
+is cherry-picked, with a follow-up for #123's waiting cancel.
 
 ## Verified (laptop, 2026-11-06)
 
