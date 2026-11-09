@@ -1,0 +1,61 @@
+{
+  "provenance": {
+    "experiment": "E1 in-situ overhead",
+    "harness": "bench_dt_insitu.py",
+    "time": "2026-11-09T15:18:30-0800",
+    "host": "nid005872",
+    "python": "3.12.12",
+    "digital_twins_commit": "a33d5349bc2edaf95caa55f71a034e05fdc1cb4d",
+    "digital_twins_dirty": false,
+    "backend": "orbit dt_r3_t1b_ep1",
+    "notify_window": null,
+    "slurm_job": "61058980",
+    "args": {
+      "broker": "https://10.249.12.233:8131",
+      "endpoint": "dt_r3_t1b_ep1",
+      "backends": [
+        "concurrent"
+      ],
+      "workers": null,
+      "tasks": 1,
+      "concurrent": 500,
+      "rows": "bare",
+      "bursts": 20,
+      "out": "experiments/dt-paper/results/r3/t1/t1b/decay-bare-c500-t1-r1-stack-r3-20261110.json"
+    }
+  },
+  "rows": {
+    "bare": {
+      "latencies_s": [
+        0.005047645885497332
+      ],
+      "concurrent": 500,
+      "concurrent_s": 1.8228206259664148,
+      "bursts_s": [
+        1.8228206259664148,
+        1.899388532154262,
+        0.8739664759486914,
+        0.6527174660004675,
+        0.7297936019022018,
+        0.8647610498592257,
+        0.8513497819658369,
+        0.9946301551535726,
+        0.9981868050526828,
+        1.137407636968419,
+        1.1804794350173324,
+        1.1793209300376475,
+        1.3369600081350654,
+        1.4267481230199337,
+        1.490313408896327,
+        1.4380116669926792,
+        1.504750386113301,
+        1.6736001400277019,
+        1.6612749299965799,
+        1.6869363060686737
+      ],
+      "p50_ms": 5.047645885497332,
+      "mean_ms": 5.047645885497332,
+      "concurrent_req_per_s": 274.3001658404607
+    }
+  }
+}

@@ -10,7 +10,8 @@ the calls that row made (warm-up + sequential + burst).
     python diag_wire.py --broker URL --endpoint EP --rows agent --tasks 200 \\
         --concurrent 50 --wire-out wire-agent.json
 
-Prints one `WIRE` line per row and frame class.
+Prints one `WIRE` line per row and frame class, and one `BURST` line per
+burst (with `--bursts`): its time and the frames sent and received in it.
 """
 
 import asyncio
@@ -100,6 +101,27 @@ async def run_row(label, call, n_meas, n_conc):
 
 
 bench.run_row = run_row
+BURSTS: dict = {}
+_snap: dict = {}
+
+
+def on_burst(label, k, elapsed):
+    """Per burst: frames by class between its start and its end."""
+    if elapsed is None:
+        _snap[label] = N.copy()
+        return
+    n0 = _snap.pop(label)
+    frames = {f"{d} {cls}": N[d, cls] - n0[d, cls]
+              for d, cls in set(N) | set(n0) if N[d, cls] - n0[d, cls]}
+    BURSTS.setdefault(label, []).append({"k": k, "elapsed_s": elapsed,
+                                         "frames": frames})
+    sub = sum(v for key, v in frames.items() if key.startswith("out request"))
+    print(f"BURST {label:24s} {k:2d} {elapsed * 1000:8.1f} ms  "
+          f"submit requests {sub:4d}  " +
+          " ".join(f"{key}={v}" for key, v in sorted(frames.items())))
+
+
+bench.ON_BURST = on_burst
 
 if __name__ == "__main__":
     wire_out = None
@@ -109,4 +131,5 @@ if __name__ == "__main__":
         del sys.argv[i:i + 2]
     asyncio.run(bench.main())
     if wire_out:
-        Path(wire_out).write_text(json.dumps(WIRE, indent=2))
+        Path(wire_out).write_text(json.dumps({"rows": WIRE, "bursts": BURSTS},
+                                             indent=2))

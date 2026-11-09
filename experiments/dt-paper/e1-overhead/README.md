@@ -251,3 +251,115 @@ hsn0 address) and client on node 0; endpoint on node 1 ("cross") or node 0
   ("cross") vs all on node 0: zmq 0.15 / 0.16 ms p50, 31.7k / 32.2k msg/s;
   orbit 0.45 / 0.43 ms, 10.0k / 10.4k msg/s (E1 run C loopback 0.49 ms).
 
+
+## Perlmutter round 3, 2026-11-09 (T1, T2; `JOURNAL-pm-20261110.md`)
+
+### T1: the DT rows' burst loss through ORBIT is a rhapsody leak, not the DT
+
+Rounds 2-2c ran bare, investigator and agent in one client process and
+measured one burst each: at c=500 cross-node the investigator reached
+0.74x bare and the agent 0.60x.  Round 3 runs each row in its own process
+too, with 5 bursts per run (`--bursts`), 5 repeats, rotated row order
+(job 61056507, `results/r3/t1/t1-table-stack-r3-20261110.md`):
+
+| c | row | solo, first burst | x bare | in-process, first burst | x bare |
+|---|---|---|---|---|---|
+| 500 | bare | 819 | 1.00 | 738 | 1.00 |
+| 500 | investigator | 818 | 1.00 | 464 | 0.63 |
+| 500 | agent | 764 | 0.93 | 326 | 0.44 |
+| 50 | bare | 658 | 1.00 | 801 | 1.00 |
+| 50 | investigator | 627 | 0.95 | 634 | 0.79 |
+| 50 | agent | 772 | 1.17 | 514 | 0.64 |
+
+(medians over 5 repeats, req/s; every repeat is in the table file.)  Solo,
+the rows are equal at c=500.  In one process, burst throughput falls with
+every burst whatever the row: bare 789 -> 553 over its own 5 bursts, then
+the investigator 465 -> 341, then the agent 309 -> 287.  The DT rows lose
+because they run later in the same client session.  The wire carries the
+same per call in every row (`diag_wire.py`: per call 0.82 submit requests,
+1.82 `task_status` events at c=50; request 1613 B bare vs 1793 B DT).
+
+**The decay.**  20 bursts of 500 in one bare process fall from 717 to 243
+req/s (job 61058980, `results/r3/t1/t1b/`), and without the sequential
+phase (`--tasks 1`) the curve is the same, shifted by its 1000 tasks: it
+follows the session's task count, not time.  A new client session starts
+fast again although the endpoint process is the same.  The client is idle
+(py-spy: about 1% on-CPU); the endpoint's 32 worker threads are busy in
+`ConcurrentExecutionBackend._run_in_thread`, and busier as the session
+ages.
+
+**The cause** (rhapsody 0.6.0 `backends/execution/concurrent.py`): with a
+thread pool every async function task runs under `asyncio.run()` in a
+worker thread, and `asyncio.run()` ends with `_cancel_all_tasks` ->
+`asyncio.all_tasks(loop)`, which copies and filters the process-wide set of
+every live asyncio Task.  `submit_tasks` stores each task's asyncio Task in
+`self.tasks[uid]` and in the task dict itself (`task["future"]`); neither is
+dropped when the task ends, and the task dict also lives on in the ORBIT
+rhapsody plugin's session `_tasks` for the session's lifetime.  So every
+finished Task stays alive, the set grows by one per task, and each task
+pays for all the session's earlier ones.  The process pool path (the local
+rows in P1) runs `asyncio.run()` in a child process and does not see it.
+
+Reproduced without ORBIT (`r3/diag_thread_decay.py`, login node, bursts of
+500 on a 32-thread backend): 1813 -> 437 req/s over 12 bursts while the
+live-task set grows to 6000; with `--prune` (finished tasks dropped from
+`self.tasks` and their `"future"` key, harness-side) the set stays at 2 and
+the rate stays at 1700-2100.
+
+**Through ORBIT with the prune** (`r3/endpoint_prune.py` wraps the
+endpoint, job 61059793, `results/r3/t1/t1c/`): 20 bursts at c=500 stay at
+800-1200 req/s for every row (unpatched: 717 -> 243), the in-process rows
+are equal (c=500 first bursts 940 / 1145 / 926, bursts 2-5 1093 / 1043 /
+1067), and so are the solo rows at c=50 (1008 / 996 / 1019).
+
+**The bimodal bare.**  The 500-vs-800 split at c=50 is the same leak.  Per
+burst (`diag_wire.py --bursts`), every row starts at about 83 ms per burst
+of 50, has one burst of about 138 ms, and then runs at about 65 ms; every
+burst is one submit request, so it is not submit batching.  Where that
+switch falls relative to the one measured burst decided the "mode".  With
+the prune all rows run at 1000-1100 req/s from the first burst; one burst
+in about ten still drops to about 450 in every row (not investigated).
+
+**For the paper:** the DT adds no measurable burst cost through ORBIT; the
+0.74x / 0.60x numbers are an artefact of rhapsody's concurrent backend
+keeping finished asyncio Tasks alive, which slows every task by the
+session's age.  Not a `src/` bug and no `src/` change; the fix belongs in
+rhapsody (drop the task's future on completion) and is an open question
+for Andre.  Separately, the per-task `asyncio.run()` (a new event loop,
+socketpair and close per task) is the endpoint's fixed per-task cost.
+
+### T2: the ex-situ gap is the DT's per-message path, not the ZMQ hop
+
+Round 2 put the dt row's fall-off at large windows (0.35x bare at 100
+samples per window) on the ZMQ stream hop.  Round 3 adds two rows to
+`bench_dt_exsitu.py` and refutes that: **zmq** is the bare learner fed
+through the same `ChannelPublisher` -> broker -> `subscribe_to_channel`
+path and nothing else; **dt-batched** is the dt row with each window
+published as one JSON list, unpacked by the learner's `_feed` (harness-side;
+`src/` unchanged).  Pool 8, 400 samples, 5 repeats, medians
+(`results/r3/t2/t2-table-stack-r3-20261110.md`, job 61057674):
+
+| window | bare msg/s | zmq | dt | dt-batched | zmq x bare | dt x bare | dt-batched x bare |
+|---|---|---|---|---|---|---|---|
+| 1 | 492 | 496 | 456 | 455 | 1.01 | 0.93 | 0.92 |
+| 10 | 4842 | 4565 | 3672 | 4265 | 0.94 | 0.76 | 0.88 |
+| 50 | 21633 | 18781 | 9823 | 17709 | 0.87 | 0.45 | 0.82 |
+| 100 | 37152 | 32054 | 12727 | 31098 | 0.86 | 0.34 | 0.84 |
+
+Per sample at window 100: bare 27 us, zmq 31 us, dt 79 us.  The hop costs
+about 4 us per message; the DT adds about 47 us per message on top of it.
+Paced publish p50 at window 100: bare 2.1 ms, zmq 6.6, dt 12.0,
+dt-batched 3.1.
+
+py-spy on-CPU at window 100, 100k samples (job 61059078,
+`results/r3/t2/t2b/`): the stream client's receive loop costs the same in
+both rows (about 740 vs 830 samples), and the DT's extra time has no single
+hot spot -- it is the per-message event path: `_launch_consumer` ->
+`_dtype_consumer` (a `gather` per message) -> `_run_component` (context
+stamps, `ON_INPUT` fired as a new Task for the learner's `_feed`) -> the
+in-situ inference task, which the twin runs for every sample, and the event
+loop turns those tasks cost.  That is a design cost of treating every
+message as an event that also serves inference, not a bug; no `src/`
+change.  Publishing a window as one message removes it (0.84x, within 2%
+of zmq): for the paper, the per-message cost is about 47 us on Perlmutter,
+and a producer that batches pays it once per batch.

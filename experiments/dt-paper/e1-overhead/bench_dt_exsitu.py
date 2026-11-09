@@ -14,6 +14,14 @@ all `as_executable=False` function tasks):
          broker); it reaches the learner via `ON_INPUT`.  The twin also
          runs its (no-op, local) inference task per sample, as the real
          shape does
+  zmq    (round 3) the bare row's learner fed through the same ZMQ hop as
+         dt and nothing else: the same `ChannelPublisher`, and a stream
+         client whose `subscribe_to_channel` queue a pump drains into the
+         `rose.Stream` -- no twin, no in-situ inference
+  dt-batched  (round 3) the dt row, but the publisher sends each window
+         as one JSON list and the learner's `_feed` unpacks it, so one
+         channel message (and one in-situ inference) per window instead of
+         per sample; harness-side only, `src/` unchanged
 
 Per row and batch size, two runs:
 
@@ -167,6 +175,8 @@ async def run_bare_paced(flow, bs, windows):
 class Learner(StreamingLearnerInvestigator):
     """The DT row: same tasks, timestamps on feed, window and publish."""
 
+    batched = False
+
     def __init__(self, flow, bs):
         super().__init__(flow, None, batch_size=bs, max_wait=None,
                          conflate=False)
@@ -184,8 +194,13 @@ class Learner(StreamingLearnerInvestigator):
         self.inference_task = infer
 
     async def _feed(self, in_data):
-        self.feed_t.append(time.perf_counter())
-        await super()._feed(in_data)
+        if not self.batched:
+            self.feed_t.append(time.perf_counter())
+            await super()._feed(in_data)
+            return
+        for item in in_data.data:  # dt-batched: one message per window
+            self.feed_t.append(time.perf_counter())
+            await super()._feed(TypedData(in_data.dtype, item))
 
     def published_model(self, state):
         self.pub_t.append(time.perf_counter())
@@ -199,10 +214,11 @@ class Learner(StreamingLearnerInvestigator):
             self.done.set()
 
 
-async def run_dt(flow, broker, bs, n, paced_windows=None):
+async def run_dt(flow, broker, bs, n, paced_windows=None, batched=False):
     stream = await connect_stream_client("e1-exsitu", *broker.get_connection_str())
     runtime = DTRuntime(flow, stream)
     learner = Learner(flow, bs)
+    learner.batched = batched
     learner.expected = n if n is not None else bs * paced_windows
     bound = runtime.add_input(X, CHANNEL, CODEC_JSON)
     runtime.add_investigator(learner, X, Y)
@@ -225,13 +241,19 @@ async def run_dt(flow, broker, bs, n, paced_windows=None):
         if paced_windows:
             for w in range(paced_windows):
                 learner.published.clear()
-                for i in range(bs):
+                if batched:
+                    t_pub = time.perf_counter()
+                    await publisher.publish(list(range(w * bs, (w + 1) * bs)))
+                for i in range(0 if batched else bs):
                     t_pub = time.perf_counter()
                     await publisher.publish(w * bs + i)
                 await asyncio.wait_for(learner.published.wait(), DRAIN_TIMEOUT)
                 # from the last sample's publish on the channel: includes
                 # the hop through the broker into the twin
                 lat.append(learner.pub_t[-1] - t_pub)
+        elif batched:
+            for i in range(0, n, bs):
+                await publisher.publish(list(range(i, min(i + bs, n))))
         else:
             for i in range(n):
                 await publisher.publish(i)
@@ -248,6 +270,78 @@ async def run_dt(flow, broker, bs, n, paced_windows=None):
         return learner.count, lat
     return (learner.count, learner.t_last - learner.feed_t[0],
             window_latencies(learner.feed_t, learner.pub_t, bs))
+
+
+async def run_zmq(flow, broker, bs, n, paced_windows=None):
+    """The bare learner behind the dt row's ZMQ hop, without the twin."""
+
+    client = await connect_stream_client("e1-exsitu-zmq",
+                                         *broker.get_connection_str())
+    learner, stream = bare_learner(flow, bs)
+    queue: asyncio.Queue = asyncio.Queue()
+    feed_t, pub_t = [], []
+    published = asyncio.Event()
+
+    def ready(state):
+        pub_t.append(time.perf_counter())
+        published.set()
+
+    learner.on_model_ready(ready)
+    await client.subscribe_to_channel(CHANNEL, X, queue, CODEC_JSON)
+
+    async def pump():
+        while True:
+            item = await queue.get()
+            feed_t.append(time.perf_counter())
+            await stream.feed(item.data)
+
+    count, t_last = 0, None
+    expected = n if n is not None else bs * paced_windows
+    done = asyncio.Event()
+
+    async def consume():
+        nonlocal count, t_last
+        async for state in learner.start(stream=stream,
+                                         skip_simulation_step=True):
+            count += state.window_size
+            t_last = time.perf_counter()
+            if count >= expected:
+                done.set()
+
+    pumper = asyncio.ensure_future(pump())
+    consumer = asyncio.ensure_future(consume())
+    publisher = await ChannelPublisher.open(
+        CHANNEL, CODEC_JSON, config=PubSubConfig(None, *broker.get_connection_str()),
+        timeout=10.0)
+    lat = []
+    try:
+        await asyncio.sleep(0.3)  # as run_dt: the subscription reaches the broker
+        if paced_windows:
+            for w in range(paced_windows):
+                published.clear()
+                for i in range(bs):
+                    t_pub = time.perf_counter()
+                    await publisher.publish(w * bs + i)
+                await asyncio.wait_for(published.wait(), DRAIN_TIMEOUT)
+                lat.append(pub_t[-1] - t_pub)
+        else:
+            for i in range(n):
+                await publisher.publish(i)
+        try:
+            await asyncio.wait_for(done.wait(), DRAIN_TIMEOUT)
+        except TimeoutError:
+            raise RuntimeError(f"zmq row stalled: {len(feed_t)} fed, "
+                               f"{count} in windows of {expected}")
+    finally:
+        await publisher.close()
+        learner.stop()
+        pumper.cancel()
+        await asyncio.gather(pumper, return_exceptions=True)
+        await asyncio.wait_for(consumer, DRAIN_TIMEOUT)
+        await client.close()
+    if paced_windows:
+        return count, lat
+    return count, t_last - feed_t[0], window_latencies(feed_t, pub_t, bs)
 
 
 def provenance(args) -> dict:
@@ -310,6 +404,10 @@ async def main():
             await run_bare(flow, 5, 50)
         if "dt" in rows:
             await run_dt(flow, broker, 5, 50)
+        if "zmq" in rows:
+            await run_zmq(flow, broker, 5, 50)
+        if "dt-batched" in rows:
+            await run_dt(flow, broker, 5, 50, batched=True)
 
         for row in rows:
             out = results["rows"][row] = {"msg_per_s": [], "samples": [],
@@ -318,9 +416,13 @@ async def main():
             for bs in sizes:
                 if row == "bare":
                     count, elapsed, lat = await run_bare(flow, bs, args.samples)
+                elif row == "zmq":
+                    count, elapsed, lat = await run_zmq(flow, broker, bs,
+                                                        args.samples)
                 else:
-                    count, elapsed, lat = await run_dt(flow, broker, bs,
-                                                       args.samples)
+                    count, elapsed, lat = await run_dt(
+                        flow, broker, bs, args.samples,
+                        batched=row == "dt-batched")
                 assert count == args.samples, (row, bs, count, args.samples)
                 rate = count / elapsed
                 out["msg_per_s"].append(rate)
@@ -329,12 +431,16 @@ async def main():
 
                 if row == "bare":
                     pcount, plat = await run_bare_paced(flow, bs, args.windows)
+                elif row == "zmq":
+                    pcount, plat = await run_zmq(flow, broker, bs, None,
+                                                 paced_windows=args.windows)
                 else:
                     pcount, plat = await run_dt(flow, broker, bs, None,
-                                                paced_windows=args.windows)
+                                                paced_windows=args.windows,
+                                                batched=row == "dt-batched")
                 assert pcount == bs * args.windows, (row, bs, pcount)
                 out["publish_latency"].append(summary(plat))
-                print(f"{row:5s} batch={bs:4d} {rate:9.0f} msg/s  "
+                print(f"{row:10s} batch={bs:4d} {rate:9.0f} msg/s  "
                       f"paced publish p50 {summary(plat).get('p50_ms', float('nan')):7.2f} ms "
                       f"({count} + {pcount} samples)", flush=True)
     finally:

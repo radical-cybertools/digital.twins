@@ -1,0 +1,83 @@
+{
+  "args": {
+    "workers": 32,
+    "concurrent": 500,
+    "bursts": 12,
+    "prune": true,
+    "out": "../results/r3/t1/decay-local/thread-decay-prune-login-stack-r3-20261110.json"
+  },
+  "bursts": [
+    {
+      "burst": 0,
+      "req_per_s": 2078.238609001923,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 1,
+      "req_per_s": 1937.1559568755852,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 2,
+      "req_per_s": 1678.3017115424607,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 3,
+      "req_per_s": 1933.2948179662042,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 4,
+      "req_per_s": 1948.723419634389,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 5,
+      "req_per_s": 1895.374206455388,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 6,
+      "req_per_s": 1379.1400658666064,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 7,
+      "req_per_s": 1995.6007786533903,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 8,
+      "req_per_s": 2040.6120155896192,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 9,
+      "req_per_s": 1742.2411869073617,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 10,
+      "req_per_s": 2130.899793568019,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 11,
+      "req_per_s": 2020.7601835219348,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    }
+  ]
+}
