@@ -1,4 +1,22 @@
 {
+  "provenance": {
+    "added_after_run": "by hand from the job log, 2026-11-10 (harness had none then)",
+    "experiment": "E1 thread-pool decay repro",
+    "harness": "diag_thread_decay.py",
+    "time": "2026-11-10T23:03:47Z (job start)",
+    "host": "nid004704",
+    "python": "3.12.12",
+    "digital_twins_commit": "e2bcd29 (fca2d54 + r3b U0 scripts)",
+    "backend": "concurrent (ThreadPoolExecutor(32))",
+    "slurm_job": "61111505",
+    "args": {
+      "workers": 32,
+      "concurrent": 500,
+      "bursts": 20,
+      "prune": false,
+      "out": "experiments/dt-paper/results/r3b/u1/thread-decay-c500-b20-stack-r3b-20261110.json"
+    }
+  },
   "args": {
     "workers": 32,
     "concurrent": 500,
