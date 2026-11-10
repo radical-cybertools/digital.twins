@@ -112,6 +112,10 @@ class StreamingLearnerInvestigator(ModelInvestigator):
     inference task runs with.
     """
 
+    # its in-situ inference only serves answers; an unconsumed one is
+    # skipped (see `ModelInvestigator`)
+    infer_without_consumer = False
+
     def __init__(
         self,
         flow: WorkflowEngine,
