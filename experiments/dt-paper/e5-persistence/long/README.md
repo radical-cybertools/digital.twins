@@ -38,7 +38,7 @@ crontab -e   # see below
 ```
 
 ```cron
-@reboot  $HOME/dt-long/digital.twins/experiments/dt-paper/e5-persistence/long/run-long.sh
+@reboot  DT_LONG_ARGS="--probe 60 --sensor-interval 10" $HOME/dt-long/digital.twins/experiments/dt-paper/e5-persistence/long/run-long.sh
 5 0 * * * $HOME/dt-long/ve/bin/python $HOME/dt-long/digital.twins/experiments/dt-paper/e5-persistence/long/summarize_long.py --events $HOME/dt-long/events --out $HOME/dt-long/summaries
 ```
 
