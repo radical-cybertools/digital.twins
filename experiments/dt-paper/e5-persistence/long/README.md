@@ -48,3 +48,10 @@ Dry run (24 h): `DT_LONG_ARGS="--kill-every 3600" run-long.sh`, so it has
 Credentials: the default pair and token in `~/.radical/orbit` on the host.
 Stop: `tmux kill-session -t dt-long` (ends the epoch, as a broker loss
 does).
+
+## Runs
+
+| Run | Stack | Settings | Result |
+|---|---|---|---|
+| dry run, radical.3, 2026-11-09 13:14 to 23:58 UTC (`results/e5-long/dryrun-20261109/`) | `b24b9ab` | kill every 3600 s, probe 10 s, sensor 1 s | 3868/3868 probes per twin, 10/10 reattach, 10/10 kills detected (10.1 s), no outage; memory grew per task in every layer: inference endpoint 130 to 1100 MB, broker 134 to 356 MB |
+| 30-day run, radical.3, from 2026-11-10 00:00 UTC | `044ccd9` (finished tasks released: asyncflow #128, rhapsody #134, orbit #167, DT #59) | kill every 86400 s, probe 60 s, sensor 10 s | running; ends 2026-12-10 |

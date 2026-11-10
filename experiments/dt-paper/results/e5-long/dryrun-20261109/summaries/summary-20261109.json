@@ -1,0 +1,158 @@
+{
+  "from_utc": "2026-11-09T13:14:00.646Z",
+  "to_utc": "2026-11-09T23:58:33.951Z",
+  "events": {
+    "driver_start": 1,
+    "endpoint_killed": 10,
+    "learning_resumed": 11,
+    "loss_detected": 10,
+    "probe": 7736,
+    "reattach": 10,
+    "session_a_created": 1,
+    "stats": 43
+  },
+  "probes": {
+    "inf": {
+      "n": 3868,
+      "ok": 3868,
+      "availability": 1.0,
+      "rtt_ms": {
+        "n": 3868,
+        "p50": 25.568485260009766,
+        "p90": 36.589860916137695,
+        "p99": 62.030792236328125,
+        "max": 518.0444717407227
+      },
+      "errors": []
+    },
+    "lrn": {
+      "n": 3868,
+      "ok": 3868,
+      "availability": 1.0,
+      "rtt_ms": {
+        "n": 3868,
+        "p50": 23.41020107269287,
+        "p90": 36.41843795776367,
+        "p99": 70.82056999206543,
+        "max": 208.45341682434082
+      },
+      "errors": []
+    }
+  },
+  "outages": [],
+  "epochs": [
+    1
+  ],
+  "reattach": {
+    "n": 10,
+    "ok": 10,
+    "attach_s": {
+      "n": 10,
+      "p50": 0.029668211936950684,
+      "p90": 0.03210711479187012,
+      "p99": 0.03210711479187012,
+      "max": 0.03210711479187012
+    }
+  },
+  "loss": {
+    "kills": 10,
+    "detected": 10,
+    "not_detected": 0,
+    "detect_s": {
+      "n": 10,
+      "p50": 10.089783072471619,
+      "p90": 10.097644329071045,
+      "p99": 10.097644329071045,
+      "max": 10.097644329071045
+    },
+    "resume_s": {
+      "n": 11,
+      "p50": 2.3207266330718994,
+      "p90": 2.3438663482666016,
+      "p99": 2.3564438819885254,
+      "max": 2.3564438819885254
+    },
+    "cycle_failures": 0
+  },
+  "resources": {
+    "broker": {
+      "rss_kb": {
+        "first": 137380,
+        "last": 365512,
+        "max": 365512
+      },
+      "threads": {
+        "first": 78,
+        "last": 121,
+        "max": 121
+      },
+      "fds": {
+        "first": 47,
+        "last": 72,
+        "max": 72
+      }
+    },
+    "inference": {
+      "rss_kb": {
+        "first": 133616,
+        "last": 1127040,
+        "max": 1127040
+      },
+      "threads": {
+        "first": 72,
+        "last": 104,
+        "max": 106
+      },
+      "fds": {
+        "first": 21,
+        "last": 21,
+        "max": 22
+      }
+    },
+    "learning": {
+      "rss_kb": {
+        "first": 31536,
+        "last": 234924,
+        "max": 244652
+      },
+      "threads": {
+        "first": 1,
+        "last": 70,
+        "max": 72
+      },
+      "fds": {
+        "first": 4,
+        "last": 20,
+        "max": 21
+      }
+    },
+    "driver": {
+      "rss_kb": {
+        "first": 131512,
+        "last": 106248,
+        "max": 132220
+      },
+      "threads": {
+        "first": 74,
+        "last": 74,
+        "max": 74
+      },
+      "fds": {
+        "first": 29,
+        "last": 29,
+        "max": 29
+      }
+    }
+  },
+  "notable": {
+    "driver_start": [
+      "2026-11-09T13:14:00.646Z"
+    ],
+    "session_a_created": [
+      "2026-11-09T13:14:03.273Z"
+    ],
+    "session_a_lost": [],
+    "client_rebuild": [],
+    "client_rebuild_failed": []
+  }
+}
