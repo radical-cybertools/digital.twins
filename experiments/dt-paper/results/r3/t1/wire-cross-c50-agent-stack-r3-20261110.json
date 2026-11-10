@@ -1,0 +1,31 @@
+{
+  "DT agent + selector": {
+    "calls": 270,
+    "frames": {
+      "in event rhapsody/task_status": {
+        "n": 490,
+        "bytes": 124072,
+        "per_call": 1.8148148148148149,
+        "bytes_per_frame": 253.20816326530613
+      },
+      "in event rhapsody/task_status_batch": {
+        "n": 1,
+        "bytes": 4305,
+        "per_call": 0.003703703703703704,
+        "bytes_per_frame": 4305.0
+      },
+      "in response": {
+        "n": 221,
+        "bytes": 61164,
+        "per_call": 0.8185185185185185,
+        "bytes_per_frame": 276.76018099547514
+      },
+      "out request": {
+        "n": 221,
+        "bytes": 396361,
+        "per_call": 0.8185185185185185,
+        "bytes_per_frame": 1793.4886877828055
+      }
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "provenance": {
+    "experiment": "E2/E4 model publishing under inference",
+    "harness": "bench_publish.py",
+    "time": "2026-11-09T16:44:41-0800",
+    "host": "nid004800",
+    "python": "3.12.12",
+    "digital_twins_commit": "1e201df053ee6861d40cd58d97902c4343141a48",
+    "digital_twins_dirty": false,
+    "backend": "local concurrent pool",
+    "notify_window": null,
+    "slurm_job": "61061603",
+    "args": {
+      "broker": null,
+      "endpoint": null,
+      "backends": [
+        "concurrent"
+      ],
+      "workers": 8,
+      "concurrency": 1,
+      "rates": "0,1,10,100,1000,max",
+      "seconds": 10.0,
+      "out": "experiments/dt-paper/results/r3/t4/publish-pm-pool8-c1-r3-stack-r3-20261110.json"
+    }
+  },
+  "points": [
+    {
+      "rate_target": 0.0,
+      "concurrency": 1,
+      "seconds": 10.000505399890244,
+      "models_published_per_s": 0.0,
+      "models_seen_per_s": 0.0,
+      "requests": 16737,
+      "req_per_s": 1673.6154154952699,
+      "p50_ms": 0.580910942517221,
+      "p90_ms": 0.6215899484232068,
+      "req_per_s_x_rate0": 1.0,
+      "p50_x_rate0": 1.0
+    },
+    {
+      "rate_target": 1.0,
+      "concurrency": 1,
+      "seconds": 10.000659019104205,
+      "models_published_per_s": 0.9999341024323551,
+      "models_seen_per_s": 0.8999406921891195,
+      "requests": 16025,
+      "req_per_s": 1602.394399147849,
+      "p50_ms": 0.5947479512542486,
+      "p90_ms": 0.6440739380195737,
+      "req_per_s_x_rate0": 0.9574448133734808,
+      "p50_x_rate0": 1.0238195009325675
+    },
+    {
+      "rate_target": 10.0,
+      "concurrency": 1,
+      "seconds": 10.000296953949146,
+      "models_published_per_s": 9.999703054868757,
+      "models_seen_per_s": 9.799708993771382,
+      "requests": 16122,
+      "req_per_s": 1612.152126505941,
+      "p50_ms": 0.5993460072204471,
+      "p90_ms": 0.6489530205726624,
+      "req_per_s_x_rate0": 0.9632751416960746,
+      "p50_x_rate0": 1.031734752014384
+    },
+    {
+      "rate_target": 100.0,
+      "concurrency": 1,
+      "seconds": 10.000555176986381,
+      "models_published_per_s": 99.99444853834056,
+      "models_seen_per_s": 98.09455401611208,
+      "requests": 16422,
+      "req_per_s": 1642.1088338966288,
+      "p50_ms": 0.5907599697820842,
+      "p90_ms": 0.6295549683272839,
+      "req_per_s_x_rate0": 0.9811745390805227,
+      "p50_x_rate0": 1.016954452987553
+    },
+    {
+      "rate_target": 1000.0,
+      "concurrency": 1,
+      "seconds": 10.000474469969049,
+      "models_published_per_s": 999.9525552542058,
+      "models_seen_per_s": 974.1537793286473,
+      "requests": 16171,
+      "req_per_s": 1617.0232771015762,
+      "p50_ms": 0.5953989457339048,
+      "p90_ms": 0.6339739775285125,
+      "req_per_s_x_rate0": 0.9661856972218755,
+      "p50_x_rate0": 1.0249401451346467
+    },
+    {
+      "rate_target": "max",
+      "concurrency": 1,
+      "seconds": 10.00160993996542,
+      "models_published_per_s": 163013.95573177462,
+      "models_seen_per_s": 468.62455426013196,
+      "requests": 4688,
+      "req_per_s": 468.7245381633238,
+      "p50_ms": 1.4847745769657195,
+      "p90_ms": 4.1873089503496885,
+      "req_per_s_x_rate0": 0.2800670535318982,
+      "p50_x_rate0": 2.5559418291069695
+    }
+  ]
+}

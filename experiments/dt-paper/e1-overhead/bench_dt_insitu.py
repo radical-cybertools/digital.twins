@@ -10,6 +10,10 @@ is the DT layer and nothing else:
               whose inference task awaits that same function task
   agent       the xGFabric twin shape: a `SciAgent` with a model
               selector in front of the investigator
+  xgf         (round 3) the workflow as xGFabric wired it before the DT
+              framework: a ZMQ request/reply service, one reading per
+              request, one asyncflow task per reading, the answer as the
+              reply (see `xgf_row`)
 
 Each row: N sequential requests (latency percentiles), then C requests
 gathered at once (throughput).  Results go to stdout and, with --out, to
@@ -29,6 +33,7 @@ bypasses the queues; the harness starts an embedded ZMQ broker.
 
 import argparse
 import asyncio
+import itertools
 import json
 import os
 import platform
@@ -65,6 +70,8 @@ N_WARM = 20
 N_MEAS = 200
 N_CONCURRENT = 50
 READY_TIMEOUT = 30.0
+N_BURSTS = 1          # --bursts: back-to-back bursts per row (round 3)
+ON_BURST = None       # diagnostics: called (label, k, elapsed or None) around each burst
 
 
 class Inv(ModelInvestigator):
@@ -114,17 +121,27 @@ async def run_row(label, call, n_meas, n_conc) -> dict:
 
     report(label, latencies)
 
-    start = time.perf_counter()
-    answers = await asyncio.gather(*[call(i) for i in range(n_conc)])
-    elapsed = time.perf_counter() - start
-    assert answers == list(range(n_conc)), label
+    bursts = []
+    for k in range(N_BURSTS):
+        if ON_BURST:
+            ON_BURST(label, k, None)
+        start = time.perf_counter()
+        answers = await asyncio.gather(*[call(i) for i in range(n_conc)])
+        elapsed = time.perf_counter() - start
+        assert answers == list(range(n_conc)), label
+        bursts.append(elapsed)
+        if ON_BURST:
+            ON_BURST(label, k, elapsed)
 
-    print(f"{label:28s} {n_conc} concurrent requests in {elapsed * 1000:.1f}ms "
-          f"({n_conc / elapsed:.0f} req/s)")
+        print(f"{label:28s} {n_conc} concurrent requests in {elapsed * 1000:.1f}ms "
+              f"({n_conc / elapsed:.0f} req/s)")
 
-    return {"latencies_s": latencies,
-            "concurrent": n_conc,
-            "concurrent_s": elapsed}
+    row = {"latencies_s": latencies,
+           "concurrent": n_conc,
+           "concurrent_s": bursts[0]}
+    if N_BURSTS > 1:
+        row["bursts_s"] = bursts
+    return row
 
 
 async def wait_ready(runtime):
@@ -154,6 +171,66 @@ async def twin_row(label, stream, flow, add, args) -> dict:
         return await run_row(label, call, args.tasks, args.concurrent)
     finally:
         await runtime.stop()
+
+
+async def xgf_row(label, predict, args) -> dict:
+    """The pre-DT xGFabric wiring, structure copied, not code.
+
+    xGFabric `devel`: `service/src/xgfabric/service/service.py` is a
+    `radical.utils` ZMQ server whose `register_fname` request carries one
+    sensor reading, runs the workload for it and returns the result as the
+    reply; `service/bin/xgfabric-client.py` is the client that sends it.
+    (The readings reach it over CSPOT/WOOF, `demo1/ucsb/rpi-5G-scripts/
+    cups-relay.sh`, or a polled input directory -- not reproducible here.)
+    Here: ROUTER service <- DEALER client on loopback, JSON bodies, and an
+    asyncio loop that submits one asyncflow task per request instead of the
+    service's blocking `run_workload`.
+    """
+
+    import zmq
+    import zmq.asyncio
+
+    ctx = zmq.asyncio.Context()
+    srv = ctx.socket(zmq.ROUTER)
+    port = srv.bind_to_random_port("tcp://127.0.0.1")
+    cli = ctx.socket(zmq.DEALER)
+    cli.connect(f"tcp://127.0.0.1:{port}")
+    handlers: set = set()
+    waiting: dict = {}
+    rids = itertools.count()
+
+    async def handle(ident, rid, body):
+        answer = await predict(json.loads(body))
+        await srv.send_multipart([ident, rid, json.dumps(answer).encode()])
+
+    async def serve():
+        while True:
+            ident, rid, body = await srv.recv_multipart()
+            task = asyncio.create_task(handle(ident, rid, body))
+            handlers.add(task)
+            task.add_done_callback(handlers.discard)
+
+    async def receive():
+        while True:
+            rid, body = await cli.recv_multipart()
+            waiting.pop(rid).set_result(json.loads(body))
+
+    async def call(i):
+        rid = str(next(rids)).encode()
+        fut = waiting[rid] = asyncio.get_running_loop().create_future()
+        await cli.send_multipart([rid, json.dumps(i).encode()])
+        return await fut
+
+    loops = [asyncio.create_task(serve()), asyncio.create_task(receive())]
+    try:
+        return await run_row(label, call, args.tasks, args.concurrent)
+    finally:
+        for task in loops + list(handlers):
+            task.cancel()
+        await asyncio.gather(*loops, *handlers, return_exceptions=True)
+        cli.close(0)
+        srv.close(0)
+        ctx.term()
 
 
 async def make_backend(args):
@@ -201,6 +278,7 @@ def provenance(args, backend_label) -> dict:
 
 
 async def main() -> None:
+    global N_BURSTS
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--broker", default=os.environ.get("RADICAL_ORBIT_BROKER_URL"),
@@ -215,11 +293,15 @@ async def main() -> None:
     parser.add_argument("--tasks", type=int, default=N_MEAS)
     parser.add_argument("--concurrent", type=int, default=N_CONCURRENT)
     parser.add_argument("--rows", default="bare,investigator,agent")
+    parser.add_argument("--bursts", type=int, default=N_BURSTS,
+                        help="back-to-back bursts per row; the first is "
+                             "concurrent_s, all are in bursts_s")
     parser.add_argument("--out", help="write results as JSON here")
 
     args = parser.parse_args()
     args.backends = [b for b in args.backends.split(",") if b]
     rows = [r for r in args.rows.split(",") if r]
+    N_BURSTS = args.bursts
 
     backend_label, backend = await make_backend(args)
     flow = await WorkflowEngine.create(backend=backend)
@@ -249,6 +331,10 @@ async def main() -> None:
             results["rows"]["agent"] = await twin_row(
                 "DT agent + selector", stream, flow,
                 lambda rt: rt.add_agent(Agent(flow, predict), X, Y), args)
+
+        if "xgf" in rows:
+            results["rows"]["xgf"] = await xgf_row(
+                "xgf zmq request/reply", predict, args)
     finally:
         await stream.close()
         await broker.stop()

@@ -1,0 +1,137 @@
+{
+  "rows": {
+    "DT investigator": {
+      "calls": 1070,
+      "frames": {
+        "in event rhapsody/task_status": {
+          "n": 2570,
+          "bytes": 644569,
+          "per_call": 2.4018691588785046,
+          "bytes_per_frame": 250.80505836575875
+        },
+        "in event rhapsody/task_status_batch": {
+          "n": 57,
+          "bytes": 50543,
+          "per_call": 0.05327102803738318,
+          "bytes_per_frame": 886.719298245614
+        },
+        "in response": {
+          "n": 1030,
+          "bytes": 297610,
+          "per_call": 0.9626168224299065,
+          "bytes_per_frame": 288.94174757281553
+        },
+        "out request": {
+          "n": 1030,
+          "bytes": 2174296,
+          "per_call": 0.9626168224299065,
+          "bytes_per_frame": 2110.966990291262
+        }
+      }
+    }
+  },
+  "bursts": {
+    "DT investigator": [
+      {
+        "k": 0,
+        "elapsed_s": 0.08508350001648068,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 1,
+          "in event rhapsody/task_status": 50,
+          "in response": 1
+        }
+      },
+      {
+        "k": 1,
+        "elapsed_s": 0.0852953779976815,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 5,
+          "in event rhapsody/task_status": 52,
+          "in response": 1
+        }
+      },
+      {
+        "k": 2,
+        "elapsed_s": 0.08297307812608778,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 8,
+          "in event rhapsody/task_status": 53,
+          "in response": 1
+        }
+      },
+      {
+        "k": 3,
+        "elapsed_s": 0.1388767349999398,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 6,
+          "in event rhapsody/task_status": 56,
+          "in response": 1
+        }
+      },
+      {
+        "k": 4,
+        "elapsed_s": 0.06600170396268368,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 3,
+          "in event rhapsody/task_status": 55,
+          "in response": 1
+        }
+      },
+      {
+        "k": 5,
+        "elapsed_s": 0.0659679090604186,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 4,
+          "in event rhapsody/task_status": 51,
+          "in response": 1
+        }
+      },
+      {
+        "k": 6,
+        "elapsed_s": 0.06853417889215052,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 9,
+          "in event rhapsody/task_status": 53,
+          "in response": 1
+        }
+      },
+      {
+        "k": 7,
+        "elapsed_s": 0.07174496212974191,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 10,
+          "in event rhapsody/task_status": 54,
+          "in response": 1
+        }
+      },
+      {
+        "k": 8,
+        "elapsed_s": 0.06945846183225513,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 7,
+          "in event rhapsody/task_status": 54,
+          "in response": 1
+        }
+      },
+      {
+        "k": 9,
+        "elapsed_s": 0.06886894395574927,
+        "frames": {
+          "out request": 1,
+          "in event rhapsody/task_status_batch": 4,
+          "in event rhapsody/task_status": 52,
+          "in response": 1
+        }
+      }
+    ]
+  }
+}

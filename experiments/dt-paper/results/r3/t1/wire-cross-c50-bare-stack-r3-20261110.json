@@ -1,0 +1,31 @@
+{
+  "bare asyncflow task": {
+    "calls": 270,
+    "frames": {
+      "in event rhapsody/task_status": {
+        "n": 491,
+        "bytes": 124353,
+        "per_call": 1.8185185185185184,
+        "bytes_per_frame": 253.26476578411405
+      },
+      "in event rhapsody/task_status_batch": {
+        "n": 1,
+        "bytes": 4223,
+        "per_call": 0.003703703703703704,
+        "bytes_per_frame": 4223.0
+      },
+      "in response": {
+        "n": 224,
+        "bytes": 61990,
+        "per_call": 0.8296296296296296,
+        "bytes_per_frame": 276.74107142857144
+      },
+      "out request": {
+        "n": 224,
+        "bytes": 361411,
+        "per_call": 0.8296296296296296,
+        "bytes_per_frame": 1613.4419642857142
+      }
+    }
+  }
+}

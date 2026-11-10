@@ -1,0 +1,31 @@
+{
+  "DT investigator": {
+    "calls": 720,
+    "frames": {
+      "in event rhapsody/task_status": {
+        "n": 941,
+        "bytes": 227856,
+        "per_call": 1.3069444444444445,
+        "bytes_per_frame": 242.1424017003188
+      },
+      "in event rhapsody/task_status_batch": {
+        "n": 11,
+        "bytes": 44280,
+        "per_call": 0.015277777777777777,
+        "bytes_per_frame": 4025.4545454545455
+      },
+      "in response": {
+        "n": 221,
+        "bytes": 80964,
+        "per_call": 0.30694444444444446,
+        "bytes_per_frame": 366.3529411764706
+      },
+      "out request": {
+        "n": 221,
+        "bytes": 955429,
+        "per_call": 0.30694444444444446,
+        "bytes_per_frame": 4323.20814479638
+      }
+    }
+  }
+}

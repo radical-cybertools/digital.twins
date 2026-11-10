@@ -1,0 +1,49 @@
+{
+  "provenance": {
+    "experiment": "E2-C broker capacity (dt service sessions)",
+    "harness": "bench_broker.py",
+    "time": "2026-11-09T16:31:37-0800",
+    "host": "nid006511",
+    "python": "3.12.12",
+    "slurm_job": "61061984",
+    "args": {
+      "broker": "https://10.249.17.71:8131",
+      "inference": "dt_r3_t4c_ep1",
+      "sessions": "1,4,16,64,256",
+      "seconds": 20.0,
+      "create_threads": 16,
+      "out": "experiments/dt-paper/results/r3/t4/broker-capacity-stack-r3-20261110.json"
+    }
+  },
+  "points": [
+    {
+      "sessions": 1,
+      "created": 1,
+      "create_s": 2.04613995552063,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794270699.9835367,
+      "load_end_epoch": 1794270719.9861984,
+      "requests": 2949,
+      "failed": 0,
+      "req_per_s": 147.4303791910018,
+      "p50_ms": 6.643056869506836,
+      "p99_ms": 8.214473724365234
+    },
+    {
+      "sessions": 4,
+      "created": 4,
+      "create_s": 0.5883641242980957,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794270720.6499665,
+      "load_end_epoch": 1794270740.6567926,
+      "requests": 4870,
+      "failed": 0,
+      "req_per_s": 243.41691982946827,
+      "p50_ms": 15.564560890197754,
+      "p99_ms": 25.299549102783203
+    }
+  ],
+  "stopped": "p50 doubled at N=4"
+}
