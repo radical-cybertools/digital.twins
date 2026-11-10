@@ -217,4 +217,4 @@ isolation checks empty (both jobs). `results/r3b/u3/`, table
 - For the paper: report several bursts per row (median of bursts 2-5, or the
   solo runs) rather than one burst; the P1 single-burst numbers at c=500 are
   GC-phase-dependent. c=50 bursts are short and less affected (U4 P1 c=50
-  rows within -9..+1% of bare).
+  DT rows 0.86-1.00x bare).
