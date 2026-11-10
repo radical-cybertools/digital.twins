@@ -19,6 +19,11 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 3`.
 | 61059078 | r3-t2b | m5290 | 1 | 00:02:54 | 0.048 | 0.69 | 0.00 |
 | 61059793 | r3-t1c | m5290 | 2 | 00:03:44 | 0.124 | 0.81 | 0.00 |
 | 61060193 | r3-t3 | m5290 | 2 | 00:09:37 | 0.321 | 1.13 | 0.00 |
+| 61060406 | r3-t45r | m5290 | 1 | 00:32:14 | 0.537 | 1.67 | 0.00 |
+| 61061603 | r3-t45l | m5290 | 1 | 00:34:31 | 0.575 | 2.25 | 0.00 |
+| 61061605 | r3-t45o | m5290 | 3 | 00:07:13 | 0.361 | 2.61 | 0.00 |
+| 61061984 | r3-t4c | m5290 | 3 | 00:01:27 | 0.072 | 2.68 | 0.00 |
+| 61062231 | r3-t4c2 | m5290 | 3 | 00:21:18 | 1.065 | 3.74 | 0.00 |
 
 ## T0: setup (done, 2026-11-09 13:22)
 
@@ -112,3 +117,64 @@ solo, 5 repeats, 5 bursts.  Isolation check empty.  Write-up: E1 README,
 - xgf is slower than the DT rows: 0.72x / 0.67x bare locally (bursts),
   0.85x / 0.92x through ORBIT, seq p50 +0.3 ms locally, +0.8 ms at c=1
   through ORBIT.  xGFabric cloned into `$W/scratch-xgf` (not committed to).
+
+## T4: done (2026-11-09 16:55)
+
+Jobs 61060406 (E2a / E2b 5 repeats), 61061603 (agents, publish c=1),
+61061605 (C failed: broker env), 61061984 (C), 61062231 (C past the
+doubled p50, cancelled at N=256).  Isolation checks empty (t4c2's run by
+hand after the cancel).  Write-up: E2 README, "Perlmutter round 3".
+
+- A agents: side by side 4000-8000 inputs/s whatever M; chained 2000/s up
+  to M=8, 1000/s at M=16; no output lost.  Coarse rate grid: lower bounds.
+- B publish: free up to 1000 models/s; "max" (163k/s) starves inference
+  to 0.28x.
+- C broker: CPU-bound on about one core, 250-290 req/s aggregate from N=4,
+  p50 6.6 ms at N=1, 233 ms at N=64; at N=256 creation stalls (keepalive
+  timeouts), no error.  Decision: N=256 counted as "fails to create",
+  cancelled after 21 min rather than waiting for the 30-min limit.
+- D: E2a / E2b numbers in line with round 2 (see table file).
+
+## T5: done (2026-11-09 16:55)
+
+Jobs 61061603 (swap and dip, local), 61061605 (swap and P7 cross-node),
+61060406 (P7 local).  Write-up: E4 README, "Perlmutter round 3".
+
+- A swap: 200 swaps per layout and c, none missed; turnaround p50 0.77 ms
+  local / 5.1 ms cross-node at c=1, 16.5 / 170 ms at c=50 (the in-flight
+  queue).  Decision: agent-side `start_investigator` instead of the page's
+  twin-level `add_investigator` (the selector only sees the agent's own).
+- B dip: publishing up to 100 models/s costs at most 6% req/s, 5% p50.
+- C P7: 0.6-0.7 ms local, 7-7.5 ms cross-node from publish to first answer.
+
+## Close-out (round 3)
+
+All phases done; nothing skipped.  Node-hours: 3.74 of 25 (m5290; table
+above).  No allocation left running.  Every ORBIT job's isolation check
+is empty (t1, t1b, t1c, t3, t45o, t4c, t4c2).  No `src/` change, so no
+fix branch (`fix/pm-orbit-burst` not created).  Branch
+`exp/pm-round3-20261110` pushed.
+
+Open questions for Andre:
+
+1. rhapsody `ConcurrentExecutionBackend` (thread pool) keeps every
+   finished asyncio Task alive (`self.tasks[uid]`, `task["future"]`, and
+   the task dict in the ORBIT rhapsody plugin's session `_tasks`), so
+   every task's `asyncio.run()` gets slower with the session's age (T1).
+   That is what the paper's 0.74x / 0.60x and the bimodal c=50 bare were.
+   Fix in rhapsody (drop the future when a task ends, prune `self.tasks`)?
+   Not done here: outside this repo and the page's fix scope.  After a fix
+   the E1 ORBIT figure should be rerun (T1c shows the expected numbers).
+2. With the prune, one burst in about ten still drops to about 450 req/s
+   in every row (T1c): not investigated.
+3. T2: the DT's per-message path costs about 47 us per message; batching a
+   window per message recovers it.  Should the paper recommend batching,
+   or is a lighter per-message path (no `gather`, no task per `ON_INPUT`)
+   worth a change in `src/`?
+4. T4-C: the broker's dt service saturates one core at about 250-290
+   req/s.  Is that the number for the paper, or should the client be
+   spread over several processes / nodes first to rule out the client?
+5. T3: xgf starts at xGFabric's service request; the CSPOT / input-dir
+   feed (1 s polling) is not in it.  Enough for the baseline?
+6. The ORBIT rows in T3 / T4 / T5 ran on the unpatched stack, so long
+   sessions (P7 cross-node, about 15k tasks) carry the T1 slowdown.

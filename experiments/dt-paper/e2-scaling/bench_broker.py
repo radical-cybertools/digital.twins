@@ -10,7 +10,9 @@ and p99 of the per-call latency, and the epoch times of the load phase so
 a broker-side sampler (the job script's) can be joined on them.
 
 N rises through `--sessions` until p50 is at least double N=1's (that point
-is kept), or sessions fail to create (stop there and say why).
+is kept), or sessions fail to create (stop there and say why).  With
+`--keep-going` it does not stop at the doubled p50 (how many sessions the
+broker holds, past its throughput limit).
 
     python bench_broker.py --broker URL --inference EP \\
         --sessions 1,4,16,64,256 --out broker.json
@@ -118,6 +120,8 @@ def main() -> int:
     p.add_argument("--sessions", default="1,4,16,64,256")
     p.add_argument("--seconds", type=float, default=20.0)
     p.add_argument("--create-threads", type=int, default=16)
+    p.add_argument("--keep-going", action="store_true",
+                   help="do not stop when p50 doubles")
     p.add_argument("--out", required=True)
     args = p.parse_args()
     ns = [int(n) for n in args.sessions.split(",") if n]
@@ -150,7 +154,7 @@ def main() -> int:
                   f"p50 {rec['p50_ms']:.1f} ms  p99 {rec['p99_ms']:.1f} ms  "
                   f"failed {rec['failed']}  load {rec['load_start_epoch']:.1f}-"
                   f"{rec['load_end_epoch']:.1f}", flush=True)
-            if rec["p50_ms"] >= 2 * base:
+            if rec["p50_ms"] >= 2 * base and not args.keep_going:
                 res["stopped"] = f"p50 doubled at N={n}"
                 break
     finally:

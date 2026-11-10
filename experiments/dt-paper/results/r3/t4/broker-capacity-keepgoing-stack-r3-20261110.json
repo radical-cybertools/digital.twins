@@ -1,0 +1,63 @@
+{
+  "provenance": {
+    "experiment": "E2-C broker capacity (dt service sessions)",
+    "harness": "bench_broker.py",
+    "time": "2026-11-09T16:33:39-0800",
+    "host": "nid006762",
+    "python": "3.12.12",
+    "slurm_job": "61062231",
+    "args": {
+      "broker": "https://10.249.2.87:8131",
+      "inference": "dt_r3_t4c_ep1",
+      "sessions": "1,16,64,256",
+      "seconds": 10.0,
+      "create_threads": 16,
+      "keep_going": true,
+      "out": "experiments/dt-paper/results/r3/t4/broker-capacity-keepgoing-stack-r3-20261110.json"
+    }
+  },
+  "points": [
+    {
+      "sessions": 1,
+      "created": 1,
+      "create_s": 2.049833059310913,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794270821.3699908,
+      "load_end_epoch": 1794270831.374948,
+      "requests": 1536,
+      "failed": 0,
+      "req_per_s": 153.5238951485651,
+      "p50_ms": 6.445050239562988,
+      "p99_ms": 7.65681266784668
+    },
+    {
+      "sessions": 16,
+      "created": 16,
+      "create_s": 0.8041958808898926,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794270832.228071,
+      "load_end_epoch": 1794270842.2582507,
+      "requests": 2912,
+      "failed": 0,
+      "req_per_s": 290.3238103179579,
+      "p50_ms": 53.01034450531006,
+      "p99_ms": 136.46650314331055
+    },
+    {
+      "sessions": 64,
+      "created": 64,
+      "create_s": 3.8486483097076416,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794270846.3919015,
+      "load_end_epoch": 1794270856.664717,
+      "requests": 2716,
+      "failed": 0,
+      "req_per_s": 264.3871107203696,
+      "p50_ms": 233.1157922744751,
+      "p99_ms": 400.55251121520996
+    }
+  ]
+}

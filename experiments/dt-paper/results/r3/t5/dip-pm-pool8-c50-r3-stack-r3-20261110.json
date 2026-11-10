@@ -1,0 +1,80 @@
+{
+  "provenance": {
+    "experiment": "E2/E4 model publishing under inference",
+    "harness": "bench_publish.py",
+    "time": "2026-11-09T16:49:14-0800",
+    "host": "nid004800",
+    "python": "3.12.12",
+    "digital_twins_commit": "1e201df053ee6861d40cd58d97902c4343141a48",
+    "digital_twins_dirty": false,
+    "backend": "local concurrent pool",
+    "notify_window": null,
+    "slurm_job": "61061603",
+    "args": {
+      "broker": null,
+      "endpoint": null,
+      "backends": [
+        "concurrent"
+      ],
+      "workers": 8,
+      "concurrency": 50,
+      "rates": "0,1,10,100",
+      "seconds": 10.0,
+      "out": "experiments/dt-paper/results/r3/t5/dip-pm-pool8-c50-r3-stack-r3-20261110.json"
+    }
+  },
+  "points": [
+    {
+      "rate_target": 0.0,
+      "concurrency": 50,
+      "seconds": 10.005675925989635,
+      "models_published_per_s": 0.0,
+      "models_seen_per_s": 0.0,
+      "requests": 30790,
+      "req_per_s": 3077.2533737599183,
+      "p50_ms": 15.539755928330123,
+      "p90_ms": 17.143892007879913,
+      "req_per_s_x_rate0": 1.0,
+      "p50_x_rate0": 1.0
+    },
+    {
+      "rate_target": 1.0,
+      "concurrency": 50,
+      "seconds": 10.006339640007354,
+      "models_published_per_s": 0.9993664376549836,
+      "models_seen_per_s": 0.8994297938894852,
+      "requests": 30464,
+      "req_per_s": 3044.4699156721417,
+      "p50_ms": 15.594356984365731,
+      "p90_ms": 17.374190967530012,
+      "req_per_s_x_rate0": 0.9893465197349933,
+      "p50_x_rate0": 1.0035136366547472
+    },
+    {
+      "rate_target": 10.0,
+      "concurrency": 50,
+      "seconds": 10.00754183891695,
+      "models_published_per_s": 9.99246384472996,
+      "models_seen_per_s": 9.592765290940761,
+      "requests": 28942,
+      "req_per_s": 2892.018885941745,
+      "p50_ms": 16.44327398389578,
+      "p90_ms": 17.92937098070979,
+      "req_per_s_x_rate0": 0.9398052531527991,
+      "p50_x_rate0": 1.0581423582025813
+    },
+    {
+      "rate_target": 100.0,
+      "concurrency": 50,
+      "seconds": 10.006330481963232,
+      "models_published_per_s": 99.93673523001621,
+      "models_seen_per_s": 91.94179641161492,
+      "requests": 28282,
+      "req_per_s": 2826.4107457753184,
+      "p50_ms": 16.32288406835869,
+      "p90_ms": 17.955692019313574,
+      "req_per_s_x_rate0": 0.9184848962638037,
+      "p50_x_rate0": 1.0503951377126115
+    }
+  ]
+}
