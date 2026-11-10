@@ -12,7 +12,7 @@ is the commit that contains this file.
 | rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits,  `28c8fa7cc7aa884a932316750874dbac4f056da3`| `28c8fa7cc7aa884a932316750874dbac4f056da3` |
 | radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume, #167 finished tasks released | `7904852ee6e0b23a4fb5277a735082216cc60493` |
 | ROSE | `main` (Stream API, #98) | none | `9cc47a597063351c6192e3520f1bb0d39dd35230` |
-| digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106`, #59 cached version stamp | this branch |
+| digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106`, #59 cached version stamp, #60 lighter per-message path (paper-stack form, `fix/pm-message-path`) | this branch |
 
 - **Python 3.12** on every host.  The DT service compares the Python minor
   version across hosts and rejects skew; radical.3 has 3.12.3.
@@ -67,6 +67,14 @@ one that drops the finished asyncio Task from the caller's task dict (orbit's
 1 h retention kept them alive; Perlmutter round 3 T1's burst decay).  The E5
 30-day run started on `044ccd9`, before that second follow-up; at its task
 rate the difference is about 1000 retained Tasks.
+
+## Update 2026-11-10 (b): a lighter per-message path
+
+digital.twins #60: a StreamingLearnerInvestigator whose in-situ answers
+nobody consumes infers once per published model, not once per input; inline
+ON_INPUT callbacks for the learner's feed; no gather for one component; lazy
+logging.  Round 3's follow-up measured the ex-situ learner at 0.77x bare
+(before 0.34x).  Other investigators are unchanged unless they opt in.
 
 ## Verified (laptop, 2026-11-06)
 
