@@ -230,7 +230,7 @@ isolation checks empty (both jobs). `results/r3b/u3/`, table
 | U4 | done | P1 seq p50 unchanged; in-process c=500 single-burst loss (now agent, was investigator) is the client's cyclic GC, gone with GC off; solo rows 0.90-0.97x |
 | U5 | done | dt 0.73x bare at window 100 (T2 0.34x, follow-up 0.77x); +6.5 us per message over the ZMQ hop |
 
-Node-hours: see the ledger above (of 8, m5290). No allocation left running.
+Node-hours: 1.58 of 8 (m5290; ledger above). No allocation left running.
 Every ORBIT job's isolation check is empty (u1, u2, u3a, u3b). No `src/`
 change, no fix branch. Harness changes: `r3/diag_thread_decay.py`
 provenance; `bench_dt_insitu.py` `--rows` order; `r3/t1_table.py` xgf row;
