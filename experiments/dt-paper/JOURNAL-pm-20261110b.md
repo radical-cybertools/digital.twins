@@ -218,3 +218,39 @@ isolation checks empty (both jobs). `results/r3b/u3/`, table
   solo runs) rather than one burst; the P1 single-burst numbers at c=500 are
   GC-phase-dependent. c=50 bursts are short and less affected (U4 P1 c=50
   DT rows 0.86-1.00x bare).
+
+## Close-out (round 3b, 2026-11-10 15:45)
+
+| phase | status | headline |
+|---|---|---|
+| U0 | done | `ve3b` at `fca2d54`, pins match, orbit check `3600.0 20000`; clone/push over HTTPS (no SSH key) |
+| U1 | done | decay gone: local repro flat at 2170-2520 req/s with 2 live Tasks (old: 1813 -> 437, 6000); ORBIT 20 bursts 983 -> 1125 (old: 717 -> 243) |
+| U2 | done | solo DT rows 0.91-1.00x bare (ORBIT bursts 2-5: 1.00 / 1.00 at c=50, 0.97 / 0.95 at c=500); in-process now equals solo (c=500 bursts 2-5 0.93 / 0.88; round 2 first burst 0.74 / 0.60); ORBIT bare throughput up 28-64% over T3 |
+| U3 | done | through radical.3 DT rows within 0.1 ms of bare; c=50 -1.3 ms, c=1 +6 ms vs 2c for every row alike; WAN connect 172 ms |
+| U4 | done | P1 seq p50 unchanged; in-process c=500 single-burst loss (now agent, was investigator) is the client's cyclic GC, gone with GC off; solo rows 0.90-0.97x |
+| U5 | done | dt 0.73x bare at window 100 (T2 0.34x, follow-up 0.77x); +6.5 us per message over the ZMQ hop |
+
+Node-hours: see the ledger above (of 8, m5290). No allocation left running.
+Every ORBIT job's isolation check is empty (u1, u2, u3a, u3b). No `src/`
+change, no fix branch. Harness changes: `r3/diag_thread_decay.py`
+provenance; `bench_dt_insitu.py` `--rows` order; `r3/t1_table.py` xgf row;
+new `r3b/` scripts and tables. Branch `exp/pm-round3b-20261110` pushed; no
+PR.
+
+Open questions for Andre:
+
+1. E1 pool figure (U4): the in-process single-burst numbers at c=500 depend
+   on where the client's GC collections fall (U4b/U4c). Plot from the solo
+   runs (pools 1, 8, 64 only) or rerun P1 with `--bursts 5` and plot bursts
+   2-5 (about 0.2 node-h)? Or run the client with a raised GC threshold and
+   say so?
+2. Through ORBIT, one first burst in about 13 at c=50 still drops to 300-450
+   req/s (U2: 3 of 40), round 3's open question 2. Possibly the same GC
+   pauses on client or endpoint; not investigated.
+3. U5: the reviewed DT #60 gives 0.73x at window 100 against `b08c8a6`'s
+   0.77x. Is the review's opt-in skip on for the harness's dt row
+   (`StreamingLearnerInvestigator` subclass)? If not, the difference is that.
+4. U3: c=1 through radical.3 is 6 ms slower than in 2c for every row, WAN
+   connect unchanged. Radical.3 load (the E5 run on :8011) is my guess.
+5. This session had no SSH key for GitHub; clone and pushes went over HTTPS
+   with `gh auth git-credential`. The checkout's remote is the HTTPS URL.
