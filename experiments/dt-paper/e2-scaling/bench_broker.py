@@ -14,6 +14,11 @@ is kept), or sessions fail to create (stop there and say why).  With
 `--keep-going` it does not stop at the doubled p50 (how many sessions the
 broker holds, past its throughput limit).
 
+Client scaling (round 3, T4-C2): several of these processes share one load
+window with `--start-at EPOCH` (each creates its sessions, then waits for
+EPOCH before the load phase); `--dump-lat` keeps every latency in the
+JSON so `r3/t4c_merge.py` can pool them across processes.
+
     python bench_broker.py --broker URL --inference EP \\
         --sessions 1,4,16,64,256 --out broker.json
 """
@@ -92,6 +97,13 @@ def one_n(runtime, args, n):
             lat.extend(mine)
             fails.append(bad)
 
+    if args.start_at:
+        wait = args.start_at - time.time()
+        if wait < 0:
+            rec["late_s"] = -wait
+        else:
+            time.sleep(wait)
+        stop = time.time() + args.seconds
     t_load = time.time()
     threads = [threading.Thread(target=loop, args=(dt, twin, k))
                for k, (dt, twin) in enumerate(sessions)]
@@ -109,6 +121,8 @@ def one_n(runtime, args, n):
         "p50_ms": statistics.median(lat) * 1e3 if lat else None,
         "p99_ms": pct(lat, 0.99) * 1e3 if lat else None,
     })
+    if args.dump_lat:
+        rec["latencies_ms"] = [round(x * 1e3, 3) for x in lat]
     return rec
 
 
@@ -122,6 +136,10 @@ def main() -> int:
     p.add_argument("--create-threads", type=int, default=16)
     p.add_argument("--keep-going", action="store_true",
                    help="do not stop when p50 doubles")
+    p.add_argument("--start-at", type=float, default=None,
+                   help="epoch at which the load phase starts (one N only)")
+    p.add_argument("--dump-lat", action="store_true",
+                   help="keep every latency in the JSON")
     p.add_argument("--out", required=True)
     args = p.parse_args()
     ns = [int(n) for n in args.sessions.split(",") if n]

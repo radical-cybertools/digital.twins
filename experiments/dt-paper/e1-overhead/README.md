@@ -399,3 +399,24 @@ transport: a DT twin fed over a message bus pays that bus too (see T2:
 about 4 us per message for the ZMQ hop, 47 us for the DT's per-message
 event path).  ORBIT runs are on the unpatched paper stack, so later bursts
 in a run are slower for every row alike (see T1).
+
+The feed is bounded from T2 rather than measured: a PUB/SUB hop in front
+of the request (the CSPOT relay's role) costs about 4 us per message (T2's
+zmq row against bare), small next to the 0.3-0.8 ms request/reply hop; the
+polled input directory adds on average half its poll interval, 0.5 s at
+xGFabric's 1 s, which dominates everything else.
+
+### Follow-up (2026-11-10): the stack with finished tasks released, and the lighter message path
+
+T1d (job 61083262): on `paper/dtaas` 52926e6 (asyncflow #128, rhapsody #134
++ e66ced4, orbit #167, DT #59), plain endpoint, the T1c numbers hold: no
+decay over 20 bursts at c=500, in-process rows equal (bursts 2-5: bare
+1032, investigator 1024, agent 1038 req/s), c=50 solo 1013 / 977 / 967.
+
+T2c (job 61083260): `fix/pm-message-path` (b08c8a6) on the same stack --
+streamed inputs whose answer nobody takes are not inferred (except the
+first after each published model), the learner's `ON_INPUT` runs inline,
+no gather for a single component, lazy logging.  dt x bare at window 10 /
+50 / 100: 0.74 / 0.46 / 0.34 -> 0.90 / 0.82 / 0.77 (zmq hop alone 0.93 /
+0.89 / 0.88, a window per message 0.87 / 0.86 / 0.83).  The DT's per-message
+cost falls from about 47 us to about 4 us over the hop.

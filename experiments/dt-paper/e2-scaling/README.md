@@ -128,6 +128,13 @@ creation stalls rather than fails.  The client side is one Python process
 with one thread per twin, so part of the latency at large N may be the
 client's; the broker's CPU says the broker is the limit.
 
+**Client scaling** (job 61082797, `results/r3/t4c3/`): the same N sessions
+split over P client processes on two client nodes, one shared 20 s load
+window.  Aggregate req/s does not move with P -- N=4: 237 / 235 / 244 (P =
+1 / 2 / 4); N=16: 274 / 262 / 266 / 255 (P = 1 / 2 / 4 / 8); N=64: 226 /
+221 / 205 / 225 -- and the broker sits at 86-108% of a core throughout:
+the broker's dt service is the limit, not the client.  (2c stack.)
+
 ### D: round 2's E2a / E2b with 5 repeats
 
 E2a, N twins on one engine (pool 64), aggregate req/s: 1 twin 1346, 2:

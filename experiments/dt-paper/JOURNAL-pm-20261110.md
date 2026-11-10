@@ -24,6 +24,9 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 3`.
 | 61061605 | r3-t45o | m5290 | 3 | 00:07:13 | 0.361 | 2.61 | 0.00 |
 | 61061984 | r3-t4c | m5290 | 3 | 00:01:27 | 0.072 | 2.68 | 0.00 |
 | 61062231 | r3-t4c2 | m5290 | 3 | 00:21:18 | 1.065 | 3.74 | 0.00 |
+| 61082797 | r3-t4c3 | m5290 | 4 | 00:12:45 | 0.850 | 4.59 | 0.00 |
+| 61083260 | r3-t2c | m5290 | 1 | 00:04:27 | 0.074 | 4.67 | 0.00 |
+| 61083262 | r3-t1d | m5290 | 2 | 00:04:01 | 0.134 | 4.80 | 0.00 |
 
 ## T0: setup (done, 2026-11-09 13:22)
 
@@ -178,3 +181,84 @@ Open questions for Andre:
    feed (1 s polling) is not in it.  Enough for the baseline?
 6. The ORBIT rows in T3 / T4 / T5 ran on the unpatched stack, so long
    sessions (P7 cross-node, about 15k tasks) carry the T1 slowdown.
+
+## Follow-up (2026-11-10, Andre present)
+
+Answers to the close-out questions: (1) release the finished tasks, (2)
+the lighter per-message path incl. the inline ON_INPUT review, (3) client
+scaling for T4-C, (4) the xgf feed: README text, no new row.
+
+### (1) finished tasks released -- already upstream
+
+Done overnight in the laptop session: asyncflow #128, rhapsody #134 +
+061c49b / e66ced4 (the finished asyncio Task dropped from the caller's
+task dict, citing T1), orbit #167, DT #59; `paper/dtaas` 52926e6.  My own
+local branches (rhapsody / asyncflow `fix/concurrent-release-finished-tasks`
+in `$W/fix`) duplicate that and are not pushed.  Venv `ve3` built from
+52926e6 (`env4.sh`).  T1d (job 61083262, `results/r3/t1/t1d/`): the T1c
+runs on that stack with a plain endpoint -- 20 bursts at c=500 stay at
+800-1100 req/s for every row (unpatched 2c stack: 717 -> 243), in-process
+rows equal (bursts 2-5: 1032 / 1024 / 1038), c=50 solo 1013 / 977 / 967.
+
+### (2) lighter per-message path -- `fix/pm-message-path` (b08c8a6)
+
+Off `paper/dtaas` 52926e6, pushed, no PR.  Unit tests 223 passed
+(8 new in `test/unit/test_message_path.py`; they fail on the unchanged
+source).  Integration tests not run: the suite skipped every test on the
+login node, and its broker loads every plugin (see the isolation note).
+Design review, decisions:
+
+- skip the in-situ inference of a streamed input whose answer nobody
+  takes (no ON_OUTPUT subscriber, output dtype not consumed: the case the
+  runtime already drops) -- but run the first input after each published
+  model, which keeps "a model the inference task rejects fails the twin on
+  the next input" (`test_learn.py` caught that); opt-out
+  `ModelInvestigator.infer_without_consumer` for inference with side
+  effects; `get_inference` unaffected.  Side effect: fewer inference tasks
+  on dashboards for streamed inputs nobody consumes.
+- inline ON_INPUT: opt-in per subscription (`inline=True`), used by
+  `StreamingLearnerInvestigator._feed` (never blocks: `rose.Stream.feed` is a
+  plain put); keeps the stop check, the component stamp and error routing
+  into the twin state.  Not the default: a blocking callback would stall
+  the dtype's consumer, and ordering / error semantics would change for
+  every user.
+- one component per dtype: no gather; lazy log formatting.
+
+T2c (job 61083260, `results/r3/t2c/`), pool 8, 5 repeats, ve3:
+
+| window | dt x bare, stack | dt x bare, msgpath | zmq x bare | dt-batched x bare |
+|---|---|---|---|---|
+| 10 | 0.74 | 0.90 | 0.93 | 0.87 |
+| 50 | 0.46 | 0.82 | 0.89 | 0.86 |
+| 100 | 0.34 | 0.77 | 0.88 | 0.83 |
+
+Per message at window 100 the DT now costs about 4 us over the ZMQ hop
+(was about 47); paced publish p50 11.7 -> 7.0 ms.
+
+### (3) client scaling -- T4-C3 (job 61082797, `results/r3/t4c3/`)
+
+N sessions over P client processes on two client nodes, shared 20 s load
+window (`bench_broker.py --start-at --dump-lat`, `r3/t4c_merge.py`): N=4:
+237 / 235 / 244 req/s for P = 1 / 2 / 4; N=16: 274 / 262 / 266 / 255 for
+P = 1 / 2 / 4 / 8; N=64: 226 / 221 / 205 / 225; broker 86-108% CPU
+throughout.  The broker's dt service is the limit, not the client.  Ran
+on the 2c stack (ve2c).
+
+### (4) xgf feed
+
+No new row: T2 bounds the PUB/SUB hop (about 4 us per message); the
+polled-directory feed adds 0.5 s mean at xGFabric's 1 s poll.  README text.
+
+### Isolation: two violations, mine
+
+Running the DT integration suite on the login node (`test/integration`):
+the first attempt (no TLS env) started a broker that appended to
+`~/.radical/orbit/logs/broker.log` and exited (no key); the second, with
+throwaway TLS and `RADICAL_ORBIT_LOG_FILE`, started the suite's broker with
+all plugins, and its `federation` plugin created
+`~/.radical/orbit/federation/federation/state.json` (empty state).  T1d's
+isolation check, run at the same time, lists exactly these paths; T1d's own
+broker (dt plugin only, job log file) did not write there.  Left in place
+for Andre to decide; no further integration runs on Perlmutter.
+
+Node-hours: 4.80 of 25 (ledger above).
