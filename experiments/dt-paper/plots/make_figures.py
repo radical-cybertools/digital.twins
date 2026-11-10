@@ -157,22 +157,33 @@ def row_values(runs, key):
     return {r: [run["rows"][r][key] for run in runs] for r in ROWS}
 
 
+XGF = "xgf"  # round 3's hand-wired xGFabric-style row
+COLORS[XGF] = COLORS["extra"]
+
+
+def solo(pattern):
+    """Round 3 runs each row in its own process: {row: [run, ...]}."""
+    return {r: SRC.load(pattern.format(row=r)) for r in [*ROWS, XGF]}
+
+
+def later_bursts(run, row):
+    """req/s of a run's bursts 2-5, median: the first burst warms up."""
+    r = run["rows"][row]
+    return statistics.median(r["concurrent"] / b for b in r["bursts_s"][1:])
+
+
 # ---------------------------------------------------------------- figures
 
 
 def fig_e1_paths(fig):
     """E1: p50 per request and burst throughput, local pool to radical.3."""
-    local = SRC.load("s1/p1/insitu-pm-pool8-c50-r*-stack-*.json")
-    cross = SRC.load("c3/p4/insitu-pm-orbit-cross-c1-r*-stack2c-*.json")
+    # round 3 (T3): each row, xgf included, in its own process
+    local = solo("r3/t3/insitu-pm-pool8-c50-solo-{row}-r*-stack-r3-*.json")
+    cross = solo("r3/t3/insitu-pm-orbit-cross-c1-solo-{row}-r*-stack-r3-*.json")
     remote = SRC.load("c3/r1/insitu-pm-remote-c1-r*-stack2c-*.json")
     service = SRC.load("s3/service-remote-stack-*.json")[0]
-    # each row in its own process: in one process the first DT row after
-    # bare pays a row-order cost under the burst (journal, S1 P1)
-    burst_local = {
-        r: SRC.load(f"s1/p1-rerun/insitu-pm-pool8-c500-solo-{r}-r*-stack-*.json")
-        for r in ROWS
-    }
-    burst_cross = SRC.load("c3/p4/insitu-pm-orbit-cross-c500-r*-stack2c-*.json")
+    burst_local = solo("r3/t3/insitu-pm-pool8-c500-solo-{row}-r*-stack-r3-*.json")
+    burst_cross = solo("r3/t3/insitu-pm-orbit-cross-c500-solo-{row}-r*-stack-r3-*.json")
 
     ax1, ax2 = fig.subplots(1, 2, gridspec_kw={"width_ratios": [4, 2.4]})
     cats = [
@@ -184,25 +195,29 @@ def fig_e1_paths(fig):
     svc = [rep["p50_ms"] for rep in service["repeats"]]
     p50 = {
         r: [
-            row_values(local, "p50_ms")[r],
-            row_values(cross, "p50_ms")[r],
-            row_values(remote, "p50_ms")[r],
+            [run["rows"][r]["p50_ms"] for run in local[r]],
+            [run["rows"][r]["p50_ms"] for run in cross[r]],
+            row_values(remote, "p50_ms")[r] if r in ROWS else [],
             svc if r == "bare" else [],
         ]
-        for r in ROWS
+        for r in [*ROWS, XGF]
     }
     bars(ax1, cats, p50, log=True)
     ax1.set_ylabel("p50 latency per request [ms]")
     ax1.set_title("(a) latency, sequential")
-    ax1.legend(loc="upper left", frameon=False)
+    fig.legend(
+        *ax1.get_legend_handles_labels(),
+        loc="outside upper center",
+        ncol=4,
+        frameon=False,
+    )
 
-    key = "concurrent_req_per_s"
     burst = {
         r: [
-            [run["rows"][r][key] for run in burst_local[r]],
-            row_values(burst_cross, key)[r],
+            [later_bursts(run, r) for run in burst_local[r]],
+            [later_bursts(run, r) for run in burst_cross[r]],
         ]
-        for r in ROWS
+        for r in [*ROWS, XGF]
     }
     bars(ax2, ["local\npool", "ORBIT\ncross-node"], burst)
     ax2.set_ylabel("burst, c=500 [req/s]")
@@ -228,23 +243,31 @@ def fig_e1_pool(fig):
 
 def fig_e1_exsitu(fig):
     """E1 ex-situ: learner throughput by window size, bare vs through DT."""
-    runs = SRC.load("s1/p3/exsitu-pm-pool8-r*-stack-*.json")
+    runs = SRC.load("r3/t2/exsitu-pm-pool8-r*-stack-r3-*.json")
     sizes = runs[0]["batch_sizes"]
+    names = {
+        "bare": "bare ROSE learner",
+        "zmq": "bare, behind the ZMQ hop",
+        "dt": "through DT",
+        "dt-batched": "through DT, window as one message",
+    }
+    COLORS.update(
+        {
+            names["bare"]: COLORS["bare"],
+            names["zmq"]: "#1baf7a",
+            names["dt"]: COLORS["dt"],
+            names["dt-batched"]: COLORS["extra"],
+        }
+    )
     vals = {
-        name: [
+        names[row]: [
             [run["rows"][row]["msg_per_s"][i] for run in runs]
             for i in range(len(sizes))
         ]
-        for name, row in (("bare", "bare"), ("dt", "dt"))
+        for row in names
     }
-    COLORS.update({"bare ROSE learner": COLORS["bare"], "through DT": COLORS["dt"]})
     ax = fig.subplots()
-    lines(
-        ax,
-        [str(s) for s in sizes],
-        {"bare ROSE learner": vals["bare"], "through DT": vals["dt"]},
-        log=True,
-    )
+    lines(ax, [str(s) for s in sizes], vals, log=True)
     ax.set_xlabel("samples per window")
     ax.set_ylabel("learner throughput [samples/s]")
     ax.legend(frameon=False)
@@ -252,8 +275,8 @@ def fig_e1_exsitu(fig):
 
 def fig_e2(fig):
     """E2: twins on one engine, and joined input streams."""
-    twins = SRC.load("s1/p5/twins-pm-pool64-r*-stack-*.json")
-    join = SRC.load("s1/p5/join-pm-r*-stack-*.json")
+    twins = SRC.load("r3/t4/twins-pm-pool64-r*-stack-r3-*.json")
+    join = SRC.load("r3/t4/join-pm-r*-stack-r3-*.json")
     ax1, ax2 = fig.subplots(1, 2)
 
     ns = [p["twins"] for p in twins[0]["points"]]
@@ -276,9 +299,8 @@ def fig_e2(fig):
 def fig_e4(fig):
     """E4: publish of a new model to the first answer that uses it."""
     paths = [
-        ("local pool", "s1/p7/update-pm-local-pool8-r*-stack-*.json"),
-        ("ORBIT loopback", "s1/p7/update-pm-orbit-loop-r*-stack-*.json"),
-        ("ORBIT cross-node", "s1/p7/update-pm-orbit-cross-r*-stack-*.json"),
+        ("local pool", "r3/t5/update-pm-local-pool8-r*-stack-r3-*.json"),
+        ("ORBIT cross-node", "r3/t5/update-pm-orbit-cross-r*-stack-r3-*.json"),
         ("radical.3", "s2/update-pm-remote-r*-stack-*.json"),
     ]
     intervals = [1.0, 0.1, 0.01]
@@ -298,7 +320,6 @@ def fig_e4(fig):
     COLORS.update(
         {
             "local pool": "#2a78d6",
-            "ORBIT loopback": "#eb6834",
             "ORBIT cross-node": "#1baf7a",
             "radical.3": "#7d5bbe",
         }
@@ -307,7 +328,110 @@ def fig_e4(fig):
     bars(ax, ["1 s", "100 ms", "10 ms"], series, log=True)
     ax.set_xlabel("publish interval")
     ax.set_ylabel("publish to first answer, p50 [ms]")
-    ax.legend(frameon=False, ncol=4, loc="lower center", bbox_to_anchor=(0.5, 1.0))
+    ax.legend(frameon=False, ncol=3, loc="lower center", bbox_to_anchor=(0.5, 1.0))
+
+
+def fig_e2_agents(fig):
+    """E2: agents per twin, and twins (sessions) per broker."""
+    runs = SRC.load("r3/t4/agents-pm-r*-stack-r3-*.json")
+    ms = [1, 2, 4, 8, 16]
+    ax1, ax2 = fig.subplots(1, 2)
+    COLORS.update({"side by side": COLORS["bare"], "chained": COLORS["dt"]})
+    lines(
+        ax1,
+        [str(m) for m in ms],
+        {
+            label: [
+                [run["max_sustainable"][f"{mode}-{m}"]["inputs_per_s"] for run in runs]
+                for m in ms
+            ]
+            for label, mode in (("side by side", "side"), ("chained", "chain"))
+        },
+    )
+    ax1.set_xlabel("agents in one twin")
+    ax1.set_ylabel("max sustainable [inputs/s]")
+    ax1.set_ylim(bottom=0)
+    ax1.set_title("(a) agents")
+    ax1.legend(frameon=False)
+
+    # one run with a stop at doubled p50 (N=1, 4), one past it (N=1, 16, 64)
+    points = {}
+    for run in SRC.load("r3/t4/broker-capacity-*stack-r3-*.json"):
+        for p in run["points"]:
+            points.setdefault(p["sessions"], []).append(p)
+    ns = sorted(points)
+    lines(
+        ax2,
+        [str(n) for n in ns],
+        {"bare": [[p["req_per_s"] for p in points[n]] for n in ns]},
+    )
+    ax2.set_xlabel("sessions on one broker, one twin each")
+    ax2.set_ylabel("aggregate [req/s]", color=COLORS["bare"])
+    ax2.set_ylim(bottom=0)
+    ax2.set_title("(b) broker")
+    lat = ax2.twinx()
+    lat.spines["right"].set_visible(True)
+    lat.grid(False)
+    lat.plot(
+        range(len(ns)),
+        [statistics.median(p["p50_ms"] for p in points[n]) for n in ns],
+        color=COLORS["dt"],
+        marker="s",
+        markersize=3,
+        linewidth=1.2,
+        linestyle="--",
+    )
+    lat.set_ylabel("p50 [ms], dashed", color=COLORS["dt"])
+    logscale(lat)
+
+
+def fig_e4_swap(fig):
+    """E4: hot-swap turnaround, and inference while models are published."""
+    configs = [
+        ("local\nc=1", "r3/t5/swap-pm-pool8-c1-r*-stack-r3-*.json"),
+        ("local\nc=50", "r3/t5/swap-pm-pool8-c50-r*-stack-r3-*.json"),
+        ("ORBIT\nc=1", "r3/t5/swap-pm-orbit-cross-c1-r*-stack-r3-*.json"),
+        ("ORBIT\nc=50", "r3/t5/swap-pm-orbit-cross-c50-r*-stack-r3-*.json"),
+    ]
+    ax1, ax2 = fig.subplots(1, 2)
+    COLORS["turnaround"] = COLORS["bare"]
+    bars(
+        ax1,
+        [c for c, _ in configs],
+        {
+            "turnaround": [
+                [r["turnaround"]["p50_ms"] for r in SRC.load(p)] for _, p in configs
+            ]
+        },
+        log=True,
+        labels=True,
+    )
+    ax1.set_ylabel("to first new answer, p50 [ms]")
+    ax1.set_title("(a) hot-swap")
+
+    dip = SRC.load("r3/t5/dip-pm-pool8-c50-r*-stack-r3-*.json")
+    pub = SRC.load("r3/t4/publish-pm-pool8-c1-r*-stack-r3-*.json")
+    rates = [1.0, 10.0, 100.0]
+    COLORS.update({"c=1": COLORS["bare"], "c=50": COLORS["dt"]})
+
+    def ratio(runs):
+        return [
+            [
+                p["req_per_s_x_rate0"]
+                for r in runs
+                for p in r["points"]
+                if p["rate_target"] == rate
+            ]
+            for rate in rates
+        ]
+
+    bars(ax2, ["1", "10", "100"], {"c=1": ratio(pub), "c=50": ratio(dip)})
+    ax2.set_ylim(0, 1.15)
+    ax2.set_xlabel("models published per second")
+    ax2.set_ylabel("inference req/s, vs none")
+    ax2.set_title("(b) while publishing")
+    ax2.legend(frameon=False, ncol=2, loc="upper center")
+    ax2.set_ylim(0, 1.3)
 
 
 def _outcomes(run):
@@ -437,7 +561,9 @@ FIGURES = {
     "e1-pool": (fig_e1_pool, 2.0),
     "e1-exsitu": (fig_e1_exsitu, 2.0),
     "e2-scaling": (fig_e2, 2.0),
+    "e2-agents-broker": (fig_e2_agents, 2.1),
     "e4-propagation": (fig_e4, 2.1),
+    "e4-swap": (fig_e4_swap, 2.1),
     "e5-endpoint-loss": (fig_e5, 2.5),
     "e6-windfield": (fig_e6, 2.2),
 }
