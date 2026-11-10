@@ -22,6 +22,8 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 3b`.
 | 61111713 | r3b-u4 | m5290 | 1 | 00:10:49 | 0.180 | 1.49 | 0.00 |
 | 61111714 | r3b-u5 | m5290 | 1 | 00:02:14 | 0.037 | 1.53 | 0.00 |
 | 61112677 | r3b-u4b | m5290 | 1 | 00:00:00 | 0.000 | 1.53 | 0.00 |
+| 61114029 | r3b-u4b | m5290 | 1 | 00:01:54 | 0.032 | 1.56 | 0.00 |
+| 61114268 | r3b-u4c | m5290 | 1 | 00:00:52 | 0.014 | 1.58 | 0.00 |
 
 ## U0: setup (done, 2026-11-10 15:20)
 
@@ -187,3 +189,32 @@ isolation checks empty (both jobs). `results/r3b/u3/`, table
   radical.3 or its load (the E5 30-day run shares that host), not the stack.
   Decision: no rerun (the contract's rerun rule is for results that
   contradict; the DT-vs-bare comparison does not change).
+
+## U4: diagnostics done (2026-11-10 15:40)
+
+- Harness change (own commit 4389c67): `bench_dt_insitu.py` runs the rows
+  in the order `--rows` gives (duplicates dropped); the default and every
+  earlier call give the old order.
+- U4b, job 61114029 (debug, 1 node, 1:41; `r3b/run_u4b.sh`,
+  `results/r3b/u4/order/`): pool 8, c=500, --tasks 1000, 5 bursts per row,
+  three row orders, 5 repeats, every rc 0. The slow bursts (about 2700-3000
+  against 3400-3800 req/s) sit at fixed positions in the process's burst
+  sequence, the same in every repeat of an order (order bare,investigator,
+  agent: global bursts 2, 5, 8, 11, 14), whatever row they fall in.
+- U4c, job 61114268 (debug, 1 node, 0:43; `r3b/run_u4c.sh`, `r3b/nogc.py`,
+  `results/r3b/u4/gc/`): the default order with the client's cyclic GC on
+  and off (`gc.disable()` before the harness), 3 repeats each. GC on: every
+  third burst slow (all bursts 2676-3883, median 3453); GC off: none (3399-
+  3929, median 3575), and the first bursts are bare 3731, investigator 3456
+  (0.93x), agent 3478 (0.93x) -- the solo ratios (0.92 / 0.91).
+- Finding: the in-process c=500 loss in P1 (round 2: investigator 0.67-0.71x,
+  now agent 0.67-0.73x) is the client process's cyclic garbage collector:
+  its collections come at fixed allocation counts, and with one burst per
+  row the row whose burst meets one loses about 25%. Which row that is
+  depends on how many objects the earlier rows allocated, so it moved when
+  the stack changed. Not a DT cost and not the thread-pool leak (the local
+  rows run on a process pool).
+- For the paper: report several bursts per row (median of bursts 2-5, or the
+  solo runs) rather than one burst; the P1 single-burst numbers at c=500 are
+  GC-phase-dependent. c=50 bursts are short and less affected (U4 P1 c=50
+  rows within -9..+1% of bare).
