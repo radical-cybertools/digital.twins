@@ -47,7 +47,7 @@ ASYNCFLOW="radical.asyncflow @ git+$GH/radical.asyncflow@24667a5eae6872f9863e31c
 # and opt-in telemetry bound (#134, cherry-picked: its base is a newer main).  The [telemetry] extra is required: the ORBIT
 # plugin calls `session.start_telemetry()` whenever it exists, and that path
 # hard-imports opentelemetry.
-RHAPSODY="rhapsody-py[telemetry] @ git+$GH/rhapsody@28c8fa7cc7aa884a932316750874dbac4f056da3"
+RHAPSODY="rhapsody-py[telemetry] @ git+$GH/rhapsody@e66ced4596c3cab5906f51cb008b839828ef82c0"
 # orbit paper/dtaas: devel (0.8.0) + calls held for a suspect endpoint are
 # failed (503) on resume (#166), finished tasks released after 1 h and
 # telemetry bounded (#167)
