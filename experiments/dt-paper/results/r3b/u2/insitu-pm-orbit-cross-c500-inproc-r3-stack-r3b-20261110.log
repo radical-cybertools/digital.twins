@@ -1,0 +1,26 @@
+backend: orbit dt_r3b_u2_ep1
+bare asyncflow task          n=1000  mean=   2.94ms  p50=   2.87  p90=   3.34  p99=   3.74  max=   4.36
+bare asyncflow task          500 concurrent requests in 571.9ms (874 req/s)
+bare asyncflow task          500 concurrent requests in 474.7ms (1053 req/s)
+bare asyncflow task          500 concurrent requests in 439.9ms (1137 req/s)
+bare asyncflow task          500 concurrent requests in 498.2ms (1004 req/s)
+bare asyncflow task          500 concurrent requests in 437.7ms (1142 req/s)
+DT investigator              n=1000  mean=   3.15ms  p50=   3.02  p90=   3.37  p99=   3.87  max=  75.81
+DT investigator              500 concurrent requests in 491.6ms (1017 req/s)
+DT investigator              500 concurrent requests in 535.4ms (934 req/s)
+DT investigator              500 concurrent requests in 443.0ms (1129 req/s)
+DT investigator              500 concurrent requests in 449.9ms (1111 req/s)
+DT investigator              500 concurrent requests in 545.7ms (916 req/s)
+DT agent + selector          n=1000  mean=   3.01ms  p50=   2.97  p90=   3.28  p99=   3.67  max=   5.08
+DT agent + selector          500 concurrent requests in 482.2ms (1037 req/s)
+DT agent + selector          500 concurrent requests in 572.7ms (873 req/s)
+DT agent + selector          500 concurrent requests in 451.2ms (1108 req/s)
+DT agent + selector          500 concurrent requests in 581.8ms (859 req/s)
+DT agent + selector          500 concurrent requests in 495.4ms (1009 req/s)
+xgf zmq request/reply        n=1000  mean=   3.35ms  p50=   3.31  p90=   3.66  p99=   3.96  max=   5.41
+xgf zmq request/reply        500 concurrent requests in 667.9ms (749 req/s)
+xgf zmq request/reply        500 concurrent requests in 488.1ms (1024 req/s)
+xgf zmq request/reply        500 concurrent requests in 488.5ms (1023 req/s)
+xgf zmq request/reply        500 concurrent requests in 494.8ms (1010 req/s)
+xgf zmq request/reply        500 concurrent requests in 692.6ms (722 req/s)
+results: experiments/dt-paper/results/r3b/u2/insitu-pm-orbit-cross-c500-inproc-r3-stack-r3b-20261110.json

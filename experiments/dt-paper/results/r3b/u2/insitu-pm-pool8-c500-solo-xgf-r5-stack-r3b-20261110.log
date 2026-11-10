@@ -1,0 +1,8 @@
+backend: local concurrent pool
+xgf zmq request/reply        n=1000  mean=   0.87ms  p50=   0.87  p90=   0.89  p99=   0.96  max=   1.22
+xgf zmq request/reply        500 concurrent requests in 187.6ms (2665 req/s)
+xgf zmq request/reply        500 concurrent requests in 192.0ms (2604 req/s)
+xgf zmq request/reply        500 concurrent requests in 232.0ms (2155 req/s)
+xgf zmq request/reply        500 concurrent requests in 181.2ms (2759 req/s)
+xgf zmq request/reply        500 concurrent requests in 207.7ms (2408 req/s)
+results: experiments/dt-paper/results/r3b/u2/insitu-pm-pool8-c500-solo-xgf-r5-stack-r3b-20261110.json

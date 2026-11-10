@@ -16,10 +16,12 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 3b`.
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
 | 61111505 | r3b-u1 | m5290 | 2 | 00:01:07 | 0.037 | 0.04 | 0.00 |
-| 61111624 | r3b-u3a | m5290 | 2 | 00:14:51 | 0.495 | 0.53 | 0.00 |
-| 61111713 | r3b-u4 | m5290 | 1 | 00:10:49 | 0.180 | 0.71 | 0.00 |
-| 61111714 | r3b-u5 | m5290 | 1 | 00:02:14 | 0.037 | 0.75 | 0.00 |
-| 61112677 | r3b-u4b | m5290 | 1 | 00:00:00 | 0.000 | 0.75 | 0.00 |
+| 61111623 | r3b-u2 | m5290 | 2 | 00:13:07 | 0.437 | 0.47 | 0.00 |
+| 61111624 | r3b-u3a | m5290 | 2 | 00:14:51 | 0.495 | 0.97 | 0.00 |
+| 61111625 | r3b-u3b | m5290 | 2 | 00:10:18 | 0.343 | 1.31 | 0.00 |
+| 61111713 | r3b-u4 | m5290 | 1 | 00:10:49 | 0.180 | 1.49 | 0.00 |
+| 61111714 | r3b-u5 | m5290 | 1 | 00:02:14 | 0.037 | 1.53 | 0.00 |
+| 61112677 | r3b-u4b | m5290 | 1 | 00:00:00 | 0.000 | 1.53 | 0.00 |
 
 ## U0: setup (done, 2026-11-10 15:20)
 
@@ -121,3 +123,67 @@ rows per repeat. `digitaltwin` from the venv (fca2d54, DT #60).
   (0.73 vs 0.77 at 100, 0.80 vs 0.82 at 50); within the repeat spread at 10
   and below. Plausibly the review's change that makes the learner skip
   opt-in, but not investigated.
+
+## U2: E1 in-situ, solo and in-process (done, 2026-11-10 15:30)
+
+Job 61111623 (r3b-u2, regular, 2 nodes, 13:07; `r3b/run_u2.sh` = round 3's
+`r3/run_t3.sh` with env5 and the in-process part I added; `results/r3b/u2/`).
+110 runs, every rc 0; isolation check empty. Tables:
+`t3-table-stack-r3b-20261110.md` (`r3/t3_table.py`, solo) and
+`t1-table-stack-r3b-20261110.md` (`r3/t1_table.py`, now with xgf; solo and
+in-process per repeat).
+
+- Decision: the in-process runs use all four rows (`--rows
+  bare,investigator,agent,xgf`, in that order), 5 bursts per row.
+- Provenance: the JSONs record commits db1889a / ef3bfb6 / 6ec7a87 because
+  I committed U1/U4/U5 while U2 ran; none of those commits touches `src/`
+  or `e1-overhead/` (`git diff --stat 492c66b 6ec7a87 -- e1-overhead src`
+  is empty), so every run used the same code.
+
+Solo, medians over 5 repeats, x bare (T3 = round 3, old stack):
+
+| layout | c | metric | bare | investigator | agent | xgf | T3 inv / agent / xgf |
+|---|---|---|---|---|---|---|---|
+| pool 8 | 50 | bursts 2-5 req/s | 3630 | 0.91 | 0.94 | 0.68 | 0.94 / 0.91 / 0.72 |
+| pool 8 | 500 | bursts 2-5 req/s | 3672 | 0.94 | 0.82 | 0.68 | 0.82 / 0.83 / 0.67 |
+| pool 8 | seq | p50 ms | 0.58 | 1.02 | 1.02 | 1.49 | 1.03 / 1.03 / 1.50 |
+| ORBIT cross | 1 | p50 ms | 2.96 | 0.97 | 1.02 | 1.09 | 1.03 / 1.09 / 1.26 |
+| ORBIT cross | 50 | bursts 2-5 req/s | 1010 | 1.00 | 1.00 | 0.93 | 0.99 / 0.98 / 0.85 |
+| ORBIT cross | 500 | bursts 2-5 req/s | 1064 | 0.97 | 0.95 | 0.91 | 0.97 / 0.96 / 0.92 |
+
+- ORBIT absolute throughput is up: bare bursts 2-5 at c=50 1010 req/s (T3
+  791), at c=500 1064 (T3 650). Local pool 8 unchanged (bare 3630 / 3672 vs
+  3525 / 3842).
+- In-process, ORBIT cross-node, first burst x bare (round 2: 0.74 / 0.60 at
+  c=500; round 3 T1 in-process: 0.63 / 0.44):
+  c=500 investigator 1.16, agent 1.16, xgf 1.10 (bursts 2-5: 0.93 / 0.88 /
+  0.87); c=50 0.98 / 1.03 / 0.89 (bursts 2-5: 0.99 / 1.00 / 0.89). Bare's
+  first burst at c=500 is itself bimodal (874 median, repeats 858-1129), which
+  is why the first-burst ratios exceed 1; bursts 2-5 are the steadier number.
+  Solo and in-process now agree within the repeat spread.
+- Outliers (reported, not dropped): single slow first bursts -- solo c=50 bare
+  r1 305 req/s, investigator 421; in-process c=50 xgf 361. This is round 3's
+  open question 2 ("one burst in about ten drops to about 450"), still there,
+  rarer here (3 of 70 first bursts at c=50); not investigated.
+
+## U3: E1 through radical.3 (done, 2026-11-10 15:35)
+
+Jobs 61111624 (repeats 1-3, debug, 2 nodes) and 61111625 (repeats 4-5),
+`s2/run_s2.sh PARTS=r1 CS="1 50"`, `--tasks 100`, endpoint `pm_e1_ep_<job>`
+on node A, client on node B, broker `https://95.217.193.116:8010`;
+credentials the `~/.radical/orbit` defaults (read only). Every rc 0;
+isolation checks empty (both jobs). `results/r3b/u3/`, table
+`r1-compare-c3-vs-r3b.md` (`s1/compare_insitu.py`, round 2c C3 R1 vs this).
+
+- WAN connect (curl, 20 per node per job): p50 0.172 s (0.164-0.199); 2c:
+  0.171-0.172.
+- c=1 p50: bare 353.91, investigator 353.98, agent 353.85 ms (2c: 347.82 /
+  347.84 / 348.02), +6 ms for every row alike, just outside 2c's repeat range
+  (344.8-351.4).
+- c=50 p50: 350.60 / 350.52 / 350.66 ms (2c 351.86 / 352.02 / 351.95);
+  throughput 88 / 90 / 92 req/s (2c 87 / 87 / 91).
+- The DT rows stay within 0.1 ms of bare in every cell. The c=1 shift is
+  common to all rows, with the WAN connect time unchanged: the path to
+  radical.3 or its load (the E5 30-day run shares that host), not the stack.
+  Decision: no rerun (the contract's rerun rule is for results that
+  contradict; the DT-vs-bare comparison does not change).

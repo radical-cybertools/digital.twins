@@ -1,0 +1,26 @@
+backend: orbit dt_r3b_u2_ep1
+bare asyncflow task          n=1000  mean=   2.81ms  p50=   2.77  p90=   3.03  p99=   3.40  max=   4.51
+bare asyncflow task          50 concurrent requests in 45.8ms (1092 req/s)
+bare asyncflow task          50 concurrent requests in 48.7ms (1027 req/s)
+bare asyncflow task          50 concurrent requests in 46.6ms (1074 req/s)
+bare asyncflow task          50 concurrent requests in 46.6ms (1073 req/s)
+bare asyncflow task          50 concurrent requests in 47.0ms (1064 req/s)
+DT investigator              n=1000  mean=   3.18ms  p50=   3.12  p90=   3.52  p99=   3.99  max=  10.11
+DT investigator              50 concurrent requests in 50.2ms (995 req/s)
+DT investigator              50 concurrent requests in 48.0ms (1043 req/s)
+DT investigator              50 concurrent requests in 47.2ms (1059 req/s)
+DT investigator              50 concurrent requests in 49.4ms (1012 req/s)
+DT investigator              50 concurrent requests in 50.1ms (997 req/s)
+DT agent + selector          n=1000  mean=   3.50ms  p50=   3.14  p90=   3.49  p99=   3.93  max= 321.54
+DT agent + selector          50 concurrent requests in 51.2ms (976 req/s)
+DT agent + selector          50 concurrent requests in 51.5ms (971 req/s)
+DT agent + selector          50 concurrent requests in 51.1ms (979 req/s)
+DT agent + selector          50 concurrent requests in 47.9ms (1044 req/s)
+DT agent + selector          50 concurrent requests in 48.9ms (1023 req/s)
+xgf zmq request/reply        n=1000  mean=   3.60ms  p50=   3.56  p90=   4.01  p99=   4.40  max=   6.75
+xgf zmq request/reply        50 concurrent requests in 52.6ms (950 req/s)
+xgf zmq request/reply        50 concurrent requests in 54.5ms (917 req/s)
+xgf zmq request/reply        50 concurrent requests in 54.7ms (914 req/s)
+xgf zmq request/reply        50 concurrent requests in 52.9ms (945 req/s)
+xgf zmq request/reply        50 concurrent requests in 141.1ms (354 req/s)
+results: experiments/dt-paper/results/r3b/u2/insitu-pm-orbit-cross-c50-inproc-r4-stack-r3b-20261110.json
