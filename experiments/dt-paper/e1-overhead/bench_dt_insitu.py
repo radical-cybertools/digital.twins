@@ -300,7 +300,7 @@ async def main() -> None:
 
     args = parser.parse_args()
     args.backends = [b for b in args.backends.split(",") if b]
-    rows = [r for r in args.rows.split(",") if r]
+    rows = list(dict.fromkeys(r for r in args.rows.split(",") if r))
     N_BURSTS = args.bursts
 
     backend_label, backend = await make_backend(args)
@@ -317,24 +317,23 @@ async def main() -> None:
     results = {"provenance": provenance(args, backend_label), "rows": {}}
     print(f"backend: {backend_label}")
 
+    # rows run in the order --rows gives them (round 3b; the default order
+    # is the one this harness always used)
+    runners = {
+        "bare": lambda: run_row(
+            "bare asyncflow task", predict, args.tasks, args.concurrent),
+        "investigator": lambda: twin_row(
+            "DT investigator", stream, flow,
+            lambda rt: rt.add_investigator(Inv(flow, predict), X, Y), args),
+        "agent": lambda: twin_row(
+            "DT agent + selector", stream, flow,
+            lambda rt: rt.add_agent(Agent(flow, predict), X, Y), args),
+        "xgf": lambda: xgf_row("xgf zmq request/reply", predict, args),
+    }
     try:
-        if "bare" in rows:
-            results["rows"]["bare"] = await run_row(
-                "bare asyncflow task", predict, args.tasks, args.concurrent)
-
-        if "investigator" in rows:
-            results["rows"]["investigator"] = await twin_row(
-                "DT investigator", stream, flow,
-                lambda rt: rt.add_investigator(Inv(flow, predict), X, Y), args)
-
-        if "agent" in rows:
-            results["rows"]["agent"] = await twin_row(
-                "DT agent + selector", stream, flow,
-                lambda rt: rt.add_agent(Agent(flow, predict), X, Y), args)
-
-        if "xgf" in rows:
-            results["rows"]["xgf"] = await xgf_row(
-                "xgf zmq request/reply", predict, args)
+        for name in rows:
+            if name in runners:
+                results["rows"][name] = await runners[name]()
     finally:
         await stream.close()
         await broker.stop()

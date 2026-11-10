@@ -164,7 +164,7 @@ Solo, medians over 5 repeats, x bare (T3 = round 3, old stack):
 - Outliers (reported, not dropped): single slow first bursts -- solo c=50 bare
   r1 305 req/s, investigator 421; in-process c=50 xgf 361. This is round 3's
   open question 2 ("one burst in about ten drops to about 450"), still there,
-  rarer here (3 of 70 first bursts at c=50); not investigated.
+  rarer here (3 of the 40 ORBIT first bursts at c=50); not investigated.
 
 ## U3: E1 through radical.3 (done, 2026-11-10 15:35)
 
