@@ -1,0 +1,8 @@
+backend: local concurrent pool
+DT agent + selector          n=1000  mean=   0.61ms  p50=   0.61  p90=   0.63  p99=   0.71  max=   0.82
+DT agent + selector          500 concurrent requests in 140.8ms (3551 req/s)
+DT agent + selector          500 concurrent requests in 138.2ms (3618 req/s)
+DT agent + selector          500 concurrent requests in 185.4ms (2697 req/s)
+DT agent + selector          500 concurrent requests in 140.0ms (3571 req/s)
+DT agent + selector          500 concurrent requests in 176.4ms (2835 req/s)
+results: experiments/dt-paper/results/r3b/u4/insitu-pm-pool8-c500-solo-agent-r2-stack-r3b-20261110.json
