@@ -363,3 +363,39 @@ message as an event that also serves inference, not a bug; no `src/`
 change.  Publishing a window as one message removes it (0.84x, within 2%
 of zmq): for the paper, the per-message cost is about 47 us on Perlmutter,
 and a producer that batches pays it once per batch.
+
+### T3: the E1 baseline as xGFabric wired it (`xgf` row)
+
+The **xgf** row in `bench_dt_insitu.py` is the pre-DT xGFabric workflow
+shape (`radical-collaboration/xGFabric` `devel`):
+`service/src/xgfabric/service/service.py` is a `radical.utils` ZMQ server
+whose `register_fname` request carries one sensor reading, runs the
+workload for it and returns the result as the reply, and
+`service/bin/xgfabric-client.py` sends it.  The row copies that structure:
+a ZMQ ROUTER service and DEALER client on loopback, JSON bodies, one
+asyncflow task per request (an asyncio loop instead of the service's
+blocking `run_workload`), the answer as the reply.  Not reproduced: how the
+readings reach the service in xGFabric (CSPOT/WOOF relays,
+`demo1/ucsb/rpi-5G-scripts/cups-relay.sh`, or a polled input directory,
+1 s per poll), which needs the testbed.
+
+Each row in its own process, 5 repeats, 5 bursts per run; medians, x bare
+(job 61060193, `results/r3/t3/t3-table-stack-r3-20261110.md`):
+
+| layout | c | bare | investigator | agent | xgf |
+|---|---|---|---|---|---|
+| pool 8 | seq p50 ms | 0.58 | 0.60 (1.03x) | 0.60 (1.03x) | 0.87 (1.50x) |
+| pool 8 | 50, bursts 2-5 req/s | 3525 | 3331 (0.94x) | 3204 (0.91x) | 2531 (0.72x) |
+| pool 8 | 500, bursts 2-5 req/s | 3842 | 3150 (0.82x) | 3173 (0.83x) | 2586 (0.67x) |
+| ORBIT cross | 1: seq p50 ms | 3.10 | 3.19 (1.03x) | 3.39 (1.09x) | 3.91 (1.26x) |
+| ORBIT cross | 50, bursts 2-5 req/s | 791 | 784 (0.99x) | 779 (0.98x) | 672 (0.85x) |
+| ORBIT cross | 500, bursts 2-5 req/s | 650 | 627 (0.97x) | 627 (0.96x) | 595 (0.92x) |
+
+The hand-wired xGFabric shape is slower than either DT row: its request/
+reply hop costs about 0.3 ms per request locally and 0.4-0.8 ms through
+ORBIT, while the DT rows' `get_inference` is an in-process call that adds
+0.02-0.3 ms over the bare task.  The comparison is the shape, not the
+transport: a DT twin fed over a message bus pays that bus too (see T2:
+about 4 us per message for the ZMQ hop, 47 us for the DT's per-message
+event path).  ORBIT runs are on the unpatched paper stack, so later bursts
+in a run are slower for every row alike (see T1).

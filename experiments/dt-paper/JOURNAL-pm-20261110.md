@@ -18,6 +18,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 3`.
 | 61058980 | r3-t1b | m5290 | 2 | 00:05:02 | 0.168 | 0.64 | 0.00 |
 | 61059078 | r3-t2b | m5290 | 1 | 00:02:54 | 0.048 | 0.69 | 0.00 |
 | 61059793 | r3-t1c | m5290 | 2 | 00:03:44 | 0.124 | 0.81 | 0.00 |
+| 61060193 | r3-t3 | m5290 | 2 | 00:09:37 | 0.321 | 1.13 | 0.00 |
 
 ## T0: setup (done, 2026-11-09 13:22)
 
@@ -94,3 +95,20 @@ imports).  Write-up: E1 README, "T2".
 - Not committed (kept in `results/r3/` on pscratch): T1's folded client
   profiles (import-only, see above) and T2's py-spy profiles (0.16 s of the
   run); T2b's replace the latter.
+
+## T3: done (2026-11-09 15:55)
+
+Job 61060193 (r3-t3, 2 nodes): local pool 8 (c = 50, 500) and ORBIT
+cross-node (c = 1, 50, 500), rows bare / investigator / agent / xgf, each
+solo, 5 repeats, 5 bursts.  Isolation check empty.  Write-up: E1 README,
+"T3".
+
+- xgf follows xGFabric `devel` `service/src/xgfabric/service/service.py`
+  and `service/bin/xgfabric-client.py` (ZMQ request per reading, workload
+  per request, result as reply); the CSPOT / input-directory feed is not
+  reproducible without the testbed, so the row starts at the service's
+  request (decision: page's "measure its message-bus hop alone" applies to
+  that feed only).
+- xgf is slower than the DT rows: 0.72x / 0.67x bare locally (bursts),
+  0.85x / 0.92x through ORBIT, seq p50 +0.3 ms locally, +0.8 ms at c=1
+  through ORBIT.  xGFabric cloned into `$W/scratch-xgf` (not committed to).
