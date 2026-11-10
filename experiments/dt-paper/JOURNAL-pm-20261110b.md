@@ -225,7 +225,7 @@ isolation checks empty (both jobs). `results/r3b/u3/`, table
 |---|---|---|
 | U0 | done | `ve3b` at `fca2d54`, pins match, orbit check `3600.0 20000`; clone/push over HTTPS (no SSH key) |
 | U1 | done | decay gone: local repro flat at 2170-2520 req/s with 2 live Tasks (old: 1813 -> 437, 6000); ORBIT 20 bursts 983 -> 1125 (old: 717 -> 243) |
-| U2 | done | solo DT rows 0.91-1.00x bare (ORBIT bursts 2-5: 1.00 / 1.00 at c=50, 0.97 / 0.95 at c=500); in-process now equals solo (c=500 bursts 2-5 0.93 / 0.88; round 2 first burst 0.74 / 0.60); ORBIT bare throughput up 28-64% over T3 |
+| U2 | done | solo DT rows, bursts 2-5: 0.82-0.94x bare on pool 8, 0.95-1.00x through ORBIT; in-process now equals solo (c=500 bursts 2-5 0.93 / 0.88; round 2 first burst 0.74 / 0.60); ORBIT bare throughput up 28-64% over T3 |
 | U3 | done | through radical.3 DT rows within 0.1 ms of bare; c=50 -1.3 ms, c=1 +6 ms vs 2c for every row alike; WAN connect 172 ms |
 | U4 | done | P1 seq p50 unchanged; in-process c=500 single-burst loss (now agent, was investigator) is the client's cyclic GC, gone with GC off; solo rows 0.90-0.97x |
 | U5 | done | dt 0.73x bare at window 100 (T2 0.34x, follow-up 0.77x); +6.5 us per message over the ZMQ hop |
