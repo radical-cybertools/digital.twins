@@ -248,8 +248,9 @@ class ModelInvestigator(_TwinComponent):
     (no ``ON_OUTPUT`` subscriber, nothing consuming the output dtype -- the
     runtime would drop the answer) is then not inferred, except the first
     one after each published model or inference task, so a model the
-    inference task rejects still fails the twin.  ``get_inference`` always
-    infers.
+    inference task rejects for every input still fails the twin; one that
+    fails only for some inputs may then go unnoticed.  ``get_inference``
+    always infers, and so does an investigator a ``SciAgent`` selects.
     """
 
     infer_without_consumer: bool = True

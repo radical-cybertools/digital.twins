@@ -232,8 +232,37 @@ async def test_inline_failure_fails_the_twin(stream_clients, no_task_leaks):
     try:
         await until(lambda: runtime.state is RuntimeState.FAILED)
         assert "on_input failed" in str(runtime.last_error)
+        assert 2 not in inv.inferred   # no inference after the failure
     finally:
         await runtime.stop()
+
+
+class Unhashable:
+    """A callable callback that cannot be hashed (eq without hash)."""
+
+    def __init__(self, seen):
+        self.seen = seen
+
+    def __eq__(self, other):
+        return self is other
+
+    __hash__ = None  # type: ignore[assignment]
+
+    async def __call__(self, in_data):
+        self.seen.append(in_data.data)
+
+
+class WithUnhashable(Counting):
+    async def publish(self, runtime):
+        runtime.subscribe_to_topic(RuntimeAPI.ON_INPUT, Unhashable(self.extra))
+        runtime.publish_new_model()
+
+
+async def test_unhashable_on_input_callback(stream_clients, no_task_leaks):
+    inv = WithUnhashable()
+    inv.extra = []
+    runtime = await run_twin(stream_clients, inv)
+    assert inv.extra and runtime.state is not RuntimeState.FAILED
 
 
 async def test_inline_is_for_on_input_only(stream_clients):

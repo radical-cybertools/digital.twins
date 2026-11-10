@@ -112,8 +112,9 @@ class StreamingLearnerInvestigator(ModelInvestigator):
     inference task runs with.
     """
 
-    # its in-situ inference only serves answers; an unconsumed one is
-    # skipped (see `ModelInvestigator`)
+    # its in-situ inference serves answers; an unconsumed one is skipped
+    # (see `ModelInvestigator`).  A subclass whose `inference_task` has side
+    # effects (`record_output`, logging predictions) sets it back to True.
     infer_without_consumer = False
 
     def __init__(
