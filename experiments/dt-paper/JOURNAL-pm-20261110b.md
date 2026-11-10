@@ -83,10 +83,11 @@ Job 61111713 (r3b-u4, debug, 1 node, 10:35; `r3b/run_u4.sh`,
 
 - P1 (all rows in one process, one burst): seq p50 unchanged at every pool
   (within +-0.04 ms of round 2). c=50 throughput within -13..+2% of round 2.
-- c=500: in round 2 the investigator (second row) was the slow one (0.66-0.75x
-  bare at pools 1-32), now it is about bare (0.90-1.00x) and the agent
-  (third row) is the slow one (0.70-0.75x at pools 1-32, 0.74x at 64, 0.75x
-  at 128; pool 256 equal). Bare itself unchanged (-4..+2%).
+- c=500: in round 2 the investigator (second row) was the slow one (0.67-0.71x
+  bare at pools 1-32), now it is close to bare (0.93-0.98x at pools 1-32,
+  0.85x at 64, 0.92x at 128) and the agent (third row) is the slow one
+  (0.67-0.73x at pools 1-32, 0.74x at 64, 0.75x at 128); pool 256 equal in
+  both rounds. Bare itself unchanged (-4..+2%).
 - Solo (each row its own process, 5 bursts), c=500, first burst x bare:
   pool 1 0.97 / 0.96, pool 8 0.92 / 0.91, pool 64 0.94 / 0.90
   (investigator / agent); bursts 2-5: 0.84-0.95.
