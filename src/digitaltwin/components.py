@@ -243,6 +243,14 @@ class ModelInvestigator(_TwinComponent):
     ``WorkflowEngine`` that drives investigator callbacks.
     """
 
+    # A streamed input whose in-situ answer nobody takes (no `ON_OUTPUT`
+    # subscriber, nothing consuming the output dtype) is not inferred -- the
+    # runtime would drop the answer anyway -- except the first one after each
+    # published model, which checks the model against the inference task.
+    # An inference task that matters for its side effects sets this to run
+    # it for every input.
+    infer_without_consumer: bool = False
+
     def __init__(self, flow: WorkflowEngine) -> None:
         super().__init__()
         self.flow = flow

@@ -223,7 +223,9 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         self._own_learner_tasks(runtime)
 
         runtime.set_inference_task(self.inference_task)
-        runtime.subscribe_to_topic(RuntimeAPI.ON_INPUT, self._feed)
+        # inline: `_feed` never blocks (a `Stream` feed is a plain put), so
+        # it needs no task of its own per input
+        runtime.subscribe_to_topic(RuntimeAPI.ON_INPUT, self._feed, inline=True)
         runtime.publish_new_model(*self.bootstrap_model())
 
         # criterion met => this model is worth serving.  In streaming mode
