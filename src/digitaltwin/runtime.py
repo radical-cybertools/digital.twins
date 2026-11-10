@@ -1016,12 +1016,12 @@ class DTRuntime:
         """
 
         for cb in ant.subscriptions[RuntimeAPI.ON_INPUT]:
-            if not ant.inline_subscriptions or id(cb) not in ant.inline_subscriptions:
+            if id(cb) not in ant.inline_subscriptions:
                 logger.info("Fire ON_INPUT on %s", cb)
                 self._to_asyncio_task(cb, in_data)
                 continue
 
-            if self._stop_task is not None or self.state is RuntimeState.FAILED:
+            if self._closed():
                 return
 
             token = _COMPONENT.set(type(ant.component).__name__)
@@ -1037,6 +1037,12 @@ class DTRuntime:
             finally:
                 _COMPONENT.reset(token)
 
+    def _closed(self) -> bool:
+        """True once the twin is being torn down or has failed: it starts
+        no new work."""
+
+        return self._stop_task is not None or self.state is RuntimeState.FAILED
+
     def _has_taker(self, dtype: DataType) -> bool:
         """True if something is registered for, or consumes, `dtype`;
         `_put_to_dtype_queue` drops the data otherwise."""
@@ -1050,7 +1056,7 @@ class DTRuntime:
         nothing for its output dtype (`_has_taker`).  Only investigators
         that set `infer_without_consumer = False` skip."""
 
-        if getattr(ant.component, "infer_without_consumer", True):
+        if ant.component.infer_without_consumer:
             return False
         if ant.subscriptions.get(RuntimeAPI.ON_OUTPUT):
             return False
@@ -1071,7 +1077,7 @@ class DTRuntime:
         # a twin which is being torn down starts no new work: a task
         # registered after teardown swapped `running_tasks` out would never
         # be cancelled by anyone
-        if self._stop_task is not None or self.state is RuntimeState.FAILED:
+        if self._closed():
             logger.debug("twin is %s - not running %s", self.state, func)
             return None
 
@@ -1540,7 +1546,9 @@ class DTRuntime:
         for investigator in ant.investigators.values():
             await self._fire_inputs(investigator, in_data)
 
-        if self.state is RuntimeState.FAILED:   # an inline callback failed
+        # a streamed input after an inline callback failed the twin (or
+        # during teardown) starts no inference; `get_inference` still answers
+        if not skip_queue_out and self._closed():
             return
 
         # run the main loop directly
