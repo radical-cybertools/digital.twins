@@ -206,7 +206,7 @@ class _JoinComponent(_TwinComponent):
     def __init__(self, join_dtype: JoinDataType, submit_event_fn: Callable) -> None:
         # FIXME(review): the depth-1 queues below plus the blocking `put` in
         # `update()` make a join a *non-local* operator.  `update` is awaited
-        # from `_run_component`, which is gathered by `_dtype_consumer`, which
+        # from `_run_component`, which `_dtype_consumer` awaits, which
         # is awaited in `_launch_consumer`'s loop -- so while one input waits
         # for its partner, the whole consumer for that dtype is stalled,
         # including components which have nothing to do with the join.  The
@@ -305,9 +305,12 @@ class _AnnotatedComponent:
 
     shared_tasks: dict[SharedSubtaskLabel, _SharedStruct] = field(default_factory=dict)
     # ON_INPUT callbacks awaited in place instead of run as tasks
-    inline_subscriptions: list[Callable] = field(default_factory=list)
-    # the published model a streamed input last ran the inference with
-    probed_model: Optional[dict] = None
+    inline_subscriptions: set[Callable] = field(default_factory=set)
+    # bumped per published model or inference task; an investigator that
+    # skips unconsumed answers infers once per generation (`probed_generation`)
+    model_generation: int = 0
+    probed_generation: int = -1
+    skip_logged: bool = False
 
 
 class RuntimeAPI:
@@ -419,7 +422,7 @@ class RuntimeAPI:
             raise ValueError(f"inline subscriptions are for ON_INPUT, not {topic}")
         self._ant.subscriptions[topic].append(task)
         if inline:
-            self._ant.inline_subscriptions.append(task)
+            self._ant.inline_subscriptions.add(task)
 
     def publish_new_model(self, model_kwargs=None, acc_kwargs=None) -> None:
         """Publish a newly trained model from an agent.
@@ -441,6 +444,7 @@ class RuntimeAPI:
         # same way the callback below already normalises them.
         self._ant.model_kwargs = model_kwargs or {}
         self._ant.accuracy_kwargs = acc_kwargs or {}
+        self._ant.model_generation += 1
         self._ant.has_published_model.set()
         if self._ant.model_publish_cb is not None:
             self._runtime._to_asyncio_task(
@@ -462,6 +466,7 @@ class RuntimeAPI:
 
         assert self.cmp_type in ["INVESTIGATOR"]
         self._ant.inference_task = task
+        self._ant.model_generation += 1
 
     def record_output(self, name: str, dataurl: str) -> None:
         """Publish the twin's latest visual output for the dashboard.
@@ -1000,8 +1005,9 @@ class DTRuntime:
 
         return await func(*args, **kwargs)
 
-    async def _fire_input(self, ant: "_AnnotatedComponent", cb, in_data) -> None:
-        """Fire one ON_INPUT callback: as a task, or awaited in place.
+    async def _fire_inputs(self, ant: "_AnnotatedComponent", in_data) -> None:
+        """Fire a component's ON_INPUT callbacks: as tasks, or awaited in
+        place for the ones subscribed with ``inline=True``.
 
         An inline callback gets what `_owned` gives a task -- this twin as
         owner (already stamped by `_run_component`), its component's name
@@ -1009,40 +1015,46 @@ class DTRuntime:
         would (`_task_done`): into the twin's state, not to the caller.
         """
 
-        if cb not in ant.inline_subscriptions:
-            logger.info("Fire ON_INPUT on %s", cb)
-            self._to_asyncio_task(cb, in_data)
-            return
+        for cb in ant.subscriptions[RuntimeAPI.ON_INPUT]:
+            if cb not in ant.inline_subscriptions:
+                logger.info("Fire ON_INPUT on %s", cb)
+                self._to_asyncio_task(cb, in_data)
+                continue
 
-        if self._stop_task is not None or self.state is RuntimeState.FAILED:
-            return
+            if self._stop_task is not None or self.state is RuntimeState.FAILED:
+                return
 
-        token = _COMPONENT.set(type(ant.component).__name__)
-        try:
-            await cb(in_data)
-        except asyncio.CancelledError:
-            raise
-        except Exception as exc:
-            self._record_error(exc)
-        finally:
-            _COMPONENT.reset(token)
+            token = _COMPONENT.set(type(ant.component).__name__)
+            try:
+                await cb(in_data)
+            except asyncio.CancelledError as exc:
+                current = asyncio.current_task()
+                if current is not None and current.cancelling():
+                    raise
+                self._record_error(exc)   # the callback's own, not ours
+            except Exception as exc:
+                self._record_error(exc)
+            finally:
+                _COMPONENT.reset(token)
+
+    def _has_taker(self, dtype: DataType) -> bool:
+        """True if something is registered for, or consumes, `dtype`;
+        `_put_to_dtype_queue` drops the data otherwise."""
+
+        return (dtype in self.dtype_queues or dtype in self.components
+                or dtype in self.barriers)
 
     def _unconsumed(self, ant: "_AnnotatedComponent") -> bool:
-        """True if an investigator's answer to a streamed input has no taker.
+        """True if an investigator skips unconsumed answers and its answer to
+        a streamed input has no taker: no `ON_OUTPUT` subscriber, and
+        nothing for its output dtype (`_has_taker`).  Only investigators
+        that set `infer_without_consumer = False` skip."""
 
-        Mirrors the drop in `_put_to_dtype_queue`: nothing registered for
-        the output dtype and nothing consuming it, plus no `ON_OUTPUT`
-        subscriber.  `infer_without_consumer` opts out.  The caller still
-        runs the first input after each publish (`probed_model`).
-        """
-
-        if getattr(ant.component, "infer_without_consumer", False):
+        if getattr(ant.component, "infer_without_consumer", True):
             return False
         if ant.subscriptions.get(RuntimeAPI.ON_OUTPUT):
             return False
-        out = ant.output_dtype
-        return (out not in self.dtype_queues and out not in self.components
-                and out not in self.barriers)
+        return not self._has_taker(ant.output_dtype)
 
     def _to_asyncio_task(self, func, *args, **kwargs) -> Optional[asyncio.Task]:
         """Schedule a coroutine as an :class:`asyncio.Task` and track its
@@ -1522,13 +1534,11 @@ class DTRuntime:
             await ant.component.update(in_data)
             return  # NULL_VAL.. Output done by component directly
 
-        for cb in ant.subscriptions[RuntimeAPI.ON_INPUT]:
-            await self._fire_input(ant, cb, in_data)
+        await self._fire_inputs(ant, in_data)
 
         # and child investigators
         for investigator in ant.investigators.values():
-            for cb in investigator.subscriptions[RuntimeAPI.ON_INPUT]:
-                await self._fire_input(investigator, cb, in_data)
+            await self._fire_inputs(investigator, in_data)
 
         # run the main loop directly
         if isinstance(ant.component, UtilityTask):
@@ -1538,7 +1548,7 @@ class DTRuntime:
                     ant.output_dtype in self.components
                     or ant.output_dtype in self.barriers
                 ):
-                    logger.info(f"Subscribe to dtype: {ant.output_dtype}")
+                    logger.info("Subscribe to dtype: %s", ant.output_dtype)
                     await self.streamer.subscribe_to_dtype(
                         ant.output_dtype, self._ensure_dtype_queue(ant.output_dtype)
                     )
@@ -1546,12 +1556,12 @@ class DTRuntime:
 
                 # run mainloop as async task
                 rt = self._api(ant)
-                logger.info(f"Run {type(ant.component).__name__} main loop")
+                logger.info("Run %s main loop", type(ant.component).__name__)
                 self._to_asyncio_task(ant.component.main_loop, rt, in_data)
                 return
 
             rt = self._api(ant)
-            logger.info(f"Run {type(ant.component).__name__} main loop")
+            logger.info("Run %s main loop", type(ant.component).__name__)
             answer = await ant.component.main_loop(rt, in_data)
 
             # for split tasks, treat the answer differently
@@ -1595,21 +1605,25 @@ class DTRuntime:
 
         # item is an investigator - run its inference
         elif isinstance(ant.component, ModelInvestigator):
-            # a streamed input whose answer nobody takes: the answer would
-            # only be dropped (see `_put_to_dtype_queue`).  Each published
-            # model still runs once, so a model the inference task rejects
-            # fails the twin on the next input, as it did when every input
-            # was inferred.
-            if not skip_queue_out and self._unconsumed(ant):
-                if ant.probed_model is ant.model_kwargs:
-                    return None
-                ant.probed_model = ant.model_kwargs
-
             # wait until there is an inference task
             await ant.has_published_model.wait()
             assert ant.inference_task is not None
 
-            logger.debug(f"Run {type(ant.component).__name__} inference task")
+            # a streamed input whose answer nobody takes: the answer would
+            # only be dropped (see `_put_to_dtype_queue`).  Opt-in
+            # (`infer_without_consumer = False`), and each published model
+            # or inference task still runs once, so one the inference task
+            # rejects fails the twin on the next input.
+            if not skip_queue_out and self._unconsumed(ant):
+                if ant.probed_generation == ant.model_generation:
+                    if not ant.skip_logged:
+                        ant.skip_logged = True
+                        logger.debug("%s: answers nobody takes are not inferred",
+                                     type(ant.component).__name__)
+                    return None
+                ant.probed_generation = ant.model_generation
+
+            logger.debug("Run %s inference task", type(ant.component).__name__)
             answer = await self._infer(ant, in_data, ant.model_kwargs)
             if answer is None:
                 return
@@ -1625,7 +1639,7 @@ class DTRuntime:
             # run a science agent. Call its decision task
             await ant.has_published_selector.wait()
             assert ant.model_select_task is not None
-            logger.debug(f"Run {type(ant.component).__name__} selection task")
+            logger.debug("Run %s selection task", type(ant.component).__name__)
 
             selecting = ant.model_select_task(
                 in_data, *ant.model_select_args, **ant.model_select_kwargs
@@ -1758,11 +1772,7 @@ class DTRuntime:
             return
 
         # nothing registered for it, and nothing consuming it: drop it
-        if (
-            t_data.dtype not in self.dtype_queues
-            and t_data.dtype not in self.components
-            and t_data.dtype not in self.barriers
-        ):
+        if not self._has_taker(t_data.dtype):
             return
 
         logger.info("Enqueue: %s", t_data.dtype)

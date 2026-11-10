@@ -241,15 +241,18 @@ class _TwinComponent:
 class ModelInvestigator(_TwinComponent):
     """Model-oriented investigation step.  ``flow`` is a
     ``WorkflowEngine`` that drives investigator callbacks.
+
+    ``infer_without_consumer`` (default ``True``): every streamed input runs
+    the in-situ inference.  An investigator whose inference has no side
+    effects sets it to ``False``: a streamed input whose answer nobody takes
+    (no ``ON_OUTPUT`` subscriber, nothing consuming the output dtype -- the
+    runtime would drop the answer) is then not inferred, except the first
+    one after each published model or inference task, so a model the
+    inference task rejects still fails the twin.  ``get_inference`` always
+    infers.
     """
 
-    # A streamed input whose in-situ answer nobody takes (no `ON_OUTPUT`
-    # subscriber, nothing consuming the output dtype) is not inferred -- the
-    # runtime would drop the answer anyway -- except the first one after each
-    # published model, which checks the model against the inference task.
-    # An inference task that matters for its side effects sets this to run
-    # it for every input.
-    infer_without_consumer: bool = False
+    infer_without_consumer: bool = True
 
     def __init__(self, flow: WorkflowEngine) -> None:
         super().__init__()
