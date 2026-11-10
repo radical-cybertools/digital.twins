@@ -304,6 +304,10 @@ class _AnnotatedComponent:
     split_outputs: tuple[DataType] = tuple([])  # type: ignore
 
     shared_tasks: dict[SharedSubtaskLabel, _SharedStruct] = field(default_factory=dict)
+    # ON_INPUT callbacks awaited in place instead of run as tasks
+    inline_subscriptions: list[Callable] = field(default_factory=list)
+    # the published model a streamed input last ran the inference with
+    probed_model: Optional[dict] = None
 
 
 class RuntimeAPI:
@@ -380,7 +384,8 @@ class RuntimeAPI:
 
         return self._runtime.stream_config
 
-    def subscribe_to_topic(self, topic: str, task: Callable) -> None:
+    def subscribe_to_topic(self, topic: str, task: Callable,
+                           inline: bool = False) -> None:
         """Register a callback under a specific runtime event.
 
         The callback will be invoked whenever the component receives an event
@@ -396,13 +401,25 @@ class RuntimeAPI:
             * :pyattr:`ON_FILTERED_OUTPUT` - invoke only for selected
               investigators.
 
+        By default every call runs as a task of its own, concurrently with
+        the inference.  ``inline=True`` (``ON_INPUT`` only) awaits the
+        callback in place, before the inference, which saves a task per
+        input: only for a callback that does not block, since the twin's
+        handling of that dtype waits for it.  Its failure fails the twin,
+        as a task's does.
+
         Args:
             topic: Name of the runtime event.
             task: Callback to register.
+            inline: Await the callback in place (``ON_INPUT`` only).
         """
 
         assert self.cmp_type in ["INVESTIGATOR", "AGENT"]
+        if inline and topic != RuntimeAPI.ON_INPUT:
+            raise ValueError(f"inline subscriptions are for ON_INPUT, not {topic}")
         self._ant.subscriptions[topic].append(task)
+        if inline:
+            self._ant.inline_subscriptions.append(task)
 
     def publish_new_model(self, model_kwargs=None, acc_kwargs=None) -> None:
         """Publish a newly trained model from an agent.
@@ -983,6 +1000,50 @@ class DTRuntime:
 
         return await func(*args, **kwargs)
 
+    async def _fire_input(self, ant: "_AnnotatedComponent", cb, in_data) -> None:
+        """Fire one ON_INPUT callback: as a task, or awaited in place.
+
+        An inline callback gets what `_owned` gives a task -- this twin as
+        owner (already stamped by `_run_component`), its component's name
+        for the tasks it submits -- and its failure goes where a task's
+        would (`_task_done`): into the twin's state, not to the caller.
+        """
+
+        if cb not in ant.inline_subscriptions:
+            logger.info("Fire ON_INPUT on %s", cb)
+            self._to_asyncio_task(cb, in_data)
+            return
+
+        if self._stop_task is not None or self.state is RuntimeState.FAILED:
+            return
+
+        token = _COMPONENT.set(type(ant.component).__name__)
+        try:
+            await cb(in_data)
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            self._record_error(exc)
+        finally:
+            _COMPONENT.reset(token)
+
+    def _unconsumed(self, ant: "_AnnotatedComponent") -> bool:
+        """True if an investigator's answer to a streamed input has no taker.
+
+        Mirrors the drop in `_put_to_dtype_queue`: nothing registered for
+        the output dtype and nothing consuming it, plus no `ON_OUTPUT`
+        subscriber.  `infer_without_consumer` opts out.  The caller still
+        runs the first input after each publish (`probed_model`).
+        """
+
+        if getattr(ant.component, "infer_without_consumer", False):
+            return False
+        if ant.subscriptions.get(RuntimeAPI.ON_OUTPUT):
+            return False
+        out = ant.output_dtype
+        return (out not in self.dtype_queues and out not in self.components
+                and out not in self.barriers)
+
     def _to_asyncio_task(self, func, *args, **kwargs) -> Optional[asyncio.Task]:
         """Schedule a coroutine as an :class:`asyncio.Task` and track its
         completion.
@@ -1451,7 +1512,7 @@ class DTRuntime:
         _COMPONENT.set(type(ant.component).__name__)
 
         await self.is_start.wait()
-        logger.info(f"Online run: {type(ant.component).__name__}.")
+        logger.info("Online run: %s.", type(ant.component).__name__)
 
         assert ant.input_dtype == TRUTHY or ant.input_dtype == in_data.dtype
 
@@ -1462,14 +1523,12 @@ class DTRuntime:
             return  # NULL_VAL.. Output done by component directly
 
         for cb in ant.subscriptions[RuntimeAPI.ON_INPUT]:
-            logger.info(f"Fire ON_INPUT on {cb}")
-            self._to_asyncio_task(cb, in_data)
+            await self._fire_input(ant, cb, in_data)
 
         # and child investigators
         for investigator in ant.investigators.values():
             for cb in investigator.subscriptions[RuntimeAPI.ON_INPUT]:
-                logger.info(f"Fire ON_INPUT on {cb}")
-                self._to_asyncio_task(cb, in_data)
+                await self._fire_input(investigator, cb, in_data)
 
         # run the main loop directly
         if isinstance(ant.component, UtilityTask):
@@ -1536,6 +1595,16 @@ class DTRuntime:
 
         # item is an investigator - run its inference
         elif isinstance(ant.component, ModelInvestigator):
+            # a streamed input whose answer nobody takes: the answer would
+            # only be dropped (see `_put_to_dtype_queue`).  Each published
+            # model still runs once, so a model the inference task rejects
+            # fails the twin on the next input, as it did when every input
+            # was inferred.
+            if not skip_queue_out and self._unconsumed(ant):
+                if ant.probed_model is ant.model_kwargs:
+                    return None
+                ant.probed_model = ant.model_kwargs
+
             # wait until there is an inference task
             await ant.has_published_model.wait()
             assert ant.inference_task is not None
@@ -1587,7 +1656,7 @@ class DTRuntime:
 
             # now, run the inference of the provided investigator
             for cb in i_select.subscriptions[RuntimeAPI.ON_FILTERED_INPUT]:
-                logger.info(f"Fire ON_FILTERED_INPUT on {cb}")
+                logger.info("Fire ON_FILTERED_INPUT on %s", cb)
                 self._to_asyncio_task(cb, in_data)
 
             await i_select.has_published_model.wait()
@@ -1667,11 +1736,13 @@ class DTRuntime:
             None. All component loops are executed concurrently.
         """
 
-        tasks = []
-        for task in self.components[input_data.dtype]:
-            tasks.append(self._run_component(task, input_data))
+        components = self.components[input_data.dtype]
+        if len(components) == 1:     # the common case: no gather per input
+            await self._run_component(components[0], input_data)
+            return
 
-        await asyncio.gather(*tasks)
+        await asyncio.gather(*[self._run_component(c, input_data)
+                               for c in components])
 
     def _put_to_dtype_queue(self, t_data: TypedData) -> None:
         """Enqueue a :class:`TypedData` instance for later consumption.
@@ -1694,7 +1765,7 @@ class DTRuntime:
         ):
             return
 
-        logger.info(f"Enqueue: {t_data.dtype}")
+        logger.info("Enqueue: %s", t_data.dtype)
         self._ensure_dtype_queue(t_data.dtype).put_nowait(t_data)
 
     async def _launch_b_consumer(
@@ -1742,7 +1813,7 @@ class DTRuntime:
                 await self.barriers[dtype][0].put(t_data)
             else:
                 # process!
-                logger.info(f"Dequeue: {t_data.dtype}")
+                logger.info("Dequeue: %s", t_data.dtype)
                 await self._dtype_consumer(t_data)
 
     def describe(self) -> dict:
