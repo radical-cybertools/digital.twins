@@ -1,0 +1,67 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: one twin on N sites",
+    "harness": "bench_sites.py",
+    "time": "2026-11-11T05:14:25-0800",
+    "host": "nid004511",
+    "python": "3.12.12",
+    "digital_twins_commit": "58c666082aee7b58b8d6c8a06e2ac713551beb66",
+    "digital_twins_dirty": false,
+    "slurm_job": "61146307",
+    "args": {
+      "broker": "https://10.249.2.225:8141",
+      "endpoints": [
+        "e3_s0"
+      ],
+      "n": "1",
+      "layout": "spread",
+      "work_ms": 50.0,
+      "seq": 20,
+      "tasks": 200,
+      "concurrent": 16,
+      "bursts": 5,
+      "timeout": 120.0,
+      "out": "experiments/dt-paper/results/r4/conc/sites-spread-c16-n1-r3-r4-stack-r4-20261111.json"
+    }
+  },
+  "points": [
+    {
+      "n": 1,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "e3_s0",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null
+      ],
+      "expected_endpoint": [
+        "e3_s0"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 1023
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 0.6881284713745117,
+      "seq_p50_ms": 56.652702449355274,
+      "bursts_s": [
+        9.89638989197556,
+        9.578693943913095,
+        9.875327014015056,
+        9.473545646993443,
+        9.186461698031053
+      ],
+      "req_per_s_bursts_2_5": 20.995546585063224,
+      "req_per_s_first": 20.20938970504477,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": null
+    }
+  ]
+}

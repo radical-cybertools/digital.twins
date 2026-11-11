@@ -19,6 +19,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 4`.
 | 61145515 | r4-e3-conc | m5290 | 5 | 00:14:04 | 1.172 | 5.20 | 0.00 |
 | 61145516 | r4-e3-remote | m5290 | 4 | 00:22:15 | 1.483 | 6.68 | 0.00 |
 | 61146168 | r4-e3-conc4 | m5290 | 5 | 00:05:58 | 0.497 | 7.18 | 0.00 |
+| 61146307 | r4-e3-conc1 | m5290 | 2 | 00:14:20 | 0.478 | 7.65 | 0.00 |
 
 ## W0: setup (2026-11-11 03:00)
 
@@ -132,3 +133,72 @@ everywhere (W3 touches only radical.3's broker, W1 only its own).
   site running the twin's tasks one at a time, here each paying the
   broker-to-site round trip on top of the 50 ms of work. Not measured
   directly.
+
+## W2: the DT-versus-hand-wired gap on one site (done, 2026-11-11 05:25)
+
+W1's layout, spread, both harnesses, `--concurrent` 16 and 32, 5 repeats.
+`results/r4/conc/`, table `e3-table-stack-r4-20261111.md`.
+
+- Jobs: 61145515 (r4-e3-conc, regular, 5 nodes, 14:04) was meant to run N=1
+  and N=4, but `--export=...,NS=1,4,...` split at the comma, so it ran N=1
+  only. 61146168 (r4-e3-conc4, debug, 5 nodes, 5:58, capped at 15 min) ran
+  N=4, and its files overwrote 61145515's (the names had no N). Its files
+  were renamed `-n4-`, and `run_e3_local.sh` now puts `NS` in the file
+  names. 61146307 (r4-e3-conc1, debug, 2 nodes: one site is all N=1 uses,
+  14:20, capped at 18 min) reran N=1. 61145515's own numbers survive only
+  in its Slurm output (`logs/r4-e3-conc-61145515.out`) and agree with the
+  rerun (dt 19.9-21.5 / 20.7-22.8, xgf 23.8-28.8 / 47.7-54.5 req/s at
+  c=16 / 32). All runs rc 0, placement ok at every point, isolation checks
+  empty.
+
+| N | dt c=16 | dt c=32 | xgf c=16 | xgf c=32 | dt / xgf at c=32 |
+|---|---|---|---|---|---|
+| 1 | 20.7 (20.3-21.0) | 21.6 (20.6-22.3) | 25.0 (23.1-25.7) | 51.3 (47.9-56.7) | 0.42 |
+| 4 | 77.9 (77.6-78.2) | 80.1 (79.4-81.4) | 80.0 (79.8-80.5) | 88.2 (87.0-88.7) | 0.91 |
+
+(req/s, median of bursts 2-5, 5 repeats.)
+
+- 32 client threads do not close the gap. The DT path stays at about 20
+  req/s per site (1 / 50 ms) whatever the client concurrency; the
+  hand-wired path doubles at one site (25 -> 51). At 4 sites the gap is
+  smaller (0.91x), because 32 threads spread over 4 sites leave the
+  hand-wired path well below its per-site rate.
+- Reading (not measured further, as the page says): through the DT service
+  a site appears to run the twin's tasks one at a time, while the hand-wired
+  backend runs as many at once as the client sends. With the wall-clock busy
+  loop the hand-wired tasks overlap; real CPU work would not overlap like
+  that within one process, so the hand-wired advantage may be an artefact
+  of the work model. Per the page: the remaining gap is reported, and W1 at
+  16 threads stays the figure.
+
+## Close-out (round 4, 2026-11-11 05:30)
+
+| phase | status | headline |
+|---|---|---|
+| W0 | done | `ve4` at `f68ab66` (digitaltwin 0.1.0); smoke test in a debug job, not on the login node |
+| W1 | done | DT spread 20.4 -> 77.5 req/s for 1 -> 4 sites (3.81x), layout one flat at 20; hand-wired 25.5 -> 80.3 (3.15x); placement ok 80/80; DT 2 lines per site vs 65 wiring lines |
+| W2 | done | 32 threads do not close the gap: one site dt 21.6 vs xgf 51.3 (0.42x); 4 sites 80.1 vs 88.2 (0.91x) |
+| W3 | done | 3 Perlmutter sites + r3_site via radical.3: 6.1 -> 19.7 req/s (3.25x), p50 394 ms (WAN 171 ms); placement ok 20/20 |
+
+Node-hours: 7.65 of 8 (m5290; ledger above). No allocation left running.
+Every ORBIT job's isolation check is empty (smoke, local, conc x3,
+remote). No `src/` change, no fix branch. Harness changes: run-script
+knobs and paths, `NS` in the file names, `r4/check_topology.py`,
+`r4/e3_table.py`, `r4/env-r4.sh`, `s1/ledger.py 4`. Branch
+`exp/pm-round4-20261111` pushed; no PR.
+
+Open questions for Andre:
+
+1. The DT path caps a site at about 1 / work_ms (20 req/s) whatever the
+   client concurrency (W2), while the hand-wired path runs tasks
+   concurrently on a site. Is that the DT service serialising a twin's
+   requests (by design, or a bug worth a look in `src/`), or the
+   investigator's inference path? Not investigated (the page said stop).
+2. The work is a wall-clock busy loop (`time.perf_counter()` deadline), so
+   concurrent tasks on one endpoint share the GIL and still end after 50 ms
+   of wall time: the README's "about 20 req/s per site" holds for the DT
+   path only. For a CPU-bound site model, should the loop count CPU time
+   (`time.thread_time()` or a fixed iteration count) and W1 be rerun?
+3. Two of my mistakes in W2 (the comma in `NS=1,4`, then the file-name
+   collision) cost the 2-node N=1 rerun, about 0.5 node-h, and an extra
+   job start; both are fixed in the script, and the data are complete.
