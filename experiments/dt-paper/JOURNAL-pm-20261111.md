@@ -171,3 +171,17 @@ Open questions for Andre:
    instead? Round 3b's branch has one more journal-only commit after
    `e660bb9` (`8d10e6f`: Andre's answers, the Q3 code check) not in this
    one.
+
+## Andre's answers (2026-11-11)
+
+1. Mention the collector's 3-12% cost on bursts 2-5 next to the e1-pool
+   figure.
+2. Asked to restate (the question was about what to do with V3's
+   endpoint-GC finding).
+3. Merge per my judgement; no need for separate branches per round.
+   Done: round 3b up to `e660bb9` was already in `paper/dtaas` (the laptop's
+   `9613e38`). I merged `exp/pm-round3c-20261111` (`1004745`) and round
+   3b's last journal commit (`8d10e6f`) onto `paper/dtaas` `62998cb` as
+   `1dc1bf5`: only `experiments/dt-paper/` changes, no conflicts, `pytest
+   test/unit` 228 passed (pytest and pytest-asyncio added to `ve3b`).
+   Pushed to `paper/dtaas`.
