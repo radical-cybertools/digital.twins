@@ -242,7 +242,12 @@ class PluginDT(Plugin):
         if config is not None and "default_engine" in config:
             # the session's own value: a role or an engine it configures
             default = config["default_engine"]
-            named = list(engines) if isinstance(engines, dict) else []
+            # configured means a non-empty entry: a null one aliases away
+            named = (
+                [n for n, cfg in engines.items() if cfg]
+                if isinstance(engines, dict)
+                else []
+            )
             allowed = (*ROLES, *(n for n in named if n not in ROLES))
         else:
             # the deployment default: a role only
@@ -667,6 +672,11 @@ def _check_engines(engines: Any) -> None:
             raise http_exception(
                 ValueError(f"engine {name!r}: config must be an object")
             )
+        for key in ("endpoint_name", "pool"):
+            if cfg.get(key) is not None and not isinstance(cfg[key], str):
+                raise http_exception(
+                    ValueError(f"engine {name!r}: {key!r} must be a string")
+                )
         if name not in ROLES and not (cfg.get("endpoint_name") or cfg.get("pool")):
             raise http_exception(
                 ValueError(f"engine {name!r} must name an 'endpoint_name' or a 'pool'")

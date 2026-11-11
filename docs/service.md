@@ -145,7 +145,10 @@ Limits:
   the default engine unless they carry a `backend=` label.  Such a late
   label is neither checked nor bound to the twin, so losing that site does
   not fail the twin: label tasks in `__init__`.  A `backend` passed
-  positionally to a task decorator is not checked.
+  positionally to a task decorator is not checked.  Placement relabels the session's
+  task decorators while a component is built; a task registered from
+  another thread at that moment would be labelled too, so register tasks
+  on the event loop.
 - Losing an engine's endpoint fails the twins whose components use it.
   Every twin uses the default engine, so losing that one fails them all.
   After losing the default or `inference`, no new twin can start and the
