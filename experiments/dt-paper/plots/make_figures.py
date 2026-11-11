@@ -620,6 +620,52 @@ def fig_e6(fig):
     ax2.set_title("(b) through the twin, GPU (p10-p90)")
 
 
+def fig_e3_sites(fig):
+    """E3: one twin on N sites (round 4), DT service vs hand-wired, req/s.
+
+    Not in the default figure list until round 4's results exist; render
+    it with `--only e3-sites`.
+    """
+    loaded = {}
+    for label, pattern in (
+        ("DT, one site each", "r4/local/sites-spread-r*-r4-*.json"),
+        ("DT, all on one site", "r4/local/sites-one-r*-r4-*.json"),
+        ("hand-wired, one site each", "r4/local/xgf-spread-r*-r4-*.json"),
+        ("hand-wired, all on one site", "r4/local/xgf-one-r*-r4-*.json"),
+    ):
+        loaded[label] = SRC.load(pattern)
+    # the N values every series measured
+    ns = sorted(set.intersection(*(
+        {p["n"] for r in runs for p in r["points"] if "error" not in p}
+        for runs in loaded.values()
+    )))
+    series = {
+        label: [
+            [p["req_per_s_bursts_2_5"] for r in runs for p in r["points"]
+             if p.get("n") == n and "error" not in p]
+            for n in ns
+        ]
+        for label, runs in loaded.items()
+    }
+    COLORS.update(
+        {
+            "DT, one site each": COLORS["bare"],
+            "DT, all on one site": COLORS["dt"],
+            "hand-wired, one site each": "#1baf7a",
+            "hand-wired, all on one site": COLORS["extra"],
+        }
+    )
+    ax = fig.subplots()
+    lines(ax, [str(n) for n in ns], series)
+    ax.set_xlabel("investigators (sites)")
+    ax.set_ylabel("throughput [req/s]")
+    ax.set_ylim(bottom=0)
+    ax.legend(frameon=False, fontsize=6)
+
+
+# figures whose results are not in yet: rendered only with --only
+PENDING = {"e3-sites": (fig_e3_sites, 2.1)}
+
 FIGURES = {
     "e1-paths": (fig_e1_paths, 2.3),
     "e1-inprocess": (fig_e1_inprocess, 2.1),
@@ -651,7 +697,7 @@ def main():
     ).stdout.strip()
     names = args.only.split(",") if args.only else list(FIGURES)
     for name in names:
-        func, height = FIGURES[name]
+        func, height = {**FIGURES, **PENDING}[name]
         SRC.current = name
         fig = plt.figure(figsize=(WIDTH, height), layout="constrained")
         func(fig)
