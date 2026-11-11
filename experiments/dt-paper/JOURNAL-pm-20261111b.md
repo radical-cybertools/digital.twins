@@ -199,6 +199,6 @@ Open questions for Andre:
    of wall time: the README's "about 20 req/s per site" holds for the DT
    path only. For a CPU-bound site model, should the loop count CPU time
    (`time.thread_time()` or a fixed iteration count) and W1 be rerun?
-3. Two of my mistakes in W2 cost about 0.8 node-h (the comma in `NS=1,4`
-   and the file-name collision); both are fixed in the script, the data are
-   complete.
+3. Two of my mistakes in W2 (the comma in `NS=1,4`, then the file-name
+   collision) cost the 2-node N=1 rerun, about 0.5 node-h, and an extra
+   job start; both are fixed in the script, and the data are complete.
