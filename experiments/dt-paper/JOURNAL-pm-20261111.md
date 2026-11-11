@@ -185,3 +185,6 @@ Open questions for Andre:
    `1dc1bf5`: only `experiments/dt-paper/` changes, no conflicts, `pytest
    test/unit` 228 passed (pytest and pytest-asyncio added to `ve3b`).
    Pushed to `paper/dtaas`.
+4. (after the restatement) Endpoint GC: the paper describes it only; open
+   issues for the fix. Opened radical.orbit#168 (endpoint GC pauses, V3)
+   and digital.twins#61 (client-side GC cost, V1/V2), cross-linked.
