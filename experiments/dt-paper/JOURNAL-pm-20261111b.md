@@ -18,6 +18,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 4`.
 | 61144870 | r4-e3-local | m5290 | 5 | 00:47:59 | 3.999 | 4.02 | 0.00 |
 | 61145515 | r4-e3-conc | m5290 | 5 | 00:14:04 | 1.172 | 5.20 | 0.00 |
 | 61145516 | r4-e3-remote | m5290 | 4 | 00:22:15 | 1.483 | 6.68 | 0.00 |
+| 61146168 | r4-e3-conc4 | m5290 | 5 | 00:05:58 | 0.497 | 7.18 | 0.00 |
 
 ## W0: setup (2026-11-11 03:00)
 
@@ -96,3 +97,35 @@ isolation check empty. Table `e3-table-stack-r4-20261111.md`
   loop (`time.perf_counter()` deadline), so concurrent tasks on one
   endpoint do not queue on the GIL as the README suggests: they share it
   and all end 50 ms after they start.
+
+## W3: E3 across facilities (done, 2026-11-11 04:45)
+
+Job 61145516 (r4-e3-remote, debug, 4 nodes, 22:15; `r4/run_e3_remote.sh`
+with `REPEATS="1 2 3 4 5" LAYOUTS=spread HARNESSES=dt`, `results/r4/remote/`).
+Submitted together with W2 once W1's first repeat showed placement ok
+everywhere (W3 touches only radical.3's broker, W1 only its own).
+
+- Topology check from the compute node: `r3_site` in the broker's topology
+  with rhapsody (`topology-check-*.txt`), so W3 ran.
+- Client on node 0; sites `pm_e3_s0/1/2_61145516` on nodes 1-3 and `r3_site`
+  on radical.3; broker and `dt` service radical.3 :8010; default
+  credentials (read only); `--tasks 100`, 16 client threads. 5 runs, every
+  rc 0; placement ok at every point (20 of 20); at N=4 every repeat sent
+  133 requests to each site including `r3_site`. Isolation check empty.
+- WAN connect (curl, 20 from node 0): p50 171 ms (165-180), as in rounds
+  2c-3c.
+
+| N | sites | bursts 2-5 req/s | x N=1 | seq p50 ms | W1 dt spread (req/s, p50 ms) |
+|---|---|---|---|---|---|
+| 1 | pm_e3_s0 | 6.1 (6.0-7.2) | 1.00 | 394.3 | 20.4, 56.4 |
+| 2 | + pm_e3_s1 | 10.6 (10.4-11.0) | 1.75 | 393.2 | 39.6, 56.8 |
+| 3 | + pm_e3_s2 | 15.5 (15.2-15.7) | 2.55 | 395.0 | 58.5, 56.8 |
+| 4 | + r3_site | 19.7 (19.4-19.8) | 3.25 | 396.9 | 77.5, 57.1 |
+
+- Through radical.3 every request pays the WAN round trip twice (client to
+  broker, broker to site and back): seq p50 about 394 ms against 57 ms on
+  the cluster, i.e. about 340 ms over the 50 ms of work, 2 x 171 ms.
+- Throughput still grows with every site, including the one on another
+  facility (radical.3); with 16 client threads it is latency-bound (16 /
+  0.394 s is about 41 req/s at most), not site-bound, so the absolute
+  numbers are lower than W1's and the scaling factor is 3.25x, not 3.8x.
