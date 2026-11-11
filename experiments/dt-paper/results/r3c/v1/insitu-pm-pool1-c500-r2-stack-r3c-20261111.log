@@ -1,0 +1,20 @@
+backend: local concurrent pool
+bare asyncflow task          n=1000  mean=   0.56ms  p50=   0.55  p90=   0.57  p99=   0.64  max=   0.73
+bare asyncflow task          500 concurrent requests in 142.2ms (3516 req/s)
+bare asyncflow task          500 concurrent requests in 139.9ms (3574 req/s)
+bare asyncflow task          500 concurrent requests in 188.1ms (2658 req/s)
+bare asyncflow task          500 concurrent requests in 138.9ms (3599 req/s)
+bare asyncflow task          500 concurrent requests in 139.4ms (3587 req/s)
+DT investigator              n=1000  mean=   0.54ms  p50=   0.53  p90=   0.55  p99=   0.57  max=   5.18
+DT investigator              500 concurrent requests in 182.6ms (2738 req/s)
+DT investigator              500 concurrent requests in 144.7ms (3455 req/s)
+DT investigator              500 concurrent requests in 149.4ms (3348 req/s)
+DT investigator              500 concurrent requests in 167.5ms (2985 req/s)
+DT investigator              500 concurrent requests in 143.9ms (3475 req/s)
+DT agent + selector          n=1000  mean=   0.54ms  p50=   0.54  p90=   0.55  p99=   0.59  max=   0.72
+DT agent + selector          500 concurrent requests in 144.9ms (3450 req/s)
+DT agent + selector          500 concurrent requests in 183.3ms (2728 req/s)
+DT agent + selector          500 concurrent requests in 146.3ms (3419 req/s)
+DT agent + selector          500 concurrent requests in 145.2ms (3444 req/s)
+DT agent + selector          500 concurrent requests in 168.3ms (2970 req/s)
+results: experiments/dt-paper/results/r3c/v1/insitu-pm-pool1-c500-r2-stack-r3c-20261111.json
