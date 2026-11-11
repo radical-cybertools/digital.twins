@@ -257,3 +257,9 @@ Open questions for Andre:
    `gh auth git-credential`. Andre then added the key; the checkout's remote
    is back on `git@github.com:radical-cybertools/digital.twins.git`, and
    `~/memory-work` is in sync with its origin.
+6. Merge `exp/pm-round3b-20261110` (results, `--rows` order in
+   `bench_dt_insitu.py`, provenance in `r3/diag_thread_decay.py`) into
+   `paper/dtaas`, as with the earlier rounds?
+
+The questions and the laptop handover prompt are also on the round 3b page
+("Open questions for Andre", "Laptop handover").
