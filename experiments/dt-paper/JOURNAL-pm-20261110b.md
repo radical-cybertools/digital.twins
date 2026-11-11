@@ -263,3 +263,18 @@ Open questions for Andre:
 
 The questions and the laptop handover prompt are also on the round 3b page
 ("Open questions for Andre", "Laptop handover").
+
+## Andre's answers (2026-11-10 16:15)
+
+1. e1-pool: raise the client's GC threshold (and say so in the paper).
+2. Rare slow ORBIT first burst: investigate.
+3. Unknown, so I read the code at `fca2d54`: the skip is on for the harness's dt row. `Learner(StreamingLearnerInvestigator)` inherits
+   `infer_without_consumer = False` (`learn.py:135`), nothing subscribes
+   `ON_OUTPUT`, so `_unconsumed` (`runtime.py:1053`) skips its streamed
+   inference. The opt-in is therefore not the 0.73x vs 0.77x difference;
+   `_has_taker` for the output dtype not checked; nothing run.
+4. U3 c=1 through radical.3: rerun.
+5. Merge this branch into `paper/dtaas`: yes.
+
+1, 2 and 4 are Perlmutter work for a round 3c; the laptop session writes
+its handover. The handover prompt was passed to the laptop session.
