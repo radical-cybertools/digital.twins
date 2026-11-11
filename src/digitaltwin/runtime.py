@@ -206,7 +206,7 @@ class _JoinComponent(_TwinComponent):
     def __init__(self, join_dtype: JoinDataType, submit_event_fn: Callable) -> None:
         # FIXME(review): the depth-1 queues below plus the blocking `put` in
         # `update()` make a join a *non-local* operator.  `update` is awaited
-        # from `_run_component`, which is gathered by `_dtype_consumer`, which
+        # from `_run_component`, which `_dtype_consumer` awaits, which
         # is awaited in `_launch_consumer`'s loop -- so while one input waits
         # for its partner, the whole consumer for that dtype is stalled,
         # including components which have nothing to do with the join.  The
@@ -304,6 +304,13 @@ class _AnnotatedComponent:
     split_outputs: tuple[DataType] = tuple([])  # type: ignore
 
     shared_tasks: dict[SharedSubtaskLabel, _SharedStruct] = field(default_factory=dict)
+    # ON_INPUT callbacks awaited in place instead of run as tasks
+    # (by id: a callback need not be hashable)
+    inline_subscriptions: set[int] = field(default_factory=set)
+    # set per published model or inference task: an investigator that skips
+    # unconsumed answers still infers the next streamed input once
+    probe_pending: bool = True
+    skip_logged: bool = False
 
 
 class RuntimeAPI:
@@ -380,7 +387,8 @@ class RuntimeAPI:
 
         return self._runtime.stream_config
 
-    def subscribe_to_topic(self, topic: str, task: Callable) -> None:
+    def subscribe_to_topic(self, topic: str, task: Callable,
+                           inline: bool = False) -> None:
         """Register a callback under a specific runtime event.
 
         The callback will be invoked whenever the component receives an event
@@ -396,13 +404,25 @@ class RuntimeAPI:
             * :pyattr:`ON_FILTERED_OUTPUT` - invoke only for selected
               investigators.
 
+        By default every call runs as a task of its own, concurrently with
+        the inference.  ``inline=True`` (``ON_INPUT`` only) awaits the
+        callback in place, before the inference, which saves a task per
+        input: only for a callback that does not block, since the twin's
+        handling of that dtype waits for it.  Its failure fails the twin,
+        as a task's does.
+
         Args:
             topic: Name of the runtime event.
             task: Callback to register.
+            inline: Await the callback in place (``ON_INPUT`` only).
         """
 
         assert self.cmp_type in ["INVESTIGATOR", "AGENT"]
+        if inline and topic != RuntimeAPI.ON_INPUT:
+            raise ValueError(f"inline subscriptions are for ON_INPUT, not {topic}")
         self._ant.subscriptions[topic].append(task)
+        if inline:
+            self._ant.inline_subscriptions.add(id(task))
 
     def publish_new_model(self, model_kwargs=None, acc_kwargs=None) -> None:
         """Publish a newly trained model from an agent.
@@ -424,6 +444,7 @@ class RuntimeAPI:
         # same way the callback below already normalises them.
         self._ant.model_kwargs = model_kwargs or {}
         self._ant.accuracy_kwargs = acc_kwargs or {}
+        self._ant.probe_pending = True
         self._ant.has_published_model.set()
         if self._ant.model_publish_cb is not None:
             self._runtime._to_asyncio_task(
@@ -445,6 +466,7 @@ class RuntimeAPI:
 
         assert self.cmp_type in ["INVESTIGATOR"]
         self._ant.inference_task = task
+        self._ant.probe_pending = True
 
     def record_output(self, name: str, dataurl: str) -> None:
         """Publish the twin's latest visual output for the dashboard.
@@ -983,6 +1005,63 @@ class DTRuntime:
 
         return await func(*args, **kwargs)
 
+    async def _fire_inputs(self, ant: "_AnnotatedComponent", in_data) -> None:
+        """Fire a component's ON_INPUT callbacks: as tasks, or awaited in
+        place for the ones subscribed with ``inline=True``.
+
+        An inline callback gets what `_owned` gives a task -- this twin as
+        owner (already stamped by `_run_component`), its component's name
+        for the tasks it submits -- and its failure goes where a task's
+        would (`_task_done`): into the twin's state, not to the caller.
+        """
+
+        for cb in ant.subscriptions[RuntimeAPI.ON_INPUT]:
+            if id(cb) not in ant.inline_subscriptions:
+                logger.info("Fire ON_INPUT on %s", cb)
+                self._to_asyncio_task(cb, in_data)
+                continue
+
+            if self._closed():
+                return
+
+            token = _COMPONENT.set(type(ant.component).__name__)
+            try:
+                await cb(in_data)
+            except asyncio.CancelledError as exc:
+                current = asyncio.current_task()
+                if current is not None and current.cancelling():
+                    raise
+                self._record_error(exc)   # the callback's own, not ours
+            except Exception as exc:
+                self._record_error(exc)
+            finally:
+                _COMPONENT.reset(token)
+
+    def _closed(self) -> bool:
+        """True once the twin is being torn down or has failed: it starts
+        no new work."""
+
+        return self._stop_task is not None or self.state is RuntimeState.FAILED
+
+    def _has_taker(self, dtype: DataType) -> bool:
+        """True if something is registered for, or consumes, `dtype`;
+        `_put_to_dtype_queue` drops the data otherwise."""
+
+        return (dtype in self.dtype_queues or dtype in self.components
+                or dtype in self.barriers)
+
+    def _unconsumed(self, ant: "_AnnotatedComponent") -> bool:
+        """True if an investigator skips unconsumed answers and its answer to
+        a streamed input has no taker: no `ON_OUTPUT` subscriber, and
+        nothing for its output dtype (`_has_taker`).  Only investigators
+        that set `infer_without_consumer = False` skip."""
+
+        if ant.component.infer_without_consumer:
+            return False
+        if ant.subscriptions.get(RuntimeAPI.ON_OUTPUT):
+            return False
+        return not self._has_taker(ant.output_dtype)
+
     def _to_asyncio_task(self, func, *args, **kwargs) -> Optional[asyncio.Task]:
         """Schedule a coroutine as an :class:`asyncio.Task` and track its
         completion.
@@ -998,7 +1077,7 @@ class DTRuntime:
         # a twin which is being torn down starts no new work: a task
         # registered after teardown swapped `running_tasks` out would never
         # be cancelled by anyone
-        if self._stop_task is not None or self.state is RuntimeState.FAILED:
+        if self._closed():
             logger.debug("twin is %s - not running %s", self.state, func)
             return None
 
@@ -1451,7 +1530,7 @@ class DTRuntime:
         _COMPONENT.set(type(ant.component).__name__)
 
         await self.is_start.wait()
-        logger.info(f"Online run: {type(ant.component).__name__}.")
+        logger.info("Online run: %s.", type(ant.component).__name__)
 
         assert ant.input_dtype == TRUTHY or ant.input_dtype == in_data.dtype
 
@@ -1461,15 +1540,16 @@ class DTRuntime:
             await ant.component.update(in_data)
             return  # NULL_VAL.. Output done by component directly
 
-        for cb in ant.subscriptions[RuntimeAPI.ON_INPUT]:
-            logger.info(f"Fire ON_INPUT on {cb}")
-            self._to_asyncio_task(cb, in_data)
+        await self._fire_inputs(ant, in_data)
 
         # and child investigators
         for investigator in ant.investigators.values():
-            for cb in investigator.subscriptions[RuntimeAPI.ON_INPUT]:
-                logger.info(f"Fire ON_INPUT on {cb}")
-                self._to_asyncio_task(cb, in_data)
+            await self._fire_inputs(investigator, in_data)
+
+        # a streamed input after an inline callback failed the twin (or
+        # during teardown) starts no inference; `get_inference` still answers
+        if not skip_queue_out and self._closed():
+            return
 
         # run the main loop directly
         if isinstance(ant.component, UtilityTask):
@@ -1479,7 +1559,7 @@ class DTRuntime:
                     ant.output_dtype in self.components
                     or ant.output_dtype in self.barriers
                 ):
-                    logger.info(f"Subscribe to dtype: {ant.output_dtype}")
+                    logger.info("Subscribe to dtype: %s", ant.output_dtype)
                     await self.streamer.subscribe_to_dtype(
                         ant.output_dtype, self._ensure_dtype_queue(ant.output_dtype)
                     )
@@ -1487,12 +1567,12 @@ class DTRuntime:
 
                 # run mainloop as async task
                 rt = self._api(ant)
-                logger.info(f"Run {type(ant.component).__name__} main loop")
+                logger.info("Run %s main loop", type(ant.component).__name__)
                 self._to_asyncio_task(ant.component.main_loop, rt, in_data)
                 return
 
             rt = self._api(ant)
-            logger.info(f"Run {type(ant.component).__name__} main loop")
+            logger.info("Run %s main loop", type(ant.component).__name__)
             answer = await ant.component.main_loop(rt, in_data)
 
             # for split tasks, treat the answer differently
@@ -1540,7 +1620,21 @@ class DTRuntime:
             await ant.has_published_model.wait()
             assert ant.inference_task is not None
 
-            logger.debug(f"Run {type(ant.component).__name__} inference task")
+            # a streamed input whose answer nobody takes: the answer would
+            # only be dropped (see `_put_to_dtype_queue`).  Opt-in
+            # (`infer_without_consumer = False`), and each published model
+            # or inference task still runs once, so one the inference task
+            # rejects fails the twin on the next input.
+            if not skip_queue_out and self._unconsumed(ant):
+                if not ant.probe_pending:
+                    if not ant.skip_logged:
+                        ant.skip_logged = True
+                        logger.debug("%s: answers nobody takes are not inferred",
+                                     type(ant.component).__name__)
+                    return None
+                ant.probe_pending = False
+
+            logger.debug("Run %s inference task", type(ant.component).__name__)
             answer = await self._infer(ant, in_data, ant.model_kwargs)
             if answer is None:
                 return
@@ -1556,7 +1650,7 @@ class DTRuntime:
             # run a science agent. Call its decision task
             await ant.has_published_selector.wait()
             assert ant.model_select_task is not None
-            logger.debug(f"Run {type(ant.component).__name__} selection task")
+            logger.debug("Run %s selection task", type(ant.component).__name__)
 
             selecting = ant.model_select_task(
                 in_data, *ant.model_select_args, **ant.model_select_kwargs
@@ -1579,7 +1673,7 @@ class DTRuntime:
                 logger.warning("Model selector pointed to non-existent investigator!")
                 return
 
-            logger.debug(f"Model selector responded with: {i_select}")
+            logger.debug("Model selector responded with: %s", i_select)
             i_select = ant.investigators[i_select]
 
             if model_kwargs is None:
@@ -1587,7 +1681,7 @@ class DTRuntime:
 
             # now, run the inference of the provided investigator
             for cb in i_select.subscriptions[RuntimeAPI.ON_FILTERED_INPUT]:
-                logger.info(f"Fire ON_FILTERED_INPUT on {cb}")
+                logger.info("Fire ON_FILTERED_INPUT on %s", cb)
                 self._to_asyncio_task(cb, in_data)
 
             await i_select.has_published_model.wait()
@@ -1667,11 +1761,21 @@ class DTRuntime:
             None. All component loops are executed concurrently.
         """
 
-        tasks = []
-        for task in self.components[input_data.dtype]:
-            tasks.append(self._run_component(task, input_data))
+        components = self.components[input_data.dtype]
+        if len(components) == 1:     # the common case: no gather per input
+            # `_run_component` stamps owner and component; gather confined
+            # that to a child task, here the consumer's context is reset
+            owner = _OWNER.set(_OWNER.get())
+            component = _COMPONENT.set(_COMPONENT.get())
+            try:
+                await self._run_component(components[0], input_data)
+            finally:
+                _COMPONENT.reset(component)
+                _OWNER.reset(owner)
+            return
 
-        await asyncio.gather(*tasks)
+        await asyncio.gather(*[self._run_component(c, input_data)
+                               for c in components])
 
     def _put_to_dtype_queue(self, t_data: TypedData) -> None:
         """Enqueue a :class:`TypedData` instance for later consumption.
@@ -1687,14 +1791,10 @@ class DTRuntime:
             return
 
         # nothing registered for it, and nothing consuming it: drop it
-        if (
-            t_data.dtype not in self.dtype_queues
-            and t_data.dtype not in self.components
-            and t_data.dtype not in self.barriers
-        ):
+        if not self._has_taker(t_data.dtype):
             return
 
-        logger.info(f"Enqueue: {t_data.dtype}")
+        logger.info("Enqueue: %s", t_data.dtype)
         self._ensure_dtype_queue(t_data.dtype).put_nowait(t_data)
 
     async def _launch_b_consumer(
@@ -1713,9 +1813,8 @@ class DTRuntime:
         await creation.wait()
         while True:
             t_data = await self.barriers[dtype][-1].get(dtype)
-            logger.info(
-                f"Final dequeue from barrier ({self.barriers[dtype][-1]}): {t_data.dtype}"
-            )
+            logger.info("Final dequeue from barrier (%s): %s",
+                        self.barriers[dtype][-1], t_data.dtype)
             await self._dtype_consumer(t_data)
 
     async def _launch_consumer(self, dtype: DataType) -> None:
@@ -1735,14 +1834,13 @@ class DTRuntime:
             # is input queue available?
             t_data = await self.dtype_queues[dtype].get()
             if len(self.barriers[dtype]) > 0:
-                logger.info(
-                    f"Dequeue and place to barrier ({self.barriers[dtype][0]}): {t_data.dtype}"
-                )
+                logger.info("Dequeue and place to barrier (%s): %s",
+                            self.barriers[dtype][0], t_data.dtype)
                 barrier_creation.set()
                 await self.barriers[dtype][0].put(t_data)
             else:
                 # process!
-                logger.info(f"Dequeue: {t_data.dtype}")
+                logger.info("Dequeue: %s", t_data.dtype)
                 await self._dtype_consumer(t_data)
 
     def describe(self) -> dict:

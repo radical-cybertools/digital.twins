@@ -112,6 +112,11 @@ class StreamingLearnerInvestigator(ModelInvestigator):
     inference task runs with.
     """
 
+    # its in-situ inference serves answers; an unconsumed one is skipped
+    # (see `ModelInvestigator`).  A subclass whose `inference_task` has side
+    # effects (`record_output`, logging predictions) sets it back to True.
+    infer_without_consumer = False
+
     def __init__(
         self,
         flow: WorkflowEngine,
@@ -223,7 +228,9 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         self._own_learner_tasks(runtime)
 
         runtime.set_inference_task(self.inference_task)
-        runtime.subscribe_to_topic(RuntimeAPI.ON_INPUT, self._feed)
+        # inline: `_feed` never blocks (a `Stream` feed is a plain put), so
+        # it needs no task of its own per input
+        runtime.subscribe_to_topic(RuntimeAPI.ON_INPUT, self._feed, inline=True)
         runtime.publish_new_model(*self.bootstrap_model())
 
         # criterion met => this model is worth serving.  In streaming mode
