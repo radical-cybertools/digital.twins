@@ -14,6 +14,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 4`.
 
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
+| 61144847 | r4-smoke | m5290 | 2 | 00:00:45 | 0.025 | 0.03 | 0.00 |
 
 ## W0: setup (2026-11-11 03:00)
 
@@ -39,3 +40,20 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 4`.
   page's Known traps forbid benchmarks there, smoke tests included. The
   smoke test runs as a short 2-node debug job instead (`NSITES=1 NS=1`,
   tiny sizes, both harnesses).
+
+## W0: smoke test (done, 2026-11-11 04:11)
+
+Job 61144847 (r4-smoke, debug, 2 nodes: broker and client on node 0, site
+`e3_s0` on node 1), `NSITES=1 NS=1 REPEATS=1 LAYOUTS=spread`, `--tasks 20
+--bursts 2 --seq 5`. Both harnesses rc 0, placement ok, isolation check
+empty. `results/r4/smoke/`.
+
+- dt spread n=1: seq p50 57.4 ms, bursts 2-5 31.0 req/s.
+- xgf spread n=1: seq p50 55.9 ms, bursts 2-5 49.6 req/s.
+- One site serves about 50 req/s at `work_ms` 50 (the README says about
+  20). The DT path reaches 31 at 16 client threads, as on the laptop (37 of
+  50): this is W2's question.
+- Decision: W1 with `REPEATS="1 2 3 4 5"` (regular QOS, the script's 1 h).
+  Estimated about 6 min per repeat (both harnesses, both layouts), so about
+  35 min on 5 nodes, about 3 node-h. W2 and W3 are submitted once W1's
+  first repeat shows `placement_ok` everywhere.
