@@ -1314,3 +1314,326 @@ def test_the_first_failure_of_a_twin_is_kept():
     twin.fail("timed out")
 
     assert twin.last_error == "engine endpoint lost: hpc1"
+
+
+# -- named engines: components on several sites --------------------------------
+
+class _LabelFlow(_FakeFlow):
+    """Records the keyword arguments of every task decorator."""
+
+    def __init__(self):
+        super().__init__()
+        self.labels = []
+
+    def _record(self, kind, *args, **kwargs):
+        self.labels.append((kind, kwargs.get("backend")))
+        return args[0] if args else (lambda func: func)
+
+    def function_task(self, *args, **kwargs):
+        return self._record("function", *args, **kwargs)
+
+    def executable_task(self, *args, **kwargs):
+        return self._record("executable", *args, **kwargs)
+
+    def prompt_task(self, *args, **kwargs):
+        return self._record("prompt", *args, **kwargs)
+
+
+class _ThreeKinds(UtilityTask):
+    """One task of each decorator kind, bare and called forms."""
+
+    def __init__(self, flow):
+        super().__init__(flow)
+
+        @flow.function_task
+        async def a():
+            return 1
+
+        @flow.executable_task()
+        async def b():
+            return "true"
+
+        @flow.prompt_task
+        async def c():
+            return "hi"
+
+
+class _Labelled(UtilityTask):
+    """Builds two 'investigators' and places one itself, as an agent does."""
+
+    def __init__(self, flow, site="site_c"):
+        super().__init__(flow)
+
+        @flow.function_task
+        async def local():
+            return 1
+
+        @flow.function_task(backend=site)
+        async def remote():
+            return 2
+
+
+class _BrokenAfterLabel(UtilityTask):
+    def __init__(self, flow):
+        super().__init__(flow)
+
+        @flow.function_task(backend="site_c")
+        async def remote():
+            return 2
+
+        raise RuntimeError("component construction failed")
+
+
+def _sites(**extra):
+    config = _dual(inference="ep1", site_b="ep2", site_c="ep3")
+    config.update(extra)
+    session = DTSession("s1", config)
+    for name in ("inference", "site_b", "site_c"):
+        session._backends[name] = _FakeBackend(name)
+    return session
+
+
+def test_engine_places_every_task_the_component_registers():
+    session = _sites()
+    twin = _twin_with(_LabelFlow())
+
+    session._instantiate(Package(_ThreeKinds), twin, engine="site_b")
+
+    assert twin.runtime.flow.labels == [
+        ("function", "site_b"), ("executable", "site_b"), ("prompt", "site_b")]
+    assert twin.engines == {"inference", "site_b"}
+
+
+def test_without_engine_tasks_stay_unlabelled():
+    session = _sites()
+    twin = _twin_with(_LabelFlow())
+
+    session._instantiate(Package(_ThreeKinds), twin)
+
+    assert [label for _, label in twin.runtime.flow.labels] == [None] * 3
+    assert twin.engines == {"inference"}
+
+
+def test_a_tasks_own_label_is_kept_checked_and_bound():
+    session = _sites()
+    twin = _twin_with(_LabelFlow())
+
+    session._instantiate(Package(_Labelled), twin, engine="site_b")
+
+    assert twin.runtime.flow.labels == [
+        ("function", "site_b"), ("function", "site_c")]
+    assert twin.engines == {"inference", "site_b", "site_c"}
+
+
+def test_an_unconfigured_label_is_refused_and_binds_nothing():
+    session = _sites()
+    twin = _twin_with(_LabelFlow())
+
+    with pytest.raises(ValueError, match="not configured"):
+        session._instantiate(Package(_Labelled, kwargs={"site": "nowhere"}), twin)
+
+    assert twin.engines == {"inference"}
+
+
+def test_a_failed_component_binds_nothing():
+    session = _sites()
+    twin = _twin_with(_LabelFlow())
+
+    with pytest.raises(RuntimeError, match="construction failed"):
+        session._instantiate(Package(_BrokenAfterLabel), twin, engine="site_b")
+
+    assert twin.engines == {"inference"}
+    # the engine is handed back unpatched
+    assert twin.runtime.flow.function_task.__func__ is _LabelFlow.function_task
+
+
+def test_engine_on_a_verb_is_checked_first():
+    session = _sites()
+
+    session._check_engine("site_b")
+    session._check_engine("inference")
+    session._check_engine(None)
+
+    with pytest.raises(ValueError, match="not configured"):
+        session._check_engine("nowhere")
+    # explicit placement never aliases: an unconfigured role is refused
+    with pytest.raises(ValueError, match="not configured"):
+        session._check_engine("learning")
+    with pytest.raises(ValueError, match="must be a name"):
+        session._check_engine("")
+
+
+def test_a_lost_engine_is_refused_by_every_labelling_path():
+    session = _sites()
+    session._endpoints = {"inference": "ep1", "site_b": "ep2", "site_c": "ep3"}
+    session.endpoints_lost({"ep3"})
+
+    with pytest.raises(RuntimeError, match="endpoint was lost"):
+        session._check_engine("site_c")
+
+    twin = _twin_with(_LabelFlow())
+    with pytest.raises(RuntimeError, match="endpoint was lost"):
+        session._instantiate(Package(_Labelled), twin)
+
+
+async def test_the_engine_kwarg_is_consumed_not_forwarded():
+    session = _sites()
+    seen = {}
+
+    class _Runtime:
+        flow = _LabelFlow()
+
+        def add_investigator(self, component, *args, **kwargs):
+            seen.update(kwargs)
+
+    twin = TwinInstance("t1")
+    twin.runtime = _Runtime()
+
+    await session._verb_add_investigator(
+        twin, Package(_ThreeKinds), "in", "out", engine="site_b", knob=1)
+
+    assert seen == {"knob": 1}
+    assert twin.engines == {"inference", "site_b"}
+
+
+def test_a_placed_learner_gets_its_learner_label():
+    learn = pytest.importorskip("digitaltwin.learn")
+
+    class _Learner(learn.StreamingLearnerInvestigator):
+        def __init__(self, flow, learn_backend=None):
+            self.flow, self.learn_backend = flow, learn_backend
+
+    # no 'learning' engine: the placed one, unless that is the default
+    session = _sites()
+    twin = _twin_with(_LabelFlow())
+    placed = session._instantiate(Package(_Learner), twin, engine="site_b")
+    assert placed.learn_backend == "site_b"
+    assert twin.engines == {"inference", "site_b"}
+
+    local = session._instantiate(Package(_Learner), _twin_with(_LabelFlow()),
+                                 engine="inference")
+    assert local.learn_backend is None
+
+    # a 'learning' engine wins, and a lost one is refused
+    session = DTSession("s2", _dual(inference="ep1", learning="hpc1",
+                                    site_b="ep2"))
+    for name in ("inference", "learning", "site_b"):
+        session._backends[name] = _FakeBackend(name)
+    twin = _twin_with(_LabelFlow())
+    learner = session._instantiate(Package(_Learner), twin, engine="site_b")
+    assert learner.learn_backend == "learning"
+    assert twin.engines == {"inference", "learning", "site_b"}
+
+    session._endpoints = {"learning": "hpc1"}
+    session.endpoints_lost({"hpc1"})
+    with pytest.raises(RuntimeError, match="endpoint was lost"):
+        session._instantiate(Package(_Learner), _twin_with(_LabelFlow()))
+
+
+def test_the_session_summary_lists_every_engine():
+    session = DTSession("s1", _dual(inference="ep1", site_b="ep2"))
+
+    assert session.summary()["endpoints"] == {
+        "inference": "ep1", "learning": None, "site_b": "ep2"}
+
+
+def _init_plugin():
+    class _Plugin:
+        async def connect_stream(self, twin_id, timeout):
+            return _FakeStream()
+
+    return _Plugin()
+
+
+async def test_a_lost_extra_engine_does_not_block_new_twins():
+    session = DTSession("s1", _dual(inference="ep1", site_b="ep2"))
+    _slow_build(session, 0)
+    session._plugin = _init_plugin()
+
+    session.endpoints_lost({"ep2"})
+
+    twin = session.twins["t1"] = TwinInstance("t1")
+    await session._init_twin(twin)
+
+    assert twin.runtime is not None
+    assert sorted(session._backends) == ["inference"]
+    with pytest.raises(RuntimeError, match="endpoint was lost"):
+        session._check_engine("site_b")
+    await session.close()
+
+
+async def test_a_lost_default_engine_still_fails_new_twins():
+    session = DTSession("s1", {**_dual(inference="ep1", site_b="ep2"),
+                               "default_engine": "site_b"})
+    _slow_build(session, 0)
+    session._plugin = _init_plugin()
+
+    session.endpoints_lost({"ep2"})
+
+    twin = session.twins["t1"] = TwinInstance("t1")
+    await session._init_twin(twin)
+
+    assert twin.state == "failed"
+    assert "recreate the session" in twin.last_error
+    await session.close()
+
+
+def test_register_session_accepts_named_engines(client):
+    resp = client.post("/dt/register_session", json={"config": {
+        **_dual(inference="ep1", site_b="ep2"), "default_engine": "site_b"}})
+
+    assert resp.status_code == 200
+
+
+@pytest.mark.parametrize("engines, match", [
+    ({"site-b": {"endpoint_name": "ep2"}}, "identifier"),
+    ({"site_b": "ep2"}, "object"),
+    ({"site_b": {"backends": ["concurrent"]}}, "endpoint_name"),
+    (["inference"], "'engines' must be an object"),
+])
+def test_register_session_rejects_bad_engines(client, engines, match):
+    resp = client.post("/dt/register_session",
+                       json={"config": {"engines": engines}})
+
+    assert resp.status_code == 400
+    assert match in resp.text
+
+
+def test_a_learning_engine_may_still_auto_select(client):
+    resp = client.post("/dt/register_session", json={"config": {
+        "engines": {"learning": {"backends": ["concurrent"]}}}})
+
+    assert resp.status_code == 200
+
+
+def test_default_engine_must_be_a_role_or_configured(client):
+    resp = client.post("/dt/register_session", json={"config": {
+        **_dual(inference="ep1"), "default_engine": "site_b"}})
+
+    assert resp.status_code == 400
+    assert "default_engine" in resp.text
+
+
+def test_the_deployment_default_stays_a_role(client, monkeypatch):
+    monkeypatch.setenv(ENV_DEFAULT_ENGINE, "site_b")
+
+    resp = client.post("/dt/register_session", json={"config":
+                       _dual(inference="ep1", site_b="ep2")})
+
+    assert resp.status_code == 400
+
+
+def test_a_reattach_ignores_the_engines_config(client):
+    sid = client.post("/dt/register_session", json={}).json()["sid"]
+    resp = client.post("/dt/register_session", json={
+        "sid": sid, "config": {"engines": {"site-b": {}}}})
+
+    assert resp.status_code == 200
+    assert resp.json()["reattached"] is True
+
+
+def test_the_client_sends_engine_only_when_set():
+    from digitaltwin.service.client import _placed
+
+    assert _placed(None) == {}
+    assert _placed("site_b") == {"engine": "site_b"}

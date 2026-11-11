@@ -204,9 +204,12 @@ class DTClient(PluginClient):
         input_dtype: DataType,
         output_dtype: DataType,
         is_persistent: bool = False,
+        *,
+        engine: Optional[str] = None,
     ) -> str:
         return self._verb(
-            twin_id, "add_task", package, input_dtype, output_dtype, is_persistent
+            twin_id, "add_task", package, input_dtype, output_dtype, is_persistent,
+            **_placed(engine),
         )["state"]
 
     def add_investigator(
@@ -216,6 +219,7 @@ class DTClient(PluginClient):
         input_dtype: DataType,
         output_dtype: DataType,
         *args: Any,
+        engine: Optional[str] = None,
         **kwargs: Any,
     ) -> str:
         return self._verb(
@@ -225,6 +229,7 @@ class DTClient(PluginClient):
             input_dtype,
             output_dtype,
             *args,
+            **_placed(engine),
             **kwargs,
         )["state"]
 
@@ -235,10 +240,12 @@ class DTClient(PluginClient):
         input_dtype: DataType,
         output_dtype: DataType,
         *args: Any,
+        engine: Optional[str] = None,
         **kwargs: Any,
     ) -> str:
         return self._verb(
-            twin_id, "add_agent", package, input_dtype, output_dtype, *args, **kwargs
+            twin_id, "add_agent", package, input_dtype, output_dtype, *args,
+            **_placed(engine), **kwargs,
         )["state"]
 
     def add_input(
@@ -297,6 +304,8 @@ class DTClient(PluginClient):
         package: Package,
         input_dtype: DataType,
         output_dtypes: tuple[DataType, ...],
+        *,
+        engine: Optional[str] = None,
     ) -> str:
         """Register a split task: one input event, one output per dtype.
 
@@ -305,7 +314,8 @@ class DTClient(PluginClient):
         """
 
         return self._verb(twin_id, "add_data_split_task", package,
-                          input_dtype, tuple(output_dtypes))["state"]
+                          input_dtype, tuple(output_dtypes),
+                          **_placed(engine))["state"]
 
     def start(self, twin_id: str) -> str:
         """Start a twin.  Starting a running twin is a no-op."""
@@ -362,3 +372,16 @@ class DTClient(PluginClient):
         self._raise(resp, context)
 
         return resp.json()
+
+
+def _placed(engine: Optional[str]) -> dict:
+    """`engine=` for a component verb, sent only when set: the payload of a
+    call without it is unchanged.
+
+    `engine` names one of the session's configured engines (`'inference'`,
+    `'learning'`, or a named site from the session's `engines` config); the
+    component's tasks run there.  The service consumes it, so a component's
+    `main_loop` cannot take a keyword argument of that name.
+    """
+
+    return {} if engine is None else {"engine": engine}
