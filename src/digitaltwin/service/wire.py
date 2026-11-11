@@ -14,6 +14,7 @@ Two guards ride along, both cheap and both mandatory:
 """
 
 import base64
+import functools
 import sys
 
 from dataclasses import dataclass, field
@@ -64,7 +65,10 @@ def register_user_modules(modules: list) -> None:
         cloudpickle.register_pickle_by_value(module)
 
 
+@functools.cache
 def _dt_version() -> str:
+    # once per process: every call is stamped and checked, and a metadata
+    # lookup scans sys.path each time
     try:
         return metadata.version("digitaltwin")
     except metadata.PackageNotFoundError:  # running from a source tree
