@@ -76,6 +76,16 @@ ON_INPUT callbacks for the learner's feed; no gather for one component; lazy
 logging.  Round 3's follow-up measured the ex-situ learner at 0.77x bare
 (before 0.34x).  Other investigators are unchanged unless they opt in.
 
+## Update 2026-11-11: named engines (E3)
+
+digital.twins #62 (paper-stack form `feature/named-engines-stack`): a
+session's `engines` may name any engine, and `engine=` on the `add_*` verbs
+(or an explicit `backend=` label on a component's own task) places a
+component on one.  Losing a non-default site fails only the twins placed
+there; new twins that do not use it still start.  `digitaltwin` is now
+0.1.0 and client and service versions must match: reinstall every host
+from the same commit (`install.sh`) before an E3 run.
+
 ## Verified (laptop, 2026-11-06)
 
 | Suite | Result |
