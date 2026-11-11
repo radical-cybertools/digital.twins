@@ -68,6 +68,8 @@ for r in ${REPEATS:-1 2 3}; do
     for c in ${CONCS:-default}; do
       ctag=; carg=()
       [ $c != default ] && ctag=-c$c && carg=(--concurrent $c)
+      # with NS set, the file names carry it (W2's N=4 run overwrote N=1's)
+      [ -n "${NS:-}" ] && ctag=$ctag-n${NS//,/_}
       for h in ${HARNESSES:-dt xgf}; do
         if [ $h = dt ]; then H=bench_sites.py; f=$R/sites-$lay$ctag-r$r-r4-$D
         else H=xgf_sites.py; f=$R/xgf-$lay$ctag-r$r-r4-$D; fi

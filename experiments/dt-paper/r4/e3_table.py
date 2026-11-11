@@ -16,7 +16,7 @@ import sys
 
 from pathlib import Path
 
-NAME = re.compile(r"^(sites|xgf)-(spread|one)(?:-c(\d+))?-r(\d+)-")
+NAME = re.compile(r"^(sites|xgf)-(spread|one)(?:-c(\d+))?(?:-n[\d_]+)?-r(\d+)-")
 
 
 def main() -> int:
