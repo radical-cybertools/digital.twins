@@ -202,10 +202,20 @@ class PluginDT(Plugin):
         engine (`WorkflowEngine.start_telemetry`): `checkpoint_path` is
         a directory on the service host, written when the session closes.
 
-        `"default_engine"` names the role that tasks without a routing
-        label run on (`'inference'` unless set; the broker-wide default
-        comes from `DT_DEFAULT_ENGINE`).  A learner still labels its own
-        tasks, so `'learning'` moves everything else onto that backend.
+        `"default_engine"` names the engine that tasks without a routing
+        label run on (`'inference'` unless set): a reserved role or an
+        engine the session configures.  The broker-wide default comes from
+        `DT_DEFAULT_ENGINE`, a reserved role only.  A learner still labels
+        its own tasks, so `'learning'` moves everything else onto that
+        backend.
+
+        Further, named engines (`"engines": {"site_b": {"endpoint_name":
+        ...}}`) let a twin's components run on several sites: names are
+        identifiers, and every engine other than the two roles names an
+        `endpoint_name` or a `pool` (an auto-selecting one could land on
+        the same endpoint as another).  A component is placed with
+        `engine=` on its `add_*` verb.  Validated for a new session only; a
+        reattach ignores the config.
         """
 
         self._ensure_cleanup_task()
@@ -217,19 +227,37 @@ class PluginDT(Plugin):
 
         telemetry = (config or {}).get("telemetry")
         if telemetry is not None and not (
-                isinstance(telemetry, dict) and set(telemetry) == {"checkpoint_path"}
-                and isinstance(telemetry["checkpoint_path"], str)):
-            raise http_exception(ValueError(
-                "'telemetry' must be {'checkpoint_path': <directory>}"))
+            isinstance(telemetry, dict)
+            and set(telemetry) == {"checkpoint_path"}
+            and isinstance(telemetry["checkpoint_path"], str)
+        ):
+            raise http_exception(
+                ValueError("'telemetry' must be {'checkpoint_path': <directory>}")
+            )
 
         # the one validation point, and for the deployment default too.
         # By key presence: an explicit null is not "unset" -- it would
         # silently inherit the deployment default
-        default = (config or {}).get("default_engine",
-                                     default_engine_setting())
-        if default not in ROLES:
-            raise http_exception(ValueError(
-                f"'default_engine' must be one of {ROLES}, got {default!r}"))
+        engines = (config or {}).get("engines")
+        if config is not None and "default_engine" in config:
+            # the session's own value: a role or an engine it configures
+            default = config["default_engine"]
+            # configured means a non-empty entry: a null one aliases away
+            named = (
+                [n for n, cfg in engines.items() if cfg]
+                if isinstance(engines, dict)
+                else []
+            )
+            allowed = (*ROLES, *(n for n in named if n not in ROLES))
+        else:
+            # the deployment default: a role only
+            default, allowed = default_engine_setting(), ROLES
+        if default not in allowed:
+            raise http_exception(
+                ValueError(
+                    f"'default_engine' must be one of {allowed}, got {default!r}"
+                )
+            )
 
         owner = self._request_owner(request)
         sid, lifetime, ttl = await self._normalize_session_policy(data)
@@ -241,6 +269,9 @@ class PluginDT(Plugin):
             self._touch(sid)
             log.info("[dt] reattached session %s", sid)
             return {"sid": sid, "reattached": True}
+
+        if engines is not None:
+            _check_engines(engines)
 
         sid = await self._open_session(sid, lifetime, ttl, owner)
         session = self._sessions[sid]
@@ -280,8 +311,9 @@ class PluginDT(Plugin):
         # `workflow_scope`: true (group under the twin id) or a name (#36)
         scope = (config or {}).get("workflow_scope")
         if scope is not None and not isinstance(scope, (bool, str)):
-            raise http_exception(ValueError(
-                "'workflow_scope' must be a boolean or a string"))
+            raise http_exception(
+                ValueError("'workflow_scope' must be a boolean or a string")
+            )
 
         return await self._forward(
             sid, DTSession.twin_create, twin_id=twin_id, config=config
@@ -402,8 +434,7 @@ class PluginDT(Plugin):
         # read per request rather than cached: these are a handful of KiB,
         # asked for once per page load, and editing one should not need a
         # broker restart (the gateway's own `ui_module` cache does)
-        return Response(body, media_type=media,
-                        headers={"cache-control": "no-store"})
+        return Response(body, media_type=media, headers={"cache-control": "no-store"})
 
     # -- observability ------------------------------------------------------
 
@@ -417,11 +448,12 @@ class PluginDT(Plugin):
         show up as inference calls that simply never return.  So this maps
         the lost participants onto the sessions' engine endpoints and
         turns the affected twins into `failed` + a reason in `twin_list`.
-        Twins on surviving engines are untouched.  Recovery is the
-        client's, and it is the *session* that has to go: engines are
-        session-shared and one of them is dead, so a twin created
-        afterwards would inherit it.  `unregister_session`, then build
-        the session and its twins again.
+        Twins on surviving engines are untouched.  Losing the default
+        engine fails every twin; after losing the default or
+        `'inference'`, no new twin can start and the *session* has to go:
+        `unregister_session`, then build the session and its twins again.
+        Losing another, named engine fails only the twins placed there;
+        new twins that do not use it still start.
         """
 
         await super().on_topology_change(participants)
@@ -449,7 +481,9 @@ class PluginDT(Plugin):
             if failed:
                 log.warning(
                     "[dt] session %s: endpoint(s) %s lost -- twins failed: %s",
-                    sid, ", ".join(sorted(lost)), ", ".join(failed),
+                    sid,
+                    ", ".join(sorted(lost)),
+                    ", ".join(failed),
                 )
 
     # -- the data plane -----------------------------------------------------
@@ -534,8 +568,10 @@ class PluginDT(Plugin):
                     if self._stream_broker is None or self._stream_broker.is_alive():
                         continue
 
-                    log.warning("[dt] stream broker died -- respawning on %s / %s",
-                                *self._stream_addrs)
+                    log.warning(
+                        "[dt] stream broker died -- respawning on %s / %s",
+                        *self._stream_addrs,
+                    )
                     await self._stream_broker.stop()
                     self._stream_broker = ZMQ_BrokerProcess(*self._stream_addrs)
                     self._stream_addrs = await self._stream_broker.start()
@@ -610,3 +646,39 @@ def _twin_id(twin_id: Any) -> str:
         )
 
     return twin_id
+
+
+def _check_engines(engines: Any) -> None:
+    """Validate a session's `engines` config block.
+
+    A name becomes the asyncflow routing label and part of the backend's
+    broker participant name, so it must be an ASCII identifier.  Every
+    engine other than the two reserved roles names its `endpoint_name` or
+    `pool`, so a named site is never auto-selected; the two roles may still
+    auto-select, as before, and two names may deliberately share one
+    endpoint.
+    """
+
+    if not isinstance(engines, dict):
+        raise http_exception(ValueError("'engines' must be an object"))
+
+    for name, cfg in engines.items():
+        if not isinstance(name, str) or not (name.isascii() and name.isidentifier()):
+            raise http_exception(
+                ValueError(f"engine name {name!r} must be an ASCII identifier")
+            )
+        if cfg is None:
+            continue  # unconfigured, as before (`_engine_config`)
+        if not isinstance(cfg, dict):
+            raise http_exception(
+                ValueError(f"engine {name!r}: config must be an object")
+            )
+        for key in ("endpoint_name", "pool"):
+            if cfg.get(key) is not None and not isinstance(cfg[key], str):
+                raise http_exception(
+                    ValueError(f"engine {name!r}: {key!r} must be a string")
+                )
+        if name not in ROLES and not (cfg.get("endpoint_name") or cfg.get("pool")):
+            raise http_exception(
+                ValueError(f"engine {name!r} must name an 'endpoint_name' or a 'pool'")
+            )
