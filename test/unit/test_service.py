@@ -59,6 +59,7 @@ def client(plugin):
 # session policy
 # ---------------------------------------------------------------------------
 
+
 def test_sessions_are_forced_persistent(plugin, client):
     """Whatever the client asks for, twins must outlive it."""
 
@@ -74,13 +75,15 @@ def test_sid_is_a_bearer_capability(plugin, client):
     """A reconnecting client is a different participant; it must still
     get its own twins back."""
 
-    resp = client.post("/dt/register_session", json={},
-                       headers={"x-orbit-src": "client.1"})
+    resp = client.post(
+        "/dt/register_session", json={}, headers={"x-orbit-src": "client.1"}
+    )
     sid = resp.json()["sid"]
     assert plugin._records[sid].owner == "client.1"
 
-    again = client.post("/dt/register_session", json={"sid": sid},
-                        headers={"x-orbit-src": "client.2"})
+    again = client.post(
+        "/dt/register_session", json={"sid": sid}, headers={"x-orbit-src": "client.2"}
+    )
 
     assert again.status_code == 200
     assert again.json() == {"sid": sid, "reattached": True}
@@ -104,12 +107,16 @@ def test_admin_sessions_reports_policy_and_broker(plugin, client):
 
     # nothing needed the stream broker yet, so none was started
     assert listing["stream_broker"] == {
-        "backend": "zmq", "addresses": None, "alive": False}
+        "backend": "zmq",
+        "addresses": None,
+        "alive": False,
+    }
 
 
 # ---------------------------------------------------------------------------
 # routes and validation
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("twin_id", ["", "with/slash", "with space", None, 42])
 def test_twin_create_rejects_bad_ids(client, twin_id):
@@ -124,8 +131,9 @@ def test_twin_create_rejects_bad_ids(client, twin_id):
 
 def test_twin_call_rejects_unknown_verbs(client):
     sid = client.post("/dt/register_session", json={}).json()["sid"]
-    resp = client.post(f"/dt/twin_call/{sid}/t1",
-                       json={"verb": "rm_rf", "payload": "", "client": {}})
+    resp = client.post(
+        f"/dt/twin_call/{sid}/t1", json={"verb": "rm_rf", "payload": "", "client": {}}
+    )
 
     assert resp.status_code == 400
     assert "unknown verb" in resp.text
@@ -135,8 +143,11 @@ def test_twin_call_rejects_version_skew(client):
     sid = client.post("/dt/register_session", json={}).json()["sid"]
     resp = client.post(
         f"/dt/twin_call/{sid}/t1",
-        json={"verb": "start", "payload": "",
-              "client": {"python": "2.7", "cloudpickle": "0.1"}},
+        json={
+            "verb": "start",
+            "payload": "",
+            "client": {"python": "2.7", "cloudpickle": "0.1"},
+        },
     )
 
     assert resp.status_code == 400
@@ -164,8 +175,11 @@ def test_an_unknown_session_never_unpickles_the_payload(client):
 
     resp = client.post(
         "/dt/twin_call/session.nope/t1",
-        json={"verb": "start", "payload": "!! not base64 !!",
-              "client": version_stamp()},
+        json={
+            "verb": "start",
+            "payload": "!! not base64 !!",
+            "client": version_stamp(),
+        },
     )
 
     assert resp.status_code == 404
@@ -192,8 +206,9 @@ async def test_a_malformed_call_is_a_client_error():
     session.twins["t1"] = _twin_with(_FakeFlow())
 
     with pytest.raises(HTTPException) as raised:
-        await session.twin_call("t1", "start",
-                                encode({"args": (1, 2, 3)}), version_stamp())
+        await session.twin_call(
+            "t1", "start", encode({"args": (1, 2, 3)}), version_stamp()
+        )
 
     assert raised.value.status_code == 409
     assert "TypeError" in raised.value.detail
@@ -202,6 +217,7 @@ async def test_a_malformed_call_is_a_client_error():
 # ---------------------------------------------------------------------------
 # wire format
 # ---------------------------------------------------------------------------
+
 
 def test_encode_roundtrip():
     payload = {"args": (1, "two", [3]), "kwargs": {"k": {"nested": True}}}
@@ -222,12 +238,15 @@ def test_version_stamp_matches_itself():
     check_versions(version_stamp())
 
 
-@pytest.mark.parametrize("key, value", [
-    ("python", "2.7"),
-    ("cloudpickle", "0.1"),
-    # by-reference pickling of component classes: any difference counts
-    ("digitaltwin", version_stamp()["digitaltwin"] + ".dev1"),
-])
+@pytest.mark.parametrize(
+    "key, value",
+    [
+        ("python", "2.7"),
+        ("cloudpickle", "0.1"),
+        # by-reference pickling of component classes: any difference counts
+        ("digitaltwin", version_stamp()["digitaltwin"] + ".dev1"),
+    ],
+)
 def test_version_skew_is_rejected(key, value):
     with pytest.raises(ValueError, match=f"{key} version skew"):
         check_versions({**version_stamp(), key: value})
@@ -280,6 +299,7 @@ def test_package_instantiates_with_the_injected_engine():
 # the persistent-component guard
 # ---------------------------------------------------------------------------
 
+
 class _FakeFlow:
     """Just enough engine for `_instantiate` and teardown."""
 
@@ -324,7 +344,8 @@ class _FakeEngineFactory:
 @pytest.fixture(autouse=True)
 def _fake_engine(monkeypatch):
     monkeypatch.setattr(
-        "digitaltwin.service.session.WorkflowEngine", _FakeEngineFactory)
+        "digitaltwin.service.session.WorkflowEngine", _FakeEngineFactory
+    )
 
 
 class _Persistent(UtilityTask):
@@ -361,8 +382,7 @@ def test_persistent_function_task_warns(caplog):
     session = DTSession("s1")
 
     with caplog.at_level("WARNING"):
-        session._instantiate(Package(_Persistent), _twin_with(flow),
-                             is_persistent=True)
+        session._instantiate(Package(_Persistent), _twin_with(flow), is_persistent=True)
 
     assert "registered 1 function_task" in caplog.text
     # the engine is handed back unpatched
@@ -382,8 +402,9 @@ def test_persistent_without_function_tasks_is_fine(caplog):
     session = DTSession("s1")
 
     with caplog.at_level("WARNING"):
-        session._instantiate(Package(_Plain), _twin_with(_FakeFlow()),
-                             is_persistent=True)
+        session._instantiate(
+            Package(_Plain), _twin_with(_FakeFlow()), is_persistent=True
+        )
 
     assert "function_task" not in caplog.text
 
@@ -396,6 +417,7 @@ def test_instantiate_rejects_a_non_package():
 # ---------------------------------------------------------------------------
 # engines
 # ---------------------------------------------------------------------------
+
 
 def _slow_build(session, delay: float, started: Optional[asyncio.Event] = None):
     """Stand in for a real (up to 150 s) backend build."""
@@ -480,9 +502,13 @@ async def test_close_shuts_down_a_built_engine():
 # the 'learning' role (M2)
 # ---------------------------------------------------------------------------
 
+
 def _dual(**endpoints: str) -> dict:
-    return {"engines": {name: {"endpoint_name": endpoint}
-                        for name, endpoint in endpoints.items()}}
+    return {
+        "engines": {
+            name: {"endpoint_name": endpoint} for name, endpoint in endpoints.items()
+        }
+    }
 
 
 async def test_an_unconfigured_role_aliases_inference():
@@ -492,8 +518,7 @@ async def test_an_unconfigured_role_aliases_inference():
     session = DTSession("s1", _dual(inference="ep1"))
     built = _slow_build(session, 0)
 
-    assert (await session.engine("learning")
-            is await session.engine("inference"))
+    assert await session.engine("learning") is await session.engine("inference")
     assert len(built) == 1
     assert sorted(session._backends) == ["inference"]
 
@@ -553,6 +578,7 @@ async def test_a_plain_component_never_sees_a_second_role():
 # ---------------------------------------------------------------------------
 # R8: a lost endpoint is visible, not silent
 # ---------------------------------------------------------------------------
+
 
 def _running_twin(session, twin_id, *engines: str):
     twin = session.twins[twin_id] = TwinInstance(twin_id)
@@ -628,10 +654,12 @@ async def test_the_plugin_routes_lost_participants_to_its_sessions(plugin):
     session._endpoints = {"inference": "ep1"}
     twin = _running_twin(session, "t1")
 
-    await plugin.on_topology_change({
-        "ep1": {"liveness": "lost"},
-        "ep2": {"liveness": "present"},
-    })
+    await plugin.on_topology_change(
+        {
+            "ep1": {"liveness": "lost"},
+            "ep2": {"liveness": "present"},
+        }
+    )
 
     assert twin.state == "failed"
     assert twin.last_error == "engine endpoint lost: ep1"
@@ -653,6 +681,7 @@ async def test_a_suspect_participant_is_not_a_loss(plugin):
 # ---------------------------------------------------------------------------
 # the embedded stream broker and its supervisor
 # ---------------------------------------------------------------------------
+
 
 async def test_stream_broker_starts_on_loopback_once(plugin):
     """One broker per plugin, shared by every twin, bound to loopback."""
@@ -715,14 +744,22 @@ async def test_shutdown_stops_the_broker_and_the_supervisor(plugin):
 # the observation surface the dashboard reads
 # ---------------------------------------------------------------------------
 
+
 class _Metered(UtilityTask):
     """A component reporting a convergence metric, the way a
     `StreamingLearnerInvestigator` does -- duck-typed, so this needs no
     ROSE."""
 
-    metrics = {"rmse": {"value": 0.4, "threshold": 0.25, "operator": "<",
-                        "should_stop": False, "windows": 3,
-                        "history": [0.9, 0.6, 0.4]}}
+    metrics = {
+        "rmse": {
+            "value": 0.4,
+            "threshold": 0.25,
+            "operator": "<",
+            "should_stop": False,
+            "windows": 3,
+            "history": [0.9, 0.6, 0.4],
+        }
+    }
 
 
 async def test_a_twin_summary_carries_its_metrics():
@@ -779,19 +816,21 @@ async def test_the_session_summary_names_the_engine_endpoints():
     omission."""
 
     single = DTSession("s1", _dual(inference="ep1"))
-    assert single.summary()["endpoints"] == {
-        "inference": "ep1", "learning": None}
+    assert single.summary()["endpoints"] == {"inference": "ep1", "learning": None}
 
     dual = DTSession("s2", _dual(inference="ep1", learning="hpc1"))
-    assert dual.summary()["endpoints"] == {
-        "inference": "ep1", "learning": "hpc1"}
+    assert dual.summary()["endpoints"] == {"inference": "ep1", "learning": "hpc1"}
 
 
 def test_admin_sessions_carries_endpoints_and_metrics(client):
-    sid = client.post("/dt/register_session",
-                      json={"config": _dual(inference="ep1")}).json()["sid"]
-    entry = next(s for s in client.get("/dt/admin/sessions").json()["sessions"]
-                 if s["sid"] == sid)
+    sid = client.post(
+        "/dt/register_session", json={"config": _dual(inference="ep1")}
+    ).json()["sid"]
+    entry = next(
+        s
+        for s in client.get("/dt/admin/sessions").json()["sessions"]
+        if s["sid"] == sid
+    )
 
     assert entry["endpoints"] == {"inference": "ep1", "learning": None}
 
@@ -799,6 +838,7 @@ def test_admin_sessions_carries_endpoints_and_metrics(client):
 # ---------------------------------------------------------------------------
 # the dashboard's assets
 # ---------------------------------------------------------------------------
+
 
 def test_the_ui_route_serves_the_standalone_page(client):
     """Served by the plugin so a browser can reach a live broker
@@ -812,8 +852,7 @@ def test_the_ui_route_serves_the_standalone_page(client):
     assert "dt_dash.js" in resp.text
 
 
-@pytest.mark.parametrize("asset", ["dt_dash.js", "dt_sample.js",
-                                   "dt_explorer.js"])
+@pytest.mark.parametrize("asset", ["dt_dash.js", "dt_sample.js", "dt_explorer.js"])
 def test_the_ui_assets_are_served_as_javascript(client, asset):
     resp = client.get(f"/dt/ui/{asset}")
 
@@ -821,13 +860,19 @@ def test_the_ui_assets_are_served_as_javascript(client, asset):
     assert "javascript" in resp.headers["content-type"]
 
 
-@pytest.mark.parametrize("asset", [
-    "passwd", "plugin.py", ".env",
-    # a percent-encoded separator survives the route's `[^/]+` segment, so
-    # the allow-list is what has to refuse it -- not the router
-    "..%2f..%2fplugin.py", "%2e%2e%2f%2e%2e%2fplugin.py",
-    "dt_dash.js%00.png",
-])
+@pytest.mark.parametrize(
+    "asset",
+    [
+        "passwd",
+        "plugin.py",
+        ".env",
+        # a percent-encoded separator survives the route's `[^/]+` segment, so
+        # the allow-list is what has to refuse it -- not the router
+        "..%2f..%2fplugin.py",
+        "%2e%2e%2f%2e%2e%2fplugin.py",
+        "dt_dash.js%00.png",
+    ],
+)
 def test_an_unlisted_ui_asset_is_404(client, asset):
     """An allow-list, not a directory walk: the asset name comes from the
     client."""
@@ -856,32 +901,53 @@ def test_the_explorer_module_is_the_one_the_plugin_declares():
 # pool-backed roles (dispatcher pools)
 # ---------------------------------------------------------------------------
 
+
 class _FakePoolBackend:
     """Signature-faithful stand-in: the pool path checks the constructor's
     parameters before using them."""
 
     captured: dict = {}
 
-    def __init__(self, broker_url=None, endpoint_name=None, backends=None,
-                 name=None, participant_name=None, plugin_name="rhapsody",
-                 pool=None, session_kwargs=None, batch_window=0):
+    def __init__(
+        self,
+        broker_url=None,
+        endpoint_name=None,
+        backends=None,
+        name=None,
+        participant_name=None,
+        plugin_name="rhapsody",
+        pool=None,
+        session_kwargs=None,
+        batch_window=0,
+    ):
         type(self).captured = dict(
-            endpoint_name=endpoint_name, name=name,
-            participant_name=participant_name, plugin_name=plugin_name,
-            pool=pool, session_kwargs=session_kwargs)
+            endpoint_name=endpoint_name,
+            name=name,
+            participant_name=participant_name,
+            plugin_name=plugin_name,
+            pool=pool,
+            session_kwargs=session_kwargs,
+        )
         self._endpoint_name = endpoint_name or "broker"
 
     def __await__(self):
         async def _self():
             return self
+
         return _self().__await__()
 
 
 class _FakeOldBackend:
     """A backend from before pool support -- no `pool` parameter."""
 
-    def __init__(self, broker_url=None, endpoint_name=None, backends=None,
-                 name=None, batch_window=0):
+    def __init__(
+        self,
+        broker_url=None,
+        endpoint_name=None,
+        backends=None,
+        name=None,
+        batch_window=0,
+    ):
         pass
 
 
@@ -895,11 +961,12 @@ async def test_a_pool_backed_role_targets_the_dispatcher(monkeypatch):
     session = DTSession("s1")
     session.config = {
         "pools": [{"name": "exsitu", "endpoint_name": "hpc1"}],
-        "engines": {"inference": {"endpoint_name": "ep1"},
-                    "learning": {"pool": "exsitu"}},
+        "engines": {
+            "inference": {"endpoint_name": "ep1"},
+            "learning": {"pool": "exsitu"},
+        },
     }
-    monkeypatch.setattr(session_mod, "OrbitExecutionBackend",
-                        _FakePoolBackend)
+    monkeypatch.setattr(session_mod, "OrbitExecutionBackend", _FakePoolBackend)
 
     await session._create_backend("learning")
 
@@ -908,7 +975,8 @@ async def test_a_pool_backed_role_targets_the_dispatcher(monkeypatch):
     assert got["pool"] == "exsitu"
     assert got["session_kwargs"]["sid"] == "s1"
     assert got["session_kwargs"]["pools"] == [
-        {"name": "exsitu", "endpoint_name": "hpc1"}]
+        {"name": "exsitu", "endpoint_name": "hpc1"}
+    ]
     # the role records its pool, not an endpoint -- the R8 opt-out
     assert session._endpoints["learning"] == "pool:exsitu"
 
@@ -918,8 +986,7 @@ async def test_a_pool_needs_a_pool_capable_backend(monkeypatch):
 
     session = DTSession("s1")
     session.config = {"engines": {"learning": {"pool": "exsitu"}}}
-    monkeypatch.setattr(session_mod, "OrbitExecutionBackend",
-                        _FakeOldBackend)
+    monkeypatch.setattr(session_mod, "OrbitExecutionBackend", _FakeOldBackend)
 
     with pytest.raises(RuntimeError, match="no pool support"):
         await session._create_backend("learning")
@@ -941,6 +1008,7 @@ async def test_endpoint_loss_spares_pool_backed_roles():
 # graph verbs: external inputs and joins (#30)
 # ---------------------------------------------------------------------------
 
+
 class _BindingStream(_FakeStream):
     """A `_FakeStream` that also accepts channel subscriptions."""
 
@@ -961,12 +1029,11 @@ async def test_add_input_binds_a_channel_through_the_verb():
 
     x = DataType("x")
     await session.twin_call(
-        "t1", "add_input",
-        encode({"args": (x, "lab/raw")}), version_stamp())
+        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp()
+    )
 
     binding = twin.runtime.inputs[0]
-    assert (binding.dtype, binding.channel, binding.codec) == (x, "lab/raw",
-                                                               "json")
+    assert (binding.dtype, binding.channel, binding.codec) == (x, "lab/raw", "json")
     # the verb answered, so the subscription is already live -- no settling
     assert twin.runtime.streamer.subscribed == [("lab/raw", x, "json")]
     assert twin.summary()["calls"] == {"add_input": 1}
@@ -984,8 +1051,11 @@ async def test_add_input_rejects_a_bad_channel_as_client_error():
 
     with pytest.raises(HTTPException) as raised:
         await session.twin_call(
-            "t1", "add_input",
-            encode({"args": (DataType("x"), "dt/oops")}), version_stamp())
+            "t1",
+            "add_input",
+            encode({"args": (DataType("x"), "dt/oops")}),
+            version_stamp(),
+        )
 
     assert raised.value.status_code == 409
     assert twin.runtime.inputs == []
@@ -1002,7 +1072,8 @@ async def test_add_data_join_registers_through_the_verb():
     a, b = DataType("a"), DataType("b")
     joined = JoinDataType([a, b])
     await session.twin_call(
-        "t1", "add_data_join", encode({"args": (joined,)}), version_stamp())
+        "t1", "add_data_join", encode({"args": (joined,)}), version_stamp()
+    )
 
     assert joined in twin.runtime.join_components
     assert twin.summary()["calls"] == {"add_data_join": 1}
@@ -1021,17 +1092,19 @@ async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
 
     x = DataType("x")
     await session.twin_call(
-        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp())
+        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp()
+    )
 
     # the identical re-bind is an idempotent no-op
     await session.twin_call(
-        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp())
+        "t1", "add_input", encode({"args": (x, "lab/raw")}), version_stamp()
+    )
     assert len(twin.runtime.inputs) == 1
 
     with pytest.raises(HTTPException) as raised:
         await session.twin_call(
-            "t1", "add_input",
-            encode({"args": (x, "lab/raw", "raw")}), version_stamp())
+            "t1", "add_input", encode({"args": (x, "lab/raw", "raw")}), version_stamp()
+        )
 
     assert raised.value.status_code == 409
     assert "codec" in raised.value.detail
@@ -1042,27 +1115,34 @@ async def test_add_input_refuses_a_codec_change_on_a_bound_channel():
 
 # -- engine-side telemetry and workflow scopes (#36) ---------------------------
 
-@pytest.mark.parametrize("telemetry", ["on", {}, {"checkpoint_path": 3},
-                                       {"checkpoint_interval": 0}])
+
+@pytest.mark.parametrize(
+    "telemetry", ["on", {}, {"checkpoint_path": 3}, {"checkpoint_interval": 0}]
+)
 def test_register_session_rejects_a_bad_telemetry_block(client, telemetry):
-    resp = client.post("/dt/register_session",
-                       json={"config": {"telemetry": telemetry}})
+    resp = client.post(
+        "/dt/register_session", json={"config": {"telemetry": telemetry}}
+    )
 
     assert resp.status_code == 400
     assert "telemetry" in resp.text
 
 
 def test_register_session_accepts_a_telemetry_block(client):
-    resp = client.post("/dt/register_session", json={"config": {
-        "telemetry": {"checkpoint_path": "/tmp/t"}}})
+    resp = client.post(
+        "/dt/register_session",
+        json={"config": {"telemetry": {"checkpoint_path": "/tmp/t"}}},
+    )
 
     assert resp.status_code == 200
 
 
 def test_twin_create_rejects_a_bad_workflow_scope(client):
     sid = client.post("/dt/register_session", json={}).json()["sid"]
-    resp = client.post(f"/dt/twin_create/{sid}", json={
-        "twin_id": str(uuid.uuid4()), "config": {"workflow_scope": 3}})
+    resp = client.post(
+        f"/dt/twin_create/{sid}",
+        json={"twin_id": str(uuid.uuid4()), "config": {"workflow_scope": 3}},
+    )
 
     assert resp.status_code == 400
     assert "workflow_scope" in resp.text
@@ -1079,8 +1159,7 @@ async def test_a_failed_telemetry_start_shuts_the_engine_down(monkeypatch):
     async def shutdown_engine(flow):
         stopped.append(flow)
 
-    monkeypatch.setattr(_FakeFlow, "start_telemetry", start_telemetry,
-                        raising=False)
+    monkeypatch.setattr(_FakeFlow, "start_telemetry", start_telemetry, raising=False)
     session._shutdown_engine = shutdown_engine
 
     with pytest.raises(RuntimeError, match="no such directory"):
@@ -1107,7 +1186,8 @@ def test_add_barrier_sends_the_spec_not_the_barrier():
     sent = []
     client = DTClient.__new__(DTClient)
     client._verb = lambda twin, verb, *args, **kw: (
-        sent.append((verb, args)) or {"state": "ready"})
+        sent.append((verb, args)) or {"state": "ready"}
+    )
 
     barrier = Barrier("AB", hard=False)
     barrier.add_dtype(A, hard=True)
@@ -1121,9 +1201,12 @@ async def test_add_barrier_verb_builds_the_same_barrier_service_side():
     session = DTSession("s1")
     twin = _running_twin(session, "t1")
 
-    await session.twin_call("t1", "add_barrier",
-                            _call("AB", True, [(A, True), (B, False)]),
-                            stamp=version_stamp())
+    await session.twin_call(
+        "t1",
+        "add_barrier",
+        _call("AB", True, [(A, True), (B, False)]),
+        stamp=version_stamp(),
+    )
 
     barrier = twin.runtime.barriers[A][0]
     assert twin.runtime.barriers[B] == [barrier]
@@ -1143,9 +1226,12 @@ async def test_add_data_split_task_verb_registers_the_split():
     session = DTSession("s1")
     twin = _running_twin(session, "t1")
 
-    await session.twin_call("t1", "add_data_split_task",
-                            _call(Package(_Split), A, (B, C)),
-                            stamp=version_stamp())
+    await session.twin_call(
+        "t1",
+        "add_data_split_task",
+        _call(Package(_Split), A, (B, C)),
+        stamp=version_stamp(),
+    )
 
     (split,) = twin.runtime.components[A]
     assert isinstance(split.component, _Split)
@@ -1195,8 +1281,9 @@ async def test_add_data_split_task_needs_a_split_task(stream_clients):
 
 # -- default engine (#27) -----------------------------------------------------
 
-_DUAL = {"engines": {"inference": {"endpoint_name": "a"},
-                     "learning": {"endpoint_name": "b"}}}
+_DUAL = {
+    "engines": {"inference": {"endpoint_name": "a"}, "learning": {"endpoint_name": "b"}}
+}
 
 
 def test_default_engine_is_inference_without_config(monkeypatch):
@@ -1235,8 +1322,9 @@ def test_register_session_rejects_a_bad_deployment_default(client, monkeypatch):
 
 @pytest.mark.parametrize("value", ["gpu", None, ""])
 def test_register_session_rejects_a_bad_default_engine(client, value):
-    resp = client.post("/dt/register_session",
-                       json={"config": {"default_engine": value}})
+    resp = client.post(
+        "/dt/register_session", json={"config": {"default_engine": value}}
+    )
 
     assert resp.status_code == 400
     assert "default_engine" in resp.text
@@ -1247,8 +1335,9 @@ async def test_a_loss_during_init_fails_a_twin_on_the_default_role():
     from its first task on: losing it while the twin initializes must
     fail the twin, and it must not come up `ready` afterwards (R8)."""
 
-    session = DTSession("s1", {**_dual(inference="ep1", learning="hpc1"),
-                               "default_engine": "learning"})
+    session = DTSession(
+        "s1", {**_dual(inference="ep1", learning="hpc1"), "default_engine": "learning"}
+    )
     started = asyncio.Event()
     _slow_build(session, 0.2, started)
 
@@ -1276,8 +1365,9 @@ async def test_a_loss_during_init_fails_a_twin_on_the_default_role():
 
 
 async def test_default_engine_moves_the_engines_default_backend():
-    session = DTSession("s1", {**_dual(inference="ep1", learning="hpc1"),
-                               "default_engine": "learning"})
+    session = DTSession(
+        "s1", {**_dual(inference="ep1", learning="hpc1"), "default_engine": "learning"}
+    )
     _slow_build(session, 0)
 
     flow = await session.engine("learning")
@@ -1290,8 +1380,9 @@ async def test_a_twin_is_bound_only_to_the_default_role():
     """R8: a twin on the 'learning' default does not use the inference
     endpoint, so losing that endpoint must not fail it."""
 
-    session = DTSession("s1", {**_dual(inference="ep1", learning="hpc1"),
-                               "default_engine": "learning"})
+    session = DTSession(
+        "s1", {**_dual(inference="ep1", learning="hpc1"), "default_engine": "learning"}
+    )
     _slow_build(session, 0)
 
     class _Plugin:
@@ -1317,6 +1408,7 @@ def test_the_first_failure_of_a_twin_is_kept():
 
 
 # -- named engines: components on several sites --------------------------------
+
 
 class _LabelFlow(_FakeFlow):
     """Records the keyword arguments of every task decorator."""
@@ -1400,7 +1492,10 @@ def test_engine_places_every_task_the_component_registers():
     session._instantiate(Package(_ThreeKinds), twin, engine="site_b")
 
     assert twin.runtime.flow.labels == [
-        ("function", "site_b"), ("executable", "site_b"), ("prompt", "site_b")]
+        ("function", "site_b"),
+        ("executable", "site_b"),
+        ("prompt", "site_b"),
+    ]
     assert twin.engines == {"inference", "site_b"}
 
 
@@ -1420,8 +1515,7 @@ def test_a_tasks_own_label_is_kept_checked_and_bound():
 
     session._instantiate(Package(_Labelled), twin, engine="site_b")
 
-    assert twin.runtime.flow.labels == [
-        ("function", "site_b"), ("function", "site_c")]
+    assert twin.runtime.flow.labels == [("function", "site_b"), ("function", "site_c")]
     assert twin.engines == {"inference", "site_b", "site_c"}
 
 
@@ -1490,7 +1584,8 @@ async def test_the_engine_kwarg_is_consumed_not_forwarded():
     twin.runtime = _Runtime()
 
     await session._verb_add_investigator(
-        twin, Package(_ThreeKinds), "in", "out", engine="site_b", knob=1)
+        twin, Package(_ThreeKinds), "in", "out", engine="site_b", knob=1
+    )
 
     assert seen == {"knob": 1}
     assert twin.engines == {"inference", "site_b"}
@@ -1510,13 +1605,13 @@ def test_a_placed_learner_gets_its_learner_label():
     assert placed.learn_backend == "site_b"
     assert twin.engines == {"inference", "site_b"}
 
-    local = session._instantiate(Package(_Learner), _twin_with(_LabelFlow()),
-                                 engine="inference")
+    local = session._instantiate(
+        Package(_Learner), _twin_with(_LabelFlow()), engine="inference"
+    )
     assert local.learn_backend is None
 
     # a 'learning' engine wins, and a lost one is refused
-    session = DTSession("s2", _dual(inference="ep1", learning="hpc1",
-                                    site_b="ep2"))
+    session = DTSession("s2", _dual(inference="ep1", learning="hpc1", site_b="ep2"))
     for name in ("inference", "learning", "site_b"):
         session._backends[name] = _FakeBackend(name)
     twin = _twin_with(_LabelFlow())
@@ -1534,7 +1629,10 @@ def test_the_session_summary_lists_every_engine():
     session = DTSession("s1", _dual(inference="ep1", site_b="ep2"))
 
     assert session.summary()["endpoints"] == {
-        "inference": "ep1", "learning": None, "site_b": "ep2"}
+        "inference": "ep1",
+        "learning": None,
+        "site_b": "ep2",
+    }
 
 
 def _init_plugin():
@@ -1563,8 +1661,9 @@ async def test_a_lost_extra_engine_does_not_block_new_twins():
 
 
 async def test_a_lost_default_engine_still_fails_new_twins():
-    session = DTSession("s1", {**_dual(inference="ep1", site_b="ep2"),
-                               "default_engine": "site_b"})
+    session = DTSession(
+        "s1", {**_dual(inference="ep1", site_b="ep2"), "default_engine": "site_b"}
+    )
     _slow_build(session, 0)
     session._plugin = _init_plugin()
 
@@ -1579,36 +1678,49 @@ async def test_a_lost_default_engine_still_fails_new_twins():
 
 
 def test_register_session_accepts_named_engines(client):
-    resp = client.post("/dt/register_session", json={"config": {
-        **_dual(inference="ep1", site_b="ep2"), "default_engine": "site_b"}})
+    resp = client.post(
+        "/dt/register_session",
+        json={
+            "config": {
+                **_dual(inference="ep1", site_b="ep2"),
+                "default_engine": "site_b",
+            }
+        },
+    )
 
     assert resp.status_code == 200
 
 
-@pytest.mark.parametrize("engines, match", [
-    ({"site-b": {"endpoint_name": "ep2"}}, "identifier"),
-    ({"site_b": "ep2"}, "object"),
-    ({"site_b": {"backends": ["concurrent"]}}, "endpoint_name"),
-    (["inference"], "'engines' must be an object"),
-])
+@pytest.mark.parametrize(
+    "engines, match",
+    [
+        ({"site-b": {"endpoint_name": "ep2"}}, "identifier"),
+        ({"site_b": "ep2"}, "object"),
+        ({"site_b": {"backends": ["concurrent"]}}, "endpoint_name"),
+        (["inference"], "'engines' must be an object"),
+    ],
+)
 def test_register_session_rejects_bad_engines(client, engines, match):
-    resp = client.post("/dt/register_session",
-                       json={"config": {"engines": engines}})
+    resp = client.post("/dt/register_session", json={"config": {"engines": engines}})
 
     assert resp.status_code == 400
     assert match in resp.text
 
 
 def test_a_learning_engine_may_still_auto_select(client):
-    resp = client.post("/dt/register_session", json={"config": {
-        "engines": {"learning": {"backends": ["concurrent"]}}}})
+    resp = client.post(
+        "/dt/register_session",
+        json={"config": {"engines": {"learning": {"backends": ["concurrent"]}}}},
+    )
 
     assert resp.status_code == 200
 
 
 def test_default_engine_must_be_a_role_or_configured(client):
-    resp = client.post("/dt/register_session", json={"config": {
-        **_dual(inference="ep1"), "default_engine": "site_b"}})
+    resp = client.post(
+        "/dt/register_session",
+        json={"config": {**_dual(inference="ep1"), "default_engine": "site_b"}},
+    )
 
     assert resp.status_code == 400
     assert "default_engine" in resp.text
@@ -1617,16 +1729,18 @@ def test_default_engine_must_be_a_role_or_configured(client):
 def test_the_deployment_default_stays_a_role(client, monkeypatch):
     monkeypatch.setenv(ENV_DEFAULT_ENGINE, "site_b")
 
-    resp = client.post("/dt/register_session", json={"config":
-                       _dual(inference="ep1", site_b="ep2")})
+    resp = client.post(
+        "/dt/register_session", json={"config": _dual(inference="ep1", site_b="ep2")}
+    )
 
     assert resp.status_code == 400
 
 
 def test_a_reattach_ignores_the_engines_config(client):
     sid = client.post("/dt/register_session", json={}).json()["sid"]
-    resp = client.post("/dt/register_session", json={
-        "sid": sid, "config": {"engines": {"site-b": {}}}})
+    resp = client.post(
+        "/dt/register_session", json={"sid": sid, "config": {"engines": {"site-b": {}}}}
+    )
 
     assert resp.status_code == 200
     assert resp.json()["reattached"] is True

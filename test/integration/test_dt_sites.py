@@ -31,17 +31,17 @@ register_user_modules([twin_components])
 INFER_TIMEOUT = 120.0
 LOST_TIMEOUT = 120.0  # the broker's suspect -> lost grace is 10 s
 
-SITES = engines(inference=TASK_ENDPOINT, site_b=EXSITU_ENDPOINT,
-                site_c=DOOMED_ENDPOINT)
+SITES = engines(inference=TASK_ENDPOINT, site_b=EXSITU_ENDPOINT, site_c=DOOMED_ENDPOINT)
 
-PROBES = {name: (DataType(f"probe_{name}"), DataType(f"where_{name}"))
-          for name in ("a", "b", "c")}
+PROBES = {
+    name: (DataType(f"probe_{name}"), DataType(f"where_{name}"))
+    for name in ("a", "b", "c")
+}
 
 
 def _probe(dt, twin, name):
     probe, where = PROBES[name]
-    answer = dt.get_inference(twin, TypedData(probe, 1), where,
-                              timeout=INFER_TIMEOUT)
+    answer = dt.get_inference(twin, TypedData(probe, 1), where, timeout=INFER_TIMEOUT)
     return answer.data
 
 
@@ -55,18 +55,17 @@ def _site_twin(dt, *, b="site_b", c=None):
     dt.add_investigator(twin, dt.package(SiteModel, where), probe, where)
     if b is not None:
         probe, where = PROBES["b"]
-        dt.add_investigator(twin, dt.package(SiteModel, where), probe, where,
-                            engine=b)
+        dt.add_investigator(twin, dt.package(SiteModel, where), probe, where, engine=b)
     if c is not None:
         probe, where = PROBES["c"]
-        dt.add_investigator(twin, dt.package(SiteModel, where, site=c),
-                            probe, where)
+        dt.add_investigator(twin, dt.package(SiteModel, where, site=c), probe, where)
     dt.start(twin)
     return twin
 
 
 def test_components_run_where_they_are_placed(
-        dt_client, inference_endpoint, learning_endpoint, doomed_endpoint):
+    dt_client, inference_endpoint, learning_endpoint, doomed_endpoint
+):
     dt = dt_client(SITES)
     twin = _site_twin(dt, c="site_c")
 
@@ -74,20 +73,21 @@ def test_components_run_where_they_are_placed(
     assert _probe(dt, twin, "b") == EXSITU_ENDPOINT
     assert _probe(dt, twin, "c") == DOOMED_ENDPOINT
 
-    session = next(s for s in dt.admin_sessions()["sessions"]
-                   if s["sid"] == dt.sid)
+    session = next(s for s in dt.admin_sessions()["sessions"] if s["sid"] == dt.sid)
     assert session["endpoints"]["site_b"] == EXSITU_ENDPOINT
     assert session["endpoints"]["site_c"] == DOOMED_ENDPOINT
 
     # explicit placement never aliases
     probe, where = PROBES["b"]
     with pytest.raises(Exception, match="not configured"):
-        dt.add_investigator(twin, dt.package(SiteModel, where), probe, where,
-                            engine="nowhere")
+        dt.add_investigator(
+            twin, dt.package(SiteModel, where), probe, where, engine="nowhere"
+        )
 
 
 def test_losing_a_site_fails_only_the_twin_placed_there(
-        dt_client, inference_endpoint, learning_endpoint, doomed_endpoint):
+    dt_client, inference_endpoint, learning_endpoint, doomed_endpoint
+):
     dt = dt_client(SITES)
     placed = _site_twin(dt, c="site_c")
     elsewhere = _site_twin(dt)
@@ -109,5 +109,6 @@ def test_losing_a_site_fails_only_the_twin_placed_there(
 
     probe, where = PROBES["c"]
     with pytest.raises(Exception, match="endpoint was lost"):
-        dt.add_investigator(later, dt.package(SiteModel, where), probe, where,
-                            engine="site_c")
+        dt.add_investigator(
+            later, dt.package(SiteModel, where), probe, where, engine="site_c"
+        )

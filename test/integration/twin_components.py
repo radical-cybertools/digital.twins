@@ -182,7 +182,8 @@ class JoinSink(UtilityTask):
 
     async def main_loop(self, runtime, in_data):
         await runtime.stream.publish(
-            ECHO_DTYPE, sum(item.data for item in in_data.data))
+            ECHO_DTYPE, sum(item.data for item in in_data.data)
+        )
 
 
 class CrashingTask(UtilityTask):
