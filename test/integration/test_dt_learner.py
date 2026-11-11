@@ -201,15 +201,16 @@ def test_a_lost_endpoint_fails_only_the_twins_that_used_it(
     assert answer.data == 12
 
     # The loss is announced once, but the dead engine is still cached in
-    # the session.  A twin created now must not inherit it and come up
-    # `ready` only to stall: the session is what has to be recreated.
-    doomed = str(uuid.uuid4())
-    with pytest.raises(RuntimeError, match="recreate the session"):
-        dt.create_twin(doomed)
+    # the session.  'learning' is not the default engine, so a new twin
+    # that does not use it still starts; a learner, which would bind it,
+    # is refused instead of coming up only to stall.
+    later = str(uuid.uuid4())
+    dt.create_twin(later)
+    assert dt.twin(later)["state"] in ("ready", "running"), dt.twin(later)
 
-    entry = dt.twin(doomed)
-    assert entry["state"] == "failed"
-    assert "endpoint was lost" in entry["last_error"]
+    with pytest.raises(Exception, match="endpoint was lost"):
+        dt.add_investigator(later, dt.package(LinearLearner), SENSOR_DTYPE,
+                            INFERENCE_DTYPE)
 
 
 def test_learning_as_default_engine_moves_unlabeled_tasks(
