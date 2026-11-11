@@ -466,8 +466,9 @@ class DTSession(PluginSession):
         engine: Optional[str] = None,
     ) -> None:
         self._check_engine(engine)
-        component = self._instantiate(package, twin, is_persistent, engine)
-        twin.runtime.add_task(component, input_dtype, output_dtype, is_persistent)
+        with self._unbound_on_failure(twin):
+            component = self._instantiate(package, twin, is_persistent, engine)
+            twin.runtime.add_task(component, input_dtype, output_dtype, is_persistent)
 
     async def _verb_add_investigator(
         self,
@@ -480,10 +481,11 @@ class DTSession(PluginSession):
         **kwargs,
     ) -> None:
         self._check_engine(engine)
-        component = self._instantiate(package, twin, engine=engine)
-        twin.runtime.add_investigator(
-            component, input_dtype, output_dtype, *args, **kwargs
-        )
+        with self._unbound_on_failure(twin):
+            component = self._instantiate(package, twin, engine=engine)
+            twin.runtime.add_investigator(
+                component, input_dtype, output_dtype, *args, **kwargs
+            )
 
     async def _verb_add_agent(
         self,
@@ -496,8 +498,11 @@ class DTSession(PluginSession):
         **kwargs,
     ) -> None:
         self._check_engine(engine)
-        component = self._instantiate(package, twin, engine=engine)
-        twin.runtime.add_agent(component, input_dtype, output_dtype, *args, **kwargs)
+        with self._unbound_on_failure(twin):
+            component = self._instantiate(package, twin, engine=engine)
+            twin.runtime.add_agent(
+                component, input_dtype, output_dtype, *args, **kwargs
+            )
 
     async def _verb_add_input(
         self,
@@ -549,8 +554,9 @@ class DTSession(PluginSession):
         engine: Optional[str] = None,
     ) -> None:
         self._check_engine(engine)
-        component = self._instantiate(package, twin, engine=engine)
-        twin.runtime.add_data_split_task(component, input_dtype, output_dtypes)
+        with self._unbound_on_failure(twin):
+            component = self._instantiate(package, twin, engine=engine)
+            twin.runtime.add_data_split_task(component, input_dtype, output_dtypes)
 
     async def _verb_start(self, twin: TwinInstance) -> None:
         # a running twin is left running: an idempotent retry, not an error
@@ -628,6 +634,20 @@ class DTSession(PluginSession):
 
         if name not in self._backends:
             raise RuntimeError(f"engine {name!r} is not built")
+
+    @contextlib.contextmanager
+    def _unbound_on_failure(self, twin: TwinInstance):
+        """Keep a component verb's engine binding only if the whole add
+        succeeded: a component the runtime refused (a duplicate mapping, a
+        stopped graph) never ran, so a later loss of its engine must not
+        fail the twin."""
+
+        before = set(twin.engines)
+        try:
+            yield
+        except BaseException:
+            twin.engines = before
+            raise
 
     def _check_engine(self, engine: Optional[str]) -> None:
         """`engine=` on a verb: a non-empty name, usable now."""
@@ -904,10 +924,14 @@ class DTSession(PluginSession):
             return ()
 
         self._lost.update(gone.values())
+        fatal = {ROLE_INFERENCE, self.default_engine()} & set(gone)
         log.warning(
-            "[dt] session %s lost endpoint(s) %s -- it must be recreated",
+            "[dt] session %s lost endpoint(s) %s -- %s",
             self.sid,
             ", ".join(sorted(gone.values())),
+            "it must be recreated"
+            if fatal
+            else "twins placed there fail, the session stays usable",
         )
 
         failed = []

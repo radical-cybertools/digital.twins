@@ -240,23 +240,19 @@ class PluginDT(Plugin):
         # silently inherit the deployment default
         engines = (config or {}).get("engines")
         if config is not None and "default_engine" in config:
+            # the session's own value: a role or an engine it configures
             default = config["default_engine"]
             named = list(engines) if isinstance(engines, dict) else []
             allowed = (*ROLES, *(n for n in named if n not in ROLES))
-            if default not in allowed:
-                raise http_exception(
-                    ValueError(
-                        f"'default_engine' must be one of {allowed}, got {default!r}"
-                    )
-                )
         else:
-            default = default_engine_setting()
-            if default not in ROLES:
-                raise http_exception(
-                    ValueError(
-                        f"'default_engine' must be one of {ROLES}, got {default!r}"
-                    )
+            # the deployment default: a role only
+            default, allowed = default_engine_setting(), ROLES
+        if default not in allowed:
+            raise http_exception(
+                ValueError(
+                    f"'default_engine' must be one of {allowed}, got {default!r}"
                 )
+            )
 
         owner = self._request_owner(request)
         sid, lifetime, ttl = await self._normalize_session_policy(data)
@@ -651,19 +647,20 @@ def _check_engines(engines: Any) -> None:
     """Validate a session's `engines` config block.
 
     A name becomes the asyncflow routing label and part of the backend's
-    broker participant name, so it must be an identifier.  Every engine
-    other than the two reserved roles names its `endpoint_name` or `pool`:
-    an auto-selecting extra engine could land on the same endpoint as
-    another and silently collapse two sites into one.
+    broker participant name, so it must be an ASCII identifier.  Every
+    engine other than the two reserved roles names its `endpoint_name` or
+    `pool`, so a named site is never auto-selected; the two roles may still
+    auto-select, as before, and two names may deliberately share one
+    endpoint.
     """
 
     if not isinstance(engines, dict):
         raise http_exception(ValueError("'engines' must be an object"))
 
     for name, cfg in engines.items():
-        if not isinstance(name, str) or not name.isidentifier():
+        if not isinstance(name, str) or not (name.isascii() and name.isidentifier()):
             raise http_exception(
-                ValueError(f"engine name {name!r} must be an identifier")
+                ValueError(f"engine name {name!r} must be an ASCII identifier")
             )
         if not isinstance(cfg, dict):
             raise http_exception(

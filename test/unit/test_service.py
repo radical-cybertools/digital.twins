@@ -1751,3 +1751,50 @@ def test_the_client_sends_engine_only_when_set():
 
     assert _placed(None) == {}
     assert _placed("site_b") == {"engine": "site_b"}
+
+
+async def test_a_refused_add_binds_nothing():
+    """A component the runtime refuses never ran, so a later loss of its
+    engine must not fail the twin."""
+
+    session = _sites()
+
+    class _Refusing:
+        flow = _LabelFlow()
+
+        def add_investigator(self, *args, **kwargs):
+            raise ValueError("duplicate mapping")
+
+    twin = TwinInstance("t1")
+    twin.runtime = _Refusing()
+
+    with pytest.raises(ValueError, match="duplicate"):
+        await session._verb_add_investigator(
+            twin, Package(_ThreeKinds), "in", "out", engine="site_b"
+        )
+
+    assert twin.engines == {"inference"}
+
+
+def test_an_engine_name_must_be_ascii(client):
+    resp = client.post(
+        "/dt/register_session",
+        json={"config": {"engines": {"sité": {"endpoint_name": "ep2"}}}},
+    )
+
+    assert resp.status_code == 400
+    assert "ASCII identifier" in resp.text
+
+
+def test_losing_an_extra_engine_does_not_ask_to_recreate(caplog):
+    session = _sites()
+    session._endpoints = {"inference": "ep1", "site_b": "ep2", "site_c": "ep3"}
+
+    with caplog.at_level("WARNING"):
+        session.endpoints_lost({"ep3"})
+    assert "session stays usable" in caplog.text
+
+    caplog.clear()
+    with caplog.at_level("WARNING"):
+        session.endpoints_lost({"ep1"})
+    assert "must be recreated" in caplog.text
