@@ -1811,3 +1811,28 @@ def test_a_null_engine_entry_is_still_unconfigured(client):
     )
 
     assert resp.status_code == 200
+
+
+def test_default_engine_may_not_name_a_null_entry(client):
+    resp = client.post(
+        "/dt/register_session",
+        json={
+            "config": {
+                "engines": {"inference": {"endpoint_name": "ep1"}, "site_b": None},
+                "default_engine": "site_b",
+            }
+        },
+    )
+
+    assert resp.status_code == 400
+    assert "default_engine" in resp.text
+
+
+def test_an_endpoint_name_must_be_a_string(client):
+    resp = client.post(
+        "/dt/register_session",
+        json={"config": {"engines": {"site_b": {"endpoint_name": ["ep2"]}}}},
+    )
+
+    assert resp.status_code == 400
+    assert "must be a string" in resp.text
