@@ -168,5 +168,6 @@ Open questions for Andre:
    threshold), or just a sentence in the paper?
 3. Round 3b's merge into `paper/dtaas` (Andre's answer 5): this branch
    holds round 3b's commits up to `e660bb9` plus round 3c; merge this one
-   instead? Round 3b's branch has two more journal-only commits after
-   `e660bb9` (`b1bbaac`..`8d10e6f`: answers, Q3 check) not in this one.
+   instead? Round 3b's branch has one more journal-only commit after
+   `e660bb9` (`8d10e6f`: Andre's answers, the Q3 code check) not in this
+   one.
