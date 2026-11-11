@@ -164,9 +164,7 @@ class DTClient(PluginClient):
                     f"twin {twin_id} failed to initialize: {twin['last_error']}"
                 )
             if time.time() > deadline:
-                raise TimeoutError(
-                    f"twin {twin_id} still {state} after {timeout}s"
-                )
+                raise TimeoutError(f"twin {twin_id} still {state} after {timeout}s")
 
             time.sleep(POLL_INTERVAL)
 
@@ -208,7 +206,12 @@ class DTClient(PluginClient):
         engine: Optional[str] = None,
     ) -> str:
         return self._verb(
-            twin_id, "add_task", package, input_dtype, output_dtype, is_persistent,
+            twin_id,
+            "add_task",
+            package,
+            input_dtype,
+            output_dtype,
+            is_persistent,
             **_placed(engine),
         )["state"]
 
@@ -244,8 +247,14 @@ class DTClient(PluginClient):
         **kwargs: Any,
     ) -> str:
         return self._verb(
-            twin_id, "add_agent", package, input_dtype, output_dtype, *args,
-            **_placed(engine), **kwargs,
+            twin_id,
+            "add_agent",
+            package,
+            input_dtype,
+            output_dtype,
+            *args,
+            **_placed(engine),
+            **kwargs,
         )["state"]
 
     def add_input(
@@ -290,13 +299,16 @@ class DTClient(PluginClient):
         """
 
         if type(barrier) is not Barrier:
-            raise TypeError("only a plain Barrier can be sent to the service,"
-                            f" got {type(barrier).__name__}")
+            raise TypeError(
+                "only a plain Barrier can be sent to the service,"
+                f" got {type(barrier).__name__}"
+            )
 
         dtypes = [(dtype, hard) for dtype, hard in barrier.dtypes.items()]
 
-        return self._verb(twin_id, "add_barrier", barrier.name,
-                          barrier.is_hard_barrier, dtypes)["state"]
+        return self._verb(
+            twin_id, "add_barrier", barrier.name, barrier.is_hard_barrier, dtypes
+        )["state"]
 
     def add_data_split_task(
         self,
@@ -313,9 +325,14 @@ class DTClient(PluginClient):
         `output_dtypes`; a `None` entry emits nothing on that dtype.
         """
 
-        return self._verb(twin_id, "add_data_split_task", package,
-                          input_dtype, tuple(output_dtypes),
-                          **_placed(engine))["state"]
+        return self._verb(
+            twin_id,
+            "add_data_split_task",
+            package,
+            input_dtype,
+            tuple(output_dtypes),
+            **_placed(engine),
+        )["state"]
 
     def start(self, twin_id: str) -> str:
         """Start a twin.  Starting a running twin is a no-op."""
@@ -359,8 +376,9 @@ class DTClient(PluginClient):
 
         payload = {
             "verb": verb,
-            "payload": encode_checked({"args": args, "kwargs": kwargs},
-                                      f"{verb} payload"),
+            "payload": encode_checked(
+                {"args": args, "kwargs": kwargs}, f"{verb} payload"
+            ),
             "client": version_stamp(),
         }
 

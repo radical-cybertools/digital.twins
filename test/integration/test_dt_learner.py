@@ -56,18 +56,23 @@ def build_learner_twin(dt, twin, interval: float = 0.2):
     """sensor -> streaming learner, the standard dual-engine test twin."""
 
     dt.create_twin(twin)
-    dt.add_task(twin, dt.package(CountingSensor, interval=interval),
-                TRUTHY, SENSOR_DTYPE, is_persistent=True)
-    dt.add_investigator(twin, dt.package(LinearLearner), SENSOR_DTYPE,
-                        INFERENCE_DTYPE)
+    dt.add_task(
+        twin,
+        dt.package(CountingSensor, interval=interval),
+        TRUTHY,
+        SENSOR_DTYPE,
+        is_persistent=True,
+    )
+    dt.add_investigator(twin, dt.package(LinearLearner), SENSOR_DTYPE, INFERENCE_DTYPE)
     dt.start(twin)
 
 
 def infer(dt, twin, value=PROBE):
     """One inference through the twin, as the plain dict the task built."""
 
-    answer = dt.get_inference(twin, TypedData(SENSOR_DTYPE, value),
-                              INFERENCE_DTYPE, timeout=INFER_TIMEOUT)
+    answer = dt.get_inference(
+        twin, TypedData(SENSOR_DTYPE, value), INFERENCE_DTYPE, timeout=INFER_TIMEOUT
+    )
 
     return answer.data
 
@@ -84,14 +89,14 @@ def await_learned(dt, twin, timeout=LEARN_TIMEOUT):
         if answer["value"]:
             return answer
         if time.time() > deadline:
-            pytest.fail(f"twin {twin} never published a learned model: "
-                        f"{dt.twin(twin)}")
+            pytest.fail(f"twin {twin} never published a learned model: {dt.twin(twin)}")
         time.sleep(1)
 
 
 # ---------------------------------------------------------------------------
 # two engines, two endpoints
 # ---------------------------------------------------------------------------
+
 
 def test_learned_model_propagates_across_two_endpoints(
     dt_client, inference_endpoint, learning_endpoint, twin_id
@@ -123,13 +128,13 @@ def test_learned_model_propagates_across_two_endpoints(
     assert after["served_by"] == TASK_ENDPOINT
     assert after["trained_on"] == EXSITU_ENDPOINT
 
-    session = next(s for s in dt.admin_sessions()["sessions"]
-                   if s["sid"] == dt.sid)
+    session = next(s for s in dt.admin_sessions()["sessions"] if s["sid"] == dt.sid)
     assert session["engines"] == ["inference", "learning"]
 
 
-def test_a_learner_twin_stops_cleanly(dt_client, inference_endpoint,
-                                      learning_endpoint, twin_id):
+def test_a_learner_twin_stops_cleanly(
+    dt_client, inference_endpoint, learning_endpoint, twin_id
+):
     """The learner's lifetime is the twin's.
 
     `stop` is terminal and must not hang on a learner parked in a
@@ -148,8 +153,9 @@ def test_a_learner_twin_stops_cleanly(dt_client, inference_endpoint,
     assert dt.twin_close(twin_id) == "closed"
 
 
-def test_an_unconfigured_learning_role_aliases_inference(dt, inference_endpoint,
-                                                    twin_id):
+def test_an_unconfigured_learning_role_aliases_inference(
+    dt, inference_endpoint, twin_id
+):
     """Adding `'learning'` is a config-only change: a single-endpoint
     deployment keeps working, with one engine serving both roles."""
 
@@ -159,14 +165,14 @@ def test_an_unconfigured_learning_role_aliases_inference(dt, inference_endpoint,
     assert answer["served_by"] == TASK_ENDPOINT
     assert answer["trained_on"] == TASK_ENDPOINT
 
-    session = next(s for s in dt.admin_sessions()["sessions"]
-                   if s["sid"] == dt.sid)
+    session = next(s for s in dt.admin_sessions()["sessions"] if s["sid"] == dt.sid)
     assert session["engines"] == ["inference"]
 
 
 # ---------------------------------------------------------------------------
 # R8: a lost endpoint is visible, not silent
 # ---------------------------------------------------------------------------
+
 
 def test_a_lost_endpoint_fails_only_the_twins_that_used_it(
     dt_client, inference_endpoint, doomed_endpoint, twin_id
@@ -179,8 +185,9 @@ def test_a_lost_endpoint_fails_only_the_twins_that_used_it(
 
     plain = str(uuid.uuid4())
     dt.create_twin(plain)
-    dt.add_investigator(plain, dt.package(OffsetModel, offset=7),
-                        SENSOR_DTYPE, INFERENCE_DTYPE)
+    dt.add_investigator(
+        plain, dt.package(OffsetModel, offset=7), SENSOR_DTYPE, INFERENCE_DTYPE
+    )
     dt.start(plain)
 
     build_learner_twin(dt, twin_id)
@@ -196,8 +203,9 @@ def test_a_lost_endpoint_fails_only_the_twins_that_used_it(
     assert sibling["state"] == "running", sibling
     assert sibling["last_error"] is None
 
-    answer = dt.get_inference(plain, TypedData(SENSOR_DTYPE, 5),
-                              INFERENCE_DTYPE, timeout=INFER_TIMEOUT)
+    answer = dt.get_inference(
+        plain, TypedData(SENSOR_DTYPE, 5), INFERENCE_DTYPE, timeout=INFER_TIMEOUT
+    )
     assert answer.data == 12
 
     # The loss is announced once, but the dead engine is still cached in
@@ -209,12 +217,14 @@ def test_a_lost_endpoint_fails_only_the_twins_that_used_it(
     assert dt.twin(later)["state"] in ("ready", "running"), dt.twin(later)
 
     with pytest.raises(Exception, match="endpoint was lost"):
-        dt.add_investigator(later, dt.package(LinearLearner), SENSOR_DTYPE,
-                            INFERENCE_DTYPE)
+        dt.add_investigator(
+            later, dt.package(LinearLearner), SENSOR_DTYPE, INFERENCE_DTYPE
+        )
 
 
 def test_learning_as_default_engine_moves_unlabeled_tasks(
-        dt_client, inference_endpoint, learning_endpoint, twin_id):
+    dt_client, inference_endpoint, learning_endpoint, twin_id
+):
     """`default_engine: learning` (#27): the learner's own tasks keep
     their label, and everything unlabeled -- here the inference half --
     follows the default onto the learning endpoint."""
@@ -226,8 +236,7 @@ def test_learning_as_default_engine_moves_unlabeled_tasks(
     assert answer["served_by"] == EXSITU_ENDPOINT
     assert answer["trained_on"] == EXSITU_ENDPOINT
 
-    session = next(s for s in dt.admin_sessions()["sessions"]
-                   if s["sid"] == dt.sid)
+    session = next(s for s in dt.admin_sessions()["sessions"] if s["sid"] == dt.sid)
     assert session["default_engine"] == "learning"
 
     assert dt.twin_close(twin_id) == "closed"

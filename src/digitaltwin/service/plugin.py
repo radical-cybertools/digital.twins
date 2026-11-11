@@ -227,10 +227,13 @@ class PluginDT(Plugin):
 
         telemetry = (config or {}).get("telemetry")
         if telemetry is not None and not (
-                isinstance(telemetry, dict) and set(telemetry) == {"checkpoint_path"}
-                and isinstance(telemetry["checkpoint_path"], str)):
-            raise http_exception(ValueError(
-                "'telemetry' must be {'checkpoint_path': <directory>}"))
+            isinstance(telemetry, dict)
+            and set(telemetry) == {"checkpoint_path"}
+            and isinstance(telemetry["checkpoint_path"], str)
+        ):
+            raise http_exception(
+                ValueError("'telemetry' must be {'checkpoint_path': <directory>}")
+            )
 
         # the one validation point, and for the deployment default too.
         # By key presence: an explicit null is not "unset" -- it would
@@ -241,15 +244,19 @@ class PluginDT(Plugin):
             named = list(engines) if isinstance(engines, dict) else []
             allowed = (*ROLES, *(n for n in named if n not in ROLES))
             if default not in allowed:
-                raise http_exception(ValueError(
-                    f"'default_engine' must be one of {allowed},"
-                    f" got {default!r}"))
+                raise http_exception(
+                    ValueError(
+                        f"'default_engine' must be one of {allowed}, got {default!r}"
+                    )
+                )
         else:
             default = default_engine_setting()
             if default not in ROLES:
-                raise http_exception(ValueError(
-                    f"'default_engine' must be one of {ROLES},"
-                    f" got {default!r}"))
+                raise http_exception(
+                    ValueError(
+                        f"'default_engine' must be one of {ROLES}, got {default!r}"
+                    )
+                )
 
         owner = self._request_owner(request)
         sid, lifetime, ttl = self._normalize_session_policy(data)
@@ -302,8 +309,9 @@ class PluginDT(Plugin):
         # `workflow_scope`: true (group under the twin id) or a name (#36)
         scope = (config or {}).get("workflow_scope")
         if scope is not None and not isinstance(scope, (bool, str)):
-            raise http_exception(ValueError(
-                "'workflow_scope' must be a boolean or a string"))
+            raise http_exception(
+                ValueError("'workflow_scope' must be a boolean or a string")
+            )
 
         return await self._forward(
             sid, DTSession.twin_create, twin_id=twin_id, config=config
@@ -424,8 +432,7 @@ class PluginDT(Plugin):
         # read per request rather than cached: these are a handful of KiB,
         # asked for once per page load, and editing one should not need a
         # broker restart (the gateway's own `ui_module` cache does)
-        return Response(body, media_type=media,
-                        headers={"cache-control": "no-store"})
+        return Response(body, media_type=media, headers={"cache-control": "no-store"})
 
     # -- observability ------------------------------------------------------
 
@@ -472,7 +479,9 @@ class PluginDT(Plugin):
             if failed:
                 log.warning(
                     "[dt] session %s: endpoint(s) %s lost -- twins failed: %s",
-                    sid, ", ".join(sorted(lost)), ", ".join(failed),
+                    sid,
+                    ", ".join(sorted(lost)),
+                    ", ".join(failed),
                 )
 
     # -- the data plane -----------------------------------------------------
@@ -557,8 +566,10 @@ class PluginDT(Plugin):
                     if self._stream_broker is None or self._stream_broker.is_alive():
                         continue
 
-                    log.warning("[dt] stream broker died -- respawning on %s / %s",
-                                *self._stream_addrs)
+                    log.warning(
+                        "[dt] stream broker died -- respawning on %s / %s",
+                        *self._stream_addrs,
+                    )
                     await self._stream_broker.stop()
                     self._stream_broker = ZMQ_BrokerProcess(*self._stream_addrs)
                     self._stream_addrs = await self._stream_broker.start()
@@ -650,11 +661,14 @@ def _check_engines(engines: Any) -> None:
 
     for name, cfg in engines.items():
         if not isinstance(name, str) or not name.isidentifier():
-            raise http_exception(ValueError(
-                f"engine name {name!r} must be an identifier"))
+            raise http_exception(
+                ValueError(f"engine name {name!r} must be an identifier")
+            )
         if not isinstance(cfg, dict):
-            raise http_exception(ValueError(
-                f"engine {name!r}: config must be an object"))
+            raise http_exception(
+                ValueError(f"engine {name!r}: config must be an object")
+            )
         if name not in ROLES and not (cfg.get("endpoint_name") or cfg.get("pool")):
-            raise http_exception(ValueError(
-                f"engine {name!r} must name an 'endpoint_name' or a 'pool'"))
+            raise http_exception(
+                ValueError(f"engine {name!r} must name an 'endpoint_name' or a 'pool'")
+            )

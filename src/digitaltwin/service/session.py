@@ -38,8 +38,11 @@ except ImportError as _exc:  # the 'learn' extra (ROSE) is optional
     # logged, not swallowed: without this, a service built *with* the
     # extra but with a broken ROSE looks identical to one built without
     # it -- the learner twins just quietly get one engine
-    log.info("[dt] ex-situ learning unavailable (%s); install the 'learn'"
-             " extra to host StreamingLearnerInvestigator twins", _exc)
+    log.info(
+        "[dt] ex-situ learning unavailable (%s); install the 'learn'"
+        " extra to host StreamingLearnerInvestigator twins",
+        _exc,
+    )
     StreamingLearnerInvestigator = None
 
 # The two reserved roles.  They name function, not placement: every twin
@@ -209,13 +212,15 @@ class TwinInstance:
             # uid -> submitting component's class name, for the same ring.
             # A uid absent here is unattributed, not wrong -- the dashboard
             # shows a dash for it.
-            "task_components": ({} if self.runtime is None
-                                else self.runtime.task_components()),
+            "task_components": (
+                {} if self.runtime is None else self.runtime.task_components()
+            ),
             # The graph itself: what the dashboard draws its twin cards
             # from.  Class names, kinds, dtypes and model-parameter names
             # only -- never a model, so the entry stays poll-sized.
-            "components": ([] if self.runtime is None
-                           else self.runtime.describe()["components"]),
+            "components": (
+                [] if self.runtime is None else self.runtime.describe()["components"]
+            ),
             # The twin's latest visual output (a small data-URI image a
             # component rendered), id-tagged so the dashboard dedups and
             # builds its own gallery.  `None` until something is recorded.
@@ -354,8 +359,11 @@ class DTSession(PluginSession):
         return self._twin_state(twin)
 
     async def twin_call(
-        self, twin_id: str, verb: str, payload: Optional[str] = None,
-        stamp: Optional[dict] = None
+        self,
+        twin_id: str,
+        verb: str,
+        payload: Optional[str] = None,
+        stamp: Optional[dict] = None,
     ) -> dict:
         """Apply exactly one graph verb to one twin.
 
@@ -406,8 +414,9 @@ class DTSession(PluginSession):
 
         return {**self._twin_state(twin), **(extra or {})}
 
-    def _decode_call(self, verb: str, payload: Optional[str],
-                     stamp: Optional[dict]) -> tuple:
+    def _decode_call(
+        self, verb: str, payload: Optional[str], stamp: Optional[dict]
+    ) -> tuple:
         """Version-check and unpickle one verb's arguments."""
 
         try:
@@ -423,8 +432,7 @@ class DTSession(PluginSession):
             ) from exc
 
         if not isinstance(call, dict):
-            raise HTTPException(
-                status_code=400, detail=f"malformed {verb} payload")
+            raise HTTPException(status_code=400, detail=f"malformed {verb} payload")
 
         return tuple(call.get("args") or ()), dict(call.get("kwargs") or {})
 
@@ -437,8 +445,7 @@ class DTSession(PluginSession):
         """
 
         if not self.is_active:
-            raise HTTPException(
-                status_code=410, detail=f"session {self.sid} is closed")
+            raise HTTPException(status_code=410, detail=f"session {self.sid} is closed")
 
     # -- verbs --------------------------------------------------------------
 
@@ -588,7 +595,8 @@ class DTSession(PluginSession):
         configured ones in config order."""
 
         return [ROLE_INFERENCE] + [
-            name for name in (self.config.get("engines") or {})
+            name
+            for name in (self.config.get("engines") or {})
             if name != ROLE_INFERENCE and self.configured(name)
         ]
 
@@ -611,12 +619,12 @@ class DTSession(PluginSession):
         if name != ROLE_INFERENCE and not self.configured(name):
             raise ValueError(
                 f"engine {name!r} is not configured for session {self.sid}"
-                f" (configured: {', '.join(self.engine_names())})")
+                f" (configured: {', '.join(self.engine_names())})"
+            )
 
         endpoint = self._engine_endpoint(name)
         if endpoint in self._lost:
-            raise RuntimeError(
-                f"engine {name!r} endpoint was lost ({endpoint})")
+            raise RuntimeError(f"engine {name!r} endpoint was lost ({endpoint})")
 
         if name not in self._backends:
             raise RuntimeError(f"engine {name!r} is not built")
@@ -697,8 +705,7 @@ class DTSession(PluginSession):
         endpoint = self._engine_endpoint(name)
         if endpoint in self._lost:
             raise RuntimeError(
-                f"engine {name!r} endpoint was lost ({endpoint});"
-                f" recreate the session"
+                f"engine {name!r} endpoint was lost ({endpoint}); recreate the session"
             )
 
         # per-role lock: a 150 s 'learning' backend init must not serialize
@@ -756,7 +763,8 @@ class DTSession(PluginSession):
             # own it, so it must not outlive its own construction
             await self._shutdown_engine(flow)
             raise RuntimeError(
-                f"session {self.sid} closed while role {name!r} was building")
+                f"session {self.sid} closed while role {name!r} was building"
+            )
 
         self._backends[name] = backend
         if name == ROLE_INFERENCE:
@@ -774,8 +782,7 @@ class DTSession(PluginSession):
         try:
             await asyncio.wait_for(flow.shutdown(), ENGINE_SHUTDOWN_TIMEOUT)
         except Exception as exc:
-            log.warning("[dt] session %s: engine shutdown: %s",
-                        self.sid, exc)
+            log.warning("[dt] session %s: engine shutdown: %s", self.sid, exc)
 
         # after the shutdown, which ends the last tasks, and asyncflow does
         # not stop telemetry itself: the checkpoint file is written here
@@ -784,18 +791,18 @@ class DTSession(PluginSession):
             try:
                 await asyncio.wait_for(telemetry.stop(), TELEMETRY_STOP_TIMEOUT)
             except Exception as exc:
-                log.warning("[dt] session %s: telemetry stop: %s",
-                            self.sid, exc)
+                log.warning("[dt] session %s: telemetry stop: %s", self.sid, exc)
 
     async def _create_backend(self, name: str):
-        cfg  = self._engine_config(name)
+        cfg = self._engine_config(name)
         pool = cfg.get("pool")
 
         log.info(
             "[dt] session %s building %r backend on %s",
             self.sid,
             name,
-            f"pool {pool!r}" if pool
+            f"pool {pool!r}"
+            if pool
             else f"endpoint {cfg.get('endpoint_name') or '<auto>'}",
         )
 
@@ -804,7 +811,7 @@ class DTSession(PluginSession):
             endpoint_name=cfg.get("endpoint_name"),
             backends=cfg.get("backends") or DEFAULT_BACKENDS,
             batch_window=0,  # per-call latency beats batching for inference
-            name=name,       # the asyncflow routing label: task backend=<role>
+            name=name,  # the asyncflow routing label: task backend=<role>
         )
 
         params = inspect.signature(OrbitExecutionBackend.__init__).parameters
@@ -815,8 +822,7 @@ class DTSession(PluginSession):
         # session (`engine` caches, `_lost` forbids rebuilds).  Guarded so
         # a rhapsody without the parameter keeps working.
         if "participant_name" in params:
-            kwargs["participant_name"] = (
-                f"rhapsody.{self.sid.split('.')[-1]}.{name}")
+            kwargs["participant_name"] = f"rhapsody.{self.sid.split('.')[-1]}.{name}"
 
         if pool:
             # A dispatcher-managed pool: the task dispatcher runs on the
@@ -837,7 +843,8 @@ class DTSession(PluginSession):
             if "pool" not in params:
                 raise RuntimeError(
                     f"engine {name!r} names pool {pool!r}, but the installed"
-                    " rhapsody's OrbitExecutionBackend has no pool support")
+                    " rhapsody's OrbitExecutionBackend has no pool support"
+                )
             session_kwargs: dict = {"sid": self.sid}
             if self.config.get("pools"):
                 session_kwargs["pools"] = self.config["pools"]
@@ -854,9 +861,9 @@ class DTSession(PluginSession):
         # none).  A pool-backed role records its pool instead -- no lost
         # endpoint ever matches it, which is exactly the R8 opt-out.
         self._endpoints[name] = (
-            f"pool:{pool}" if pool
-            else getattr(backend, "_endpoint_name", None)
-            or cfg.get("endpoint_name")
+            f"pool:{pool}"
+            if pool
+            else getattr(backend, "_endpoint_name", None) or cfg.get("endpoint_name")
         )
 
         return backend
@@ -897,8 +904,11 @@ class DTSession(PluginSession):
             return ()
 
         self._lost.update(gone.values())
-        log.warning("[dt] session %s lost endpoint(s) %s -- it must be"
-                    " recreated", self.sid, ", ".join(sorted(gone.values())))
+        log.warning(
+            "[dt] session %s lost endpoint(s) %s -- it must be recreated",
+            self.sid,
+            ", ".join(sorted(gone.values())),
+        )
 
         failed = []
         for twin in self.twins.values():
@@ -961,7 +971,8 @@ class DTSession(PluginSession):
             ROLE_INFERENCE: self._engine_endpoint(ROLE_INFERENCE),
             ROLE_LEARNING: (
                 self._engine_endpoint(ROLE_LEARNING)
-                if self.configured(ROLE_LEARNING) else None
+                if self.configured(ROLE_LEARNING)
+                else None
             ),
         }
         # further, named engines after the two roles (the dashboard draws
@@ -1007,7 +1018,8 @@ class DTSession(PluginSession):
                 # twin never reaches `ready` on a dead default engine.
                 default = self.default_engine()
                 names = [
-                    name for name in self.engine_names()
+                    name
+                    for name in self.engine_names()
                     if name in (ROLE_INFERENCE, default)
                     or self._engine_endpoint(name) not in self._lost
                 ]
@@ -1033,8 +1045,7 @@ class DTSession(PluginSession):
                 # twin's tasks under its id, a string under that name
                 scope = twin.config.get("workflow_scope")
                 if scope:
-                    runtime.workflow_id = (twin.twin_id if scope is True
-                                           else str(scope))
+                    runtime.workflow_id = twin.twin_id if scope is True else str(scope)
 
                 twin.ready(runtime, stream)
 
@@ -1131,7 +1142,8 @@ class DTSession(PluginSession):
 
         registered = 0
         decorators = [
-            name for name in ("function_task", "executable_task", "prompt_task")
+            name
+            for name in ("function_task", "executable_task", "prompt_task")
             if hasattr(flow, name)
         ]
         originals = {name: getattr(flow, name) for name in decorators}
