@@ -33,6 +33,7 @@ bypasses the queues; the harness starts an embedded ZMQ broker.
 
 import argparse
 import asyncio
+import gc
 import itertools
 import json
 import os
@@ -273,6 +274,8 @@ def provenance(args, backend_label) -> dict:
         "backend": backend_label,
         "notify_window": os.environ.get("RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW"),
         "slurm_job": os.environ.get("SLURM_JOB_ID"),
+        "gc_enabled": gc.isenabled(),  # round 3c: r3b/nogc.py may change it
+        "gc_threshold": gc.get_threshold(),
         "args": vars(args),
     }
 

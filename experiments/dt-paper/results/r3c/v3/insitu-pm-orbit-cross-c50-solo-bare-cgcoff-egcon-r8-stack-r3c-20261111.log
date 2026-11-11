@@ -1,0 +1,9 @@
+nogc: gc disabled
+backend: orbit dt_r3c_v3_ep1
+bare asyncflow task          n=1000  mean=   2.80ms  p50=   2.68  p90=   2.93  p99=   3.39  max=  75.14
+bare asyncflow task          50 concurrent requests in 49.0ms (1021 req/s)
+bare asyncflow task          50 concurrent requests in 48.0ms (1042 req/s)
+bare asyncflow task          50 concurrent requests in 45.9ms (1089 req/s)
+bare asyncflow task          50 concurrent requests in 48.8ms (1025 req/s)
+bare asyncflow task          50 concurrent requests in 47.5ms (1053 req/s)
+results: experiments/dt-paper/results/r3c/v3/insitu-pm-orbit-cross-c50-solo-bare-cgcoff-egcon-r8-stack-r3c-20261111.json

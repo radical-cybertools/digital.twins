@@ -1,0 +1,9 @@
+nogc: gc disabled
+backend: orbit dt_r3c_v3_ep1
+DT investigator              n=1000  mean=   2.94ms  p50=   2.90  p90=   3.22  p99=   3.61  max=   4.19
+DT investigator              50 concurrent requests in 47.6ms (1051 req/s)
+DT investigator              50 concurrent requests in 48.1ms (1039 req/s)
+DT investigator              50 concurrent requests in 47.5ms (1053 req/s)
+DT investigator              50 concurrent requests in 49.9ms (1002 req/s)
+DT investigator              50 concurrent requests in 47.0ms (1063 req/s)
+results: experiments/dt-paper/results/r3c/v3/insitu-pm-orbit-cross-c50-solo-investigator-cgcoff-egcoff-r9-stack-r3c-20261111.json
