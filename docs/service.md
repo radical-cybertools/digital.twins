@@ -102,7 +102,67 @@ SESSION_CONFIG = {
   broker's `DT_DEFAULT_ENGINE` sets this for a whole deployment, and the
   session config wins.
 
-Both engines are built once per session and shared by its twins.
+Every configured engine is built once per session, when a twin is
+created, and shared by the session's twins.
+
+### Components on several sites
+
+A session can configure further, named engines, one per site, and place a
+twin's components on them:
+
+```python
+SESSION_CONFIG = {
+    'engines': {
+        'inference': {'endpoint_name': 'pm_node_a'},
+        'site_b':    {'endpoint_name': 'pm_node_b'},
+        'site_c':    {'endpoint_name': 'remote_c'},
+    },
+}
+
+dt.add_investigator(twin, dt.package(FieldModel), SENSOR, FIELD, engine='site_b')
+```
+
+- An engine name is an identifier.  Every engine other than `inference`
+  and `learning` names an `endpoint_name` or a `pool`.
+- `engine=` on `add_task`, `add_investigator`, `add_agent` and
+  `add_data_split_task` places every task the component registers while
+  it is built on that engine.  A component's `main_loop` cannot take a
+  keyword argument named `engine`: the service consumes it.
+- A task decorated with its own `backend='site_c'` label keeps it.  That
+  is how a component that builds other components, an agent with its
+  investigators for example, places them on different sites; the site
+  names reach it as `package()` keyword arguments.
+- A `StreamingLearnerInvestigator` placed with `engine=` runs its learner
+  tasks on `learning` if configured, else on the placed engine.
+- `default_engine` may also name a configured engine.
+  `DT_DEFAULT_ENGINE` stays limited to `inference` and `learning`.
+- An unknown or unconfigured engine name is refused, and so is an engine
+  whose endpoint was lost.
+
+Limits:
+
+- Tasks registered after the component was built (in `main_loop`) run on
+  the default engine unless they carry a `backend=` label.  Such a late
+  label is neither checked nor bound to the twin, so losing that site does
+  not fail the twin: label tasks in `__init__`.  A `backend` passed
+  positionally to a task decorator is not checked.  Placement relabels the session's
+  task decorators while a component is built; a task registered from
+  another thread at that moment would be labelled too, so register tasks
+  on the event loop.
+- Losing an engine's endpoint fails the twins whose components use it.
+  Every twin uses the default engine, so losing that one fails them all.
+  After losing the default or `inference`, no new twin can start and the
+  session has to be recreated.  Losing another engine fails only the
+  twins placed there; new twins that do not use it still start.
+- Every configured engine is built when a twin is created, so a site that
+  is unreachable fails every new twin: until its loss is detected if it
+  was connected once, and for good if it never connected (as an
+  unreachable `learning` endpoint does).
+- The dashboard draws lanes for `inference` and `learning` only; tasks on
+  other engines do not appear there.
+- Client and service must run the same `digitaltwin` version (0.1.0
+  introduced `engine=`).  The check needs installed packages: run from a
+  source tree, both sides report `unknown` and the check passes.
 
 ## Feeding a twin: external channels
 

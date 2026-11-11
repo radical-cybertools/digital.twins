@@ -202,10 +202,11 @@ the twin's input stream both feeds the learner and is served by the
 inference task, and each window of samples retrains the model the
 inference task runs with.
 
-That class is the only thing that labels tasks for an engine -- there is
-no `engine=` argument.  The service recognises it by subclass check and
-hands it two role backends: its learner tasks carry the `'learning'`
-label, and its inference stays on the default role.
+The service recognises that class by subclass check and hands it two
+role backends: its learner tasks carry the `'learning'` label, and its
+inference stays on the default role.  Other components can be placed on a
+named engine with `engine=` (see "Components on several sites" in
+`docs/service.md`).
 
 ```python
 dt = rt.get_plugin('broker', 'dt', config={'engines': {
