@@ -289,14 +289,17 @@ def fig_e1_inprocess(fig):
 
 
 def fig_e1_pool(fig):
-    """E1: burst throughput by process pool size, local pool, c=500."""
+    """E1: burst throughput by process pool size, local pool, c=500.
+
+    Round 3c V1: all rows in one process, five bursts each, the median of
+    bursts 2-5 (a single burst depends on where the client's garbage
+    collector runs, round 3b U4)."""
     pools = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-    key = "concurrent_req_per_s"
     vals = {r: [] for r in ROWS}
     for w in pools:
-        runs = SRC.load(f"s1/p1/insitu-pm-pool{w}-c500-r*-stack-*.json")
+        runs = SRC.load(f"r3c/v1/insitu-pm-pool{w}-c500-r*-stack-r3c-*.json")
         for r in ROWS:
-            vals[r].append(row_values(runs, key)[r])
+            vals[r].append([later_bursts(run, r) for run in runs])
     ax = fig.subplots()
     lines(ax, [str(w) for w in pools], vals)
     ax.set_xlabel("process pool size")
@@ -635,14 +638,22 @@ def fig_e3_sites(fig):
     ):
         loaded[label] = SRC.load(pattern)
     # the N values every series measured
-    ns = sorted(set.intersection(*(
-        {p["n"] for r in runs for p in r["points"] if "error" not in p}
-        for runs in loaded.values()
-    )))
+    ns = sorted(
+        set.intersection(
+            *(
+                {p["n"] for r in runs for p in r["points"] if "error" not in p}
+                for runs in loaded.values()
+            )
+        )
+    )
     series = {
         label: [
-            [p["req_per_s_bursts_2_5"] for r in runs for p in r["points"]
-             if p.get("n") == n and "error" not in p]
+            [
+                p["req_per_s_bursts_2_5"]
+                for r in runs
+                for p in r["points"]
+                if p.get("n") == n and "error" not in p
+            ]
             for n in ns
         ]
         for label, runs in loaded.items()
@@ -655,22 +666,53 @@ def fig_e3_sites(fig):
             "hand-wired, all on one site": COLORS["extra"],
         }
     )
-    ax = fig.subplots()
-    lines(ax, [str(n) for n in ns], series)
-    ax.set_xlabel("investigators (sites)")
-    ax.set_ylabel("throughput [req/s]")
-    ax.set_ylim(bottom=0)
-    ax.legend(frameon=False, fontsize=6)
+    ax1, ax2 = fig.subplots(1, 2, gridspec_kw={"width_ratios": [3, 2]})
+    lines(ax1, [str(n) for n in ns], series)
+    ax1.set_xlabel("investigators (sites)")
+    ax1.set_ylabel("throughput [req/s]")
+    ax1.set_ylim(bottom=0)
+    ax1.set_title("(a) Perlmutter nodes")
+    fig.legend(
+        *ax1.get_legend_handles_labels(),
+        loc="outside lower center",
+        ncol=2,
+        frameon=False,
+        fontsize=6,
+    )
+
+    # round 4 W3: broker and DT service on radical.3, three Perlmutter
+    # sites, the fourth site on radical.3
+    remote = SRC.load("r4/remote/sites-spread-r*-r4-*.json")
+    COLORS["DT, through radical.3"] = COLORS["bare"]
+    lines(
+        ax2,
+        [str(n) for n in ns],
+        {
+            "DT, through radical.3": [
+                [
+                    p["req_per_s_bursts_2_5"]
+                    for r in remote
+                    for p in r["points"]
+                    if p.get("n") == n and "error" not in p
+                ]
+                for n in ns
+            ]
+        },
+    )
+    ax2.set_xlabel("investigators (sites)")
+    ax2.set_ylim(bottom=0)
+    ax2.set_title("(b) across facilities")
 
 
 # figures whose results are not in yet: rendered only with --only
-PENDING = {"e3-sites": (fig_e3_sites, 2.1)}
+PENDING = {}
 
 FIGURES = {
     "e1-paths": (fig_e1_paths, 2.3),
     "e1-inprocess": (fig_e1_inprocess, 2.1),
     "e1-pool": (fig_e1_pool, 2.0),
     "e1-exsitu": (fig_e1_exsitu, 2.0),
+    "e3-sites": (fig_e3_sites, 2.5),
     "e2-scaling": (fig_e2, 2.0),
     "e2-agents-broker": (fig_e2_agents, 2.1),
     "e4-propagation": (fig_e4, 2.1),
