@@ -1,0 +1,274 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm3/orbit-logs/broker-r3c-v3-61137685.log
+[Broker] using     cert  at /pscratch/sd/m/merzky/dt-pm3/tls/r3c-v3-61137685/broker_cert.pem
+[Broker] using     token from $RADICAL_ORBIT_BROKER_TOKEN
+[Broker] listening       on https://10.249.3.2:8131
+
+  On Client:
+    export RADICAL_ORBIT_BROKER_URL=https://10.249.3.2:8131
+    export RADICAL_ORBIT_BROKER_TOKEN=<the configured token>
+    mkdir -p ~/.radical/orbit && scp 10.249.3.2:/pscratch/sd/m/merzky/dt-pm3/tls/r3c-v3-61137685/broker_cert.pem ~/.radical/orbit/broker_cert.pem
+
+  On Endpoint:
+    export RADICAL_ORBIT_BROKER_URL=https://10.249.3.2:8131
+    mkdir -p ~/.radical/orbit && scp 10.249.3.2:/pscratch/sd/m/merzky/dt-pm3/tls/r3c-v3-61137685/broker_cert.pem ~/.radical/orbit/broker_cert.pem
+
+INFO:     Started server process [2347740]
+INFO:     Waiting for application startup.
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['dt']
+INFO [PluginHost] Loaded plugin: dt
+INFO [Broker] hosted plugins: ['dt']
+INFO:     Application startup complete.
+INFO:     Uvicorn running on https://10.249.3.2:8131 (Press CTRL+C to quit)
+INFO:     10.249.3.1:55768 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:47920 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48836 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48858 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:42688 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:42704 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48784 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48814 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:46760 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:46776 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:55842 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:55860 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:44436 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:44448 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:41162 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:41194 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:54060 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:42456 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:42462 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:34398 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:34430 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:50476 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:50484 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:35996 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:36006 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49894 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49916 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:44904 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:44922 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:46738 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:46760 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.1:52646 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49454 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49482 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:38026 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49516 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49538 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:57596 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:57612 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:47738 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:47762 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:53468 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:53486 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:51106 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:51120 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:47470 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:47494 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:57406 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:57424 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:51784 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:51802 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:52844 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:52854 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:45338 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:45360 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:36912 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:36922 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:47242 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:47264 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:60482 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:60486 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:45936 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.1:36358 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:55950 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48672 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48686 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48278 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48300 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:42200 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:56012 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:56024 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:43394 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:43410 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:36628 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:36658 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:58918 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:58922 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:60444 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:60472 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:60448 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:60474 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:45916 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:45938 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:39208 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:39230 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:60576 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:60604 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:52772 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:52780 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:53320 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:53350 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:40988 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:41008 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.1:53600 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:53502 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:53522 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:52888 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:52904 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:39038 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:33186 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:33196 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:38198 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:38216 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:42320 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:42350 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:34890 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:34902 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48066 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48076 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48878 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:48892 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49530 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49550 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:38838 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:38866 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:58244 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:58260 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:41680 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:41710 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:45214 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:50080 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:50098 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49860 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.3.2:49872 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2347740]

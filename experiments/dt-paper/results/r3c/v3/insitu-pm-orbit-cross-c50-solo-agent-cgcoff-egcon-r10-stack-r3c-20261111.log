@@ -1,0 +1,9 @@
+nogc: gc disabled
+backend: orbit dt_r3c_v3_ep1
+DT agent + selector          n=1000  mean=   2.86ms  p50=   2.74  p90=   3.06  p99=   3.61  max=  71.18
+DT agent + selector          50 concurrent requests in 49.1ms (1018 req/s)
+DT agent + selector          50 concurrent requests in 49.0ms (1020 req/s)
+DT agent + selector          50 concurrent requests in 48.2ms (1038 req/s)
+DT agent + selector          50 concurrent requests in 47.8ms (1047 req/s)
+DT agent + selector          50 concurrent requests in 49.2ms (1017 req/s)
+results: experiments/dt-paper/results/r3c/v3/insitu-pm-orbit-cross-c50-solo-agent-cgcoff-egcon-r10-stack-r3c-20261111.json

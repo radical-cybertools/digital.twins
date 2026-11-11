@@ -16,6 +16,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 3c`.
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
 | 61137684 | r3c-v12 | m5290 | 1 | 00:10:30 | 0.175 | 0.17 | 0.00 |
+| 61137685 | r3c-v3 | m5290 | 2 | 00:12:04 | 0.402 | 0.58 | 0.00 |
 
 ## Setup (2026-11-11 00:20)
 
@@ -85,3 +86,31 @@ Same job, after V1 on the same node (`results/r3c/v2/`), 15 runs, every rc
   3-12% on bursts 2-5 at its default threshold, more for the DT rows (which
   allocate more per request). Decision: report both as the finding; no
   further runs (the section asks for this check only).
+
+## V3: the rare slow first burst through ORBIT (done, 2026-11-11 00:28)
+
+Job 61137685 (r3c-v3, debug, 2 nodes; `r3c/run_v3.sh`, `results/r3c/v3/`).
+U2's cross-node layout, c=50, rows bare / investigator / agent each in its
+own process, 10 repeats per row, 5 bursts each, four settings, a fresh
+endpoint per setting. 120 runs, every rc 0; isolation check empty. Client
+GC state in each JSON's provenance (`gc_enabled`); the endpoint's console
+log shows `nogc: gc disabled` for both endpoint-off settings. Table
+`v3-count-stack-r3c-20261111.md` (`r3c/v3_count.py`).
+
+| client GC | endpoint GC | first bursts < 600 req/s | which | all bursts < 600 | bursts 2-5 median |
+|---|---|---|---|---|---|
+| on | on | 2 of 30 | bare r1 381, investigator r6 406 | 6 of 150 | 1014 |
+| off | on | 2 of 30 | bare r1 387, investigator r6 464 | 7 of 150 | 1038 |
+| on | off | 1 of 30 | bare r2 476 | 1 of 150 | 1030 |
+| off | off | 0 of 30 | - | 0 of 150 | 1026 |
+
+- Turning the client's collector off changes nothing (2 / 6 -> 2 / 7).
+  Turning the endpoint's off removes them (2 / 6 -> 1 / 1, and 0 / 0 with
+  both off). With the endpoint's GC on, the slow first bursts land on the
+  same runs in both settings (bare r1, investigator r6): the same point in a
+  fresh endpoint's lifetime, as collections at fixed allocation counts would.
+- Finding: the rare slow burst is the endpoint process's cyclic garbage
+  collector. Counts are small (30 first bursts per setting), so this is a
+  consistent pattern, not a statistical test; per the section, no further
+  digging.
+- Bursts 2-5 median 1014-1038 req/s in every setting (U2 solo c=50: 1010).
