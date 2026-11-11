@@ -628,9 +628,10 @@ class DTSession(PluginSession):
                 f" (configured: {', '.join(self.engine_names())})"
             )
 
-        endpoint = self._engine_endpoint(name)
-        if endpoint in self._lost:
-            raise RuntimeError(f"engine {name!r} endpoint was lost ({endpoint})")
+        if self._is_lost(name):
+            raise RuntimeError(
+                f"engine {name!r} endpoint was lost ({self._engine_endpoint(name)})"
+            )
 
         if name not in self._backends:
             raise RuntimeError(f"engine {name!r} is not built")
@@ -648,6 +649,11 @@ class DTSession(PluginSession):
         except BaseException:
             twin.engines = before
             raise
+
+    def _is_lost(self, name: str) -> bool:
+        """Did ORBIT declare engine `name`'s endpoint lost (R8)?"""
+
+        return self._engine_endpoint(name) in self._lost
 
     def _check_engine(self, engine: Optional[str]) -> None:
         """`engine=` on a verb: a non-empty name, usable now."""
@@ -722,10 +728,10 @@ class DTSession(PluginSession):
         # silence -- the very failure mode R8 detection exists to remove.
         # (`_init_twin` skips a lost extra engine a new twin does not need;
         # the root and the default engine still come through here.)
-        endpoint = self._engine_endpoint(name)
-        if endpoint in self._lost:
+        if self._is_lost(name):
             raise RuntimeError(
-                f"engine {name!r} endpoint was lost ({endpoint}); recreate the session"
+                f"engine {name!r} endpoint was lost"
+                f" ({self._engine_endpoint(name)}); recreate the session"
             )
 
         # per-role lock: a 150 s 'learning' backend init must not serialize
@@ -1044,8 +1050,7 @@ class DTSession(PluginSession):
                 names = [
                     name
                     for name in self.engine_names()
-                    if name in (ROLE_INFERENCE, default)
-                    or self._engine_endpoint(name) not in self._lost
+                    if name in (ROLE_INFERENCE, default) or not self._is_lost(name)
                 ]
 
                 flow, *_ = await asyncio.gather(*map(self.engine, names))

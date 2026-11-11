@@ -142,19 +142,24 @@ dt.add_investigator(twin, dt.package(FieldModel), SENSOR, FIELD, engine='site_b'
 Limits:
 
 - Tasks registered after the component was built (in `main_loop`) run on
-  the default engine unless they carry a `backend=` label.  A `backend`
-  passed positionally to a task decorator is not checked.
+  the default engine unless they carry a `backend=` label.  Such a late
+  label is neither checked nor bound to the twin, so losing that site does
+  not fail the twin: label tasks in `__init__`.  A `backend` passed
+  positionally to a task decorator is not checked.
 - Losing an engine's endpoint fails the twins whose components use it.
   Every twin uses the default engine, so losing that one fails them all.
   After losing the default or `inference`, no new twin can start and the
   session has to be recreated.  Losing another engine fails only the
   twins placed there; new twins that do not use it still start.
-- Every configured engine is built when a twin is created, so an
-  unreachable site fails every new twin until its loss is detected.
+- Every configured engine is built when a twin is created, so a site that
+  is unreachable fails every new twin: until its loss is detected if it
+  was connected once, and for good if it never connected (as an
+  unreachable `learning` endpoint does).
 - The dashboard draws lanes for `inference` and `learning` only; tasks on
   other engines do not appear there.
 - Client and service must run the same `digitaltwin` version (0.1.0
-  introduced `engine=`).
+  introduced `engine=`).  The check needs installed packages: run from a
+  source tree, both sides report `unknown` and the check passes.
 
 ## Feeding a twin: external channels
 

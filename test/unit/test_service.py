@@ -1798,3 +1798,16 @@ def test_losing_an_extra_engine_does_not_ask_to_recreate(caplog):
     with caplog.at_level("WARNING"):
         session.endpoints_lost({"ep1"})
     assert "must be recreated" in caplog.text
+
+
+def test_a_null_engine_entry_is_still_unconfigured(client):
+    resp = client.post(
+        "/dt/register_session",
+        json={
+            "config": {
+                "engines": {"inference": {"endpoint_name": "ep1"}, "learning": None}
+            }
+        },
+    )
+
+    assert resp.status_code == 200
