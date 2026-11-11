@@ -661,6 +661,8 @@ def _check_engines(engines: Any) -> None:
             raise http_exception(
                 ValueError(f"engine name {name!r} must be an ASCII identifier")
             )
+        if cfg is None:
+            continue  # unconfigured, as before (`_engine_config`)
         if not isinstance(cfg, dict):
             raise http_exception(
                 ValueError(f"engine {name!r}: config must be an object")
