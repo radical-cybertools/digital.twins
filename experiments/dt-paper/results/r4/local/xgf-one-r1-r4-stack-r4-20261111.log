@@ -1,0 +1,4 @@
+xgf one n=1: seq p50 55.0 ms, bursts 2-5 25.4 req/s, placement ok {'0': {'e3_s0': 1023}}
+xgf one n=2: seq p50 55.4 ms, bursts 2-5 26.9 req/s, placement ok {'0': {'e3_s0': 513}, '1': {'e3_s0': 513}}
+xgf one n=3: seq p50 55.1 ms, bursts 2-5 25.0 req/s, placement ok {'0': {'e3_s0': 343}, '1': {'e3_s0': 343}, '2': {'e3_s0': 343}}
+xgf one n=4: seq p50 54.8 ms, bursts 2-5 26.7 req/s, placement ok {'0': {'e3_s0': 258}, '1': {'e3_s0': 258}, '2': {'e3_s0': 258}, '3': {'e3_s0': 258}}

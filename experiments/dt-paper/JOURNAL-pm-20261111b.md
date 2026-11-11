@@ -15,6 +15,9 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 4`.
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
 | 61144847 | r4-smoke | m5290 | 2 | 00:00:45 | 0.025 | 0.03 | 0.00 |
+| 61144870 | r4-e3-local | m5290 | 5 | 00:47:59 | 3.999 | 4.02 | 0.00 |
+| 61145515 | r4-e3-conc | m5290 | 5 | 00:14:04 | 1.172 | 5.20 | 0.00 |
+| 61145516 | r4-e3-remote | m5290 | 4 | 00:22:15 | 1.483 | 6.68 | 0.00 |
 
 ## W0: setup (2026-11-11 03:00)
 
@@ -57,3 +60,39 @@ empty. `results/r4/smoke/`.
   Estimated about 6 min per repeat (both harnesses, both layouts), so about
   35 min on 5 nodes, about 3 node-h. W2 and W3 are submitted once W1's
   first repeat shows `placement_ok` everywhere.
+
+## W1: E3 on Perlmutter nodes (done, 2026-11-11 05:00)
+
+Job 61144870 (r4-e3-local, regular, 5 nodes, 47:59; `r4/run_e3_local.sh`
+with `REPEATS="1 2 3 4 5"`, `results/r4/local/`): broker (`dt` plugin) and
+client on node 0, sites `e3_s0`-`e3_s3` on nodes 1-4, throwaway TLS,
+`work_ms` 50, `--tasks 200 --bursts 5 --concurrent 16`. 20 runs, every rc 0;
+`placement_ok` true at every point in every repeat (80 of 80); no errors;
+isolation check empty. Table `e3-table-stack-r4-20261111.md`
+(`r4/e3_table.py`).
+
+| harness | layout | N=1 | N=2 | N=3 | N=4 | N=4 x N=1 |
+|---|---|---|---|---|---|---|
+| dt | spread | 20.4 | 39.6 | 58.5 | 77.5 | 3.81 |
+| dt | one | 20.3 | 20.2 | 20.4 | 20.4 | 1.01 |
+| xgf | spread | 25.5 | 42.8 | 61.4 | 80.3 | 3.15 |
+| xgf | one | 25.7 | 25.3 | 25.5 | 26.7 | 1.04 |
+
+(req/s, median of bursts 2-5 over 5 repeats; ranges in the table file.)
+
+- Sequential p50: 56.2-57.1 ms (dt), 54.7-56.1 ms (xgf), at every N and
+  layout; `work_ms` is 50.
+- The DT twin scales with sites: 3.81x at 4 sites, at 20 req/s per site;
+  all investigators on one site stay at one site's rate. The hand-wired
+  layout gets 80.3 at 4 sites (DT 0.97x of it), but more at one site
+  (25.5 vs 20.4), so its scaling factor is lower (3.15x).
+- Code per site (from the JSON): DT 2 lines (one engine config entry
+  `site_k: {endpoint_name, backends}`, one element in the agent's `sites`);
+  hand-wired 1 `SITES` entry per site plus 65 wiring lines the user owns
+  (`wiring_lines`), which the DT service provides.
+- Per-site rate: 20 req/s for the DT path is exactly 1 / 50 ms, as if a site
+  ran the twin's tasks one at a time; the hand-wired path's per-site rate
+  depends on client concurrency (W2). Note the work is a wall-clock busy
+  loop (`time.perf_counter()` deadline), so concurrent tasks on one
+  endpoint do not queue on the GIL as the README suggests: they share it
+  and all end 50 ms after they start.
