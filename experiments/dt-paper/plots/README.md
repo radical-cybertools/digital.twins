@@ -35,3 +35,7 @@ python3 experiments/dt-paper/plots/make_figures.py --out ... --only e1-paths,e5-
 | `e4-swap` | E4 | `r3/t5` swap, dip; `r3/t4` publish |
 | `e5-endpoint-loss` | E5 | `s2`, `b1`, `c1`, `c2` |
 | `e6-windfield` | E6 | `p8/surrogate-*`, `b3` |
+
+`e3-sites` (E3, round 4: `results/r4/local/`) is kept out of the default
+list (`PENDING` in `make_figures.py`) until those results exist; render it
+with `--only e3-sites`, then move it into `FIGURES`.
