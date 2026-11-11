@@ -1,0 +1,72 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: hand-wired N-site baseline",
+    "harness": "xgf_sites.py",
+    "time": "2026-11-11T05:02:48-0800",
+    "host": "nid004146",
+    "python": "3.12.12",
+    "digital_twins_commit": "6bd2faadb9e9243f280d9d95a8f266d766974b4d",
+    "digital_twins_dirty": false,
+    "slurm_job": "61146168",
+    "args": {
+      "broker": "https://10.249.1.70:8141",
+      "endpoints": [
+        "e3_s0",
+        "e3_s1",
+        "e3_s2",
+        "e3_s3"
+      ],
+      "n": "4",
+      "layout": "spread",
+      "work_ms": 50.0,
+      "seq": 20,
+      "tasks": 200,
+      "concurrent": 16,
+      "bursts": 5,
+      "out": "experiments/dt-paper/results/r4/conc/xgf-spread-c16-r2-r4-stack-r4-20261111.json"
+    }
+  },
+  "wiring_lines": 65,
+  "points": [
+    {
+      "n": 4,
+      "layout": "spread",
+      "sites": [
+        "e3_s0",
+        "e3_s1",
+        "e3_s2",
+        "e3_s3"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 258
+        },
+        "1": {
+          "e3_s1": 258
+        },
+        "2": {
+          "e3_s2": 258
+        },
+        "3": {
+          "e3_s3": 258
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 0.8074014186859131,
+      "seq_p50_ms": 56.51083355769515,
+      "bursts_s": [
+        2.4669712230097502,
+        2.51134186796844,
+        2.4875054759904742,
+        2.504213270964101,
+        2.5482218409888446
+      ],
+      "req_per_s_bursts_2_5": 79.75205076135,
+      "req_per_s_first": 81.07107133418295,
+      "code_per_site": {
+        "SITES_entry": "e3_s3",
+        "lines": 1
+      }
+    }
+  ]
+}

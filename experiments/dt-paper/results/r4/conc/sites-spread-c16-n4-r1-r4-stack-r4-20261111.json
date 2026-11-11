@@ -1,0 +1,114 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: one twin on N sites",
+    "harness": "bench_sites.py",
+    "time": "2026-11-11T05:01:26-0800",
+    "host": "nid004146",
+    "python": "3.12.12",
+    "digital_twins_commit": "6bd2faadb9e9243f280d9d95a8f266d766974b4d",
+    "digital_twins_dirty": false,
+    "slurm_job": "61146168",
+    "args": {
+      "broker": "https://10.249.1.70:8141",
+      "endpoints": [
+        "e3_s0",
+        "e3_s1",
+        "e3_s2",
+        "e3_s3"
+      ],
+      "n": "4",
+      "layout": "spread",
+      "work_ms": 50.0,
+      "seq": 20,
+      "tasks": 200,
+      "concurrent": 16,
+      "bursts": 5,
+      "timeout": 120.0,
+      "out": "experiments/dt-paper/results/r4/conc/sites-spread-c16-r1-r4-stack-r4-20261111.json"
+    }
+  },
+  "points": [
+    {
+      "n": 4,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "e3_s0",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "e3_s1",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_2": {
+          "endpoint_name": "e3_s2",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_3": {
+          "endpoint_name": "e3_s3",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1",
+        "site_2",
+        "site_3"
+      ],
+      "expected_endpoint": [
+        "e3_s0",
+        "e3_s1",
+        "e3_s2",
+        "e3_s3"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 258
+        },
+        "1": {
+          "e3_s1": 258
+        },
+        "2": {
+          "e3_s2": 258
+        },
+        "3": {
+          "e3_s3": 258
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 1.2299890518188477,
+      "seq_p50_ms": 57.33400757890195,
+      "bursts_s": [
+        2.5864806540776044,
+        2.562840046128258,
+        2.5817907378077507,
+        2.5529707251116633,
+        2.552720644045621
+      ],
+      "req_per_s_bursts_2_5": 78.18926590264418,
+      "req_per_s_first": 77.32514824137526,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_3": {
+            "endpoint_name": "e3_s3",
+            "backends": [
+              "concurrent"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_3",
+        "lines": 2
+      }
+    }
+  ]
+}

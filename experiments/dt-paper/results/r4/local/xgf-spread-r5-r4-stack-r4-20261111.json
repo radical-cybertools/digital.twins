@@ -1,0 +1,165 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: hand-wired N-site baseline",
+    "harness": "xgf_sites.py",
+    "time": "2026-11-11T04:51:52-0800",
+    "host": "nid004146",
+    "python": "3.12.12",
+    "digital_twins_commit": "1aa58fc23660405fc085f19feec200eb09fd4451",
+    "digital_twins_dirty": false,
+    "slurm_job": "61144870",
+    "args": {
+      "broker": "https://10.249.1.70:8141",
+      "endpoints": [
+        "e3_s0",
+        "e3_s1",
+        "e3_s2",
+        "e3_s3"
+      ],
+      "n": "1,2,3,4",
+      "layout": "spread",
+      "work_ms": 50.0,
+      "seq": 20,
+      "tasks": 200,
+      "concurrent": 16,
+      "bursts": 5,
+      "out": "experiments/dt-paper/results/r4/local/xgf-spread-r5-r4-stack-r4-20261111.json"
+    }
+  },
+  "wiring_lines": 65,
+  "points": [
+    {
+      "n": 1,
+      "layout": "spread",
+      "sites": [
+        "e3_s0"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 1023
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 0.20130300521850586,
+      "seq_p50_ms": 54.56362257245928,
+      "bursts_s": [
+        5.299766353098676,
+        8.909979067044333,
+        8.139753666939214,
+        8.355275043053553,
+        5.947608392918482
+      ],
+      "req_per_s_bursts_2_5": 24.253870978005658,
+      "req_per_s_first": 37.73751268922708,
+      "code_per_site": null
+    },
+    {
+      "n": 2,
+      "layout": "spread",
+      "sites": [
+        "e3_s0",
+        "e3_s1"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 513
+        },
+        "1": {
+          "e3_s1": 513
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 0.39172792434692383,
+      "seq_p50_ms": 56.02002399973571,
+      "bursts_s": [
+        4.742747721960768,
+        4.719552809139714,
+        4.72245032293722,
+        4.812700035981834,
+        4.857677751919255
+      ],
+      "req_per_s_bursts_2_5": 41.95380484389332,
+      "req_per_s_first": 42.16964758085743,
+      "code_per_site": {
+        "SITES_entry": "e3_s1",
+        "lines": 1
+      }
+    },
+    {
+      "n": 3,
+      "layout": "spread",
+      "sites": [
+        "e3_s0",
+        "e3_s1",
+        "e3_s2"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 343
+        },
+        "1": {
+          "e3_s1": 343
+        },
+        "2": {
+          "e3_s2": 343
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 0.583369255065918,
+      "seq_p50_ms": 55.93126441817731,
+      "bursts_s": [
+        3.2236811958719045,
+        3.2236710251308978,
+        3.26984902494587,
+        3.278758133063093,
+        3.2746077040210366
+      ],
+      "req_per_s_bursts_2_5": 61.12046088067013,
+      "req_per_s_first": 62.040874344556975,
+      "code_per_site": {
+        "SITES_entry": "e3_s2",
+        "lines": 1
+      }
+    },
+    {
+      "n": 4,
+      "layout": "spread",
+      "sites": [
+        "e3_s0",
+        "e3_s1",
+        "e3_s2",
+        "e3_s3"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 258
+        },
+        "1": {
+          "e3_s1": 258
+        },
+        "2": {
+          "e3_s2": 258
+        },
+        "3": {
+          "e3_s3": 258
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 0.7895290851593018,
+      "seq_p50_ms": 56.22140597552061,
+      "bursts_s": [
+        2.4909079619683325,
+        2.4809727631509304,
+        2.4539213459938765,
+        2.4825339019298553,
+        2.4992761840112507
+      ],
+      "req_per_s_bursts_2_5": 80.5881943070727,
+      "req_per_s_first": 80.29200719321585,
+      "code_per_site": {
+        "SITES_entry": "e3_s3",
+        "lines": 1
+      }
+    }
+  ]
+}
