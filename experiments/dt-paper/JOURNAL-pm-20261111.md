@@ -17,6 +17,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 3c`.
 |---|---|---|---|---|---|---|---|
 | 61137684 | r3c-v12 | m5290 | 1 | 00:10:30 | 0.175 | 0.17 | 0.00 |
 | 61137685 | r3c-v3 | m5290 | 2 | 00:12:04 | 0.402 | 0.58 | 0.00 |
+| 61138155 | r3c-v4 | m5290 | 2 | 00:12:22 | 0.412 | 0.99 | 0.00 |
 
 ## Setup (2026-11-11 00:20)
 
@@ -114,3 +115,58 @@ log shows `nogc: gc disabled` for both endpoint-off settings. Table
   consistent pattern, not a statistical test; per the section, no further
   digging.
 - Bursts 2-5 median 1014-1038 req/s in every setting (U2 solo c=50: 1010).
+
+## V4: c=1 through radical.3 again (done, 2026-11-11 00:55)
+
+Job 61138155 (r3c-v4, debug, 2 nodes, 12:22), `s2/run_s2.sh PARTS=r1 CS=1
+KS="1 2 3 4 5"`, `--tasks 100`, endpoint `pm_e1_ep_61138155` on node A,
+client on node B, broker `https://95.217.193.116:8010`, default
+credentials (read only). Every rc 0; isolation check empty.
+`results/r3c/v4/`, tables `r1-compare-u3-vs-v4.md`, `r1-compare-c3-vs-v4.md`.
+
+| row | 2c p50 ms | U3 p50 ms | V4 p50 ms (repeats) |
+|---|---|---|---|
+| bare | 347.82 | 353.91 | 353.00 (346.77-353.74) |
+| investigator | 347.84 | 353.98 | 353.09 (346.67-353.54) |
+| agent | 348.02 | 353.85 | 353.18 (346.67-353.52) |
+
+- V4 reproduces U3 (-0.7 to -0.9 ms). One repeat (r1, 346.8 ms) sits at
+  2c's level, the other four at 351.7-353.7: the per-repeat level moves by
+  about 6 ms between runs, for every row alike. WAN connect p50 172 ms
+  (165-180), as in U3 and 2c.
+- DT rows within 0.2 ms of bare. Finding: the c=1 offset against 2c is the
+  WAN path to radical.3, which varies by about 6 ms between runs; not the
+  stack.
+
+## Close-out (round 3c, 2026-11-11 01:00)
+
+| phase | status | headline |
+|---|---|---|
+| V1 | done | pool sweep, 5 bursts per row: DT rows 0.91-1.02x bare at c=50 and 0.85-0.98x at c=500 on bursts 2-5; the single-burst loss moved to the investigator's first burst (0.70-0.79x) |
+| V2 | done | client GC threshold (100000, 50, 50): DT rows' first bursts come up, bare's first burst drops (one larger collection); bursts 2-5 +3-12%, DT rows 0.94-1.00x bare |
+| V3 | done | rare slow ORBIT burst = the endpoint's cyclic GC: 6-7 of 150 slow bursts with it on, 0-1 with it off; client GC makes no difference |
+| V4 | done | c=1 via radical.3 353.0 ms (U3 353.9, 2c 347.8); one repeat at 2c's level; WAN path variance |
+
+Node-hours: 0.99 of 1.5 (m5290; ledger above). No allocation left running.
+Every ORBIT job's isolation check is empty (v3, v4). No `src/` change, no
+fix branch. Harness changes: `r3b/nogc.py --gc-threshold` (and a working
+`--freeze`), GC state in `bench_dt_insitu.py` provenance, `s1/ledger.py 3c`,
+new `r3c/` scripts and tables. Provenance commits in the JSONs: 97c3791
+(219), 1b03cbc / 41e1681 / 0124c0b (11; I committed results while V3/V4
+ran); none of those commits touches the harnesses or `src/`
+(`git diff --stat 97c3791 HEAD -- e1-overhead src r3b/nogc.py` is empty).
+Branch `exp/pm-round3c-20261111` pushed; no PR.
+
+Open questions for Andre:
+
+1. V2: at the default GC threshold the collector costs 3-12% on bursts 2-5
+   (more for the DT rows). Should the paper say so next to the e1-pool
+   figure (V1, default GC), or only the one sentence about single-burst
+   variance?
+2. V3: the endpoint's collector causes the rare slow ORBIT burst. Worth a
+   note for the endpoint (e.g. `gc.freeze()` after start-up, or a raised
+   threshold), or just a sentence in the paper?
+3. Round 3b's merge into `paper/dtaas` (Andre's answer 5): this branch
+   holds round 3b's commits up to `e660bb9` plus round 3c; merge this one
+   instead? Round 3b's branch has two more journal-only commits after
+   `e660bb9` (`b1bbaac`..`8d10e6f`: answers, Q3 check) not in this one.
