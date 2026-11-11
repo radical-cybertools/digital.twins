@@ -46,9 +46,9 @@ Job 61137684 (r3c-v12, debug, 1 node, 10:27, V1 and V2;
 `results/r3c/v1/compare-u4-vs-v1.md` (round 3b U4 P1, one burst, vs this;
 its req/s column is the first burst).
 
-- Bursts 2-5, x bare: c=50 0.91-1.02 (investigator 0.94-1.02, agent
+- Bursts 2-5, x bare: c=50 0.91-1.02 (investigator 0.93-1.02, agent
   0.91-1.02); c=500 investigator 0.91-0.98, agent 0.85-0.93. Seq p50 within
-  0.06 ms of bare up to pool 64 (0.53-0.80 ms), as in U4.
+  0.12 ms of bare at every pool (0.53-1.43 ms), as in U4.
 - First burst at c=500: now the investigator loses (0.70-0.79x at pools
   1-128, 0.95 at 256), the agent is 0.88-1.02x. With five bursts per row the
   collections fall elsewhere than in U4's single-burst runs (agent lost
@@ -76,7 +76,7 @@ Same job, after V1 on the same node (`results/r3c/v2/`), 15 runs, every rc
   agent +11-12%); the DT rows come to 0.94-1.00x bare.
 - First bursts: the DT rows' first bursts come up to their bursts 2-5
   (investigator 2754 -> 3503 at pool 1), except the agent at pool 64. Bare's
-  first burst drops instead (3516 -> 2958 at pool 1, 0.82-0.90x of V1) in
+  first burst drops instead (3516 -> 2958 at pool 1, 0.84-0.90x of V1) in
   every repeat (2792-3285 at pools 1 and 8): with collections rarer, the
   first one is larger and falls in the first burst of the run.
 - Reading against the section's test: bursts 2-5 do not match V1 exactly
