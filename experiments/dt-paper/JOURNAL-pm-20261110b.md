@@ -252,5 +252,8 @@ Open questions for Andre:
    (`StreamingLearnerInvestigator` subclass)? If not, the difference is that.
 4. U3: c=1 through radical.3 is 6 ms slower than in 2c for every row, WAN
    connect unchanged. Radical.3 load (the E5 run on :8011) is my guess.
-5. This session had no SSH key for GitHub; clone and pushes went over HTTPS
-   with `gh auth git-credential`. The checkout's remote is the HTTPS URL.
+5. (Resolved 2026-11-10 16:00.) This session had no SSH key for GitHub, so
+   the clone and pushes up to `b1bbaac` went over HTTPS with
+   `gh auth git-credential`. Andre then added the key; the checkout's remote
+   is back on `git@github.com:radical-cybertools/digital.twins.git`, and
+   `~/memory-work` is in sync with its origin.
