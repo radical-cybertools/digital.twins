@@ -86,6 +86,15 @@ there; new twins that do not use it still start.  `digitaltwin` is now
 0.1.0 and client and service versions must match: reinstall every host
 from the same commit (`install.sh`) before an E3 run.
 
+## Update 2026-11-12: coalesced immediate sends (rhapsody #139)
+
+With `batch_window=0` (the DT service's setting) rhapsody's orbit backend
+sent one submit at a time per backend, so a site served at most one task
+per submit round trip whatever the client concurrency (round 4 W2: one
+site 20 req/s at 50 ms of work).  #139 sends the tasks submitted during a
+send together in the next request.  Laptop, DT service path, one site,
+c=32: 17.9 -> 45.3 req/s (busy work), 71.9 -> 138.9 (asyncio.sleep).
+
 ## Verified (laptop, 2026-11-06)
 
 | Suite | Result |
