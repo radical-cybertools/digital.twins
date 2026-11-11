@@ -177,13 +177,16 @@ def later_bursts(run, row):
 
 def fig_e1_paths(fig):
     """E1: p50 per request and burst throughput, local pool to radical.3."""
-    # round 3 (T3): each row, xgf included, in its own process
-    local = solo("r3/t3/insitu-pm-pool8-c50-solo-{row}-r*-stack-r3-*.json")
-    cross = solo("r3/t3/insitu-pm-orbit-cross-c1-solo-{row}-r*-stack-r3-*.json")
-    remote = SRC.load("c3/r1/insitu-pm-remote-c1-r*-stack2c-*.json")
+    # round 3b (U2, U3): each row, xgf included, in its own process; the
+    # service path was measured once, in round 2 (S3)
+    local = solo("r3b/u2/insitu-pm-pool8-c50-solo-{row}-r*-stack-r3b-*.json")
+    cross = solo("r3b/u2/insitu-pm-orbit-cross-c1-solo-{row}-r*-stack-r3b-*.json")
+    remote = SRC.load("r3b/u3/insitu-pm-remote-c1-r*-stack-r3b-*.json")
     service = SRC.load("s3/service-remote-stack-*.json")[0]
-    burst_local = solo("r3/t3/insitu-pm-pool8-c500-solo-{row}-r*-stack-r3-*.json")
-    burst_cross = solo("r3/t3/insitu-pm-orbit-cross-c500-solo-{row}-r*-stack-r3-*.json")
+    burst_local = solo("r3b/u2/insitu-pm-pool8-c500-solo-{row}-r*-stack-r3b-*.json")
+    burst_cross = solo(
+        "r3b/u2/insitu-pm-orbit-cross-c500-solo-{row}-r*-stack-r3b-*.json"
+    )
 
     ax1, ax2 = fig.subplots(1, 2, gridspec_kw={"width_ratios": [4, 2.4]})
     cats = [
@@ -224,6 +227,67 @@ def fig_e1_paths(fig):
     ax2.set_title("(b) burst")
 
 
+def fig_e1_inprocess(fig):
+    """E1 through ORBIT: DT rows and xgf against bare, each row in its own
+    process and all rows in one process, with round 2's in-process ratios."""
+    rows = ["investigator", "agent", XGF]
+    ax1, ax2 = fig.subplots(1, 2, sharey=True)
+    for ax, c in ((ax1, 50), (ax2, 500)):
+        alone = solo(
+            f"r3b/u2/insitu-pm-orbit-cross-c{c}-solo-{{row}}-r*-stack-r3b-*.json"
+        )
+        bare = statistics.median(later_bursts(r, "bare") for r in alone["bare"])
+        inproc = SRC.load(
+            f"r3b/u2/insitu-pm-orbit-cross-c{c}-inproc-r*-stack-r3b-*.json"
+        )
+        COLORS.update(
+            {
+                "each row in its own process": COLORS["bare"],
+                "all rows in one process": COLORS["dt"],
+            }
+        )
+        bars(
+            ax,
+            ["inves-\ntigator", "agent", "xgf"],
+            {
+                "each row in its own process": [
+                    [later_bursts(run, r) / bare for run in alone[r]] for r in rows
+                ],
+                "all rows in one process": [
+                    [later_bursts(run, r) / later_bursts(run, "bare") for run in inproc]
+                    for r in rows
+                ],
+            },
+        )
+        ax.axhline(1.0, color="#888888", linewidth=0.6, linestyle=":")
+        ax.set_title(f"(%s) c={c}" % ("a" if c == 50 else "b"))
+    # round 2c, one process, before finished tasks were released
+    old = SRC.load("c3/p4/insitu-pm-orbit-cross-c500-r*-stack2c-*.json")
+    key = "concurrent_req_per_s"
+    ratios = [
+        statistics.median(run["rows"][r][key] / run["rows"]["bare"][key] for run in old)
+        for r in ("investigator", "agent")
+    ]
+    (marks,) = ax2.plot(
+        [0.2, 1.2], ratios, marker="x", color="#a3352b", markersize=5, linestyle="none"
+    )
+    ax2.legend(
+        [marks],
+        ["one process, before the fix"],
+        frameon=False,
+        loc="lower right",
+        fontsize=6,
+    )
+    ax1.set_ylabel("throughput vs bare")
+    ax1.set_ylim(0, 1.3)
+    fig.legend(
+        *ax1.get_legend_handles_labels(),
+        loc="outside upper center",
+        ncol=2,
+        frameon=False,
+    )
+
+
 def fig_e1_pool(fig):
     """E1: burst throughput by process pool size, local pool, c=500."""
     pools = [1, 2, 4, 8, 16, 32, 64, 128, 256]
@@ -243,7 +307,7 @@ def fig_e1_pool(fig):
 
 def fig_e1_exsitu(fig):
     """E1 ex-situ: learner throughput by window size, bare vs through DT."""
-    runs = SRC.load("r3/t2/exsitu-pm-pool8-r*-stack-r3-*.json")
+    runs = SRC.load("r3b/u5/exsitu-pm-pool8-r*-stack-r3b-*.json")
     sizes = runs[0]["batch_sizes"]
     names = {
         "bare": "bare ROSE learner",
@@ -558,6 +622,7 @@ def fig_e6(fig):
 
 FIGURES = {
     "e1-paths": (fig_e1_paths, 2.3),
+    "e1-inprocess": (fig_e1_inprocess, 2.1),
     "e1-pool": (fig_e1_pool, 2.0),
     "e1-exsitu": (fig_e1_exsitu, 2.0),
     "e2-scaling": (fig_e2, 2.0),
