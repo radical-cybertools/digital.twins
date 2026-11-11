@@ -126,6 +126,9 @@ everywhere (W3 touches only radical.3's broker, W1 only its own).
   broker, broker to site and back): seq p50 about 394 ms against 57 ms on
   the cluster, i.e. about 340 ms over the 50 ms of work, 2 x 171 ms.
 - Throughput still grows with every site, including the one on another
-  facility (radical.3); with 16 client threads it is latency-bound (16 /
-  0.394 s is about 41 req/s at most), not site-bound, so the absolute
-  numbers are lower than W1's and the scaling factor is 3.25x, not 3.8x.
+  facility (radical.3): 3.25x at 4 sites (W1: 3.81x). It is not client-bound
+  (16 threads / 0.394 s would allow about 41 req/s). One site gives 6.1
+  req/s, one request per about 164 ms: consistent with W1/W2's picture of a
+  site running the twin's tasks one at a time, here each paying the
+  broker-to-site round trip on top of the 50 ms of work. Not measured
+  directly.
