@@ -1,0 +1,26 @@
+backend: orbit dt_r3b_u2_ep1
+bare asyncflow task          n=1000  mean=   3.04ms  p50=   2.96  p90=   3.39  p99=   4.18  max=   4.69
+bare asyncflow task          50 concurrent requests in 49.1ms (1019 req/s)
+bare asyncflow task          50 concurrent requests in 48.7ms (1026 req/s)
+bare asyncflow task          50 concurrent requests in 48.3ms (1034 req/s)
+bare asyncflow task          50 concurrent requests in 49.2ms (1017 req/s)
+bare asyncflow task          50 concurrent requests in 47.4ms (1056 req/s)
+DT investigator              n=1000  mean=   3.07ms  p50=   3.01  p90=   3.38  p99=   4.01  max=   4.39
+DT investigator              50 concurrent requests in 51.0ms (980 req/s)
+DT investigator              50 concurrent requests in 45.3ms (1104 req/s)
+DT investigator              50 concurrent requests in 47.3ms (1056 req/s)
+DT investigator              50 concurrent requests in 49.0ms (1021 req/s)
+DT investigator              50 concurrent requests in 47.9ms (1045 req/s)
+DT agent + selector          n=1000  mean=   3.41ms  p50=   3.05  p90=   3.39  p99=   4.04  max= 306.48
+DT agent + selector          50 concurrent requests in 48.5ms (1031 req/s)
+DT agent + selector          50 concurrent requests in 47.4ms (1054 req/s)
+DT agent + selector          50 concurrent requests in 48.7ms (1027 req/s)
+DT agent + selector          50 concurrent requests in 48.9ms (1022 req/s)
+DT agent + selector          50 concurrent requests in 45.5ms (1098 req/s)
+xgf zmq request/reply        n=1000  mean=   3.48ms  p50=   3.45  p90=   3.83  p99=   4.50  max=   5.21
+xgf zmq request/reply        50 concurrent requests in 138.6ms (361 req/s)
+xgf zmq request/reply        50 concurrent requests in 54.6ms (915 req/s)
+xgf zmq request/reply        50 concurrent requests in 53.1ms (942 req/s)
+xgf zmq request/reply        50 concurrent requests in 52.7ms (949 req/s)
+xgf zmq request/reply        50 concurrent requests in 51.2ms (977 req/s)
+results: experiments/dt-paper/results/r3b/u2/insitu-pm-orbit-cross-c50-inproc-r3-stack-r3b-20261110.json

@@ -23,6 +23,10 @@ patch, not a rhapsody change) to show the decay goes with them.
 import argparse
 import asyncio
 import json
+import os
+import platform
+import socket
+import subprocess
 import time
 
 from concurrent.futures import ThreadPoolExecutor
@@ -81,8 +85,33 @@ async def main():
     finally:
         await flow.shutdown()
     if args.out:
-        Path(args.out).write_text(json.dumps({"args": vars(args), "bursts": rows},
+        Path(args.out).write_text(json.dumps({"provenance": provenance(args),
+                                              "args": vars(args), "bursts": rows},
                                              indent=2))
+
+
+def provenance(args) -> dict:
+    """As `e1-overhead/bench_dt_insitu.py`'s (round 3b)."""
+    root = Path(__file__).resolve().parents[3]
+
+    def git(*cmd):
+        try:
+            return subprocess.check_output(["git", "-C", str(root), *cmd],
+                                           text=True).strip()
+        except Exception:
+            return None
+
+    return {
+        "experiment": "E1 thread-pool decay repro",
+        "harness": Path(__file__).name,
+        "time": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "host": socket.gethostname(),
+        "python": platform.python_version(),
+        "digital_twins_commit": git("rev-parse", "HEAD"),
+        "backend": f"concurrent (ThreadPoolExecutor({args.workers}))",
+        "slurm_job": os.environ.get("SLURM_JOB_ID"),
+        "args": vars(args),
+    }
 
 
 if __name__ == "__main__":

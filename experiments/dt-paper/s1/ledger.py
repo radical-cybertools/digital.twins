@@ -5,9 +5,10 @@ Every finished job of round 2 (names s1-*, s2-*, s3-*) since the start of
 the round, node-hours = elapsed x nodes, running totals per account.  With
 `2b` / `2c`, the round-2b / 2c jobs (names b0-* ... b3-*, c1-* ... c3-*)
 into the table under the "Round 2b" / "Round 2c" heading.  With `3`, the
-round-3 jobs (names r3-*) into JOURNAL-pm-20261110.md.
+round-3 jobs (names r3-*) into JOURNAL-pm-20261110.md, with `3b` the
+round-3b jobs (names r3b-*) into JOURNAL-pm-20261110b.md.
 
-    python experiments/dt-paper/s1/ledger.py [2b|2c|3]
+    python experiments/dt-paper/s1/ledger.py [2b|2c|3|3b]
 """
 
 import subprocess
@@ -21,8 +22,11 @@ ROUNDS = {  # round: (start, job-name prefixes, heading the table follows)
     "2b": ("2026-11-07T05:30", ("b0-", "b1-", "b2-", "b3-"), "## Round 2b"),
     "2c": ("2026-11-07T20:00", ("c1-", "c2-", "c3-"), "## Round 2c"),
     "3": ("2026-11-09T13:00", ("r3-",), "## Node-hour ledger"),
+    "3b": ("2026-11-10T15:00", ("r3b-",), "## Node-hour ledger"),
 }
-JOURNALS = {"3": JOURNAL.with_name("JOURNAL-pm-20261110.md")}
+JOURNALS = {"3": JOURNAL.with_name("JOURNAL-pm-20261110.md"),
+            "3b": JOURNAL.with_name("JOURNAL-pm-20261110b.md")}
+BUDGET = {"3": 25, "3b": 8}
 HEAD = ("| job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |\n"
         "|---|---|---|---|---|---|---|---|\n")
 
@@ -50,7 +54,7 @@ def main() -> int:
     end = len(text) if end == 0 else end
     journal.write_text(text[:start] + table + text[end:])
     print(f"{len(rows)} jobs; m5290 {tot['m5290']:.2f}, m5290_g {tot['m5290_g']:.2f} "
-          f"node-h (of {25 if rnd == '3' else 100})")
+          f"node-h (of {BUDGET.get(rnd, 100)})")
     return 0
 
 

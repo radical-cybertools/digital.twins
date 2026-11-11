@@ -1,0 +1,8 @@
+backend: orbit dt_r3b_u2_ep1
+xgf zmq request/reply        n=1000  mean=   3.76ms  p50=   3.67  p90=   4.08  p99=   4.66  max=  86.55
+xgf zmq request/reply        1 concurrent requests in 3.7ms (270 req/s)
+xgf zmq request/reply        1 concurrent requests in 3.7ms (272 req/s)
+xgf zmq request/reply        1 concurrent requests in 3.4ms (293 req/s)
+xgf zmq request/reply        1 concurrent requests in 3.4ms (297 req/s)
+xgf zmq request/reply        1 concurrent requests in 3.9ms (255 req/s)
+results: experiments/dt-paper/results/r3b/u2/insitu-pm-orbit-cross-c1-solo-xgf-r1-stack-r3b-20261110.json

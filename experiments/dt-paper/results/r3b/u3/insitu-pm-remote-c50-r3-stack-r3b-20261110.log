@@ -1,0 +1,9 @@
+Backend orbit held the run loop for 1.0 s in submit_tasks (1 task(s)); a backend should hand slow work to the background
+backend: orbit pm_e1_ep_61111624
+bare asyncflow task          n=100  mean= 347.65ms  p50= 347.67  p90= 348.08  p99= 348.89  max= 348.89
+bare asyncflow task          50 concurrent requests in 557.5ms (90 req/s)
+DT investigator              n=100  mean= 348.39ms  p50= 347.64  p90= 348.07  p99= 425.62  max= 425.62
+DT investigator              50 concurrent requests in 543.1ms (92 req/s)
+DT agent + selector          n=100  mean= 347.67ms  p50= 347.70  p90= 348.15  p99= 349.20  max= 349.20
+DT agent + selector          50 concurrent requests in 533.5ms (94 req/s)
+results: experiments/dt-paper/results/r3b/u3/insitu-pm-remote-c50-r3-stack-r3b-20261110.json

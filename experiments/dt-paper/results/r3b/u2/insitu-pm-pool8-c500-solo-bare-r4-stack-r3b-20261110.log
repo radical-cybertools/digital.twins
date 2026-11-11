@@ -1,0 +1,8 @@
+backend: local concurrent pool
+bare asyncflow task          n=1000  mean=   0.59ms  p50=   0.58  p90=   0.63  p99=   0.67  max=   0.83
+bare asyncflow task          500 concurrent requests in 132.9ms (3763 req/s)
+bare asyncflow task          500 concurrent requests in 132.5ms (3773 req/s)
+bare asyncflow task          500 concurrent requests in 184.2ms (2714 req/s)
+bare asyncflow task          500 concurrent requests in 134.2ms (3727 req/s)
+bare asyncflow task          500 concurrent requests in 138.2ms (3617 req/s)
+results: experiments/dt-paper/results/r3b/u2/insitu-pm-pool8-c500-solo-bare-r4-stack-r3b-20261110.json

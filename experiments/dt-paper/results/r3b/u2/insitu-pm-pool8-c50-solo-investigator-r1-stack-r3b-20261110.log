@@ -1,0 +1,8 @@
+backend: local concurrent pool
+DT investigator              n=1000  mean=   0.60ms  p50=   0.59  p90=   0.61  p99=   0.69  max=   0.79
+DT investigator              50 concurrent requests in 15.4ms (3240 req/s)
+DT investigator              50 concurrent requests in 15.1ms (3305 req/s)
+DT investigator              50 concurrent requests in 15.1ms (3312 req/s)
+DT investigator              50 concurrent requests in 15.4ms (3257 req/s)
+DT investigator              50 concurrent requests in 15.1ms (3301 req/s)
+results: experiments/dt-paper/results/r3b/u2/insitu-pm-pool8-c50-solo-investigator-r1-stack-r3b-20261110.json

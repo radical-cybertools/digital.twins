@@ -14,7 +14,7 @@ import sys
 
 from pathlib import Path
 
-ROWS = ("bare", "investigator", "agent")
+ROWS = ("bare", "investigator", "agent", "xgf")  # xgf: round 3b U2
 
 
 def load(d: Path, tag: str):

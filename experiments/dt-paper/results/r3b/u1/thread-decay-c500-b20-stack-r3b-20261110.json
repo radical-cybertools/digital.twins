@@ -1,0 +1,149 @@
+{
+  "provenance": {
+    "added_after_run": "by hand from the job log, 2026-11-10 (harness had none then)",
+    "experiment": "E1 thread-pool decay repro",
+    "harness": "diag_thread_decay.py",
+    "time": "2026-11-10T23:03:47Z (job start)",
+    "host": "nid004704",
+    "python": "3.12.12",
+    "digital_twins_commit": "e2bcd29 (fca2d54 + r3b U0 scripts)",
+    "backend": "concurrent (ThreadPoolExecutor(32))",
+    "slurm_job": "61111505",
+    "args": {
+      "workers": 32,
+      "concurrent": 500,
+      "bursts": 20,
+      "prune": false,
+      "out": "experiments/dt-paper/results/r3b/u1/thread-decay-c500-b20-stack-r3b-20261110.json"
+    }
+  },
+  "args": {
+    "workers": 32,
+    "concurrent": 500,
+    "bursts": 20,
+    "prune": false,
+    "out": "experiments/dt-paper/results/r3b/u1/thread-decay-c500-b20-stack-r3b-20261110.json"
+  },
+  "bursts": [
+    {
+      "burst": 0,
+      "req_per_s": 2480.8203321916612,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 1,
+      "req_per_s": 2502.648740854165,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 2,
+      "req_per_s": 2223.3116459769817,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 3,
+      "req_per_s": 2513.5215767730833,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 4,
+      "req_per_s": 2495.9411741598037,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 5,
+      "req_per_s": 2482.4210456882306,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 6,
+      "req_per_s": 2175.8944233355805,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 7,
+      "req_per_s": 2488.5597926178975,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 8,
+      "req_per_s": 2464.3675846593223,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 9,
+      "req_per_s": 2220.312082412078,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 10,
+      "req_per_s": 2474.8630002216205,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 11,
+      "req_per_s": 2458.8232679524863,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 12,
+      "req_per_s": 2491.446564462021,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 13,
+      "req_per_s": 2171.5541794991414,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 14,
+      "req_per_s": 2496.911021983673,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 15,
+      "req_per_s": 2497.295629770307,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 16,
+      "req_per_s": 2217.0655748620447,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 17,
+      "req_per_s": 2518.207305725285,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 18,
+      "req_per_s": 2448.6362933812943,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    },
+    {
+      "burst": 19,
+      "req_per_s": 2462.3477226565474,
+      "scheduled_tasks": 2,
+      "backend_tasks": 0
+    }
+  ]
+}

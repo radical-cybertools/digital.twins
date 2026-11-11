@@ -1,0 +1,23 @@
+backend: orbit dt_r3b_u1_ep1
+bare asyncflow task          n=1000  mean=   2.74ms  p50=   2.71  p90=   2.90  p99=   3.32  max=   7.23
+bare asyncflow task          500 concurrent requests in 508.4ms (983 req/s)
+bare asyncflow task          500 concurrent requests in 432.1ms (1157 req/s)
+bare asyncflow task          500 concurrent requests in 493.7ms (1013 req/s)
+bare asyncflow task          500 concurrent requests in 444.8ms (1124 req/s)
+bare asyncflow task          500 concurrent requests in 499.7ms (1001 req/s)
+bare asyncflow task          500 concurrent requests in 508.0ms (984 req/s)
+bare asyncflow task          500 concurrent requests in 450.1ms (1111 req/s)
+bare asyncflow task          500 concurrent requests in 525.6ms (951 req/s)
+bare asyncflow task          500 concurrent requests in 443.5ms (1127 req/s)
+bare asyncflow task          500 concurrent requests in 544.9ms (918 req/s)
+bare asyncflow task          500 concurrent requests in 448.1ms (1116 req/s)
+bare asyncflow task          500 concurrent requests in 444.3ms (1125 req/s)
+bare asyncflow task          500 concurrent requests in 542.1ms (922 req/s)
+bare asyncflow task          500 concurrent requests in 531.2ms (941 req/s)
+bare asyncflow task          500 concurrent requests in 444.5ms (1125 req/s)
+bare asyncflow task          500 concurrent requests in 593.3ms (843 req/s)
+bare asyncflow task          500 concurrent requests in 446.7ms (1119 req/s)
+bare asyncflow task          500 concurrent requests in 573.2ms (872 req/s)
+bare asyncflow task          500 concurrent requests in 436.0ms (1147 req/s)
+bare asyncflow task          500 concurrent requests in 444.4ms (1125 req/s)
+results: experiments/dt-paper/results/r3b/u1/decay-bare-c500-t1000-b20-stack-r3b-20261110.json
