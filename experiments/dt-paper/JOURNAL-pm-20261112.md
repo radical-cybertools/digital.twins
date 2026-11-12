@@ -201,7 +201,7 @@ repeat; `work_model: cpu`; isolation check empty. WAN connect p50 172 ms
 | X3 | done | CPU model: one site 19.5 req/s, 3.86x at 4 sites, DT = hand-wired within 1%; the model the paper should use |
 | X4 | done | across facilities, cpu: 13.0 -> 28.8 req/s (round 4 6.1 -> 19.7), latency-bound at 16 threads |
 
-Node-hours: 5.55 of 6 (m5290; ledger above), 3.36 of them in the two jobs
+Node-hours: 5.55 of 6 (m5290; ledger above), 3.33 of them in the two jobs
 the harness bug hung. No allocation left running. Every ORBIT job's
 isolation check is empty (two by hand, see the setback section). No `src/`
 change, no fix branch. Deviations from the page, all for the budget after
