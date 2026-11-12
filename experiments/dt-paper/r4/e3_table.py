@@ -6,7 +6,7 @@ the repeats of the bursts 2-5 throughput, the median sequential p50,
 placement_ok in how many repeats, errors, and what a site costs in code
 (dt: `code_per_site`; xgf: `wiring_lines`).  Markdown to stdout.
 
-    python experiments/dt-paper/r4/e3_table.py results/r4/local [TAG]
+    python experiments/dt-paper/r4/e3_table.py results/r4/local [TAG [ROUND]]
 """
 
 import json
@@ -22,8 +22,9 @@ NAME = re.compile(r"^(sites|xgf)-(spread|one)(?:-c(\d+))?(?:-n[\d_]+)?-r(\d+)-")
 def main() -> int:
     d = Path(sys.argv[1])
     tag = sys.argv[2] if len(sys.argv) > 2 else "stack-r4-20261111"
+    rnd = sys.argv[3] if len(sys.argv) > 3 else "r4"  # round tag in the names
     cells, code, wiring = {}, {}, {}
-    for f in sorted(d.glob(f"*-r4-{tag}.json")):
+    for f in sorted(d.glob(f"*-{rnd}-{tag}.json")):
         m = NAME.match(f.name)
         if not m:
             continue

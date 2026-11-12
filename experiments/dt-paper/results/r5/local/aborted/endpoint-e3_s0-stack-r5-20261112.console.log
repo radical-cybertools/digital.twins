@@ -1,0 +1,673 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm5/orbit-logs/endpoint-e3_s0-61162899.log
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['queue_info', 'sysinfo', 'staging', 'rhapsody', 'globus']
+INFO [PluginHost] Loaded plugin: queue_info
+INFO [PluginHost] Loaded plugin: sysinfo
+INFO [PluginHost] Loaded plugin: staging
+INFO [PluginHost] Loaded plugin: rhapsody
+INFO [PluginHost] Loaded plugin: globus
+INFO Starting ORBIT endpoint (https://10.249.2.115:8141)
+INFO [Runtime] ws_compression=auto: connect 0.4 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] registered as 'e3_s0' (role=endpoint, plugins=['queue_info', 'sysinfo', 'staging', 'rhapsody', 'globus'])
+INFO [rhapsody] Registered session session.e9b00f56
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.e9b00f56.1794475444.telemetry.jsonl
+INFO [session.e9b00f56] Session initialization complete
+WARNING pynvml initialization failed on nid004419 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.764b38d7 (owner=rhapsody.66022a86.inference)
+INFO [sysinfo] Unregistered session session.764b38d7
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 10 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 11 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 11 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 11 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 11 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 8 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 12 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 14 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 11 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 11 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 10 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 10 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 14 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 11 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 3 tasks
+INFO {
+    "session_id": "session.e9b00f56",
+    "duration_seconds": 13.197879,
+    "tasks": {
+        "submitted": 523,
+        "completed": 523,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 98.021972,
+        "mean_seconds": 0.187423,
+        "min_seconds": 0.051086,
+        "max_seconds": 0.324813
+    },
+    "resources": {
+        "concurrent/nid004419": {
+            "backend": "concurrent",
+            "node_id": "nid004419",
+            "cpu_percent": 0.3,
+            "memory_percent": 3.9,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 3917.0,
+            "net_recv_bytes": 3251.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.e9b00f56
+INFO [rhapsody] Registered session session.9c29264a
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.9c29264a.1794475457.telemetry.jsonl
+INFO [session.9c29264a] Session initialization complete
+WARNING pynvml initialization failed on nid004419 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.4e3fbfa9 (owner=rhapsody.8a7b10cc.inference)
+INFO [sysinfo] Unregistered session session.4e3fbfa9
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 3 tasks
+INFO {
+    "session_id": "session.9c29264a",
+    "duration_seconds": 9.330875,
+    "tasks": {
+        "submitted": 263,
+        "completed": 263,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 31.288616,
+        "mean_seconds": 0.118968,
+        "min_seconds": 0.050784,
+        "max_seconds": 0.260359
+    },
+    "resources": {
+        "concurrent/nid004419": {
+            "backend": "concurrent",
+            "node_id": "nid004419",
+            "cpu_percent": 0.4,
+            "memory_percent": 3.9,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 5554.0,
+            "net_recv_bytes": 2877.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.9c29264a
+INFO [rhapsody] Registered session session.e799a0c2
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.e799a0c2.1794475467.telemetry.jsonl
+INFO [session.e799a0c2] Session initialization complete
+WARNING pynvml initialization failed on nid004419 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.9ecf4e1e (owner=rhapsody.5c51f51c.inference)
+INFO [sysinfo] Unregistered session session.9ecf4e1e
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.e799a0c2",
+    "duration_seconds": 7.816131,
+    "tasks": {
+        "submitted": 177,
+        "completed": 177,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 14.756716,
+        "mean_seconds": 0.083371,
+        "min_seconds": 0.050844,
+        "max_seconds": 0.202412
+    },
+    "resources": {
+        "concurrent/nid004419": {
+            "backend": "concurrent",
+            "node_id": "nid004419",
+            "cpu_percent": 0.4,
+            "memory_percent": 3.9,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 8236.0,
+            "net_recv_bytes": 12624.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.e799a0c2
+INFO [rhapsody] Registered session session.d93549eb
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.d93549eb.1794475474.telemetry.jsonl
+INFO [session.d93549eb] Session initialization complete
+WARNING pynvml initialization failed on nid004419 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.d933d75a (owner=rhapsody.3fa1b5d6.inference)
+INFO [sysinfo] Unregistered session session.d933d75a
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO {
+    "session_id": "session.d93549eb",
+    "duration_seconds": 7.161321,
+    "tasks": {
+        "submitted": 133,
+        "completed": 133,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 9.381897,
+        "mean_seconds": 0.070541,
+        "min_seconds": 0.051044,
+        "max_seconds": 0.155412
+    },
+    "resources": {
+        "concurrent/nid004419": {
+            "backend": "concurrent",
+            "node_id": "nid004419",
+            "cpu_percent": 0.4,
+            "memory_percent": 3.9,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 3219.0,
+            "net_recv_bytes": 3385.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.d93549eb
+INFO [rhapsody] Registered session session.c5859098
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.c5859098.1794475483.telemetry.jsonl
+INFO [session.c5859098] Session initialization complete
+INFO [sysinfo] Registered session session.628c1a63 (owner=rhapsody.d7313621)
+INFO [sysinfo] Unregistered session session.628c1a63
+INFO Successfully submitted 1 tasks
+WARNING pynvml initialization failed on nid004419 — GPU metrics disabled: Driver Not Loaded
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 15 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 14 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 14 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 13 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 14 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 14 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 14 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 9 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 9 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 9 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 12 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 12 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 4 tasks
+INFO Successfully submitted 12 tasks
+INFO Successfully submitted 5 tasks
+INFO Successfully submitted 11 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 14 tasks
+INFO Successfully submitted 16 tasks
+INFO Successfully submitted 10 tasks
+INFO Successfully submitted 6 tasks
+INFO Successfully submitted 4 tasks
+INFO {
+    "session_id": "session.c5859098",
+    "duration_seconds": 12.20578,
+    "tasks": {
+        "submitted": 523,
+        "completed": 523,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 108.055157,
+        "mean_seconds": 0.206606,
+        "min_seconds": 0.050864,
+        "max_seconds": 0.3952
+    },
+    "resources": {
+        "concurrent/nid004419": {
+            "backend": "concurrent",
+            "node_id": "nid004419",
+            "cpu_percent": 0.4,
+            "memory_percent": 3.9,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 96553.0,
+            "net_recv_bytes": 8316.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.c5859098
+INFO [rhapsody] Registered session session.c914f53c
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.c914f53c.1794475496.telemetry.jsonl
+INFO [session.c914f53c] Session initialization complete
+WARNING pynvml initialization failed on nid004419 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.620896b7 (owner=rhapsody.7049d153)
+INFO [sysinfo] Unregistered session session.620896b7
+INFO Successfully submitted 1 tasks
+WARNING [rhapsody] session session.c914f53c expired after 903 s without requests or work in flight (idle timeout 900 s, set when the session was created).  Likely API misuse: the client did not close() the session.  To reconnect after longer idle phases, create the session with register_session(ttl=<s>) (ttl=0: never expires) or call touch() now and then.  If this is a legitimate use case, please open an issue: https://github.com/radical-cybertools/radical.orbit/issues
+INFO {
+    "session_id": "session.c914f53c",
+    "duration_seconds": 903.38121,
+    "tasks": {
+        "submitted": 1,
+        "completed": 1,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 0.051509,
+        "mean_seconds": 0.051509,
+        "min_seconds": 0.051509,
+        "max_seconds": 0.051509
+    },
+    "resources": {
+        "concurrent/nid004419": {
+            "backend": "concurrent",
+            "node_id": "nid004419",
+            "cpu_percent": 0.0,
+            "memory_percent": 3.9,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 198.0,
+            "net_recv_bytes": 378.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.

@@ -1,0 +1,216 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: one twin on N sites",
+    "harness": "bench_sites.py",
+    "time": "2026-11-12T13:17:18-0800",
+    "host": "nid005375",
+    "python": "3.12.12",
+    "digital_twins_commit": "f7dc583cc3fc5f6dafeb9db80e261b02feb91c38",
+    "digital_twins_dirty": false,
+    "slurm_job": "61187854",
+    "args": {
+      "broker": "https://10.249.9.31:8141",
+      "endpoints": [
+        "e3_s0",
+        "e3_s1",
+        "e3_s2",
+        "e3_s3"
+      ],
+      "n": "1,2,3,4",
+      "layout": "one",
+      "work_ms": 50.0,
+      "work": "cpu",
+      "seq": 20,
+      "tasks": 200,
+      "concurrent": 16,
+      "bursts": 5,
+      "timeout": 120.0,
+      "out": "experiments/dt-paper/results/r5/cpu5/sites-one-n1_2_3_4-r2-r5-stack-r5-20261112.json"
+    }
+  },
+  "work_model": "cpu",
+  "points": [
+    {
+      "n": 1,
+      "layout": "one",
+      "engines": {
+        "inference": {
+          "endpoint_name": "e3_s0",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null
+      ],
+      "expected_endpoint": [
+        "e3_s0"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 1023
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 0.7054197788238525,
+      "seq_p50_ms": 58.38971499179024,
+      "bursts_s": [
+        10.252589857002022,
+        10.303081630001543,
+        10.261928979001823,
+        10.243457761986065,
+        10.288947041000938
+      ],
+      "req_per_s_bursts_2_5": 19.463924115806925,
+      "req_per_s_first": 19.50726624096932,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": null
+    },
+    {
+      "n": 2,
+      "layout": "one",
+      "engines": {
+        "inference": {
+          "endpoint_name": "e3_s0",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        null
+      ],
+      "expected_endpoint": [
+        "e3_s0",
+        "e3_s0"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 513
+        },
+        "1": {
+          "e3_s0": 513
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 0.8729908466339111,
+      "seq_p50_ms": 58.2039210057701,
+      "bursts_s": [
+        10.339355082003749,
+        10.262150795999332,
+        10.267867752991151,
+        10.266863905009814,
+        10.274843768012943
+      ],
+      "req_per_s_bursts_2_5": 19.47919298960303,
+      "req_per_s_first": 19.343566248934778,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": null
+    },
+    {
+      "n": 3,
+      "layout": "one",
+      "engines": {
+        "inference": {
+          "endpoint_name": "e3_s0",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        null,
+        null
+      ],
+      "expected_endpoint": [
+        "e3_s0",
+        "e3_s0",
+        "e3_s0"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 343
+        },
+        "1": {
+          "e3_s0": 343
+        },
+        "2": {
+          "e3_s0": 343
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 1.0418875217437744,
+      "seq_p50_ms": 58.1903029960813,
+      "bursts_s": [
+        10.327395334999892,
+        10.294455691997427,
+        10.282834215991898,
+        10.241146157000912,
+        10.325726745999418
+      ],
+      "req_per_s_bursts_2_5": 19.4389119935408,
+      "req_per_s_first": 19.365967265937158,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": null
+    },
+    {
+      "n": 4,
+      "layout": "one",
+      "engines": {
+        "inference": {
+          "endpoint_name": "e3_s0",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "expected_endpoint": [
+        "e3_s0",
+        "e3_s0",
+        "e3_s0",
+        "e3_s0"
+      ],
+      "ran_on": {
+        "0": {
+          "e3_s0": 258
+        },
+        "1": {
+          "e3_s0": 258
+        },
+        "2": {
+          "e3_s0": 258
+        },
+        "3": {
+          "e3_s0": 258
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 1.2170977592468262,
+      "seq_p50_ms": 58.653956999478396,
+      "bursts_s": [
+        10.307568813994294,
+        10.254556518993923,
+        10.284058176999679,
+        10.261323509999784,
+        10.258483221987262
+      ],
+      "req_per_s_bursts_2_5": 19.493361359985926,
+      "req_per_s_first": 19.40321753937414,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": null
+    }
+  ]
+}

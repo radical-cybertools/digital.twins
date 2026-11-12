@@ -1,0 +1,285 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: one twin on N sites",
+    "harness": "bench_sites.py",
+    "time": "2026-11-12T02:15:56-0800",
+    "host": "nid007021",
+    "python": "3.12.12",
+    "digital_twins_commit": "18eaa591248df5ac28b74ef14f54f09cdc661d2b",
+    "digital_twins_dirty": false,
+    "slurm_job": "61164117",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "endpoints": [
+        "pm_e3_s0_61164117",
+        "pm_e3_s1_61164117",
+        "pm_e3_s2_61164117",
+        "r3_site"
+      ],
+      "n": "1,2,3,4",
+      "layout": "spread",
+      "work_ms": 50.0,
+      "work": "cpu",
+      "seq": 20,
+      "tasks": 100,
+      "concurrent": 16,
+      "bursts": 5,
+      "timeout": 120.0,
+      "out": "experiments/dt-paper/results/r5/remote/sites-spread-r3-r5-stack-r5-20261112.json"
+    }
+  },
+  "work_model": "cpu",
+  "points": [
+    {
+      "n": 1,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "pm_e3_s0_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null
+      ],
+      "expected_endpoint": [
+        "pm_e3_s0_61164117"
+      ],
+      "ran_on": {
+        "0": {
+          "pm_e3_s0_61164117": 523
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 3.209251880645752,
+      "seq_p50_ms": 392.12959750148,
+      "bursts_s": [
+        7.680480073999206,
+        7.676117066999723,
+        7.747178031000658,
+        7.700216354998702,
+        7.429666365002049
+      ],
+      "req_per_s_bursts_2_5": 13.00703397855078,
+      "req_per_s_first": 13.020019456665326,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": null
+    },
+    {
+      "n": 2,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "pm_e3_s0_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "pm_e3_s1_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1"
+      ],
+      "expected_endpoint": [
+        "pm_e3_s0_61164117",
+        "pm_e3_s1_61164117"
+      ],
+      "ran_on": {
+        "0": {
+          "pm_e3_s0_61164117": 263
+        },
+        "1": {
+          "pm_e3_s1_61164117": 263
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 4.879967927932739,
+      "seq_p50_ms": 391.52323699818226,
+      "bursts_s": [
+        4.9767753849955625,
+        5.037531835005211,
+        4.9553230029996485,
+        4.861392377999437,
+        4.889635185994848
+      ],
+      "req_per_s_bursts_2_5": 20.315871361277164,
+      "req_per_s_first": 20.093331979877803,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_1": {
+            "endpoint_name": "pm_e3_s1_61164117",
+            "backends": [
+              "concurrent"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_1",
+        "lines": 2
+      }
+    },
+    {
+      "n": 3,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "pm_e3_s0_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "pm_e3_s1_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_2": {
+          "endpoint_name": "pm_e3_s2_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1",
+        "site_2"
+      ],
+      "expected_endpoint": [
+        "pm_e3_s0_61164117",
+        "pm_e3_s1_61164117",
+        "pm_e3_s2_61164117"
+      ],
+      "ran_on": {
+        "0": {
+          "pm_e3_s0_61164117": 177
+        },
+        "1": {
+          "pm_e3_s1_61164117": 176
+        },
+        "2": {
+          "pm_e3_s2_61164117": 176
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 6.597376346588135,
+      "seq_p50_ms": 392.3098755039973,
+      "bursts_s": [
+        4.0736359050060855,
+        4.149148816999514,
+        4.217427160998341,
+        4.2592347170066205,
+        4.167601963999914
+      ],
+      "req_per_s_bursts_2_5": 23.852876254140455,
+      "req_per_s_first": 24.548094707509364,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_2": {
+            "endpoint_name": "pm_e3_s2_61164117",
+            "backends": [
+              "concurrent"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_2",
+        "lines": 2
+      }
+    },
+    {
+      "n": 4,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "pm_e3_s0_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "pm_e3_s1_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_2": {
+          "endpoint_name": "pm_e3_s2_61164117",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_3": {
+          "endpoint_name": "r3_site",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1",
+        "site_2",
+        "site_3"
+      ],
+      "expected_endpoint": [
+        "pm_e3_s0_61164117",
+        "pm_e3_s1_61164117",
+        "pm_e3_s2_61164117",
+        "r3_site"
+      ],
+      "ran_on": {
+        "0": {
+          "pm_e3_s0_61164117": 133
+        },
+        "1": {
+          "pm_e3_s1_61164117": 133
+        },
+        "2": {
+          "pm_e3_s2_61164117": 133
+        },
+        "3": {
+          "r3_site": 133
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 7.28432822227478,
+      "seq_p50_ms": 391.65680349833565,
+      "bursts_s": [
+        3.4995353170015733,
+        3.5538297849998344,
+        3.44340755900339,
+        3.5552371840021806,
+        3.467803006002214
+      ],
+      "req_per_s_bursts_2_5": 28.487679601033,
+      "req_per_s_first": 28.575222405722343,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_3": {
+            "endpoint_name": "r3_site",
+            "backends": [
+              "concurrent"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_3",
+        "lines": 2
+      }
+    }
+  ]
+}

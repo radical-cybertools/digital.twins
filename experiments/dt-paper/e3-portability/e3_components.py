@@ -27,18 +27,23 @@ OUT = DataType("e3_answer")
 class SiteInvestigator(ModelInvestigator):
     """Answers `{site, inv, v}` after `work_ms` of CPU on its site."""
 
-    def __init__(self, flow, inv: int, site: Optional[str], work_ms: float):
+    def __init__(self, flow, inv: int, site: Optional[str], work_ms: float,
+                 work: str = "wall"):
         super().__init__(flow)
         label = {} if site is None else {"backend": site}
 
         @flow.function_task(**label)
-        async def work(value, inv=inv, work_ms=work_ms):
+        async def work(value, inv=inv, work_ms=work_ms, model=work):
             import os
             import socket
             import time
 
-            end = time.perf_counter() + work_ms / 1000.0
-            while time.perf_counter() < end:  # hold the GIL: one core per site
+            # wall: spin until work_ms of wall time has passed (tasks on one
+            # endpoint overlap); cpu: until this thread has used work_ms of
+            # CPU, so tasks on one endpoint share its GIL (round 5)
+            clock = time.thread_time if model == "cpu" else time.perf_counter
+            end = clock() + work_ms / 1000.0
+            while clock() < end:
                 pass
             return {
                 "site": os.environ.get("DT_TEST_ENDPOINT_TAG") or socket.gethostname(),
@@ -63,10 +68,10 @@ class SiteAgent(SciAgent):
     no remote task: every request is exactly one task on one site.
     """
 
-    def __init__(self, flow, sites: list, work_ms: float = 50.0):
+    def __init__(self, flow, sites: list, work_ms: float = 50.0, work: str = "wall"):
         super().__init__(flow)
         self.investigators_ = [
-            SiteInvestigator(flow, k, site, work_ms) for k, site in enumerate(sites)
+            SiteInvestigator(flow, k, site, work_ms, work) for k, site in enumerate(sites)
         ]
         self._next = itertools.count()
 

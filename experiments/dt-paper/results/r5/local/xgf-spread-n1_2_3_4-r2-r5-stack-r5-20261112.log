@@ -1,0 +1,4 @@
+xgf spread n=1: seq p50 55.0 ms, bursts 2-5 45.0 req/s, placement ok {'0': {'e3_s0': 523}}
+xgf spread n=2: seq p50 56.1 ms, bursts 2-5 72.0 req/s, placement ok {'0': {'e3_s0': 263}, '1': {'e3_s1': 263}}
+xgf spread n=3: seq p50 56.0 ms, bursts 2-5 93.8 req/s, placement ok {'0': {'e3_s0': 177}, '1': {'e3_s1': 176}, '2': {'e3_s2': 176}}
+xgf spread n=4: seq p50 56.0 ms, bursts 2-5 105.9 req/s, placement ok {'0': {'e3_s0': 133}, '1': {'e3_s1': 133}, '2': {'e3_s2': 133}, '3': {'e3_s3': 133}}

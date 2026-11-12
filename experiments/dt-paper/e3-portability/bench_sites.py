@@ -111,12 +111,12 @@ def code_per_site(engines, sites, n):
     }
 
 
-def build_twin(dt, sites, work_ms):
+def build_twin(dt, sites, work_ms, work="wall"):
     twin = str(uuid.uuid4())
     dt.create_twin(twin)
     dt.add_agent(
         twin,
-        dt.package(e3_components.SiteAgent, sites=sites, work_ms=work_ms),
+        dt.package(e3_components.SiteAgent, sites=sites, work_ms=work_ms, work=work),
         e3_components.IN,
         e3_components.OUT,
     )
@@ -165,7 +165,7 @@ def one_n(runtime, args, n):
     cfg = {"engines": engines}
     t0 = time.time()
     dt = runtime.get_plugin("broker", "dt", config=cfg)
-    twin = build_twin(dt, sites, args.work_ms)
+    twin = build_twin(dt, sites, args.work_ms, args.work)
     placed = []
     for i in range(3 * n):  # warm-up: every investigator a few times
         a = call(dt, twin, i, args.timeout)
@@ -233,6 +233,8 @@ def main() -> int:
     p.add_argument("--n", default="1,2,3,4", help="investigator / site counts")
     p.add_argument("--layout", choices=["spread", "one"], default="spread")
     p.add_argument("--work-ms", type=float, default=50.0)
+    p.add_argument("--work", choices=["wall", "cpu"], default="wall",
+                   help="wall: wall-clock busy loop; cpu: thread CPU time (round 5)")
     p.add_argument("--seq", type=int, default=20)
     p.add_argument("--tasks", type=int, default=200, help="requests per burst")
     p.add_argument("--concurrent", type=int, default=16, help="client threads")
@@ -245,7 +247,7 @@ def main() -> int:
     if args.layout == "spread" and max(ns) > len(args.endpoints):
         p.error(f"spread needs {max(ns)} endpoints, got {len(args.endpoints)}")
 
-    res = {"provenance": provenance(args), "points": []}
+    res = {"provenance": provenance(args), "work_model": args.work, "points": []}
     runtime = EndpointRuntime(broker_url=args.broker)
     runtime.start(wait=True)
     try:

@@ -1,0 +1,4 @@
+spread n=1: seq p50 391.0 ms, bursts 2-5 13.2 req/s, placement ok {'0': {'pm_e3_s0_61164117': 523}}, errors 0
+spread n=2: seq p50 390.4 ms, bursts 2-5 19.7 req/s, placement ok {'0': {'pm_e3_s0_61164117': 263}, '1': {'pm_e3_s1_61164117': 263}}, errors 0
+spread n=3: seq p50 391.2 ms, bursts 2-5 23.9 req/s, placement ok {'0': {'pm_e3_s0_61164117': 177}, '1': {'pm_e3_s1_61164117': 176}, '2': {'pm_e3_s2_61164117': 176}}, errors 0
+spread n=4: seq p50 389.6 ms, bursts 2-5 29.3 req/s, placement ok {'0': {'pm_e3_s0_61164117': 133}, '1': {'pm_e3_s1_61164117': 133}, '2': {'pm_e3_s2_61164117': 133}, '3': {'r3_site': 133}}, errors 0

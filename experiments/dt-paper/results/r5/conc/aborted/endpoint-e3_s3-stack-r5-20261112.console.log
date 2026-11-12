@@ -1,0 +1,171 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm5/orbit-logs/endpoint-e3_s3-61162942.log
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['queue_info', 'sysinfo', 'staging', 'rhapsody', 'globus']
+INFO [PluginHost] Loaded plugin: queue_info
+INFO [PluginHost] Loaded plugin: sysinfo
+INFO [PluginHost] Loaded plugin: staging
+INFO [PluginHost] Loaded plugin: rhapsody
+INFO [PluginHost] Loaded plugin: globus
+INFO Starting ORBIT endpoint (https://10.249.11.187:8141)
+INFO [Runtime] ws_compression=auto: connect 0.4 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] registered as 'e3_s3' (role=endpoint, plugins=['queue_info', 'sysinfo', 'staging', 'rhapsody', 'globus'])
+INFO [rhapsody] Registered session session.704dc47a
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.704dc47a.1794475366.telemetry.jsonl
+INFO [session.704dc47a] Session initialization complete
+WARNING pynvml initialization failed on nid006594 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.6564489a (owner=rhapsody.17da1f83.site_3)
+INFO [sysinfo] Unregistered session session.6564489a
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 3 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 2 tasks
+INFO {
+    "session_id": "session.704dc47a",
+    "duration_seconds": 7.080618,
+    "tasks": {
+        "submitted": 133,
+        "completed": 133,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 9.933741,
+        "mean_seconds": 0.07469,
+        "min_seconds": 0.051098,
+        "max_seconds": 0.176818
+    },
+    "resources": {
+        "concurrent/nid006594": {
+            "backend": "concurrent",
+            "node_id": "nid006594",
+            "cpu_percent": 0.6,
+            "memory_percent": 4.3,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 9055.0,
+            "net_recv_bytes": 7380.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.704dc47a
+INFO [rhapsody] Registered session session.3e2f8e29
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.3e2f8e29.1794475388.telemetry.jsonl
+INFO [session.3e2f8e29] Session initialization complete
+WARNING pynvml initialization failed on nid006594 — GPU metrics disabled: Driver Not Loaded
+WARNING [rhapsody] session session.3e2f8e29 expired after 903 s without requests or work in flight (idle timeout 900 s, set when the session was created).  Likely API misuse: the client did not close() the session.  To reconnect after longer idle phases, create the session with register_session(ttl=<s>) (ttl=0: never expires) or call touch() now and then.  If this is a legitimate use case, please open an issue: https://github.com/radical-cybertools/radical.orbit/issues
+INFO {
+    "session_id": "session.3e2f8e29",
+    "duration_seconds": 903.324126,
+    "tasks": {
+        "submitted": 0,
+        "completed": 0,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {},
+    "resources": {
+        "concurrent/nid006594": {
+            "backend": "concurrent",
+            "node_id": "nid006594",
+            "cpu_percent": 0.0,
+            "memory_percent": 4.2,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 0.0,
+            "net_recv_bytes": 180.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+[2026-11-12T09:42:23.087] error: *** STEP 61162942.2 ON nid006594 CANCELLED AT 2026-11-12T09:42:23 DUE TO TIME LIMIT ***
+INFO Received shutdown signal
+INFO Endpoint stopping

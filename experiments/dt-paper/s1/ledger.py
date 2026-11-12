@@ -8,9 +8,10 @@ into the table under the "Round 2b" / "Round 2c" heading.  With `3`, the
 round-3 jobs (names r3-*) into JOURNAL-pm-20261110.md, with `3b` the
 round-3b jobs (names r3b-*) into JOURNAL-pm-20261110b.md, with `3c` the
 round-3c jobs (names r3c-*) into JOURNAL-pm-20261111.md, with `4` the
-round-4 jobs (names r4-*) into JOURNAL-pm-20261111b.md.
+round-4 jobs (names r4-*) into JOURNAL-pm-20261111b.md, with `5` the
+round-5 jobs (names r5-*) into JOURNAL-pm-20261112.md.
 
-    python experiments/dt-paper/s1/ledger.py [2b|2c|3|3b|3c|4]
+    python experiments/dt-paper/s1/ledger.py [2b|2c|3|3b|3c|4|5]
 """
 
 import subprocess
@@ -27,12 +28,14 @@ ROUNDS = {  # round: (start, job-name prefixes, heading the table follows)
     "3b": ("2026-11-10T15:00", ("r3b-",), "## Node-hour ledger"),
     "3c": ("2026-11-10T16:00", ("r3c-",), "## Node-hour ledger"),
     "4": ("2026-11-11T03:00", ("r4-",), "## Node-hour ledger"),
+    "5": ("2026-11-12T00:00", ("r5-",), "## Node-hour ledger"),
 }
 JOURNALS = {"3": JOURNAL.with_name("JOURNAL-pm-20261110.md"),
             "3b": JOURNAL.with_name("JOURNAL-pm-20261110b.md"),
             "3c": JOURNAL.with_name("JOURNAL-pm-20261111.md"),
-            "4": JOURNAL.with_name("JOURNAL-pm-20261111b.md")}
-BUDGET = {"3": 25, "3b": 8, "3c": 1.5, "4": 8}
+            "4": JOURNAL.with_name("JOURNAL-pm-20261111b.md"),
+            "5": JOURNAL.with_name("JOURNAL-pm-20261112.md")}
+BUDGET = {"3": 25, "3b": 8, "3c": 1.5, "4": 8, "5": 6}
 HEAD = ("| job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |\n"
         "|---|---|---|---|---|---|---|---|\n")
 

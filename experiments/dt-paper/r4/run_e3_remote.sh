@@ -13,7 +13,8 @@
 # with radical.3 as the fourth site, 3 repeats.
 #   sbatch -A m5290 -q regular r4/run_e3_remote.sh
 # Round 4 knobs (defaults as before): REPEATS ("1 2 3"), LAYOUTS ("spread one"),
-# HARNESSES ("dt xgf").  The job stops (exit 6) if r3_site is not in the
+# HARNESSES ("dt xgf"), ARGS (extra harness arguments), RT (round tag in the
+# file names, default r4).  The job stops (exit 6) if r3_site is not in the
 # broker's topology.
 # Credentials: the default pair and token in ~/.radical/orbit, read only
 # (round 2's S2 rule); the throwaway variables are unset.
@@ -59,10 +60,10 @@ EP_LIST=pm_e3_s0_$SLURM_JOB_ID,pm_e3_s1_$SLURM_JOB_ID,pm_e3_s2_$SLURM_JOB_ID,r3_
 for r in ${REPEATS:-1 2 3}; do
   for lay in ${LAYOUTS:-spread one}; do
     for h in ${HARNESSES:-dt xgf}; do
-      if [ $h = dt ]; then H=bench_sites.py; f=$R/sites-$lay-r$r-r4-$D
-      else H=xgf_sites.py; f=$R/xgf-$lay-r$r-r4-$D; fi
+      if [ $h = dt ]; then H=bench_sites.py; f=$R/sites-$lay-r$r-${RT:-r4}-$D
+      else H=xgf_sites.py; f=$R/xgf-$lay-r$r-${RT:-r4}-$D; fi
       python $E3/$H --broker $URL --endpoints $EP_LIST --n 1,2,3,4 \
-          --layout $lay --tasks 100 --out $f.json > $f.log 2>&1
+          --layout $lay --tasks 100 ${ARGS:-} --out $f.json > $f.log 2>&1
       echo "$h $lay r$r rc=$? $(date -u +%T) $(grep -h 'req/s' $f.log | tr '\n' '|')"
     done
   done

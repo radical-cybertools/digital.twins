@@ -1,0 +1,306 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: one twin on N sites",
+    "harness": "bench_sites.py",
+    "time": "2026-11-12T13:05:47-0800",
+    "host": "nid004185",
+    "python": "3.12.12",
+    "digital_twins_commit": "f7dc583cc3fc5f6dafeb9db80e261b02feb91c38",
+    "digital_twins_dirty": false,
+    "slurm_job": "61187855",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "endpoints": [
+        "pm_e3_s0_61187855",
+        "pm_e3_s1_61187855",
+        "pm_e3_s2_61187855",
+        "r3_site"
+      ],
+      "n": "1,2,3,4",
+      "layout": "spread",
+      "work_ms": 50.0,
+      "work": "cpu",
+      "seq": 20,
+      "tasks": 100,
+      "concurrent": 64,
+      "bursts": 5,
+      "timeout": 120.0,
+      "out": "experiments/dt-paper/results/r5/remote64/sites-spread-r2-r5-stack-r5-20261112.json"
+    }
+  },
+  "work_model": "cpu",
+  "points": [
+    {
+      "n": 1,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "pm_e3_s0_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null
+      ],
+      "expected_endpoint": [
+        "pm_e3_s0_61187855"
+      ],
+      "ran_on": {
+        "0": {
+          "pm_e3_s0_61187855": 460
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 3.3953347206115723,
+      "seq_p50_ms": 404.2027159957797,
+      "bursts_s": [
+        6.304687490002834,
+        35.13931552199938,
+        6.2185354460089,
+        6.258215498994105,
+        6.282096259004902
+      ],
+      "req_per_s_bursts_2_5": 15.948624655331727,
+      "req_per_s_first": 15.861214399376209,
+      "errors": [
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out",
+        "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin 5feb5ce5-ad30-4213-bb6b-9a41c8c3e479: get_inference: RuntimeError: HTTP 504 \u2014 [pm_e3_s0_61187855/rhapsody] submit 63 task(s) \u2014 call timed out"
+      ],
+      "n_errors": 63,
+      "code_per_site": null
+    },
+    {
+      "n": 2,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "pm_e3_s0_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "pm_e3_s1_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1"
+      ],
+      "expected_endpoint": [
+        "pm_e3_s0_61187855",
+        "pm_e3_s1_61187855"
+      ],
+      "ran_on": {
+        "0": {
+          "pm_e3_s0_61187855": 263
+        },
+        "1": {
+          "pm_e3_s1_61187855": 263
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 5.0469958782196045,
+      "seq_p50_ms": 405.40470099949744,
+      "bursts_s": [
+        3.6403567750094226,
+        3.78210670799308,
+        3.7536886769958073,
+        3.614969996997388,
+        3.637800419004634
+      ],
+      "req_per_s_bursts_2_5": 27.064800236881496,
+      "req_per_s_first": 27.469835013558846,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_1": {
+            "endpoint_name": "pm_e3_s1_61187855",
+            "backends": [
+              "concurrent"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_1",
+        "lines": 2
+      }
+    },
+    {
+      "n": 3,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "pm_e3_s0_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "pm_e3_s1_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_2": {
+          "endpoint_name": "pm_e3_s2_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1",
+        "site_2"
+      ],
+      "expected_endpoint": [
+        "pm_e3_s0_61187855",
+        "pm_e3_s1_61187855",
+        "pm_e3_s2_61187855"
+      ],
+      "ran_on": {
+        "0": {
+          "pm_e3_s0_61187855": 177
+        },
+        "1": {
+          "pm_e3_s1_61187855": 176
+        },
+        "2": {
+          "pm_e3_s2_61187855": 176
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 6.790930509567261,
+      "seq_p50_ms": 405.893618495611,
+      "bursts_s": [
+        2.757031460001599,
+        2.897249034998822,
+        2.77829342399491,
+        2.8471765069989488,
+        2.8616690380004
+      ],
+      "req_per_s_bursts_2_5": 35.03357856500371,
+      "req_per_s_first": 36.27089550873025,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_2": {
+            "endpoint_name": "pm_e3_s2_61187855",
+            "backends": [
+              "concurrent"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_2",
+        "lines": 2
+      }
+    },
+    {
+      "n": 4,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "pm_e3_s0_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "pm_e3_s1_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_2": {
+          "endpoint_name": "pm_e3_s2_61187855",
+          "backends": [
+            "concurrent"
+          ]
+        },
+        "site_3": {
+          "endpoint_name": "r3_site",
+          "backends": [
+            "concurrent"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1",
+        "site_2",
+        "site_3"
+      ],
+      "expected_endpoint": [
+        "pm_e3_s0_61187855",
+        "pm_e3_s1_61187855",
+        "pm_e3_s2_61187855",
+        "r3_site"
+      ],
+      "ran_on": {
+        "0": {
+          "pm_e3_s0_61187855": 133
+        },
+        "1": {
+          "pm_e3_s1_61187855": 133
+        },
+        "2": {
+          "pm_e3_s2_61187855": 133
+        },
+        "3": {
+          "r3_site": 133
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 7.512831211090088,
+      "seq_p50_ms": 405.8570470006089,
+      "bursts_s": [
+        2.184808302001329,
+        2.191924992002896,
+        2.177843216995825,
+        2.1765986880054697,
+        2.1819871329935268
+      ],
+      "req_per_s_bursts_2_5": 45.873386032495844,
+      "req_per_s_first": 45.77060601078728,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_3": {
+            "endpoint_name": "r3_site",
+            "backends": [
+              "concurrent"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_3",
+        "lines": 2
+      }
+    }
+  ]
+}

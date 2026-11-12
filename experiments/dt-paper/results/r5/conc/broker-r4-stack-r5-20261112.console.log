@@ -1,0 +1,3665 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm5/orbit-logs/broker-r4-61163550.log
+[Broker] using     cert  at /pscratch/sd/m/merzky/dt-pm5/tls/r4-61163550/broker_cert.pem
+[Broker] using     token from $RADICAL_ORBIT_BROKER_TOKEN
+[Broker] listening       on https://10.249.21.201:8141
+
+  On Client:
+    export RADICAL_ORBIT_BROKER_URL=https://10.249.21.201:8141
+    export RADICAL_ORBIT_BROKER_TOKEN=<the configured token>
+    mkdir -p ~/.radical/orbit && scp 10.249.21.201:/pscratch/sd/m/merzky/dt-pm5/tls/r4-61163550/broker_cert.pem ~/.radical/orbit/broker_cert.pem
+
+  On Endpoint:
+    export RADICAL_ORBIT_BROKER_URL=https://10.249.21.201:8141
+    mkdir -p ~/.radical/orbit && scp 10.249.21.201:/pscratch/sd/m/merzky/dt-pm5/tls/r4-61163550/broker_cert.pem ~/.radical/orbit/broker_cert.pem
+
+INFO:     Started server process [419496]
+INFO:     Waiting for application startup.
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['dt']
+INFO [PluginHost] Loaded plugin: dt
+INFO [Broker] hosted plugins: ['dt']
+INFO:     Application startup complete.
+INFO:     Uvicorn running on https://10.249.21.201:8141 (Press CTRL+C to quit)
+INFO:     10.249.21.220:54670 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.233:60874 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.219:49506 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.234:38680 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:33064 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [dt] Registered session session.de87f09b (owner=None)
+INFO [dt] session session.de87f09b created twin 1aaca37c-6b7e-46a1-8797-18296ce31fe8
+INFO [dt] session session.de87f09b building 'inference' backend on endpoint e3_s0
+INFO [Runtime] ws_compression=auto: connect 0.4 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:33078 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'rhapsody.de87f09b.inference' (role=engine, plugins=[])
+INFO ORBIT task callbacks scoped to session session.ecd87626
+INFO Orbit backend ready: e3_s0/rhapsody (session session.ecd87626)
+WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
+INFO connecting stream participant dt_stream.1aaca37c.c336
+INFO [Runtime] ws_compression=auto: connect 0.3 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:33092 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'dt_stream.1aaca37c.c336' (role=stream, plugins=[])
+INFO [dt] twin 1aaca37c-6b7e-46a1-8797-18296ce31fe8 ready
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO [dt] reattached session session.de87f09b
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Shutting down runtime....
+INFO [dt] session session.de87f09b closed twin 1aaca37c-6b7e-46a1-8797-18296ce31fe8
+INFO Initiating shutdown
+INFO Orbit execution backend shutdown complete
+INFO Shutdown completed for all components.
+INFO [dt] Unregistered session session.de87f09b
+INFO [dt] Registered session session.a135e95a (owner=None)
+INFO [dt] session session.a135e95a created twin fce36d11-ed86-4f89-be23-ca3d2bb0b671
+INFO [dt] session session.a135e95a building 'inference' backend on endpoint e3_s0
+INFO [dt] session session.a135e95a building 'site_1' backend on endpoint e3_s1
+INFO [dt] session session.a135e95a building 'site_2' backend on endpoint e3_s2
+INFO [dt] session session.a135e95a building 'site_3' backend on endpoint e3_s3
+INFO [Runtime] ws_compression=auto: connect 0.7 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 1.1 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 1.4 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 0.8 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:37442 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:37474 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:37504 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:37516 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'rhapsody.a135e95a.site_1' (role=engine, plugins=[])
+INFO [Runtime] registered as 'rhapsody.a135e95a.inference' (role=engine, plugins=[])
+INFO [Runtime] registered as 'rhapsody.a135e95a.site_3' (role=engine, plugins=[])
+INFO [Runtime] registered as 'rhapsody.a135e95a.site_2' (role=engine, plugins=[])
+INFO ORBIT task callbacks scoped to session session.3e6f100b
+INFO Orbit backend ready: e3_s0/rhapsody (session session.3e6f100b)
+WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
+INFO ORBIT task callbacks scoped to session session.afaf890f
+INFO Orbit backend ready: e3_s3/rhapsody (session session.afaf890f)
+INFO ORBIT task callbacks scoped to session session.55fefb0d
+INFO Orbit backend ready: e3_s2/rhapsody (session session.55fefb0d)
+INFO ORBIT task callbacks scoped to session session.42dcd5e6
+INFO Orbit backend ready: e3_s1/rhapsody (session session.42dcd5e6)
+INFO connecting stream participant dt_stream.fce36d11.8db5
+INFO [Runtime] ws_compression=auto: connect 0.4 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:37532 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'dt_stream.fce36d11.8db5' (role=stream, plugins=[])
+INFO [dt] twin fce36d11-ed86-4f89-be23-ca3d2bb0b671 ready
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO [dt] reattached session session.a135e95a
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Shutting down runtime....
+INFO [dt] session session.a135e95a closed twin fce36d11-ed86-4f89-be23-ca3d2bb0b671
+INFO Initiating shutdown
+INFO Orbit execution backend shutdown complete
+INFO Orbit execution backend shutdown complete
+ERROR [Broker] connection error (rhapsody.a135e95a.site_1): WebSocket is not connected. Need to call "accept" first.
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/radical/orbit/broker.py", line 754, in register
+    data = await ws.receive_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/starlette/websockets.py", line 131, in receive_bytes
+    raise WebSocketDisconnected('WebSocket is not connected. Need to call "accept" first.')
+starlette.websockets.WebSocketDisconnected: WebSocket is not connected. Need to call "accept" first.
+INFO Orbit execution backend shutdown complete
+INFO Orbit execution backend shutdown complete
+INFO Shutdown completed for all components.
+INFO [dt] Unregistered session session.a135e95a
+ERROR [Broker] connection error (rhapsody.a135e95a.site_3): WebSocket is not connected. Need to call "accept" first.
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/radical/orbit/broker.py", line 754, in register
+    data = await ws.receive_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/starlette/websockets.py", line 131, in receive_bytes
+    raise WebSocketDisconnected('WebSocket is not connected. Need to call "accept" first.')
+starlette.websockets.WebSocketDisconnected: WebSocket is not connected. Need to call "accept" first.
+INFO:     10.249.21.201:49368 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:50814 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:50822 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:50848 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:50872 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:50902 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [dt] Registered session session.89030343 (owner=None)
+INFO [dt] session session.89030343 created twin 7d73d420-0d2f-4ba2-a9c9-f423f90bd04a
+INFO [dt] session session.89030343 building 'inference' backend on endpoint e3_s0
+INFO [Runtime] ws_compression=auto: connect 0.3 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:50916 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'rhapsody.89030343.inference' (role=engine, plugins=[])
+INFO ORBIT task callbacks scoped to session session.c67c3032
+INFO Orbit backend ready: e3_s0/rhapsody (session session.c67c3032)
+WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
+INFO connecting stream participant dt_stream.7d73d420.b455
+INFO [Runtime] ws_compression=auto: connect 0.3 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:50928 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'dt_stream.7d73d420.b455' (role=stream, plugins=[])
+INFO [dt] twin 7d73d420-0d2f-4ba2-a9c9-f423f90bd04a ready
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO [dt] reattached session session.89030343
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Shutting down runtime....
+INFO [dt] session session.89030343 closed twin 7d73d420-0d2f-4ba2-a9c9-f423f90bd04a
+INFO Initiating shutdown
+INFO Orbit execution backend shutdown complete
+INFO Shutdown completed for all components.
+INFO [dt] Unregistered session session.89030343
+INFO [dt] Registered session session.564df594 (owner=None)
+INFO [dt] session session.564df594 created twin eba8c684-6960-4408-a14b-24fccea41ee9
+INFO [dt] session session.564df594 building 'inference' backend on endpoint e3_s0
+INFO [dt] session session.564df594 building 'site_1' backend on endpoint e3_s1
+INFO [dt] session session.564df594 building 'site_2' backend on endpoint e3_s2
+INFO [dt] session session.564df594 building 'site_3' backend on endpoint e3_s3
+INFO [Runtime] ws_compression=auto: connect 0.8 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 0.7 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 1.6 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 2.4 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:49408 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:49412 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:49420 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:49424 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'rhapsody.564df594.inference' (role=engine, plugins=[])
+INFO [Runtime] registered as 'rhapsody.564df594.site_1' (role=engine, plugins=[])
+INFO [Runtime] registered as 'rhapsody.564df594.site_3' (role=engine, plugins=[])
+INFO [Runtime] registered as 'rhapsody.564df594.site_2' (role=engine, plugins=[])
+INFO ORBIT task callbacks scoped to session session.bb286c5f
+INFO Orbit backend ready: e3_s0/rhapsody (session session.bb286c5f)
+WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
+INFO ORBIT task callbacks scoped to session session.68c5c05f
+INFO Orbit backend ready: e3_s3/rhapsody (session session.68c5c05f)
+INFO ORBIT task callbacks scoped to session session.7a174f68
+INFO Orbit backend ready: e3_s1/rhapsody (session session.7a174f68)
+INFO ORBIT task callbacks scoped to session session.7e2eb50c
+INFO Orbit backend ready: e3_s2/rhapsody (session session.7e2eb50c)
+INFO connecting stream participant dt_stream.eba8c684.23d6
+INFO [Runtime] ws_compression=auto: connect 0.3 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:49438 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'dt_stream.eba8c684.23d6' (role=stream, plugins=[])
+INFO [dt] twin eba8c684-6960-4408-a14b-24fccea41ee9 ready
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO [dt] reattached session session.564df594
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Shutting down runtime....
+INFO [dt] session session.564df594 closed twin eba8c684-6960-4408-a14b-24fccea41ee9
+INFO Initiating shutdown
+INFO Orbit execution backend shutdown complete
+INFO Orbit execution backend shutdown complete
+ERROR [Broker] connection error (rhapsody.564df594.site_3): WebSocket is not connected. Need to call "accept" first.
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/radical/orbit/broker.py", line 754, in register
+    data = await ws.receive_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/starlette/websockets.py", line 131, in receive_bytes
+    raise WebSocketDisconnected('WebSocket is not connected. Need to call "accept" first.')
+starlette.websockets.WebSocketDisconnected: WebSocket is not connected. Need to call "accept" first.
+INFO Orbit execution backend shutdown complete
+INFO Orbit execution backend shutdown complete
+INFO Shutdown completed for all components.
+INFO [dt] Unregistered session session.564df594
+ERROR [Broker] connection error (rhapsody.564df594.site_2): WebSocket is not connected. Need to call "accept" first.
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/radical/orbit/broker.py", line 754, in register
+    data = await ws.receive_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/starlette/websockets.py", line 131, in receive_bytes
+    raise WebSocketDisconnected('WebSocket is not connected. Need to call "accept" first.')
+starlette.websockets.WebSocketDisconnected: WebSocket is not connected. Need to call "accept" first.
+INFO:     10.249.21.201:38242 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:60206 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:60236 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:60240 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:60270 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:35994 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [dt] Registered session session.26bcbde4 (owner=None)
+INFO [dt] session session.26bcbde4 created twin ab870890-0055-404e-b040-f15c2da20823
+INFO [dt] session session.26bcbde4 building 'inference' backend on endpoint e3_s0
+INFO [Runtime] ws_compression=auto: connect 0.4 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:36000 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'rhapsody.26bcbde4.inference' (role=engine, plugins=[])
+INFO ORBIT task callbacks scoped to session session.86f3a6ba
+INFO Orbit backend ready: e3_s0/rhapsody (session session.86f3a6ba)
+WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
+INFO connecting stream participant dt_stream.ab870890.9732
+INFO [Runtime] ws_compression=auto: connect 0.3 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:36012 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'dt_stream.ab870890.9732' (role=stream, plugins=[])
+INFO [dt] twin ab870890-0055-404e-b040-f15c2da20823 ready
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO [dt] reattached session session.26bcbde4
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Shutting down runtime....
+INFO [dt] session session.26bcbde4 closed twin ab870890-0055-404e-b040-f15c2da20823
+INFO Initiating shutdown
+INFO Orbit execution backend shutdown complete
+INFO Shutdown completed for all components.
+INFO [dt] Unregistered session session.26bcbde4
+INFO [dt] Registered session session.d0218779 (owner=None)
+INFO [dt] session session.d0218779 created twin f78d4a47-2504-4a2e-ab85-ab71aab6f9df
+INFO [dt] session session.d0218779 building 'inference' backend on endpoint e3_s0
+INFO [dt] session session.d0218779 building 'site_1' backend on endpoint e3_s1
+INFO [dt] session session.d0218779 building 'site_2' backend on endpoint e3_s2
+INFO [dt] session session.d0218779 building 'site_3' backend on endpoint e3_s3
+INFO [Runtime] ws_compression=auto: connect 0.3 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 1.5 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 1.0 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] ws_compression=auto: connect 1.3 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:44858 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:44892 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:44900 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'rhapsody.d0218779.inference' (role=engine, plugins=[])
+INFO:     10.249.21.201:44914 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'rhapsody.d0218779.site_1' (role=engine, plugins=[])
+INFO [Runtime] registered as 'rhapsody.d0218779.site_2' (role=engine, plugins=[])
+INFO [Runtime] registered as 'rhapsody.d0218779.site_3' (role=engine, plugins=[])
+INFO ORBIT task callbacks scoped to session session.adb1df13
+INFO Orbit backend ready: e3_s0/rhapsody (session session.adb1df13)
+WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
+INFO ORBIT task callbacks scoped to session session.9c06e75d
+INFO Orbit backend ready: e3_s1/rhapsody (session session.9c06e75d)
+INFO ORBIT task callbacks scoped to session session.0e56624a
+INFO Orbit backend ready: e3_s3/rhapsody (session session.0e56624a)
+INFO ORBIT task callbacks scoped to session session.64103c40
+INFO Orbit backend ready: e3_s2/rhapsody (session session.64103c40)
+INFO connecting stream participant dt_stream.f78d4a47.57a6
+INFO [Runtime] ws_compression=auto: connect 0.3 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.21.201:44932 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'dt_stream.f78d4a47.57a6' (role=stream, plugins=[])
+INFO [dt] twin f78d4a47-2504-4a2e-ab85-ab71aab6f9df ready
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO [dt] reattached session session.d0218779
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Shutting down runtime....
+INFO [dt] session session.d0218779 closed twin f78d4a47-2504-4a2e-ab85-ab71aab6f9df
+INFO Initiating shutdown
+INFO Orbit execution backend shutdown complete
+INFO Orbit execution backend shutdown complete
+ERROR [Broker] connection error (rhapsody.d0218779.site_2): WebSocket is not connected. Need to call "accept" first.
+Traceback (most recent call last):
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/radical/orbit/broker.py", line 754, in register
+    data = await ws.receive_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pscratch/sd/m/merzky/dt-pm5/ve5/lib/python3.12/site-packages/starlette/websockets.py", line 131, in receive_bytes
+    raise WebSocketDisconnected('WebSocket is not connected. Need to call "accept" first.')
+starlette.websockets.WebSocketDisconnected: WebSocket is not connected. Need to call "accept" first.
+INFO Orbit execution backend shutdown complete
+INFO Orbit execution backend shutdown complete
+INFO Shutdown completed for all components.
+INFO [dt] Unregistered session session.d0218779
+INFO:     10.249.21.201:44330 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:54586 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:54612 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:54620 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.21.201:54642 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [419496]
