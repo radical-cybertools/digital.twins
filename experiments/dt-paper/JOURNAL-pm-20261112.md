@@ -15,6 +15,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 5`.
 
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
+| 61162900 | r5-smoke | m5290 | 2 | 00:00:47 | 0.026 | 0.03 | 0.00 |
 
 ## X0: setup (done, 2026-11-12 01:20)
 
@@ -51,3 +52,11 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 5`.
   throughput is the median of bursts 2-5, a rate, so the burst size should
   not move it much. X4 is `--tasks 100` as on the page.
 - Decision: X1 uses `NS="1 2 3 4"`, so the N list is in the file names.
+- Smoke test of `--work cpu`, job 61162900 (r5-smoke, debug, 2 nodes, one
+  site, N=1, `--tasks 20 --bursts 2 --seq 5`), `results/r5/smoke/`: dt
+  19.4 req/s, xgf 19.5 req/s (one site at about 1 / 50 ms, as the model
+  intends; round 4's wall model gave xgf 49.6 at this size), seq p50 57.2 /
+  55.4 ms; placement ok; `work_model: cpu` in both JSONs; isolation check
+  empty.
+- X1 submitted: job 61162899 (regular, 5 nodes, 1 h), `REPEATS="1 2 3 4 5"
+  NS="1 2 3 4" ARGS="--tasks 100" RES=r5/local`.

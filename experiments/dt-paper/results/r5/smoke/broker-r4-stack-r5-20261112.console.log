@@ -1,0 +1,117 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm5/orbit-logs/broker-r4-61162900.log
+[Broker] using     cert  at /pscratch/sd/m/merzky/dt-pm5/tls/r4-61162900/broker_cert.pem
+[Broker] using     token from $RADICAL_ORBIT_BROKER_TOKEN
+[Broker] listening       on https://10.249.4.62:8141
+
+  On Client:
+    export RADICAL_ORBIT_BROKER_URL=https://10.249.4.62:8141
+    export RADICAL_ORBIT_BROKER_TOKEN=<the configured token>
+    mkdir -p ~/.radical/orbit && scp 10.249.4.62:/pscratch/sd/m/merzky/dt-pm5/tls/r4-61162900/broker_cert.pem ~/.radical/orbit/broker_cert.pem
+
+  On Endpoint:
+    export RADICAL_ORBIT_BROKER_URL=https://10.249.4.62:8141
+    mkdir -p ~/.radical/orbit && scp 10.249.4.62:/pscratch/sd/m/merzky/dt-pm5/tls/r4-61162900/broker_cert.pem ~/.radical/orbit/broker_cert.pem
+
+INFO:     Started server process [433491]
+INFO:     Waiting for application startup.
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['dt']
+INFO [PluginHost] Loaded plugin: dt
+INFO [Broker] hosted plugins: ['dt']
+INFO:     Application startup complete.
+INFO:     Uvicorn running on https://10.249.4.62:8141 (Press CTRL+C to quit)
+INFO:     10.249.14.104:40218 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     10.249.4.62:43732 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [dt] Registered session session.c0a131bb (owner=None)
+INFO [dt] session session.c0a131bb created twin 04ee23ca-e568-4ee3-a80b-ff7e9db12e6f
+INFO [dt] session session.c0a131bb building 'inference' backend on endpoint e3_s0
+INFO [Runtime] ws_compression=auto: connect 0.4 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.4.62:43746 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'rhapsody.c0a131bb.inference' (role=engine, plugins=[])
+INFO ORBIT task callbacks scoped to session session.5dae1063
+INFO Orbit backend ready: e3_s0/rhapsody (session session.5dae1063)
+WARNING running on a non-main-thread event loop; signal handlers not installed - host process must manage shutdown
+INFO connecting stream participant dt_stream.04ee23ca.5fde
+INFO [Runtime] ws_compression=auto: connect 0.3 ms (threshold 10.0 ms) -> deflate off
+INFO:     10.249.4.62:43770 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO [Runtime] registered as 'dt_stream.04ee23ca.5fde' (role=stream, plugins=[])
+INFO [dt] twin 04ee23ca-e568-4ee3-a80b-ff7e9db12e6f ready
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO [dt] reattached session session.c0a131bb
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Online run: SiteAgent.
+INFO Shutting down runtime....
+INFO [dt] session session.c0a131bb closed twin 04ee23ca-e568-4ee3-a80b-ff7e9db12e6f
+INFO Initiating shutdown
+INFO Orbit execution backend shutdown complete
+INFO Shutdown completed for all components.
+INFO [dt] Unregistered session session.c0a131bb
+INFO:     10.249.4.62:39768 - "WebSocket /register" [accepted]
+INFO:     connection open
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [433491]
