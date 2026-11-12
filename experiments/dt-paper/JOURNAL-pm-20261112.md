@@ -226,3 +226,30 @@ Open questions for Andre:
 3. Branching: per Andre's 2026-11-11 note there should be no per-round
    branch, but this round's kickoff named one. Merge
    `exp/pm-round5-20261112` into `paper/dtaas` as with round 3c?
+
+## Andre's answers (2026-11-12)
+
+1. X3 at 5 repeats ("we have the allocation"): rerun X3 at round 4's sizes,
+   `--tasks 200`, 5 repeats, both layouts, N = 1-4, `--work cpu`, into
+   `results/r5/cpu5/` (the 3-repeat X3 stays in `results/r5/cpu/`).
+   Estimate about 55 min on 5 nodes, about 4.6 node-h; budget beyond the
+   round's 6 by Andre's answer.
+2. X4 with more client threads: `--concurrent 64`, otherwise as X4 (cpu,
+   `--tasks 100`, spread, DT); 5 repeats; `results/r5/remote64/`.
+3. Merge `exp/pm-round5-20261112` into `paper/dtaas`: after these two runs.
+
+## /pscratch degraded; moved to /global/homes (2026-11-12 12:40)
+
+- From about 12:00 PST some of /pscratch's storage targets stopped
+  answering: `lfs df /pscratch` times out; `git status` in the round 5
+  checkout hangs in `cl_sync_io_wait`; in the venv 18 of 154
+  `site-packages` entries could not be stat-ed within 10 s (among them
+  `radical`, `zmq`, `numpy`, `pydantic`, `fastapi`), and `import
+  digitaltwin, radical.orbit, rhapsody` hung. Other paths (harness and
+  results directories, a 50 MB write) answered in under 0.1 s. No job was
+  submitted while it lasted.
+- Andre: switch file systems. New work dir `/global/homes/m/merzky/dt-pm5`:
+  checkout of `exp/pm-round5-20261112` (`1f8251c`) plus this journal entry
+  copied from the /pscratch checkout; venv `ve5` rebuilt there with
+  `install.sh` at `307c247` and pip's cache there too; env
+  `r5/env-r5h.sh`. The /pscratch checkout and venv are left as they are.
