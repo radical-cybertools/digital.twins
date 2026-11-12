@@ -1,0 +1,44 @@
+{
+ "provenance": {
+  "experiment": "E4 Flink baseline path 2 (broadcast model update)",
+  "args": {
+   "mode": "bcast",
+   "out": "/home/merzky/.cache/claude-tmp/claude-1000/-home-merzky-radical-digital-twins/cbb3366c-0ab9-4060-897d-1fb21c545796/scratchpad/flink/job/../results/r2/bc-work500-sat-unaligned-u100-r3",
+   "jobdir": "/home/merzky/.cache/claude-tmp/claude-1000/-home-merzky-radical-digital-twins/cbb3366c-0ab9-4060-897d-1fb21c545796/scratchpad/flink/job",
+   "rate": 0.0,
+   "work_us": 500,
+   "swaps": 20,
+   "state_mb": 0,
+   "cli": false,
+   "settle": 4,
+   "upd": 100.0,
+   "dur": 15.0,
+   "warmup": 4.0,
+   "sample": 1,
+   "p": 1,
+   "buffer_ms": 0,
+   "unaligned": true
+  }
+ },
+ "point": {
+  "upd": 100.0,
+  "rate": 0.0,
+  "p": 1,
+  "work_us": 500,
+  "seconds": 12.5,
+  "req_per_s": 1992.16,
+  "bucket_req_per_s_min": 1970,
+  "bucket_req_per_s_p50": 1990,
+  "lat_p50_ms": 3893.298437,
+  "lat_p90_ms": 4157.714212,
+  "lat_p99_ms": 4565.103018,
+  "lat_samples": 24903,
+  "versions_published": 914,
+  "versions_seen_frac": 1.0,
+  "pub_to_first_answer_p50_ms": 2387.1922320000003,
+  "pub_to_first_answer_p90_ms": 4175.943863,
+  "pub_to_first_answer_max_ms": 4612.062515,
+  "pub_to_operator_p50_ms": 2386.6883660000003,
+  "operator_to_first_answer_p50_ms": 0.5041135
+ }
+}

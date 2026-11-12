@@ -1,0 +1,66 @@
+{
+  "provenance": {
+    "experiment": "E4 hot-swap turnaround",
+    "harness": "bench_swap.py",
+    "time": "2026-11-12T23:34:39+0100",
+    "host": "thinkie",
+    "python": "3.12.13",
+    "digital_twins_commit": "710c74f78db6ef5888eee8b37a29ee86136bf3c5",
+    "digital_twins_dirty": false,
+    "backend": "local concurrent pool",
+    "notify_window": null,
+    "slurm_job": null,
+    "args": {
+      "broker": null,
+      "endpoint": null,
+      "backends": [
+        "concurrent"
+      ],
+      "workers": 8,
+      "concurrency": 50,
+      "swaps": 20,
+      "interval": 0.5,
+      "out": "/home/merzky/.cache/claude-tmp/claude-1000/-home-merzky-radical-digital-twins/cbb3366c-0ab9-4060-897d-1fb21c545796/scratchpad/e4lap/swap-lap-c50-r1.json"
+    }
+  },
+  "swaps": 20,
+  "missed": 0,
+  "answers": 10763,
+  "turnaround": {
+    "n": 20,
+    "p50_ms": 50.71651854086667,
+    "p90_ms": 79.70089092850685,
+    "min_ms": 16.221745871007442,
+    "max_ms": 85.6979030650109
+  },
+  "turnaround_s": [
+    0.06912919785827398,
+    0.05730784311890602,
+    0.018612750805914402,
+    0.04259917908348143,
+    0.05512897716835141,
+    0.07425201684236526,
+    0.03609325201250613,
+    0.02263419795781374,
+    0.038323562825098634,
+    0.056897609028965235,
+    0.058090368984267116,
+    0.0519660550635308,
+    0.07970089092850685,
+    0.016221745871007442,
+    0.0856979030650109,
+    0.03687383304350078,
+    0.04434313694946468,
+    0.04946698201820254,
+    0.06736383400857449,
+    0.03696530102752149
+  ],
+  "stale_after_first": 6,
+  "gap": {
+    "n": 20,
+    "p50_ms": 13.134653097949922,
+    "p90_ms": 20.30046097934246,
+    "min_ms": 9.073397144675255,
+    "max_ms": 23.115081014111638
+  }
+}
