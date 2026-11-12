@@ -19,6 +19,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 5`.
 | 61162900 | r5-smoke | m5290 | 2 | 00:00:47 | 0.026 | 1.66 | 0.00 |
 | 61162942 | r5-e3-conc | m5290 | 5 | 00:20:25 | 1.701 | 3.36 | 0.00 |
 | 61163497 | r5-smoke2 | m5290 | 3 | 00:00:49 | 0.041 | 3.40 | 0.00 |
+| 61163550 | r5-e3-x123 | m5290 | 5 | 00:18:03 | 1.504 | 4.91 | 0.00 |
 
 ## X0: setup (done, 2026-11-12 01:20)
 
@@ -103,3 +104,62 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 5`.
     4 (same nodes, same allocation).
   - Order X1, X3, X2, so the time limit, if it hits, cuts X2.
   - X4 afterwards, 4 nodes, capped at 9 min (0.6 node-h), 3 repeats.
+
+## X1-X3 (done, 2026-11-12 02:10)
+
+Job 61163550 (r5-e3-x123, regular, 5 nodes, 18:03 of the 23-min cap;
+`r5/run_x123.sh`): X1 06:00, X3 09:45, X2 02:20 (min:s). 30 runs, every rc
+0; placement ok at every point; no errors; all three isolation checks
+empty. Provenance `7f9b878` in every JSON, `work_model` as intended. Tables
+`results/r5/{local,cpu,conc}/e3-table-stack-r5-20261112.md`
+(`r4/e3_table.py <dir> stack-r5-20261112 r5`). 3 repeats, `--tasks 100`,
+16 threads unless noted; req/s = median of bursts 2-5.
+
+### X1: wall model, fixed stack (round 4 W1 in brackets)
+
+| harness | layout | N=1 | N=2 | N=3 | N=4 | N=4 x N=1 |
+|---|---|---|---|---|---|---|
+| dt | spread | 42.7 (20.4) | 69.2 (39.6) | 86.9 (58.5) | 102.8 (77.5) | 2.41 (3.81) |
+| dt | one | = spread N=1 | - | - | 42.4 (20.4) | 0.99 |
+| xgf | spread | 45.0 (25.5) | 71.8 (42.8) | 93.8 (61.4) | 105.9 (80.3) | 2.35 (3.15) |
+| xgf | one | = spread N=1 | - | - | 44.4 (26.7) | 0.99 |
+
+- #139 removes the per-site submit cap: one site through the DT service
+  42.7 req/s (round 4 20.4), and the DT path now follows the hand-wired one
+  (0.95x at N=1, 0.97x at N=4; round 4 0.80x / 0.97x).
+- Round 4's xgf numbers also rise (25.5 -> 45.0 at N=1): `--tasks 100`
+  instead of 200 and 3 repeats here; and the wall model lets tasks overlap, so
+  a site's rate depends on how many requests are in flight, and scaling over
+  sites flattens (2.4x at 4 sites) because 16 threads are spread thinner.
+  That is the wall model's artefact X3 removes.
+- Seq p50 56.9-57.2 ms (dt), 54.8-56.0 ms (xgf), as in round 4.
+
+### X3: CPU model (`--work cpu`)
+
+| harness | layout | N=1 | N=2 | N=3 | N=4 | N=4 x N=1 |
+|---|---|---|---|---|---|---|
+| dt | spread | 19.5 | 38.3 | 56.1 | 75.3 | 3.86 |
+| dt | one | = spread N=1 | - | - | 19.5 | 1.00 |
+| xgf | spread | 19.6 | 38.5 | 56.4 | 75.7 | 3.87 |
+| xgf | one | = spread N=1 | - | - | 19.6 | 1.00 |
+
+- The model holds up: one site serves 1 / 50 ms (19.5-19.6), sites add
+  capacity almost linearly (3.86x at 4), all investigators on one site stay
+  at one site's rate, and the DT path equals the hand-wired one within 1% at
+  every N (ranges within 0.4 req/s over the repeats). Seq p50 56.8-57.5 /
+  55.0-56.4 ms.
+- For the paper: this is the E3 figure. With work that occupies a site's
+  CPU, the twin scales over sites exactly as the hand-wired deployment does,
+  at 2 lines of code per site instead of 65 lines of wiring.
+
+### X2: 32 client threads, wall model, spread (c=16 from X1)
+
+| N | dt c=16 | dt c=32 | xgf c=16 | xgf c=32 | dt / xgf c=32 | round 4 dt / xgf c=32 |
+|---|---|---|---|---|---|---|
+| 1 | 42.7 | 50.3 | 45.0 | 54.9 | 0.92 | 0.42 |
+| 4 | 102.8 | 129.1 | 105.9 | 138.0 | 0.94 | 0.91 |
+
+- The DT path now follows the hand-wired one as concurrency grows (+18% /
+  +26% from 16 to 32 threads, hand-wired +22% / +30%). The remaining 6-8%
+  at c=32 is within what the DT service's request path costs (round 4: about
+  2 ms of p50 over hand-wired at every point).

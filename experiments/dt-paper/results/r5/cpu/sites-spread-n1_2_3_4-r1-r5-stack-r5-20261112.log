@@ -1,0 +1,4 @@
+spread n=1: seq p50 56.8 ms, bursts 2-5 19.5 req/s, placement ok {'0': {'e3_s0': 523}}, errors 0
+spread n=2: seq p50 57.4 ms, bursts 2-5 38.3 req/s, placement ok {'0': {'e3_s0': 263}, '1': {'e3_s1': 263}}, errors 0
+spread n=3: seq p50 57.6 ms, bursts 2-5 55.8 req/s, placement ok {'0': {'e3_s0': 177}, '1': {'e3_s1': 176}, '2': {'e3_s2': 176}}, errors 0
+spread n=4: seq p50 57.5 ms, bursts 2-5 75.3 req/s, placement ok {'0': {'e3_s0': 133}, '1': {'e3_s1': 133}, '2': {'e3_s2': 133}, '3': {'e3_s3': 133}}, errors 0
