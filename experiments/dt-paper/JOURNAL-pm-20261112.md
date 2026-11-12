@@ -253,3 +253,33 @@ Open questions for Andre:
   copied from the /pscratch checkout; venv `ve5` rebuilt there with
   `install.sh` at `307c247` and pip's cache there too; env
   `r5/env-r5h.sh`. The /pscratch checkout and venv are left as they are.
+
+## X4 at 64 client threads (done, 2026-11-12 13:20)
+
+Job 61187855 (r5-e3-remote64, regular, 4 nodes; from /global/homes,
+`r4/run_e3_remote.sh` with `REPEATS="1 2 3 4 5" LAYOUTS=spread
+HARNESSES=dt ARGS="--work cpu --concurrent 64"`, `results/r5/remote64/`).
+`r3_site` in the topology; 5 runs, every rc 0; placement ok at every
+point; isolation check empty.
+
+| N | sites | 64 threads req/s | x N=1 | seq p50 ms | 16 threads (X4) |
+|---|---|---|---|---|---|
+| 1 | PM s0 | 16.0 (15.9-16.2) | 1.00 | 403.3 | 13.0 |
+| 2 | + PM s1 | 26.9 (26.6-27.2) | 1.69 | 404.1 | 19.9 |
+| 3 | + PM s2 | 35.2 (35.0-35.7) | 2.21 | 404.2 | 23.9 |
+| 4 | + r3_site | 45.9 (45.8-46.1) | 2.87 | 404.4 | 28.8 |
+
+- More client threads lift every point; at 4 sites 45.9 req/s (16 threads:
+  28.8), 2.87x N=1. Through radical.3 the twin still gains capacity with
+  every site, including the one at another facility; the remaining gap to
+  the cluster's 3.86x is the WAN round trip (about 400 ms per request).
+- Errors, reported not dropped: at N=1 in repeats 2 and 5, 63 requests
+  each failed with `HTTP 409 [broker/dt] get_inference ... HTTP 504
+  [pm_e3_s0_61187855/rhapsody] submit 63 task(s) -- call timed out`. With
+  64 threads on one site, rhapsody's coalesced submit carried 63 tasks to
+  one endpoint, and that call took longer than ORBIT's 30 s call timeout
+  (the affected burst took 35.1 s, the others about 6.3 s). Not seen at
+  N >= 2 or at 16 threads. My reading, not tested: the CPU model's tasks
+  hold the endpoint's GIL, so its event loop answers the submit call late
+  while 50 ms tasks queue behind each other. The bursts 2-5 median is not
+  affected (the failed burst is one of four).
