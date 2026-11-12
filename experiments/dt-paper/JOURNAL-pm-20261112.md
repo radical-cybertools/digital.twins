@@ -283,3 +283,22 @@ point; isolation check empty.
   hold the endpoint's GIL, so its event loop answers the submit call late
   while 50 ms tasks queue behind each other. The bursts 2-5 median is not
   affected (the failed burst is one of four).
+
+## X3 at 5 repeats, round 4's sizes (done, 2026-11-12 14:00)
+
+Job 61187854 (r5-e3-cpu5, regular, 5 nodes, 58:25; from /global/homes,
+`r4/run_e3_local.sh` with `REPEATS="1 2 3 4 5" NS="1 2 3 4" RUN_TIMEOUT=900
+ARGS="--work cpu"`, `--tasks 200`, 16 threads, both layouts, N = 1-4;
+`results/r5/cpu5/`, table `e3-table-stack-r5-20261112.md`). 20 runs,
+every rc 0; placement ok at every point; no errors; isolation check empty.
+
+| harness | layout | N=1 | N=2 | N=3 | N=4 | N=4 x N=1 |
+|---|---|---|---|---|---|---|
+| dt | spread | 19.5 | 38.4 | 57.0 | 75.2 | 3.87 |
+| dt | one | 19.5 | 19.5 | 19.5 | 19.5 | 1.00 |
+| xgf | spread | 19.6 | 38.5 | 57.3 | 75.9 | 3.88 |
+| xgf | one | 19.6 | 19.6 | 19.6 | 19.6 | 1.00 |
+
+- Confirms the 3-repeat X3 (`results/r5/cpu/`) within 1%: this is the E3
+  figure. The DT path equals the hand-wired one within 1% at every N, every
+  repeat range within 0.8 req/s.
