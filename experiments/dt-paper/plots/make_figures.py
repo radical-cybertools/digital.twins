@@ -517,40 +517,44 @@ def _outcomes(run):
 
 def fig_e5(fig):
     """E5: in-situ inference while a learning endpoint dies, and recovery."""
-    runs = [
-        ("r2\n1", "s2/endpoint-loss-remote-run1-stack-*.json"),
-        ("r2\n2", "s2/endpoint-loss-remote-stack-*.json"),
-        ("2b\n1", "b1/endpoint-loss-remote-run1-*.json"),
-        ("2b\n2", "b1/endpoint-loss-remote-run2-*.json"),
-        ("2b\n3", "b1/endpoint-loss-remote-run3-*.json"),
-        ("2c\n1", "c1/endpoint-loss-remote-run1-*.json"),
-        ("2c\n2", "c1/endpoint-loss-remote-run2-*.json"),
-        ("2c\n3", "c1/endpoint-loss-remote-run3-*.json"),
-    ]
-    out = [_outcomes(SRC.load(p)[0]) for _, p in runs]
     ax1, ax2 = fig.subplots(1, 2, gridspec_kw={"width_ratios": [3, 2]})
-    labels = [
-        "session dead",
-        "paused until detection",
-        "kill during a submit, answered",
-        "answered",
+    # the session's other twin, probed while the learning endpoint is lost
+    # (from the kill until the loss is reported), current stack (round 2c)
+    runs = [
+        ("cluster", "c2/endpoint-loss-pm-stack2c-*.json"),
+        ("radical.3\nrun 1", "c1/endpoint-loss-remote-run1-*.json"),
+        ("radical.3\nrun 2", "c1/endpoint-loss-remote-run2-*.json"),
+        ("radical.3\nrun 3", "c1/endpoint-loss-remote-run3-*.json"),
     ]
-    colors = ["#a3352b", "#e0a85c", "#1baf7a", "#2a78d6"]
-    bottom = [0] * len(runs)
-    for i, (lab, col) in enumerate(zip(labels, colors)):
-        v = [o[i] for o in out]
-        ax1.bar(range(len(runs)), v, 0.7, bottom=bottom, label=lab, color=col)
-        bottom = [b + x for b, x in zip(bottom, v)]
-    ax1.set_xticks(range(len(runs)), [r[0] for r in runs])
-    ax1.set_ylabel("kills (of 10 per run)")
-    ax1.set_title("(a) in-situ inference, radical.3")
-    ax1.legend(
-        frameon=False,
-        fontsize=6,
-        loc="upper center",
-        bbox_to_anchor=(0.5, -0.22),
-        ncol=2,
+    rtts, counts = [], []
+    for _, pattern in runs:
+        probes = [
+            p
+            for k in SRC.load(pattern)[0]["kills"]
+            for p in k.get("probes", [])
+            if p["twin"] == "sibling"
+        ]
+        rtts.append([p["rtt"] * 1e3 for p in probes if p["ok"]])
+        counts.append((sum(p["ok"] for p in probes), len(probes)))
+    COLORS["in-situ inference"] = COLORS["bare"]
+    bars(
+        ax1,
+        [r[0] for r in runs],
+        {"in-situ inference": rtts},
+        log=True,
+        err=p10_p90,
     )
+    for j, (ok, n) in enumerate(counts):
+        ax1.annotate(
+            f"{ok}/{n}",
+            (j, 1.0),
+            xycoords=("data", "axes fraction"),
+            ha="center",
+            va="top",
+            fontsize=6,
+        )
+    ax1.set_ylabel("latency while the endpoint\nis lost, p50 [ms]")
+    ax1.set_title("(a) in-situ inference, 10 kills per run")
 
     cluster = SRC.load("c2/endpoint-loss-pm-stack2c-*.json")[0]
     remote = SRC.load("c1/endpoint-loss-remote-run*-stack2c-*.json")
@@ -571,7 +575,7 @@ def fig_e5(fig):
     COLORS.update({"cluster": "#2a78d6", "radical.3": "#7d5bbe"})
     bars(ax2, [lab for _, lab in keys], series, labels=True)
     ax2.set_ylabel("seconds")
-    ax2.set_title("(b) recovery (2c)")
+    ax2.set_title("(b) recovery")
     ax2.legend(frameon=False)
 
 
