@@ -39,7 +39,7 @@ from bench_sites import provenance  # noqa: E402  (same provenance block)
 
 
 # ---- WIRING begin: what a hand-wired N-site deployment owns -------------
-async def wire(broker, sites, work_ms):
+async def wire(broker, sites, work_ms, work="wall"):
     """Engine, one backend and one task per site, a ZMQ service with a
     round-robin dispatcher, and a client.  `sites`: endpoint per site."""
 
@@ -62,13 +62,15 @@ async def wire(broker, sites, work_ms):
         label = f"site_{names.index(ep)}"
 
         @flow.function_task(backend=label)
-        async def work(value, inv=k, work_ms=work_ms):
+        async def work(value, inv=k, work_ms=work_ms, work=work):
             import os
             import socket
             import time
 
-            end = time.perf_counter() + work_ms / 1000.0
-            while time.perf_counter() < end:
+            # wall / cpu as in e3_components.SiteInvestigator (round 5); one
+            # line, so wiring_lines stays as in round 4
+            end = (clock := time.thread_time if work == "cpu" else time.perf_counter)() + work_ms / 1000.0
+            while clock() < end:
                 pass
             return {"site": os.environ.get("DT_TEST_ENDPOINT_TAG")
                     or socket.gethostname(), "inv": inv, "v": value}
@@ -131,7 +133,7 @@ def wiring_lines():
 async def one_n(args, n):
     sites = args.endpoints[:n] if args.layout == "spread" else [args.endpoints[0]] * n
     t0 = time.time()
-    call, close = await wire(args.broker, sites, args.work_ms)
+    call, close = await wire(args.broker, sites, args.work_ms, args.work)
     placed = []
     try:
         for i in range(3 * n):
@@ -181,7 +183,8 @@ async def one_n(args, n):
 
 
 async def amain(args, ns):
-    res = {"provenance": provenance(args), "wiring_lines": wiring_lines(), "points": []}
+    res = {"provenance": provenance(args), "work_model": args.work,
+           "wiring_lines": wiring_lines(), "points": []}
     res["provenance"]["experiment"] = "E3 portability: hand-wired N-site baseline"
     res["provenance"]["harness"] = Path(__file__).name
     for n in ns:
@@ -208,6 +211,7 @@ def main() -> int:
     p.add_argument("--n", default="1,2,3,4")
     p.add_argument("--layout", choices=["spread", "one"], default="spread")
     p.add_argument("--work-ms", type=float, default=50.0)
+    p.add_argument("--work", choices=["wall", "cpu"], default="wall")
     p.add_argument("--seq", type=int, default=20)
     p.add_argument("--tasks", type=int, default=200)
     p.add_argument("--concurrent", type=int, default=16)
