@@ -160,6 +160,6 @@ empty. Provenance `7f9b878` in every JSON, `work_model` as intended. Tables
 | 4 | 102.8 | 129.1 | 105.9 | 138.0 | 0.94 | 0.91 |
 
 - The DT path now follows the hand-wired one as concurrency grows (+18% /
-  +26% from 16 to 32 threads, hand-wired +22% / +30%). The remaining 6-8%
-  at c=32 is within what the DT service's request path costs (round 4: about
-  2 ms of p50 over hand-wired at every point).
+  +26% from 16 to 32 threads, hand-wired +22% / +30%). A 6-8% gap remains
+  at c=32; the DT's sequential p50 is 1.5-2 ms above hand-wired at every
+  point, which may be part of it. Not investigated.
