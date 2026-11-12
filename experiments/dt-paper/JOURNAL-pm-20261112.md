@@ -20,6 +20,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 5`.
 | 61162942 | r5-e3-conc | m5290 | 5 | 00:20:25 | 1.701 | 3.36 | 0.00 |
 | 61163497 | r5-smoke2 | m5290 | 3 | 00:00:49 | 0.041 | 3.40 | 0.00 |
 | 61163550 | r5-e3-x123 | m5290 | 5 | 00:18:03 | 1.504 | 4.91 | 0.00 |
+| 61164117 | r5-e3-remote | m5290 | 4 | 00:09:38 | 0.642 | 5.55 | 0.00 |
 
 ## X0: setup (done, 2026-11-12 01:20)
 
@@ -163,3 +164,65 @@ empty. Provenance `7f9b878` in every JSON, `work_model` as intended. Tables
   +26% from 16 to 32 threads, hand-wired +22% / +30%). A 6-8% gap remains
   at c=32; the DT's sequential p50 is 1.5-2 ms above hand-wired at every
   point, which may be part of it. Not investigated.
+
+## X4: across facilities, CPU model (done, 2026-11-12 02:20)
+
+Job 61164117 (r5-e3-remote, debug, 4 nodes, 9:38 of a 13-min cap;
+`r4/run_e3_remote.sh` with `REPEATS="1 2 3" LAYOUTS=spread HARNESSES=dt
+ARGS="--work cpu"`, `results/r5/remote/`). `r3_site` in the broker's
+topology (checked first). Sites `pm_e3_s0/1/2_61164117` on Perlmutter and
+`r3_site` on radical.3; broker and `dt` service radical.3 :8010; default
+credentials, read only; `--tasks 100`, 16 threads. 3 runs, every rc 0,
+placement ok at every point, `r3_site` served 133 requests at N=4 in every
+repeat; `work_model: cpu`; isolation check empty. WAN connect p50 172 ms
+(165-175).
+
+| N | sites | X4 req/s | x N=1 | seq p50 ms | round 4 W3 (wall) | X3 on the cluster (cpu) |
+|---|---|---|---|---|---|---|
+| 1 | PM s0 | 13.0 (13.0-13.2) | 1.00 | 392.1 | 6.1 | 19.5 |
+| 2 | + PM s1 | 19.9 (19.7-20.3) | 1.53 | 391.5 | 10.6 | 38.3 |
+| 3 | + PM s2 | 23.9 (23.8-23.9) | 1.83 | 392.3 | 15.5 | 56.1 |
+| 4 | + r3_site | 28.8 (28.5-29.3) | 2.21 | 391.7 | 19.7 | 75.3 |
+
+- #139 doubles the cross-facility rate at one site (6.1 -> 13.0) and
+  raises N=4 to 28.8 (1.46x round 4).
+- Through radical.3 the point is no longer the sites: 16 client threads at
+  about 392 ms per request allow at most about 41 req/s, and the curve bends
+  towards that (2.2x at 4 sites). More client threads would push it further
+  (not run: budget).
+
+## Close-out (round 5, 2026-11-12 02:25)
+
+| phase | status | headline |
+|---|---|---|
+| X0 | done | `ve5` at `307c247` (rhapsody `fd3bad7`, #139); `--work wall|cpu`; smoke tests |
+| X1 | done | wall model: one site DT 42.7 req/s (round 4 20.4), DT 0.95-0.97x hand-wired at every N |
+| X2 | done | c=32: DT 0.92x / 0.94x hand-wired at N=1 / 4 (round 4 0.42x / 0.91x) |
+| X3 | done | CPU model: one site 19.5 req/s, 3.86x at 4 sites, DT = hand-wired within 1%; the model the paper should use |
+| X4 | done | across facilities, cpu: 13.0 -> 28.8 req/s (round 4 6.1 -> 19.7), latency-bound at 16 threads |
+
+Node-hours: 5.55 of 6 (m5290; ledger above), 3.36 of them in the two jobs
+the harness bug hung. No allocation left running. Every ORBIT job's
+isolation check is empty (two by hand, see the setback section). No `src/`
+change, no fix branch. Deviations from the page, all for the budget after
+the setback: 3 repeats instead of 5 (X1-X4), `--tasks 100` (X1-X3), layout
+`one` at N=4 only, X2 at c=32 only with c=16 taken from X1. Branch
+`exp/pm-round5-20261112` pushed; no PR.
+
+Harness changes: `--work {wall,cpu}` in `bench_sites.py`, `xgf_sites.py`,
+`e3_components.py` (`work_model` in the JSON; `wiring_lines` unchanged at
+65); `run_e3_local.sh`: `RT`, space-separated `NS`, `NS_ONE`,
+`RUN_TIMEOUT`; `run_e3_remote.sh`: `RT`, `ARGS`; `e3_table.py` round tag;
+`r5/env-r5.sh`, `r5/run_x123.sh`; `s1/ledger.py 5`.
+
+Open questions for Andre:
+
+1. The figure: X3 (CPU model) at 3 repeats and `--tasks 100`. Enough for
+   the paper, or a 5-repeat rerun of X3 alone at round 4's sizes (about
+   2 node-h)?
+2. X4 is bound by 16 client threads over a 392 ms round trip. Should the
+   cross-facility point be run with more client threads (e.g. 64) to show
+   site scaling rather than client latency?
+3. Branching: per Andre's 2026-11-11 note there should be no per-round
+   branch, but this round's kickoff named one. Merge
+   `exp/pm-round5-20261112` into `paper/dtaas` as with round 3c?
