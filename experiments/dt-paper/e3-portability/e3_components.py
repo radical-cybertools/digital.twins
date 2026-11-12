@@ -33,7 +33,7 @@ class SiteInvestigator(ModelInvestigator):
         label = {} if site is None else {"backend": site}
 
         @flow.function_task(**label)
-        async def work(value, inv=inv, work_ms=work_ms, work=work):
+        async def work(value, inv=inv, work_ms=work_ms, model=work):
             import os
             import socket
             import time
@@ -41,7 +41,7 @@ class SiteInvestigator(ModelInvestigator):
             # wall: spin until work_ms of wall time has passed (tasks on one
             # endpoint overlap); cpu: until this thread has used work_ms of
             # CPU, so tasks on one endpoint share its GIL (round 5)
-            clock = time.thread_time if work == "cpu" else time.perf_counter
+            clock = time.thread_time if model == "cpu" else time.perf_counter
             end = clock() + work_ms / 1000.0
             while clock() < end:
                 pass

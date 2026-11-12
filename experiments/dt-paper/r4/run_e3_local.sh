@@ -14,7 +14,8 @@
 # else one run per value, tagged -c<C>), NSITES (4: site endpoints on nodes
 # 1..NSITES), ARGS (extra harness arguments, e.g. for a smoke test), RT (round
 # tag in the file names, default r4).  NS may use spaces ("1 4"): a comma
-# would split sbatch's --export list (round 4).
+# would split sbatch's --export list (round 4).  NS_ONE: N list for the `one`
+# layout (default NS); RUN_TIMEOUT: seconds per harness run (round 5).
 # Throwaway TLS as in s1/run_s1_p4.sh; ~/.radical/orbit checked before/after.
 set -uo pipefail
 source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm4/digital.twins/experiments/dt-paper/r4/env-r4.sh}
@@ -71,12 +72,16 @@ for r in ${REPEATS:-1 2 3}; do
       ctag=; carg=()
       [ $c != default ] && ctag=-c$c && carg=(--concurrent $c)
       # with NS set, the file names carry it (W2's N=4 run overwrote N=1's)
-      NSL=${NS:-}; NSL=${NSL// /,}
+      NSL=${NS:-}
+      [ $lay = one ] && [ -n "${NS_ONE:-}" ] && NSL=$NS_ONE  # round 5: N list for `one`
+      NSL=${NSL// /,}
       [ -n "$NSL" ] && ctag=$ctag-n${NSL//,/_}
+      # RUN_TIMEOUT (s): kill a hung harness run (round 5 lost 20 min to one)
+      tmo=(); [ -n "${RUN_TIMEOUT:-}" ] && tmo=(timeout $RUN_TIMEOUT)
       for h in ${HARNESSES:-dt xgf}; do
         if [ $h = dt ]; then H=bench_sites.py; f=$R/sites-$lay$ctag-r$r-${RT:-r4}-$D
         else H=xgf_sites.py; f=$R/xgf-$lay$ctag-r$r-${RT:-r4}-$D; fi
-        python $E3/$H --broker $URL --endpoints $EP_LIST --n ${NSL:-1,2,3,4} \
+        "${tmo[@]}" python $E3/$H --broker $URL --endpoints $EP_LIST --n ${NSL:-1,2,3,4} \
             --layout $lay "${carg[@]}" ${ARGS:-} --out $f.json > $f.log 2>&1
         echo "$h $lay$ctag r$r rc=$? $(date -u +%T) $(grep -h 'req/s' $f.log | tr '\n' '|')"
       done

@@ -39,7 +39,7 @@ from bench_sites import provenance  # noqa: E402  (same provenance block)
 
 
 # ---- WIRING begin: what a hand-wired N-site deployment owns -------------
-async def wire(broker, sites, work_ms, work="wall"):
+async def wire(broker, sites, work_ms, work_model="wall"):
     """Engine, one backend and one task per site, a ZMQ service with a
     round-robin dispatcher, and a client.  `sites`: endpoint per site."""
 
@@ -62,14 +62,15 @@ async def wire(broker, sites, work_ms, work="wall"):
         label = f"site_{names.index(ep)}"
 
         @flow.function_task(backend=label)
-        async def work(value, inv=k, work_ms=work_ms, work=work):
+        async def work(value, inv=k, work_ms=work_ms, model=work_model):
             import os
             import socket
             import time
 
             # wall / cpu as in e3_components.SiteInvestigator (round 5); one
-            # line, so wiring_lines stays as in round 4
-            end = (clock := time.thread_time if work == "cpu" else time.perf_counter)() + work_ms / 1000.0
+            # line, so wiring_lines stays as in round 4.  Not `work=`: in this
+            # loop `work` names the previous site's task from k=1 on
+            end = (clock := time.thread_time if model == "cpu" else time.perf_counter)() + work_ms / 1000.0
             while clock() < end:
                 pass
             return {"site": os.environ.get("DT_TEST_ENDPOINT_TAG")

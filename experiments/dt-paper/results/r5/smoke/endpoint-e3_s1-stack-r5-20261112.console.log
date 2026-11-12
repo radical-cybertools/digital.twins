@@ -1,0 +1,118 @@
+INFO Log level: DEBUG_9; log file: /pscratch/sd/m/merzky/dt-pm5/orbit-logs/endpoint-e3_s1-61163497.log
+INFO [PluginHost] Discovered external plugin: dt
+INFO [PluginHost] Loading plugins: ['queue_info', 'sysinfo', 'staging', 'rhapsody', 'globus']
+INFO [PluginHost] Loaded plugin: queue_info
+INFO [PluginHost] Loaded plugin: sysinfo
+INFO [PluginHost] Loaded plugin: staging
+INFO [PluginHost] Loaded plugin: rhapsody
+INFO [PluginHost] Loaded plugin: globus
+INFO Starting ORBIT endpoint (https://10.249.4.91:8141)
+INFO [Runtime] ws_compression=auto: connect 0.5 ms (threshold 10.0 ms) -> deflate off
+INFO [Runtime] registered as 'e3_s1' (role=endpoint, plugins=['queue_info', 'sysinfo', 'staging', 'rhapsody', 'globus'])
+INFO [rhapsody] Registered session session.b2d99a5e
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.b2d99a5e.1794476747.telemetry.jsonl
+INFO [session.b2d99a5e] Session initialization complete
+WARNING pynvml initialization failed on nid006089 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.e934a01b (owner=rhapsody.f3bd4d68.site_1)
+INFO [sysinfo] Unregistered session session.e934a01b
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 7 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO {
+    "session_id": "session.b2d99a5e",
+    "duration_seconds": 2.085842,
+    "tasks": {
+        "submitted": 25,
+        "completed": 25,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 5.503579,
+        "mean_seconds": 0.220143,
+        "min_seconds": 0.05166,
+        "max_seconds": 0.358076
+    },
+    "resources": {
+        "concurrent/nid006089": {
+            "backend": "concurrent",
+            "node_id": "nid006089",
+            "cpu_percent": 0.4,
+            "memory_percent": 4.5,
+            "gpu_percent": null,
+            "disk_read_bytes": 139264.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 3019.0,
+            "net_recv_bytes": 6390.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.b2d99a5e
+INFO [rhapsody] Registered session session.247153b7
+INFO No executor was provided. Falling back to default ThreadPoolExecutor
+INFO ThreadPoolExecutor execution backend started successfully
+INFO Telemetry checkpoint file: telemetry-output/session.247153b7.1794476751.telemetry.jsonl
+INFO [session.247153b7] Session initialization complete
+WARNING pynvml initialization failed on nid006089 — GPU metrics disabled: Driver Not Loaded
+INFO [sysinfo] Registered session session.f7a0daa2 (owner=rhapsody.20ac8b4e)
+INFO [sysinfo] Unregistered session session.f7a0daa2
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 1 tasks
+INFO Successfully submitted 8 tasks
+INFO Successfully submitted 2 tasks
+INFO Successfully submitted 8 tasks
+INFO Successfully submitted 2 tasks
+INFO {
+    "session_id": "session.247153b7",
+    "duration_seconds": 1.683323,
+    "tasks": {
+        "submitted": 25,
+        "completed": 25,
+        "failed": 0,
+        "canceled": 0,
+        "running": 0
+    },
+    "duration": {
+        "total_seconds": 6.014852,
+        "mean_seconds": 0.240594,
+        "min_seconds": 0.051477,
+        "max_seconds": 0.40658
+    },
+    "resources": {
+        "concurrent/nid006089": {
+            "backend": "concurrent",
+            "node_id": "nid006089",
+            "cpu_percent": 0.4,
+            "memory_percent": 4.5,
+            "gpu_percent": null,
+            "disk_read_bytes": 0.0,
+            "disk_write_bytes": 0.0,
+            "net_sent_bytes": 1646.0,
+            "net_recv_bytes": 4627.0
+        }
+    }
+}
+INFO Concurrent execution backend shutdown complete
+INFO [rhapsody] Unregistered session session.247153b7
+srun: forcing job termination
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+[2026-11-12T09:45:53.776] error: *** STEP 61163497.0 ON nid006089 CANCELLED AT 2026-11-12T09:45:53 DUE to SIGNAL Killed ***
+srun: error: nid006089: task 0: Killed
+srun: Terminating StepId=61163497.0

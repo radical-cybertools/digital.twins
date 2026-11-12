@@ -15,7 +15,10 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 5`.
 
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
-| 61162900 | r5-smoke | m5290 | 2 | 00:00:47 | 0.026 | 0.03 | 0.00 |
+| 61162899 | r5-e3-local | m5290 | 5 | 00:19:36 | 1.633 | 1.63 | 0.00 |
+| 61162900 | r5-smoke | m5290 | 2 | 00:00:47 | 0.026 | 1.66 | 0.00 |
+| 61162942 | r5-e3-conc | m5290 | 5 | 00:20:25 | 1.701 | 3.36 | 0.00 |
+| 61163497 | r5-smoke2 | m5290 | 3 | 00:00:49 | 0.041 | 3.40 | 0.00 |
 
 ## X0: setup (done, 2026-11-12 01:20)
 
@@ -60,3 +63,43 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 5`.
   empty.
 - X1 submitted: job 61162899 (regular, 5 nodes, 1 h), `REPEATS="1 2 3 4 5"
   NS="1 2 3 4" ARGS="--tasks 100" RES=r5/local`.
+
+## Setback: a harness bug hung X1 and X2 (2026-11-12 01:45)
+
+- X2 was submitted early to debug (job 61162942, 5 nodes, 20 min cap) while
+  X1 (61162899) waited for regular nodes; both started within minutes.
+- X2 hit its time limit after the first repeat's dt run and one xgf point;
+  X1 was cancelled after 19:36 for the same reason. Cause, mine: in
+  `xgf_sites.py` the site tasks are defined in a loop as `async def
+  work(..., work=work)`; from k=1 on, `work` no longer names the work-model
+  string but the previous site's task object, which does not pickle
+  (`cannot pickle '_queue.SimpleQueue' object`), the submit fails and the
+  hand-wired run waits forever. N=1 has one loop pass, so the N=1 smoke test
+  passed. The DT side (`e3_components.py`) was correct (one definition per
+  investigator); renamed the same way for clarity.
+- Fix: the default is `model=work_model`; `wiring_lines` stays 65. Smoke
+  test at N=2, job 61163497 (3 nodes, cpu model, both harnesses): rc 0,
+  placement ok, dt 37.2 / xgf 38.1 req/s on 2 sites, isolation check empty.
+- Guard: `run_e3_local.sh` takes `RUN_TIMEOUT` (each harness run under
+  `timeout`), so a hung run cannot eat an allocation again.
+- The killed jobs' isolation checks did not run; checked by hand right
+  after (nothing newer than either stamp), noted in
+  `results/r5/{local,conc}/orbit-isolation-check-<job>-*.txt`. Their partial
+  results (dt runs valid, xgf runs from the buggy harness) are kept in
+  `results/r5/{local,conc}/aborted/`.
+- Cost: 3.40 node-h of 6 spent so far, almost all of it in the two hung jobs.
+
+## Replan (budget, 2026-11-12 01:50)
+
+- X1, X3 and X2 in one 5-node allocation (`r5/run_x123.sh`, job 61163550,
+  regular, capped at 23 min = 1.92 node-h): `r4/run_e3_local.sh` three
+  times on the same nodes, each with its own broker, endpoints and isolation
+  check; `RUN_TIMEOUT=300`.
+- Decisions to fit the remaining 2.6 node-h:
+  - 3 repeats instead of 5 (X1-X3).
+  - Layout `one` at N=4 only (`NS_ONE=4`): one N=1 is the same run as
+    spread N=1, and round 4 showed `one` flat over N.
+  - X2 runs `--concurrent 32` only; its c=16 points are X1's spread N=1 and
+    4 (same nodes, same allocation).
+  - Order X1, X3, X2, so the time limit, if it hits, cuts X2.
+  - X4 afterwards, 4 nodes, capped at 9 min (0.6 node-h), 3 repeats.
