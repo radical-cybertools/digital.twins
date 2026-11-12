@@ -21,6 +21,8 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 5`.
 | 61163497 | r5-smoke2 | m5290 | 3 | 00:00:49 | 0.041 | 3.40 | 0.00 |
 | 61163550 | r5-e3-x123 | m5290 | 5 | 00:18:03 | 1.504 | 4.91 | 0.00 |
 | 61164117 | r5-e3-remote | m5290 | 4 | 00:09:38 | 0.642 | 5.55 | 0.00 |
+| 61187854 | r5-e3-cpu5 | m5290 | 5 | 00:58:25 | 4.868 | 10.42 | 0.00 |
+| 61187855 | r5-e3-remote64 | m5290 | 4 | 00:17:19 | 1.154 | 11.57 | 0.00 |
 
 ## X0: setup (done, 2026-11-12 01:20)
 
@@ -302,3 +304,13 @@ every rc 0; placement ok at every point; no errors; isolation check empty.
 - Confirms the 3-repeat X3 (`results/r5/cpu/`) within 1%: this is the E3
   figure. The DT path equals the hand-wired one within 1% at every N, every
   repeat range within 0.8 req/s.
+
+## Merge and close-out of the follow-up (2026-11-12 15:20)
+
+- Merged `exp/pm-round5-20261112` (`28d3030`) into `paper/dtaas` (`ea36ba7`)
+  as `f455d5b`: only `experiments/dt-paper/` changes, no conflicts,
+  `pytest test/unit` 256 passed (from /global/homes, pytest added to the
+  home `ve5`). This entry and the ledger update came after the merge.
+- Node-hours: see the ledger (round 5 including the two follow-up runs).
+- Round 5 page updated with X3 at 5 repeats, X4 at 64 threads, the
+  /pscratch move and the merge.
