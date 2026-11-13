@@ -15,6 +15,8 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
 | 61219092 | r6-smoke | m5290 | 3 | 00:00:48 | 0.040 | 0.04 | 0.00 |
+| 61219149 | r6-y1 | m5290 | 3 | 00:30:46 | 1.538 | 1.58 | 0.00 |
+| 61219150 | r6-y2 | m5290 | 3 | 00:00:00 | 0.000 | 1.58 | 0.00 |
 
 ## Y0: setup (2026-11-13 01:30)
 
@@ -73,3 +75,34 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
     modes (N sessions x K twins) later if needed.
   Both harness changes are applied only after Y1 and Y2 finish, so neither
   run sees a changed harness.
+
+## Y1: default keepalive deadline, 3 s (done, 2026-11-13 02:35)
+
+Job 61219149 (r6-y1, regular, 3 nodes, 30:57), `r6/run_broker.sh`, 2
+repeats, `--sessions 1,4,16,64,128,256,384 --seconds 20 --keep-going
+--create-threads 16`. Both repeats ran every N: 0 failed requests, 0
+keepalive ping timeouts in either broker log; isolation check empty.
+`results/r6/t3s/`, table `broker-table-stack-r6-20261113.md`
+(`r6/broker_table.py`, medians over the 2 repeats).
+
+| N | create s | s per session | req/s | p50 ms | p99 ms | broker CPU % | RSS MB | threads | fds | round 3 T4-C req/s |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 2.0 | 2.04 | 200.8 | 5.0 | 5.9 | 60 | 85 | 71 | 44 | 147 |
+| 4 | 0.6 | 0.14 | 316.8 | 12.3 | 18.0 | 113 | 107 | 117 | 95 | 243 |
+| 16 | 0.8 | 0.05 | 352.7 | 43.3 | 96.0 | 119 | 147 | 177 | 299 | 290 |
+| 64 | 3.4 | 0.05 | 328.8 | 186.3 | 374.2 | 116 | 272 | 417 | 1115 | 264 |
+| 128 | 9.7 | 0.08 | 79.0 | 1604.6 | 1978.8 | 46 | 466 | 737 | 2203 | – |
+| 256 | 63.6 | 0.25 | 19.7 | 12467.8 | 14139.4 | 31 | 911 | 1377 | 4379 | stalled |
+| 384 | 181.2 | 0.47 | 11.2 | 27313.1 | 35654.0 | 36 | 1513 | 2017 | 6555 | – |
+
+- #170 works at the default deadline: 384 sessions are created and served
+  without a single keepalive timeout (round 3 stalled at 256; the laptop
+  stalled at 384 with 3 s).
+- Up to 64 sessions the broker is CPU-bound at about one core (113-119%)
+  and the aggregate is 317-353 req/s (round 3: 243-290).
+- From 128 sessions throughput collapses (79 -> 19.7 -> 11.2 req/s) while
+  the broker's CPU falls to 31-46%: it is waiting, not working. Threads
+  grow by about 5 per session (2,017 at 384), fds by about 17.
+- Creation per session grows with N (0.05 s at 16-64, 0.25 at 256, 0.47 at
+  384).
+- Y1b (client scaling) and Y1c (one session) look at the collapse.

@@ -14,7 +14,8 @@
 #   SECONDS, a bash built-in),
 #   PING (RADICAL_ORBIT_PING_TIMEOUT for broker, endpoint and client; unset:
 #   the default 3 s), TELEMETRY (RADICAL_ORBIT_RHAPSODY_TELEMETRY on the
-#   endpoint; unset: default), STEP_TIMEOUT (s per repeat, 1500).
+#   endpoint; unset: default), STEP_TIMEOUT (s per repeat, 1500), BENCH_ARGS
+#   (extra bench_broker.py arguments, e.g. --one-session for Y1c).
 set -uo pipefail
 source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm6/digital.twins/experiments/dt-paper/r6/env-r6.sh}
 R=$X/results/${RES:-r6/t3s}; mkdir -p $R
@@ -76,7 +77,7 @@ $(ls /proc/$BP/fd 2>/dev/null | wc -l)"
   timeout ${STEP_TIMEOUT:-1500} srun --overlap -N1 -n1 -w $N2 --export=ALL \
       python $X/e2-scaling/bench_broker.py --broker $URL --inference $EPN \
       --sessions $SES --seconds ${SECONDS_:-20} \
-      --keep-going --create-threads 16 --out $f.json > $f.log 2>&1
+      --keep-going --create-threads 16 ${BENCH_ARGS:-} --out $f.json > $f.log 2>&1
   echo "r$r rc=$? $(date -u +%T)"; grep -E "^N=|failed|Traceback" $f.log | cut -c1-200
   echo "r$r keepalive ping timeouts in the broker log: $(grep -c 'keepalive ping timeout' $BL 2>/dev/null)"
   srun --overlap -N1 -n1 -w $N1 pkill -TERM -u $USER -f "radical-orbit-endpoint.py -n $EPN" 2>/dev/null
