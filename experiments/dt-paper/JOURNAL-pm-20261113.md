@@ -55,3 +55,21 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
   `STEP_TIMEOUT=1080` per repeat): separate nodes and brokers, no shared
   state, and it halves the wall time. Phases are still written up in order.
   Submitted Y1 61219149 (`RES=r6/t3s`), Y2 61219150 (`RES=r6/t20s PING=20`).
+- Andre (2026-11-13 02:25): avoid tight timeouts, the allocation is fine.
+  Y2 (still pending) cancelled (61219150) and resubmitted as 61221797 with
+  `-t 01:15:00 STEP_TIMEOUT=2400`. Y1 (61219149) was already running with
+  40 min / 1080 s per repeat; its repeat 1 took 17 min, so repeat 2 may be
+  cut at N=384 by the step timeout (recorded if so).
+- Andre also added two phases after Y1 and Y2:
+  - Y1b: client scaling at the top end, N = 128, 256, 384 spread over 1, 4
+    and 8 client processes on two client nodes (round 3 T4-C3 measured
+    only up to N=64, where the broker was CPU-bound; here the broker's CPU
+    falls to 34-51% while latency explodes, so the single client is a
+    suspect). Uses round 3's `--start-at` / `--dump-lat` in
+    `bench_broker.py` (from `exp/pm-round3-20261110`, never merged) and
+    `r3/t4c_merge.py`; client CPU sampled too.
+  - Y1c: all N twins in one DT service session (a `--one-session` mode in
+    `bench_broker.py`), to separate per-session from per-twin cost. Mixed
+    modes (N sessions x K twins) later if needed.
+  Both harness changes are applied only after Y1 and Y2 finish, so neither
+  run sees a changed harness.
