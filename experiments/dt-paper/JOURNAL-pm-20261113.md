@@ -14,6 +14,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
 
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
+| 61219092 | r6-smoke | m5290 | 3 | 00:00:48 | 0.040 | 0.04 | 0.00 |
 
 ## Y0: setup (2026-11-13 01:30)
 
@@ -39,3 +40,18 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
     threads and fds, keepalive-timeout count from the broker log per
     repeat; knobs `PING`, `TELEMETRY`, `REPEATS`, `SESSIONS`, `SECONDS_`.
   - `s1/ledger.py 6`: this journal's ledger.
+- Venv: `install.sh` rc 0, `pip check` clean, `digitaltwin` 0.1.0; pins
+  digitaltwin `c2cbc5c`, asyncflow `24667a5`, radical.orbit `adf2548`
+  (#170: `RADICAL_ORBIT_PING_TIMEOUT` in `broker.py` and `runtime.py`),
+  rhapsody-py `fd3bad7`, ROSE `9cc47a5`.
+- Smoke test, job 61219092 (r6-smoke, debug, 3 nodes): fd limits soft
+  400000 / hard 600000 on every node (raised to 600000); N=1 created in
+  2.5 s, 195.9 req/s, p50 5.1 ms, 0 keepalive timeouts; sampler works;
+  isolation check empty. It ran N=1 only: I passed `SESSIONS=1,4` through
+  `--export`, whose comma splits the list (round 4's trap). The script
+  now takes spaces (`SESSIONS="1 4"`); Y1/Y2 use its default
+  1,4,16,64,128,256,384.
+- Decision: Y1 and Y2 run concurrently (regular, 3 nodes each, 40 min,
+  `STEP_TIMEOUT=1080` per repeat): separate nodes and brokers, no shared
+  state, and it halves the wall time. Phases are still written up in order.
+  Submitted Y1 61219149 (`RES=r6/t3s`), Y2 61219150 (`RES=r6/t20s PING=20`).
