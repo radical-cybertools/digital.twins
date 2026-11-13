@@ -7,6 +7,14 @@ traps. Branch `exp/pm-round7-20261113` off `f4b1f16`, merged into
 `paper/dtaas` at the end. Work dir `/pscratch/sd/m/merzky/dt-pm7`. Budget 4
 node-h, m5290, CPU. Ledger: `python s1/ledger.py 7`.
 
+## Node-hour ledger (round 7 budget: 4, CPU, m5290)
+
+Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 7`.
+
+| job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
+|---|---|---|---|---|---|---|---|
+| 61225576 | r7-smoke | m5290 | 3 | 00:01:50 | 0.092 | 0.09 | 0.00 |
+
 ## Z0: setup (2026-11-13 05:05 PST)
 
 - `/pscratch` healthy (`lfs df` answers, 70% full): work dir there.
@@ -58,3 +66,31 @@ node-h, m5290, CPU. Ledger: `python s1/ledger.py 7`.
 - Decision: broker and endpoint run with the checkout root as cwd, as in
   round 6, so Z1 is the same setup. The new checkout starts without those
   files.
+
+### Z0 smoke test (job 61225576, debug, 3 nodes, 2 min)
+
+- Run 1: `PROFILE=1 SESSIONS=4 SECONDS_=25 PROFILE_S=10`, telemetry on.
+  232.6 req/s. Working: both /proc samplers, py-spy dump and record on
+  broker and endpoint (attach allowed on the compute nodes, no extra
+  privileges), and the frame counter. Per second in the load window:
+  - 228 twin_call requests, 228 `rhapsody/submit` requests and 228 200
+    responses;
+  - 455 `rhapsody/task_status` events (2 per request);
+  - 685 outbound frames;
+  - no telemetry frames through the broker at N=4.
+- Run 2: `--twins-per-session 2 SESSIONS=8`: 4 sessions with 2 twins each,
+  8 created, 316 req/s.
+- Isolation checks empty. Results under `results/r7/smoke*` (kept as the
+  harness check).
+
+## Z1, Z2 submitted (05:20 PST)
+
+- Z1: job 61225635 (`RES=r7/notel TELEMETRY=0 REPEATS="1 2"`, regular, 3
+  nodes, 1 h, STEP_TIMEOUT 2400). Otherwise round 6's Y1: default 3 s
+  deadline, N = 1 to 384, `--keep-going --seconds 20 --create-threads 16`.
+- Z2: job 61225637, two runs back to back at N = 256, `PROFILE=1
+  SECONDS_=40 PROFILE_S=30`, one repeat each: telemetry on
+  (`r7/profile/tel-on`, port 8171), then off (`r7/profile/tel-off`, port
+  8172).
+- Decision: Z1 and Z2 run at the same time. They are independent and use
+  different nodes, so this saves wall time at no node-h cost.

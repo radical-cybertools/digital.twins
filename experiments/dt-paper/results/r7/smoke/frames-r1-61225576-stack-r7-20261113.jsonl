@@ -1,0 +1,57 @@
+{"t": 1794575812.3955119, "in": {}, "out": [0, 0]}
+{"t": 1794575813.3968587, "in": {}, "out": [0, 0]}
+{"t": 1794575814.3971088, "in": {}, "out": [0, 0]}
+{"t": 1794575815.397438, "in": {}, "out": [0, 0]}
+{"t": 1794575816.3977594, "in": {}, "out": [0, 0]}
+{"t": 1794575817.3980784, "in": {}, "out": [0, 0]}
+{"t": 1794575818.3984005, "in": {}, "out": [0, 0]}
+{"t": 1794575819.3987002, "in": {}, "out": [0, 0]}
+{"t": 1794575820.3989806, "in": {}, "out": [0, 0]}
+{"t": 1794575821.3992472, "in": {}, "out": [2, 2630]}
+{"t": 1794575822.3995183, "in": {}, "out": [0, 0]}
+{"t": 1794575823.399848, "in": {}, "out": [0, 0]}
+{"t": 1794575824.4001257, "in": {}, "out": [0, 0]}
+{"t": 1794575825.4004061, "in": {}, "out": [0, 0]}
+{"t": 1794575826.4007363, "in": {}, "out": [0, 0]}
+{"t": 1794575827.4010026, "in": {}, "out": [0, 0]}
+{"t": 1794575828.401288, "in": {}, "out": [0, 0]}
+{"t": 1794575829.4015486, "in": {}, "out": [0, 0]}
+{"t": 1794575830.4018567, "in": {}, "out": [0, 0]}
+{"t": 1794575831.4021702, "in": {}, "out": [0, 0]}
+{"t": 1794575832.4024196, "in": {}, "out": [0, 0]}
+{"t": 1794575833.4027274, "in": {}, "out": [0, 0]}
+{"t": 1794575834.4029677, "in": {}, "out": [0, 0]}
+{"t": 1794575835.403258, "in": {}, "out": [0, 0]}
+{"t": 1794575836.4034653, "in": {"request POST /broker/dt/register_session": [4, 1404], "request POST /broker/dt/twin_create/*": [4, 1264], "request GET /broker/dt/twin_list/*": [8, 1856], "subscribe": [16, 3180], "request POST /rhapsody/register_session": [4, 1212], "response 200": [4, 1176], "unsubscribe": [8, 1556], "event rhapsody/session_status": [4, 840]}, "out": [37, 31267]}
+{"t": 1794575837.4036672, "in": {"request GET /broker/dt/twin_list/*": [8, 1856]}, "out": [8, 3797]}
+{"t": 1794575838.4039307, "in": {"request GET /broker/dt/twin_list/*": [4, 928], "request POST /broker/dt/twin_call/*/*": [182, 134130], "request POST /sysinfo/register_session": [4, 976], "response 200": [182, 51970], "request GET /sysinfo/host_role": [4, 944], "request POST /sysinfo/unregister_session/*": [4, 1056], "request POST /rhapsody/submit/*": [173, 307594], "event rhapsody/task_status": [341, 86708]}, "out": [549, 452992]}
+{"t": 1794575839.4044163, "in": {"response 200": [304, 86640], "event rhapsody/task_status": [607, 154580], "request POST /rhapsody/submit/*": [302, 536956], "request POST /broker/dt/twin_call/*/*": [301, 201971]}, "out": [910, 777420]}
+{"t": 1794575840.4047868, "in": {"request POST /broker/dt/twin_call/*/*": [296, 198616], "event rhapsody/task_status": [587, 149654], "response 200": [294, 83790], "request POST /rhapsody/submit/*": [296, 526288]}, "out": [883, 758336]}
+{"t": 1794575841.4068897, "in": {"event rhapsody/task_status": [331, 84436], "response 200": [165, 47025], "request POST /broker/dt/twin_call/*/*": [162, 108702], "request POST /rhapsody/submit/*": [162, 288036]}, "out": [492, 418551]}
+{"t": 1794575842.4074132, "in": {"request POST /broker/dt/twin_call/*/*": [121, 81191], "request POST /rhapsody/submit/*": [120, 213360], "event rhapsody/task_status": [240, 61200], "response 200": [120, 34200]}, "out": [359, 307774]}
+{"t": 1794575843.4101734, "in": {"request POST /rhapsody/submit/*": [135, 240030], "request POST /broker/dt/twin_call/*/*": [136, 91256], "event rhapsody/task_status": [270, 68850], "response 200": [135, 38475]}, "out": [407, 347827]}
+{"t": 1794575844.4103353, "in": {"request POST /broker/dt/twin_call/*/*": [143, 95953], "request POST /rhapsody/submit/*": [145, 257810], "event rhapsody/task_status": [285, 72582], "response 200": [143, 40755]}, "out": [429, 369911]}
+{"t": 1794575845.4105392, "in": {"response 200": [157, 44745], "event rhapsody/task_status": [315, 80418], "request POST /broker/dt/twin_call/*/*": [159, 106689], "request POST /rhapsody/submit/*": [155, 275590]}, "out": [471, 400789]}
+{"t": 1794575846.4118013, "in": {"request POST /rhapsody/submit/*": [130, 231140], "event rhapsody/task_status": [255, 64932], "response 200": [129, 36765], "request POST /broker/dt/twin_call/*/*": [126, 84546]}, "out": [385, 331661]}
+{"t": 1794575847.4135911, "in": {"event rhapsody/task_status": [247, 63078], "response 200": [122, 34770], "request POST /broker/dt/twin_call/*/*": [124, 83204], "request POST /rhapsody/submit/*": [122, 216916]}, "out": [368, 314430]}
+{"t": 1794575848.4156983, "in": {"event rhapsody/task_status": [275, 70094], "response 200": [138, 39330], "request POST /rhapsody/submit/*": [138, 245364], "request POST /broker/dt/twin_call/*/*": [137, 91927]}, "out": [413, 354016]}
+{"t": 1794575849.417021, "in": {"event rhapsody/task_status": [291, 74236], "response 200": [145, 41325], "request POST /rhapsody/submit/*": [145, 257810], "request POST /broker/dt/twin_call/*/*": [144, 96624]}, "out": [437, 373517]}
+{"t": 1794575850.417331, "in": {"event rhapsody/task_status": [313, 79784], "response 200": [156, 44460], "request POST /broker/dt/twin_call/*/*": [159, 106689], "request POST /rhapsody/submit/*": [157, 279146]}, "out": [469, 402542]}
+{"t": 1794575851.4175823, "in": {"request POST /rhapsody/submit/*": [294, 522732], "response 200": [293, 83505], "event rhapsody/task_status": [585, 149144], "request POST /broker/dt/twin_call/*/*": [292, 195932]}, "out": [879, 753989]}
+{"t": 1794575852.41779, "in": {"response 200": [276, 78660], "event rhapsody/task_status": [552, 140822], "request POST /broker/dt/twin_call/*/*": [277, 185867], "request POST /rhapsody/submit/*": [277, 492506]}, "out": [830, 711328]}
+{"t": 1794575853.4179986, "in": {"event rhapsody/task_status": [582, 148410], "response 200": [291, 82935], "request POST /broker/dt/twin_call/*/*": [289, 193919], "request POST /rhapsody/submit/*": [288, 512064]}, "out": [868, 741233]}
+{"t": 1794575854.4188273, "in": {"event rhapsody/task_status": [614, 156570], "response 200": [307, 87495], "request POST /rhapsody/submit/*": [309, 549402], "request POST /broker/dt/twin_call/*/*": [308, 206668]}, "out": [925, 793251]}
+{"t": 1794575855.4190538, "in": {"request POST /broker/dt/twin_call/*/*": [301, 201971], "event rhapsody/task_status": [603, 153734], "response 200": [301, 85785], "request POST /rhapsody/submit/*": [301, 535178]}, "out": [903, 773269]}
+{"t": 1794575856.4199283, "in": {"response 200": [293, 83505], "event rhapsody/task_status": [586, 149430], "request POST /broker/dt/twin_call/*/*": [292, 195932], "request POST /rhapsody/submit/*": [292, 519176]}, "out": [876, 749927]}
+{"t": 1794575857.421295, "in": {"response 200": [296, 84360], "event rhapsody/task_status": [591, 150965], "request POST /broker/dt/twin_call/*/*": [294, 197274], "request POST /rhapsody/submit/*": [294, 522732]}, "out": [886, 756868]}
+{"t": 1794575858.4219465, "in": {"request POST /broker/dt/twin_call/*/*": [298, 199958], "request POST /rhapsody/submit/*": [297, 528066], "event rhapsody/task_status": [591, 150969], "response 200": [295, 84075]}, "out": [888, 761917]}
+{"t": 1794575859.4234312, "in": {"response 200": [257, 73245], "event rhapsody/task_status": [513, 131103], "request POST /broker/dt/twin_call/*/*": [255, 171105], "request POST /rhapsody/submit/*": [256, 455168]}, "out": [768, 657443]}
+{"t": 1794575860.4237437, "in": {"event rhapsody/task_status": [608, 155281], "response 200": [305, 86925], "request POST /broker/dt/twin_call/*/*": [304, 203984], "request POST /rhapsody/submit/*": [304, 540512]}, "out": [913, 781261]}
+{"t": 1794575861.4243245, "in": {"event rhapsody/task_status": [600, 153363], "request POST /broker/dt/twin_call/*/*": [299, 200629], "request POST /rhapsody/submit/*": [299, 531622], "response 200": [299, 85215]}, "out": [900, 769649]}
+{"t": 1794575862.4260037, "in": {"request POST /broker/dt/twin_call/*/*": [304, 203984], "request POST /rhapsody/submit/*": [303, 538734], "event rhapsody/task_status": [604, 154322], "response 200": [302, 86070]}, "out": [907, 777616]}
+{"t": 1794575863.426211, "in": {"request POST /broker/dt/twin_call/*/*": [134, 89914], "request POST /rhapsody/submit/*": [135, 240030], "event rhapsody/task_status": [272, 69496], "response 200": [140, 39772], "request GET /broker/dt/twin_list/*": [4, 928], "request POST /broker/dt/twin_close/*/*": [4, 1084], "request POST /broker/dt/unregister_session/*": [4, 968], "request POST /rhapsody/unregister_session/*": [4, 1060], "unsubscribe": [8, 1656]}, "out": [437, 383400]}
+{"t": 1794575864.426513, "in": {}, "out": [0, 0]}
+{"t": 1794575865.4267468, "in": {}, "out": [0, 0]}
+{"t": 1794575866.426993, "in": {}, "out": [0, 0]}
+{"t": 1794575867.4272308, "in": {}, "out": [0, 0]}
+{"t": 1794575868.4274645, "in": {}, "out": [0, 0]}
