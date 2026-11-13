@@ -27,6 +27,7 @@ IP0=$(ip -4 -o addr show hsn0 | awk '{print $4}' | cut -d/ -f1 | head -1)
 PORT=8151
 URL=https://$IP0:$PORT
 [ -n "${PING:-}" ] && export RADICAL_ORBIT_PING_TIMEOUT=$PING
+SES=${SESSIONS:-1 4 16 64 128 256 384}; SES=${SES// /,}   # spaces: a comma splits sbatch --export
 echo "node0 $N0 ($IP0) node1 $N1 node2 $N2  broker $URL  ping ${PING:-default}  telemetry ${TELEMETRY:-default}  $(date -u +%FT%TZ)"
 # fds: the broker holds about 4.4k at 256 sessions, 6.6k at 384
 echo "ulimit -n before: soft $(ulimit -Sn) hard $(ulimit -Hn)"
@@ -74,7 +75,7 @@ $(ls /proc/$BP/fd 2>/dev/null | wc -l)"
   f=$R/broker-capacity-$tag-$D
   timeout ${STEP_TIMEOUT:-1500} srun --overlap -N1 -n1 -w $N2 --export=ALL \
       python $X/e2-scaling/bench_broker.py --broker $URL --inference $EPN \
-      --sessions ${SESSIONS:-1,4,16,64,128,256,384} --seconds ${SECONDS_:-20} \
+      --sessions $SES --seconds ${SECONDS_:-20} \
       --keep-going --create-threads 16 --out $f.json > $f.log 2>&1
   echo "r$r rc=$? $(date -u +%T)"; grep -E "^N=|failed|Traceback" $f.log | cut -c1-200
   echo "r$r keepalive ping timeouts in the broker log: $(grep -c 'keepalive ping timeout' $BL 2>/dev/null)"
