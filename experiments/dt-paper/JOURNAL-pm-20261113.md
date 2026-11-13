@@ -17,6 +17,8 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
 | 61219092 | r6-smoke | m5290 | 3 | 00:00:48 | 0.040 | 0.04 | 0.00 |
 | 61219149 | r6-y1 | m5290 | 3 | 00:30:46 | 1.538 | 1.58 | 0.00 |
 | 61219150 | r6-y2 | m5290 | 3 | 00:00:00 | 0.000 | 1.58 | 0.00 |
+| 61222208 | r6-smoke-y1c | m5290 | 3 | 00:00:52 | 0.043 | 1.62 | 0.00 |
+| 61222210 | r6-smoke-y1b | m5290 | 4 | 00:02:55 | 0.194 | 1.82 | 0.00 |
 
 ## Y0: setup (2026-11-13 01:30)
 
@@ -106,3 +108,27 @@ keepalive ping timeouts in either broker log; isolation check empty.
 - Creation per session grows with N (0.05 s at 16-64, 0.25 at 256, 0.47 at
   384).
 - Y1b (client scaling) and Y1c (one session) look at the collapse.
+
+## Y1b and Y1c: harness, smoke tests, submitted (2026-11-13 02:45)
+
+- `bench_broker.py`: round 3's `--start-at` / `--dump-lat` (from
+  `exp/pm-round3-20261110`, applied unchanged; behaviour without them is
+  the same); new `--one-session` (all N twins on one DT service session,
+  built with the same 16 creation threads; teardown once per session);
+  every point records `client_cpu_s` / `client_cpu_pct`, the client
+  process's CPU over the load window. Applied after Y1 finished; Y2 started
+  after that, so its JSONs record the newer commit, but it uses none of the
+  new options and its behaviour is unchanged.
+- `r6/run_clients.sh` (Y1b) from `r3/run_t4c3.sh`: one broker and endpoint
+  for the job, N = 128, 256, 384 over P = 1, 4, 8 processes alternating two
+  client nodes, the shared load window starts 60 + N s after launch (all
+  creation done first), a 2400 s timeout per point. `r6/clients_table.py`
+  pools them (`r3/t4c_merge.py` reads only round 3's 3-column /proc file).
+- `r6/run_broker.sh`: `BENCH_ARGS` passes extra arguments (Y1c:
+  `--one-session`).
+- Smoke tests (debug): 61222208 (Y1c, N = 1, 4, one session: 198 / 334
+  req/s) and 61222210 (Y1b, N=8, P = 1 and 4: 342 / 331 req/s, all
+  processes in the window, client CPU 23% for one process). Isolation
+  checks empty.
+- Submitted: Y1b 61222332 (regular, 4 nodes, 2 h), Y1c 61222333 (regular,
+  3 nodes, 90 min, `STEP_TIMEOUT=2400`).
