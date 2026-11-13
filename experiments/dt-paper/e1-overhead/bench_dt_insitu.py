@@ -235,6 +235,15 @@ async def xgf_row(label, predict, args) -> dict:
 
 
 async def make_backend(args):
+    if getattr(args, "local_backend", None) == "dragon_native":
+        # round 8: the harness itself runs under `dragon -s`
+        from rhapsody.backends.execution.dragon_native import (  # type: ignore
+            DragonNativeExecutionBackend,
+        )
+        be = DragonNativeExecutionBackend(workers_per_node=args.workers)
+        if hasattr(be, "__await__"):
+            be = await be
+        return f"local dragon_native ({args.workers or 'physical cores'} workers)", be
     if args.broker or args.endpoint:
         from rhapsody.backends.execution.orbit import (  # type: ignore
             OrbitExecutionBackend,
@@ -299,6 +308,10 @@ async def main() -> None:
     parser.add_argument("--bursts", type=int, default=N_BURSTS,
                         help="back-to-back bursts per row; the first is "
                              "concurrent_s, all are in bursts_s")
+    parser.add_argument("--work-ms", type=float, default=0.0,
+                        help="round 8: CPU per task in ms (0: a no-op)")
+    parser.add_argument("--local-backend", default=None, choices=[None, "dragon_native"],
+                        help="round 8: local dragon_native pool (run under dragon -s)")
     parser.add_argument("--out", help="write results as JSON here")
 
     args = parser.parse_args()
@@ -309,8 +322,15 @@ async def main() -> None:
     backend_label, backend = await make_backend(args)
     flow = await WorkflowEngine.create(backend=backend)
 
+    work_s = args.work_ms / 1000.0
+
     @flow.function_task
-    async def predict(x):
+    async def predict(x, work_s=work_s):
+        if work_s:  # round 8: CPU-bound task cost (holds its process's GIL)
+            import time
+            end = time.thread_time() + work_s
+            while time.thread_time() < end:
+                pass
         return x
 
     broker = ZMQ_BrokerProcess()
@@ -318,6 +338,12 @@ async def main() -> None:
     stream = await connect_stream_client("e1-insitu", *broker.get_connection_str())
 
     results = {"provenance": provenance(args, backend_label), "rows": {}}
+    try:  # round 8: all five packages, backend, telemetry, file system
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "r8"))
+        from prov import provenance as _r8prov
+        results["provenance"]["r8"] = _r8prov("R8-1 overhead on Dragon", Path(__file__).name)
+    except Exception as exc:
+        results["provenance"]["r8"] = f"unavailable: {exc}"
     print(f"backend: {backend_label}")
 
     # rows run in the order --rows gives them (round 3b; the default order

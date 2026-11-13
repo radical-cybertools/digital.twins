@@ -65,12 +65,16 @@ start_eps() {  # mode: dragon | process
   done
   for n in ${EPS[@]}; do echo "  $n up after $(timeout 330 python $X/r8/wait_endpoint.py $URL $n 300) s"; done
 }
-stop_eps() {
+stop_eps() {  # wait only on these steps: a bare `wait` would wait for the broker too
+  local ps=()
   for k in 0 1 2 3; do
     srun --overlap -N1 -n1 -w ${SN[$k]} pkill -TERM -u $USER -f "radical-orbit-endpoint.py -n r8b_s$k|p8b_endpoint.py -n r8b_s$k" 2>/dev/null &
-  done; wait
+    ps+=($!)
+  done; wait ${ps[@]}
   sleep 10; kill -TERM ${EPIDS[@]} 2>/dev/null; wait ${EPIDS[@]} 2>/dev/null
-  for k in 0 1 2 3; do srun --overlap -N1 -n1 -w ${SN[$k]} dragon-cleanup > /dev/null 2>&1 & done; wait
+  ps=()
+  for k in 0 1 2 3; do srun --overlap -N1 -n1 -w ${SN[$k]} dragon-cleanup > /dev/null 2>&1 & ps+=($!); done; wait ${ps[@]}
+  EPIDS=(); EPS=()
   sleep 5
 }
 run() {  # row backend workers layout

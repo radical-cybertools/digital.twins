@@ -17,6 +17,14 @@ Per version v:
 Backends as in `e1-overhead/bench_dt_insitu.py`: a local process pool, or
 an ORBIT endpoint (`--broker`, `--endpoint`).
 
+Round 8 (R8-A): `--payload-mb S` publishes every version by value with an
+S MB blob in the model (the model args travel with every inference task);
+`--path-mb S --path-dir DIR` writes one S MB file there and publishes its
+path, and the task reads the file once per worker process and path (a
+model loaded from the endpoint's file system).  The answers also give the
+inference rate over the run (`rate_windows`: requests per 1 s window), so
+the dip around a publish shows.
+
     python experiments/dt-paper/e4-hot-swap/bench_model_update.py \\
         --intervals 1,0.1,0.01 --out results/update.json
 """
@@ -51,8 +59,9 @@ from digitaltwin.components import NULL_DTYPE  # noqa: E402
 
 
 class Versioned(ModelInvestigator):
-    def __init__(self, flow, predict, interval, n):
+    def __init__(self, flow, predict, interval, n, extra=None):
         super().__init__(flow)
+        self.extra = extra or {}
         self.predict = predict
         self.interval = interval
         self.n = n
@@ -63,11 +72,11 @@ class Versioned(ModelInvestigator):
     async def main_loop(self, runtime):
         predict = self.predict
 
-        async def infer(in_data, v=0):
-            return TypedData(Y, await predict(v))
+        async def infer(in_data, v=0, **model):
+            return TypedData(Y, await predict(v, **model))
 
         runtime.set_inference_task(infer)
-        runtime.publish_new_model({"v": 0})
+        runtime.publish_new_model({"v": 0, **self.extra})
         await self.go.wait()
         t0 = time.perf_counter()
         for v in range(1, self.n + 1):
@@ -75,7 +84,7 @@ class Versioned(ModelInvestigator):
             if delay > 0:
                 await asyncio.sleep(delay)
             self.published[v] = time.perf_counter()
-            runtime.publish_new_model({"v": v})
+            runtime.publish_new_model({"v": v, **self.extra})
         await asyncio.sleep(max(0.5, 3 * self.interval))
         self.done.set()
 
@@ -93,10 +102,10 @@ def summarize(xs):
             "max_ms": max(xs) * 1e3}
 
 
-async def one_interval(flow, broker, predict, interval, n):
+async def one_interval(flow, broker, predict, interval, n, extra=None):
     stream = await connect_stream_client("e4-update", *broker.get_connection_str())
     rt = DTRuntime(flow, stream)
-    inv = Versioned(flow, predict, interval, n)
+    inv = Versioned(flow, predict, interval, n, extra)
     rt.add_investigator(inv, X, Y)
     rt.start()
     answers = []           # (issued, answered, version)
@@ -130,7 +139,13 @@ async def one_interval(flow, broker, predict, interval, n):
         answered.append(first[1] - t_pub)
         issued.append(first[0] - t_pub)
     inference = [ta - ti for ti, ta, _ in answers]
+    windows = {}
+    if answers:
+        a0 = answers[0][0]
+        for _, ta, _ in answers:
+            windows[int(ta - a0)] = windows.get(int(ta - a0), 0) + 1
     return {
+        "rate_windows": [windows.get(i, 0) for i in range(max(windows, default=-1) + 1)],
         "interval_s": interval,
         "versions": n,
         "versions_seen": seen,
@@ -179,6 +194,11 @@ async def main():
                    help="publishing time per interval (N = seconds / interval, "
                         "at most --max-versions)")
     p.add_argument("--max-versions", type=int, default=500)
+    p.add_argument("--payload-mb", type=float, default=0.0,
+                   help="round 8: model published by value with this many MB")
+    p.add_argument("--path-mb", type=float, default=0.0,
+                   help="round 8: model published by path, a file of this many MB")
+    p.add_argument("--path-dir", default="/tmp")
     p.add_argument("--out")
     args = p.parse_args()
     args.backends = [b for b in args.backends.split(",") if b]
@@ -188,16 +208,43 @@ async def main():
     flow = await WorkflowEngine.create(backend=backend)
 
     @flow.function_task
-    async def predict(v):
+    async def predict(v, blob=None, path=None):
+        if path is not None:  # a model on the endpoint's file system, read once per worker
+            import builtins
+            cache = builtins.__dict__.setdefault("_r8_model_cache", {})
+            if path not in cache:
+                with open(path, "rb") as f:
+                    cache[path] = len(f.read())
         return v
+
+    extra = {}
+    if args.payload_mb:
+        extra["blob"] = os.urandom(int(args.payload_mb * 2**20))
+    elif args.path_mb:
+        mp = Path(args.path_dir) / f"r8-model-{args.path_mb:g}MB.bin"
+        if not mp.exists() or mp.stat().st_size != int(args.path_mb * 2**20):
+            with open(mp, "wb") as f:
+                left = int(args.path_mb * 2**20)
+                while left:
+                    n_ = min(left, 64 * 2**20)
+                    f.write(os.urandom(n_))
+                    left -= n_
+        extra["path"] = str(mp)
 
     broker = ZMQ_BrokerProcess()
     await broker.start()
     results = {"provenance": provenance(args, label), "points": []}
+    try:  # round 8: all five packages, backend, telemetry, file system
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "r8"))
+        from prov import provenance as _r8prov
+        results["provenance"]["r8"] = _r8prov("R8-A model publish", Path(__file__).name)
+    except Exception as exc:
+        results["provenance"]["r8"] = f"unavailable: {exc}"
     try:
         for interval in intervals:
             n = min(args.max_versions, max(5, int(args.seconds / interval)))
-            r = await one_interval(flow, broker, predict, interval, n)
+            r = await one_interval(flow, broker, predict, interval, n, extra)
+            r["payload_mb"], r["path_mb"] = args.payload_mb, args.path_mb
             results["points"].append(r)
             a = r["answered"] or {}
             print(f"interval {interval*1e3:7.1f} ms: {r['versions_seen']}/{n} versions "
