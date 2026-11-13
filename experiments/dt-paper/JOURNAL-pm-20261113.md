@@ -162,3 +162,34 @@ isolation check empty. `results/r6/t20s/`, table
   the figure needs no tuning; the 20 s numbers go next to it as the
   sensitivity check. (On the laptop, 3 s stalled at 384; Perlmutter has
   more headroom.)
+
+## Y1c: all N twins in one session (done, 2026-11-13 03:25)
+
+Job 61222333 (r6-y1c, regular, 3 nodes; `BENCH_ARGS=--one-session
+STEP_TIMEOUT=2400`), 2 repeats, all N in both: 0 failed requests, 0
+keepalive timeouts, isolation check empty. `results/r6/onesess/`, table
+`broker-table-stack-r6-20261113.md`.
+
+| twins N | one session: create s | req/s | p50 ms | p99 ms | broker CPU % | threads | fds | Y1 (N sessions) req/s | Y1 p50 ms |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 2.0 | 206.2 | 4.8 | 5.9 | 61 | 71 | 44 | 200.8 | 5.0 |
+| 4 | 0.6 | 374.0 | 10.3 | 14.9 | 93 | 108 | 71 | 316.8 | 12.3 |
+| 16 | 0.6 | 608.9 | 25.1 | 54.1 | 96 | 132 | 179 | 352.7 | 43.3 |
+| 64 | 1.9 | 777.0 | 77.1 | 233.7 | 84 | 228 | 611 | 328.8 | 186.3 |
+| 128 | 2.2 | 830.1 | 142.3 | 353.4 | 77 | 356 | 1187 | 79.0 | 1604.6 |
+| 256 | 3.9 | 842.1 | 278.3 | 712.4 | 72 | 612 | 2339 | 19.7 | 12467.8 |
+| 384 | 5.7 | 794.8 | 446.8 | 890.7 | 68 | 868 | 3491 | 11.2 | 27313.1 |
+
+- The collapse is a per-session cost, not a per-twin one: 384 twins in one
+  session serve 795 req/s (384 sessions: 11.2), created in 5.7 s (181 s).
+  Throughput plateaus at about 800-840 req/s from 64 twins, latency grows
+  linearly with N (closed loop), the broker stays at 68-96% CPU.
+- Per twin in one session the broker gains about 2 threads and 9 fds; per
+  session (Y1) about 5 threads and 17 fds.
+- The single client is not the limit here: its CPU over the load window
+  is 18-33% at every N while it drives 800 req/s. Y1b tests the client at
+  N sessions.
+- For the paper: a deployment should put many twins in one session, or
+  the dt service should share per-session machinery (broker participant,
+  engine, backends) across sessions. That is a radical.orbit / digital.twins
+  question, not measured further here.
