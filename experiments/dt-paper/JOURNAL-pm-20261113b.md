@@ -14,6 +14,10 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 7`.
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
 | 61225576 | r7-smoke | m5290 | 3 | 00:01:50 | 0.092 | 0.09 | 0.00 |
+| 61225635 | r7-z1 | m5290 | 3 | 00:27:06 | 1.355 | 1.45 | 0.00 |
+| 61225637 | r7-z2 | m5290 | 3 | 00:07:46 | 0.388 | 1.83 | 0.00 |
+| 61225659 | r7-z3 | m5290 | 3 | 00:08:18 | 0.415 | 2.25 | 0.00 |
+| 61226377 | r7-z2b | m5290 | 3 | 00:11:15 | 0.562 | 2.81 | 0.00 |
 
 ## Z0: setup (2026-11-13 05:05 PST)
 
@@ -135,3 +139,127 @@ endpoint CPU are % of one core in the load window.
 - The repeat spread is up to 23% (16 sessions: 316.5 / 396.0). It is not
   tuned between repeats and is reported as measured.
 - Isolation check empty, no failed requests.
+
+## Z2: where the per-session cost sits (done; jobs 61225637 and 61226377)
+
+### Attempt 1 (job 61225637): no recordings
+
+`py-spy record --rate 100 --idle`, blocking (the default), on broker and
+endpoint, at N = 256, telemetry on and off.
+
+- With about 1,400 broker threads and 300-600 endpoint threads, py-spy fell
+  about 50 s behind ("results may be inaccurate"). The `timeout 60` around
+  each recording killed it before it wrote the folded file.
+- Pausing the process for every sample also slowed both runs: 49.1 req/s
+  with telemetry on, 79.1 with it off, against 254-330 in Z1.
+- The dumps (`pyspy-*-dump.txt`) and the frame counts came through and are
+  used below.
+
+### Attempt 2 (job 61226377)
+
+- Change: `PYSPY_RATE=20 PYSPY_NB=1`, i.e. `--rate 20 --idle --nonblocking`,
+  and a timeout of the duration + 180 s. This deviates from the page's
+  `--rate 100`, which py-spy could not hold with this many threads.
+- Same job, first run: telemetry on without profiling (`tel-on-plain`), for
+  undisturbed CPU numbers.
+- The nonblocking recordings barely disturb the runs: telemetry off gives
+  231.5 req/s (Z1: 254-330), telemetry on 28.8 (unprofiled: 21.8).
+
+| run (N = 256) | req/s | p50 ms | broker CPU % | endpoint CPU % | endpoint threads | broker threads |
+|---|---|---|---|---|---|---|
+| telemetry on, no profiler | 21.8 | 11,365 | 31 | 192 | 613 | 1,377 |
+| telemetry on, py-spy 20 Hz nonblocking | 28.8 | 8,715 | 32 | 195 | 613 | 1,378 |
+| telemetry off, py-spy 20 Hz nonblocking | 231.5 | 1,027 | 98 | 38 | 356 | 1,378 |
+| Z1 telemetry off (median of 2) | 291.9 | 835 | 122 | 45 | 356 | 1,377 |
+
+### What crosses the broker (r7/frame_counter.py, load window, per second)
+
+| | twin_call requests | rhapsody/submit requests | 200 responses | rhapsody/task_status events | other inbound | outbound frames |
+|---|---|---|---|---|---|---|
+| telemetry on (attempt 1) | 50.7 | 50.0 | 49.3 | 98.6 | 0 | 149 |
+| telemetry off (attempt 1) | 85.1 | 83.5 | 83.3 | 166.1 | ~0 | 250 |
+
+The frames per request are the same with telemetry on and off: one
+twin_call, one submit, one response and two task_status events. No telemetry
+or sysinfo frames cross the broker during the load. The broker relays
+nothing extra per session.
+
+### Profiles (`r7/folded_top.py`, `results/r7/profile/*/top-*.md`)
+
+**Endpoint, telemetry on.**
+- 98.4% of its busy samples are in rhapsody's
+  `ConcurrentTelemetryAdapter._collect_loop` (`rhapsody/telemetry/adapters/concurrent.py:225`, its `_poll()`).
+- Hot frames, share of busy samples:
+  - `psutil.disk_io_counters` (`concurrent.py:161`): 59.0%, of which
+    `psutil/_pslinux.py:248 is_storage_device` is 47.7% self;
+  - `psutil.virtual_memory` (`concurrent.py:136`): 14.0%;
+  - `psutil.net_io_counters` (`concurrent.py:170`): 13.7%;
+  - `cpu_times`: about 4.5%;
+  - `open_binary` / `open_text` (psutil reading /proc and /sys): 26% self.
+- The dump shows 549 threads against 293 with telemetry off: the 256 extra
+  threads are one `_collect_loop` per session.
+- **Endpoint, telemetry off:** almost idle. 0.2% of samples are busy, all
+  in its event loop and socket writes.
+
+**Broker, both cases.**
+- Busy time is the event loop's socket and SSL writes
+  (`_SelectorSocketTransport.write`, `SSLObject.write`) and pydantic in
+  `protocol.parse_message` / `public_plugins`.
+- The dt service (digitaltwin) and asyncflow are at or below 0.1%.
+- With telemetry on the broker is mostly idle (31% CPU), waiting on the
+  endpoint.
+- Note: `_dump (frame_counter.py:79)` is the counter thread's `time.sleep`.
+  folded_top.py finds no source for that file, so it counts the sleep as busy.
+
+### Answer
+
+- **The time goes to the endpoint, into rhapsody's per-session telemetry
+  collector.** Every service session starts its own `ConcurrentTelemetryAdapter`
+  thread, which polls node-level psutil counters (CPU, memory, disk I/O,
+  network) every 0.1 s (`resource_poll_interval=0.1` in radical.orbit's
+  `plugin_rhapsody.py`).
+- At 256 sessions that is 2,560 polls a second. Each poll reads several
+  /proc and /sys files; `disk_io_counters` checks every block device with
+  `is_storage_device`.
+- These threads hold the endpoint at about 190% CPU and contend for its GIL
+  with the event loop that answers the broker. Each request then waits on
+  the endpoint and the broker idles.
+- Neither the broker's relaying nor the dt service in the broker is the cost.
+- This is also why one session with 384 twins (Y1c) is fast: one session
+  has one poller.
+
+**Bug, described and not fixed (no fix branches this round):**
+- The telemetry collects node-level figures that are identical for every
+  session on the node, yet radical.orbit's rhapsody plugin starts one
+  collector per session at 10 Hz.
+- Its cost grows with the session count and starves the endpoint. Each
+  session also writes its own `telemetry-output/session.*.telemetry.jsonl`
+  into the endpoint's cwd: 4.2 GB in round 6.
+- Candidates:
+  - one shared collector per endpoint process, fanned out to the sessions;
+  - a much longer default poll interval;
+  - telemetry off by default for service sessions.
+- To decide in radical.orbit #? / rhapsody, not here.
+
+## Z3: S sessions x T twins, 256 twins (done, job 61225659, 3 nodes, about 14 min)
+
+Telemetry on, default 3 s deadline, one repeat per split, a fresh broker and
+endpoint each. Tables: `results/r7/mixed/t<T>/broker-table-stack-r7-20261113.md`.
+
+| S sessions | T twins each | create s | req/s | p50 ms | p99 ms | broker CPU % | endpoint CPU % | endpoint threads | broker threads / fds |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 256 | 5.8 | 875.4 | 274 | 473 | 75 | 84 | 103 | 612 / 2,339 |
+| 4 | 64 | 5.5 | 893.6 | 275 | 551 | 88 | 103 | 233 | 621 / 2,363 |
+| 16 | 16 | 6.3 | 712.4 | 336 | 699 | 103 | 119 | 629 | 657 / 2,459 |
+| 64 | 4 | 9.5 | 395.8 | 631 | 952 | 107 | 153 | 956 | 801 / 2,843 |
+| 256 | 1 | 76.7 | 20.0 | 12,400 | 13,854 | 38 | 196 | 613 | 1,377 / 4,379 |
+
+- At a fixed 256 twins, throughput depends on the number of sessions: flat
+  from 1 to 4 sessions (about 880 req/s), down 20% at 16, 55% at 64 and 98%
+  at 256 (20.0, matching Y1's 19.7). The endpoint's CPU rises with S (84 to
+  196%), as one telemetry poller per session predicts.
+- The broker's CPU peaks at 64 sessions (107%) and drops to 38% at 256: up
+  to 64 the broker still carries the load, at 256 the endpoint is the limit.
+- 0 failures, 0 keepalive timeouts, isolation checks empty.
+- Endpoint threads do not grow monotonically with S (956 at S=64, 613 at
+  S=256); not investigated.

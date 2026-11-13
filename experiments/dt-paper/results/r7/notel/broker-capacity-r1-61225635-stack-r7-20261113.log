@@ -1,0 +1,7 @@
+N=   1 create    2.0s    228.6 req/s  p50 4.3 ms  p99 5.3 ms  failed 0  load 1794577001.2-1794577021.2
+N=   4 create    0.6s    327.6 req/s  p50 12.1 ms  p99 16.9 ms  failed 0  load 1794577021.8-1794577041.8
+N=  16 create    0.8s    316.5 req/s  p50 50.3 ms  p99 99.7 ms  failed 0  load 1794577042.7-1794577062.7
+N=  64 create    3.2s    329.0 req/s  p50 195.8 ms  p99 293.9 ms  failed 0  load 1794577066.1-1794577086.2
+N= 128 create    8.6s    313.0 req/s  p50 393.4 ms  p99 594.8 ms  failed 0  load 1794577095.7-1794577116.0
+N= 256 create   46.9s    254.1 req/s  p50 929.5 ms  p99 1338.8 ms  failed 0  load 1794577165.7-1794577186.4
+N=384: 1 sessions failed to create after 461.8s: ['RuntimeError: twin 94df8918-4c19-481a-b8c9-72b87c0ea59a failed to initialize: twin initialization exceeded 300.0s']
