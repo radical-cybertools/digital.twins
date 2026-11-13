@@ -22,6 +22,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
 | 61222210 | r6-smoke-y1b | m5290 | 4 | 00:02:55 | 0.194 | 3.22 | 0.00 |
 | 61222332 | r6-y1b | m5290 | 4 | 01:02:22 | 4.158 | 7.38 | 0.00 |
 | 61222333 | r6-y1c | m5290 | 3 | 00:06:43 | 0.336 | 7.71 | 0.00 |
+| 61224556 | r6-y3 | m5290 | 3 | 00:11:31 | 0.576 | 8.29 | 0.00 |
 
 ## Y0: setup (2026-11-13 01:30)
 
@@ -232,9 +233,32 @@ clients alternating over two nodes. Table `results/r6/clients/clients-table-6122
   sessions; at 384 the limit is session creation (endpoint rhapsody calls
   time out under the burst), not the request path.
 
-## Y3: telemetry off (submitted)
+## Y3: telemetry off (done, job 61224556, 11.5 min)
 
-- Job 61224556 (`RES=r6/t20s-notel PING=20 TELEMETRY=0 REPEATS=1 SESSIONS="64 256 384"`,
-  regular, 3 nodes, 1:15, STEP_TIMEOUT 2400). Budget: 7.71 node-h used before
-  Y3 (ledger), over the page's 5; Andre relaxed the allocation guards
-  ("we can relax allocation guards quite a bit"), and Y3 adds at most 3.75.
+`RES=r6/t20s-notel PING=20 TELEMETRY=0 REPEATS=1 SESSIONS="64 256 384"`
+(regular, 3 nodes). Table `results/r6/t20s-notel/`, made with `r6/broker_table.py`.
+
+| N | create s | s per session | req/s | p50 ms | p99 ms | broker CPU % | RSS MB | threads | fds | Y2 (telemetry on) req/s | Y2 p50 ms |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 64 | 4.5 | 0.071 | 382.3 | 168 | 251 | 122 | 265 | 417 | 1115 | 303.6 | 200 |
+| 256 | 54.6 | 0.213 | 264.5 | 899 | 1282 | 122 | 843 | 1377 | 4379 | 23.6 | 10293 |
+| 384 | 203.9 | 0.531 | 210.3 | 1672 | 2344 | 124 | 1407 | 2017 | 6555 | 11.9 | 27200 |
+
+- **Endpoint telemetry causes the collapse.** With it off, 256 sessions serve
+  264.5 req/s (Y2: 23.6, 11x) and 384 serve 210.3 (Y2: 11.9, 18x), with 0
+  failures and 0 keepalive timeouts.
+- The broker is CPU-bound at 122-124% at every N (with telemetry: 31-36% at
+  256-384, i.e. waiting). Throughput now degrades gently with N, the
+  expected shape for a single-process broker.
+- Threads and fds per session are unchanged (2,017 / 6,555 at 384), so they are
+  not the cost. Session creation still slows with N (0.07 to 0.53 s per
+  session, 204 s for 384 against Y2's 162 s), so creation is a separate cost
+  that telemetry does not explain.
+- Not measured: where the telemetry cost is (endpoint CPU, broker relay of
+  telemetry messages, or rhapsody's per-session telemetry loop). One repeat
+  only.
+- For the paper: E2's capacity figure should show both curves. Telemetry
+  on is the default and collapses at 128 sessions or more; telemetry off holds
+  more than 200 req/s at 384. Per-session telemetry is the item to fix
+  (radical.orbit / rhapsody), and Y1c's one-session numbers (795 req/s at 384
+  twins, telemetry on) agree: one session has one telemetry stream.
