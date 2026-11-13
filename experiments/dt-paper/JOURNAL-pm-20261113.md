@@ -262,3 +262,32 @@ clients alternating over two nodes. Table `results/r6/clients/clients-table-6122
   more than 200 req/s at 384. Per-session telemetry is the item to fix
   (radical.orbit / rhapsody), and Y1c's one-session numbers (795 req/s at 384
   twins, telemetry on) agree: one session has one telemetry stream.
+
+## Close-out (2026-11-13 04:55 PST)
+
+- Phases: Y0, Y1, Y2, Y1b and Y1c (added by Andre), Y3 (stretch). All done.
+  Default 3 s keepalive deadline for the paper.
+- Ledger (`python s1/ledger.py 6`): 9 jobs, 8.29 node-h on m5290, over the
+  page's 5 node-h. Andre relaxed the guards on 2026-11-13; the overrun is
+  Y1b, Y1c and Y3, which he added or allowed.
+- Findings in order of weight for E2:
+  1. The collapse from 128 sessions is endpoint telemetry (Y3): off, 384
+     sessions serve 210 req/s against 11.9.
+  2. It is per session, not per twin (Y1c): 384 twins in one session serve 795 req/s.
+  3. It is not the client (Y1b): 1, 4 and 8 processes give the same rate.
+  4. #170 holds: no keepalive timeouts in the steady state at 3 s or 20 s.
+     The 4 timeouts seen were all in Y1b's 384-session creation bursts.
+- Open questions for Andre:
+  - Where the telemetry cost sits: endpoint CPU, the broker's relay, or
+    rhapsody's per-session loop. A profile of the endpoint at 256 sessions,
+    telemetry on and off, would tell.
+  - Session creation slows with N even with telemetry off (0.53 s per session
+    at 384); at 384 simultaneous creates, twins hit the 300 s init limit or
+    get HTTP 504.
+  - Y3 is one repeat; a second repeat and the full N list (1 to 384) with
+    telemetry off would make the figure's second curve.
+  - Mixed mode (several twins per session, many sessions), deferred by Andre.
+- Housekeeping: the checkout root holds thousands of untracked
+  `asyncflow.session.*` dirs from runs started there; they are ignored by
+  git and left in place.
+- Branch `exp/pm-round6-20261113` merged into `paper/dtaas` after this entry.
