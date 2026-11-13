@@ -1,0 +1,80 @@
+{
+  "provenance": {
+    "experiment": "R8-0 GPU check",
+    "harness": "gpu_smoke.py",
+    "time": "2026-11-13T14:29:19-0800",
+    "host": "nid001969",
+    "python": "3.12.13",
+    "slurm_job": "61246506",
+    "harness_commit": "cb1c13ab13b71ef93e47c8af5ef1c5a480f750b8",
+    "harness_dirty": false,
+    "packages": {
+      "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+      "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+      "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+      "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+      "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+      "dragonhpc": "0.15.0"
+    },
+    "backend": "dragon_native",
+    "workers_per_node": "2 (gpu check)",
+    "telemetry": "on (default)",
+    "file_system": "/pscratch",
+    "args": {
+      "xgf": "/pscratch/sd/m/merzky/dt-pm2/xGFabric",
+      "models": "/pscratch/sd/m/merzky/xgf_playground/WindField",
+      "playground": "/pscratch/sd/m/merzky/dt-pm8/xgf/check-61246506",
+      "out": "experiments/dt-paper/results/r8/r8-0/gpu-smoke-61246506-stack-r8-20261114.json"
+    }
+  },
+  "backend_start_s": 0.6895995140075684,
+  "task": {
+    "pid": 656561,
+    "gpus": [
+      "/physical_device:GPU:0",
+      "/physical_device:GPU:1",
+      "/physical_device:GPU:2",
+      "/physical_device:GPU:3"
+    ],
+    "tf": "2.21.0",
+    "cuda_visible": "0,1,2,3",
+    "tf_import_s": 12.488729607022833,
+    "runs": [
+      {
+        "s": 2.519619327998953,
+        "shapes": [
+          [
+            38,
+            85
+          ],
+          [
+            38,
+            85
+          ],
+          [
+            38,
+            85
+          ]
+        ]
+      },
+      {
+        "s": 0.12148942798376083,
+        "shapes": [
+          [
+            38,
+            85
+          ],
+          [
+            38,
+            85
+          ],
+          [
+            38,
+            85
+          ]
+        ]
+      }
+    ]
+  },
+  "ok": true
+}

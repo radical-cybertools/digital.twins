@@ -1,0 +1,523 @@
+{
+  "provenance": {
+    "experiment": "R8-0 Dragon smoke",
+    "harness": "smoke_dragon.py",
+    "time": "2026-11-13T14:32:58-0800",
+    "host": "nid004381",
+    "python": "3.12.12",
+    "slurm_job": "61246494",
+    "harness_commit": "cb1c13ab13b71ef93e47c8af5ef1c5a480f750b8",
+    "harness_dirty": true,
+    "packages": {
+      "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+      "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+      "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+      "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+      "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+      "dragonhpc": "0.15.0"
+    },
+    "backend": "dragon_native",
+    "workers_per_node": "default (physical cores)",
+    "telemetry": "on (default)",
+    "file_system": "/pscratch",
+    "args": {
+      "broker": "https://10.249.2.51:8182",
+      "endpoint": "r8_ep",
+      "backend": "dragon_native",
+      "step": "sessions",
+      "state": "experiments/dt-paper/results/r8/r8-0b/state-61246494.json",
+      "workers": 128,
+      "sessions_list": "1,4,16,64",
+      "ep_node": "nid005243",
+      "timeout": 120.0,
+      "reattach_wait": 180.0,
+      "out": "experiments/dt-paper/results/r8/r8-0b/smoke-sessions-61246494-stack-r8-20261114.json"
+    }
+  },
+  "step": "sessions",
+  "points": [
+    {
+      "sessions": 1,
+      "probe_before": {
+        "host": "nid005243",
+        "dragon_native_procs": 0,
+        "user_procs": 7,
+        "user_threads": 84,
+        "mem_avail_mb": 485828,
+        "mem_total_mb": 515140,
+        "t": 1794609179.3029966
+      },
+      "create_wall_s": 2.0314221382141113,
+      "ready_s": [
+        2.0311081409454346
+      ],
+      "created": 1,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "probe_ready": {
+        "host": "nid005243",
+        "dragon_native_procs": 130,
+        "user_procs": 136,
+        "user_threads": 482,
+        "mem_avail_mb": 479779,
+        "mem_total_mb": 515140,
+        "t": 1794609182.1267505
+      },
+      "burst_wall_s": 0.14803600311279297,
+      "bursts": [
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.14780522799992468,
+          "svc_s": 0.14546799659729004,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.022960901260375977,
+          "start_spread_s": 0.01888871192932129,
+          "tasks_per_s": 439.9593140556957,
+          "error": null
+        }
+      ],
+      "burst_errors": 0,
+      "makespan_max_s": 0.14780522799992468,
+      "probe_after": {
+        "host": "nid005243",
+        "dragon_native_procs": 130,
+        "user_procs": 136,
+        "user_threads": 482,
+        "mem_avail_mb": 479749,
+        "mem_total_mb": 515140,
+        "t": 1794609183.0735242
+      }
+    },
+    {
+      "sessions": 4,
+      "probe_before": {
+        "host": "nid005243",
+        "dragon_native_procs": 0,
+        "user_procs": 6,
+        "user_threads": 83,
+        "mem_avail_mb": 485999,
+        "mem_total_mb": 515140,
+        "t": 1794609194.2742505
+      },
+      "create_wall_s": 5.558011293411255,
+      "ready_s": [
+        4.541851758956909,
+        5.556107997894287,
+        5.556454658508301,
+        5.556840658187866
+      ],
+      "created": 4,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "probe_ready": {
+        "host": "nid005243",
+        "dragon_native_procs": 520,
+        "user_procs": 526,
+        "user_threads": 1682,
+        "mem_avail_mb": 461627,
+        "mem_total_mb": 515140,
+        "t": 1794609200.7931473
+      },
+      "burst_wall_s": 0.391892671585083,
+      "bursts": [
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.37056545399536844,
+          "svc_s": 0.366910457611084,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.11869931221008301,
+          "start_spread_s": 0.024612903594970703,
+          "tasks_per_s": 174.42947910696626,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.39137110199953895,
+          "svc_s": 0.38735342025756836,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.08893275260925293,
+          "start_spread_s": 0.024206161499023438,
+          "tasks_per_s": 165.22378957553434,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.321170498005813,
+          "svc_s": 0.3158085346221924,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.037578582763671875,
+          "start_spread_s": 0.024961471557617188,
+          "tasks_per_s": 202.65443451857433,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.37787363499228377,
+          "svc_s": 0.37256646156311035,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.14933395385742188,
+          "start_spread_s": 0.026555776596069336,
+          "tasks_per_s": 171.78143124178882,
+          "error": null
+        }
+      ],
+      "burst_errors": 0,
+      "makespan_max_s": 0.39137110199953895,
+      "probe_after": {
+        "host": "nid005243",
+        "dragon_native_procs": 520,
+        "user_procs": 530,
+        "user_threads": 1748,
+        "mem_avail_mb": 461336,
+        "mem_total_mb": 515140,
+        "t": 1794609202.1403134
+      }
+    },
+    {
+      "sessions": 16,
+      "probe_before": {
+        "host": "nid005243",
+        "dragon_native_procs": 0,
+        "user_procs": 6,
+        "user_threads": 86,
+        "mem_avail_mb": 485818,
+        "mem_total_mb": 515140,
+        "t": 1794609214.5043387
+      },
+      "create_wall_s": 38.31622314453125,
+      "ready_s": [
+        27.735004901885986,
+        29.73392343521118,
+        30.70135998725891,
+        32.25207328796387,
+        36.772079944610596,
+        37.2717547416687,
+        37.78594756126404,
+        37.78725290298462,
+        37.78913593292236,
+        38.21978807449341,
+        38.298325061798096,
+        38.3033561706543,
+        38.3058545589447,
+        38.30758762359619,
+        38.30887293815613,
+        38.312026500701904
+      ],
+      "created": 16,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "probe_ready": {
+        "host": "nid005243",
+        "dragon_native_procs": 2078,
+        "user_procs": 2091,
+        "user_threads": 6492,
+        "mem_avail_mb": 388391,
+        "mem_total_mb": 515140,
+        "t": 1794609254.300111
+      },
+      "burst_wall_s": 2.4145822525024414,
+      "bursts": [
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 1.9407936499919742,
+          "svc_s": 1.9380180835723877,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.03825831413269043,
+          "start_spread_s": 0.04609179496765137,
+          "tasks_per_s": 33.0234276669016,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.4117056590039283,
+          "svc_s": 2.3630199432373047,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.17325210571289062,
+          "start_spread_s": 0.06584572792053223,
+          "tasks_per_s": 27.083986397643724,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.411441657997784,
+          "svc_s": 2.368783473968506,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.11506533622741699,
+          "start_spread_s": 0.04773998260498047,
+          "tasks_per_s": 27.01808785113591,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.4115584550017957,
+          "svc_s": 2.370033025741577,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.46732044219970703,
+          "start_spread_s": 0.24043035507202148,
+          "tasks_per_s": 27.003843113103695,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.411576820013579,
+          "svc_s": 2.3790323734283447,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.0050435066223145,
+          "start_spread_s": 0.04408550262451172,
+          "tasks_per_s": 26.901693610739613,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.410744679000345,
+          "svc_s": 2.3712406158447266,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.0560519695281982,
+          "start_spread_s": 0.07230901718139648,
+          "tasks_per_s": 26.990090998083193,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.4091617570084054,
+          "svc_s": 2.3649001121520996,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.2999136447906494,
+          "start_spread_s": 0.1509251594543457,
+          "tasks_per_s": 27.062453788696768,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.408488013999886,
+          "svc_s": 2.360046863555908,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 0.24187946319580078,
+          "start_spread_s": 0.04677772521972656,
+          "tasks_per_s": 27.118105571670938,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.409805111994501,
+          "svc_s": 2.3752143383026123,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.14603590965271,
+          "start_spread_s": 0.07058978080749512,
+          "tasks_per_s": 26.94493670231715,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.409480023998185,
+          "svc_s": 2.3750417232513428,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.2259762287139893,
+          "start_spread_s": 0.0381619930267334,
+          "tasks_per_s": 26.946895026495117,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.409716870999546,
+          "svc_s": 2.3721611499786377,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.551483392715454,
+          "start_spread_s": 0.04784417152404785,
+          "tasks_per_s": 26.979617299851803,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.409600725994096,
+          "svc_s": 2.373108148574829,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.4784493446350098,
+          "start_spread_s": 0.06117439270019531,
+          "tasks_per_s": 26.96885097227247,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.407098194991704,
+          "svc_s": 2.338364362716675,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.8427252769470215,
+          "start_spread_s": 0.045317888259887695,
+          "tasks_per_s": 27.369558406050036,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.407161958006327,
+          "svc_s": 2.362435817718506,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.4182243347167969,
+          "start_spread_s": 0.048108577728271484,
+          "tasks_per_s": 27.090683065331795,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.406824866004172,
+          "svc_s": 2.3588855266571045,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.256483793258667,
+          "start_spread_s": 0.15334248542785645,
+          "tasks_per_s": 27.13145647669373,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 2.4068543320026947,
+          "svc_s": 2.3673222064971924,
+          "pids": 64,
+          "hosts": [
+            "nid005243"
+          ],
+          "first_start_s": 1.6005473136901855,
+          "start_spread_s": 0.22917437553405762,
+          "tasks_per_s": 27.03476519771999,
+          "error": null
+        }
+      ],
+      "burst_errors": 0,
+      "makespan_max_s": 2.4117056590039283,
+      "probe_after": {
+        "host": "nid005243",
+        "dragon_native_procs": 2080,
+        "user_procs": 2097,
+        "user_threads": 6268,
+        "mem_avail_mb": 387192,
+        "mem_total_mb": 515140,
+        "t": 1794609258.1433933
+      }
+    },
+    {
+      "sessions": 64,
+      "probe_before": {
+        "host": "nid005243",
+        "dragon_native_procs": 0,
+        "user_procs": 6,
+        "user_threads": 98,
+        "mem_avail_mb": 485109,
+        "mem_total_mb": 515140,
+        "t": 1794609276.1853142
+      },
+      "create_wall_s": 241.01395320892334,
+      "ready_s": [],
+      "created": 0,
+      "create_errors": [
+        "RuntimeError: twin r8-8eb0a8894f41 failed to initialize: RuntimeError: Session init timed out after 120.0s",
+        "RuntimeError: twin r8-547f6400dc8e failed to initialize: RuntimeError: Session init timed out after 120.0s",
+        "RuntimeError: twin r8-2bb176582b5d failed to initialize: RuntimeError: Session init timed out after 120.0s",
+        "RuntimeError: twin r8-288804ec18d9 failed to initialize: RuntimeError: Session init timed out after 120.0s",
+        "RuntimeError: twin r8-712315532626 failed to initialize: RuntimeError: Session init timed out after 120.0s"
+      ],
+      "n_create_errors": 64,
+      "probe_ready": {
+        "host": "nid005243",
+        "dragon_native_procs": 4352,
+        "user_procs": 4358,
+        "user_threads": 9192,
+        "mem_avail_mb": 283894,
+        "mem_total_mb": 515140,
+        "t": 1794609518.9228094
+      },
+      "burst_wall_s": 0.0003421306610107422,
+      "bursts": [],
+      "burst_errors": 0,
+      "makespan_max_s": null,
+      "probe_after": {
+        "host": "nid005243",
+        "dragon_native_procs": 4352,
+        "user_procs": 4358,
+        "user_threads": 9192,
+        "mem_avail_mb": 283902,
+        "mem_total_mb": 515140,
+        "t": 1794609520.4902081
+      }
+    }
+  ]
+}

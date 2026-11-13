@@ -14,6 +14,10 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 
 | job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |
 |---|---|---|---|---|---|---|---|
+| 61245985 | r8-smoke | m5290 | 2 | 00:09:15 | 0.308 | 0.31 | 0.00 |
+| 61246055 | r8-gpu-smoke | m5290_g | 1 | 00:00:23 | 0.006 | 0.31 | 0.01 |
+| 61246494 | r8-smoke-b | m5290 | 2 | 00:10:42 | 0.357 | 0.67 | 0.01 |
+| 61246506 | r8-gpu-smoke | m5290_g | 1 | 00:00:39 | 0.011 | 0.67 | 0.02 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -118,3 +122,54 @@ runtime on nid005593 (128 physical cores). Results in `results/r8/r8-0/`.
   - Indicative: about 24 sessions' pools, 3,076 Dragon processes and 6,588
     threads, took 121 s to start and used about 172 GB.
   - Twin ids are now uuids; run 2 repeats S = 1, 4, 16, 64.
+
+### R8-0 smoke, run 2 (job 61246494, debug, 2 nodes) and the GPU check (61246506)
+
+`RES=r8/r8-0b STEPS="basic kill pool sessions" KILL_WAIT=1
+POOL_CPUS=0-7,128-135`, twin ids now uuids.
+
+- basic: as run 1 (function task 5.1-5.9 ms, endpoint up 12 s).
+- **Reattach, rerun as the contract asks:** the broker held the endpoint
+  as `suspect` right after the kill (wait_lost, 0.0 s), then the restart.
+  It fails the same way: 89 tries in 180 s, all `HTTP 404 — [r8_ep/rhapsody]
+  submit 1 task(s) — unknown session id`. The result holds.
+  - **Finding:** after the whole Dragon runtime of an endpoint is killed
+    and the endpoint restarts under the same name, an existing twin does
+    not recover. Its DT session keeps submitting to the remote rhapsody
+    session id that died with the runtime, and nothing creates a new one.
+  - A restart after the suspect window, once the broker has declared the
+    endpoint lost, is E5's case (R8-5).
+  - Described, not fixed (no fix branches). For Andre: should the DT
+    service re-create its remote rhapsody session on a 404 `unknown
+    session id`?
+- **Pool size:** `taskset -c 0-7,128-135` gives a pool of **8** workers. 256
+  × 50 ms took 1.87 s (ideal 1.6 s). The pool follows the launch's CPU
+  restriction, counted in physical cores; R8-D can hold a site to 8
+  workers without a `src/` change.
+- **Sessions per endpoint** (each DT session builds its own `dragon_native`
+  backend, one pool of 128 workers on this node):
+
+| S | sessions ready | ready s (all) | Dragon native processes | threads | node memory used, GB | 64 × 100 ms per session at once, worst makespan s |
+|---|---|---|---|---|---|---|
+| 1 | 1/1 | 2.0 | 130 | 482 | about 12 | 0.15 |
+| 4 | 4/4 | 5.6 | 520 | 1,682 | about 31 | 0.39 |
+| 16 | 16/16 | 38.3 | 2,078 | 6,492 | about 104 | 2.41 |
+| 64 | **0/64** | 241 (failed) | 4,352 | 9,192 | about 209 | – |
+
+  - S = 64 breaks: every session fails with `twin ... failed to initialize:
+    RuntimeError: Session init timed out after 120.0s` while 34 pools
+    (4,352 processes) start on 128 cores.
+  - At S = 16 the 1,024 tasks take 3× their ideal (0.8 s on 128 cores):
+    16 pools of 128 workers oversubscribe the node 16×.
+  - **Decision:** R8-2 and R8-C use at most **16** sessions per Dragon
+    endpoint for their one-session-per-twin rows.
+- **GPU check: passed** (job 61246506, 1 A100 node, debug).
+  - TensorFlow 2.21.0 inside a `dragon_native` pool worker sees all four
+    A100s (`CUDA_VISIBLE_DEVICES=0,1,2,3`); TF import takes 12.5 s in the
+    worker.
+  - One PINN field from the September archive (`tk_pinn_eval`): 2.52 s
+    cold, then 0.121 s; shapes 3 × 38 × 85.
+  - The first submission failed in my harness (asyncflow requires an async
+    task function; job 61246055) and was fixed.
+- **R8-0 done; the gate passes.** All isolation checks are empty. Jobs:
+  61245985, 61246494 (CPU debug, 2 nodes); 61246055, 61246506 (GPU debug).

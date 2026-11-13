@@ -1,0 +1,41 @@
+{
+  "provenance": {
+    "experiment": "R8-0 Dragon smoke",
+    "harness": "smoke_dragon.py",
+    "time": "2026-11-13T14:29:09-0800",
+    "host": "nid004381",
+    "python": "3.12.12",
+    "slurm_job": "61246494",
+    "harness_commit": "cb1c13ab13b71ef93e47c8af5ef1c5a480f750b8",
+    "harness_dirty": false,
+    "packages": {
+      "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+      "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+      "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+      "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+      "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+      "dragonhpc": "0.15.0"
+    },
+    "backend": "dragon_native",
+    "workers_per_node": "default (physical cores)",
+    "telemetry": "on (default)",
+    "file_system": "/pscratch",
+    "args": {
+      "broker": "https://10.249.2.51:8182",
+      "endpoint": "r8_ep",
+      "backend": "dragon_native",
+      "step": "reattach",
+      "state": "experiments/dt-paper/results/r8/r8-0b/state-61246494.json",
+      "workers": 128,
+      "sessions_list": "1,4,16,64",
+      "ep_node": "nid005243",
+      "timeout": 120.0,
+      "reattach_wait": 180.0,
+      "out": "experiments/dt-paper/results/r8/r8-0b/smoke-reattach-61246494-stack-r8-20261114.json"
+    }
+  },
+  "step": "reattach",
+  "reattach_s": null,
+  "tries": 89,
+  "last_error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8-c835e9ac0507: get_inference: RuntimeError: HTTP 404 \u2014 [r8_ep/rhapsody] submit 1 task(s) \u2014 unknown session id: session.b78b1584"
+}
