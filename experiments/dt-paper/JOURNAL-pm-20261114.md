@@ -20,6 +20,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61246506 | r8-gpu-smoke | m5290_g | 1 | 00:00:39 | 0.011 | 0.67 | 0.02 |
 | 61246837 | r8-b-smoke | m5290 | 5 | 00:07:30 | 0.625 | 1.29 | 0.02 |
 | 61247053 | r8-b-smoke | m5290 | 5 | 00:01:32 | 0.128 | 1.42 | 0.02 |
+| 61247087 | r8-a | m5290 | 2 | 00:06:24 | 0.213 | 1.63 | 0.02 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -175,3 +176,70 @@ POOL_CPUS=0-7,128-135`, twin ids now uuids.
     task function; job 61246055) and was fixed.
 - **R8-0 done; the gate passes.** All isolation checks are empty. Jobs:
   61245985, 61246494 (CPU debug, 2 nodes); 61246055, 61246506 (GPU debug).
+
+## R8-A: payload size (done, job 61247087, debug, 2 nodes, about 6 min)
+
+Node 0: broker and clients; node 1: one Dragon endpoint (dragon_native,
+whole node). Wide area: radical.3:8010 with `r3_site` (read-only default
+credentials). Results in `results/r8/r8-a/`.
+
+**Stream messages** (`e1-overhead/bench_streams.py --payload`). Rows:
+zmq embedded broker as the local floor; ORBIT eventing through the
+cluster broker; ORBIT through radical.3. Cells: p50 ms / burst msg/s.
+
+| size | zmq (local floor) | ORBIT cluster | ORBIT radical.3 |
+|---|---|---|---|
+| 100 B | 0.19 / 19,878 | 0.51 / 8,364 | 173.4 / 530 |
+| 1 KB | 0.19 / 18,934 | 0.42 / 8,278 | 178.7 / 399 |
+| 100 KB | 0.27 / 7,538 | 0.81 / 2,651 | 173.5 / 266 |
+| 1 MB | 0.97 / 1,311 | 4.97 / 345 | 198.0 / 59 |
+| 16 MB | 20.4 / 108 | **error** | **error** |
+| 64 MB | 126.1 / 16 | **error** | **error** |
+
+ORBIT's error is a clear client-side `ValueError: stream payload ... is
+16777225 bytes, over the 4128768 byte ceiling (ORBIT's 4194304 byte frame
+cap, less envelope overhead)`. **Break: between 1 MB and 16 MB (the 4 MiB
+frame cap), on both brokers.**
+
+**Task argument and return** (`r8/bench_echo.py`: the investigator sends S
+random bytes as the argument and the task returns S bytes; 5 calls each).
+
+| size | cluster | radical.3 |
+|---|---|---|
+| 1 KB | 5/5, p50 5.7 ms | 5/5, p50 426 ms |
+| 100 KB | 5/5, 10.6 ms | 5/5, 433 ms |
+| 1 MB | 5/5, 40.1 ms | 5/5, 493 ms |
+| 2 MiB - 1 KB | **returns `None`**, no error | **returns `None`**, no error |
+| 2 MiB + 1 KB | **returns `None`**, no error | **returns `None`**, no error |
+| 16 MB | `HTTP 413 — [r8a_ep/rhapsody] submit 1 task(s) — frame size 21335241 bytes exceeds cap 4194304 bytes` | the same (r3_site) |
+
+- **Break and bug (described, not fixed):** above about 1.5 MiB the
+  return value is silently replaced by `None`. The task completes, the
+  investigator gets `None`, and nothing reports an error, already at
+  2 MiB - 1 KB. With base64 encoding (×1.33), a 1.5 MiB return already
+  exceeds the 2 MiB return limit.
+- Arguments fail loudly with HTTP 413 once the encoded frame passes 4 MiB
+  (raw arguments of about 3 MiB).
+- For Andre: the silent `None` should become an error, in the radical.orbit
+  rhapsody plugin's return-value limit or in rhapsody's orbit backend.
+
+**Model publish** (`e4-hot-swap/bench_model_update.py`, new `--payload-mb`
+/ `--path-mb`, interval 1 s, 20 versions, client-side runtime with
+`OrbitExecutionBackend` on dragon_native).
+
+| model | cluster: publish → first answer p50 / p90 ms | inference p50 ms | requests/s | radical.3 |
+|---|---|---|---|---|
+| by value 0.2 MB | 13.6 / 17.2 | 8.3 | about 118 | 791 / 958 ms, inference 490 ms, 2 req/s |
+| by value 10 MB | **error**: `HTTP 413 ... frame size 13983026 bytes exceeds cap 4194304 bytes` | – | – | same error |
+| by value 100 MB | **error**: frame size 139812146 bytes | – | – | same error |
+| by path 10 MB | 5.4 / 7.0 | 3.4 | about 290 | not possible (the file would have to be on radical.3) |
+| by path 1 GB | 310 / 433 | 4.0 | **about 5** (each of 128 workers reads the 1 GB once) | – |
+
+- **By value, the model travels with every inference task**, so the 4 MiB
+  frame cap is a hard limit on model size by value (about 3 MiB raw):
+  WindField's FNO (about 9.5 MB) and PCR (about 10 MB) cannot be published
+  by value. **By path has no size limit**, but each pool worker loads
+  the file on first use: at 1 GB the 128 workers' first reads hold the
+  rate at 5 req/s for the 20 s run (236 answers in the final window, once
+  warm).
+- Isolation check empty.
