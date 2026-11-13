@@ -9,7 +9,7 @@ is the commit that contains this file.
 | Repo | Base | Merged PRs | Commit |
 |---|---|---|---|
 | radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation, #127 slow-submit warning, #128 finished tasks released | `24667a5eae6872f9863e31ca631d8af2bc945f04` |
-| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits,  `28c8fa7cc7aa884a932316750874dbac4f056da3`| `28c8fa7cc7aa884a932316750874dbac4f056da3` |
+| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits, #134 finished tasks released (cherry-picked), #139 coalesced immediate sends, #147 one telemetry node sampler per process (cherry-picked) | `c675e3f08899618ca654fad329a07e09c0a8e0e7` |
 | radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume, #167 finished tasks released, #170 keepalive knob + coalesced topology | `adf25487c772791f99bf3812ea55b02bec6fc9b1` |
 | ROSE | `main` (Stream API, #98) | none | `9cc47a597063351c6192e3520f1bb0d39dd35230` |
 | digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106`, #59 cached version stamp, #60 lighter per-message path (paper-stack form, `fix/pm-message-path`) | this branch |
@@ -122,3 +122,14 @@ disables).  Laptop: 256 sessions at 3 s (stall at 384), 384 at 20 s.
 DT_PYTHON=python3.12 ./deploy/install.sh <broker|endpoint|client> <venv>
 # exact reproduction of a recorded run: DT_REF=<digital.twins SHA> ...
 ```
+
+## Update 2026-11-13: one telemetry sampler per endpoint process
+
+rhapsody #147: every concurrent telemetry adapter ran its own 10 Hz psutil
+thread, so an endpoint with N sessions polled the node N times per tick (the
+E2 many-session collapse, rounds 6 and 7).  Adapters now share one sampler
+thread per process and interval.  Laptop, 256 sessions at 0.1 s in one
+process: 151% -> 53% CPU, event-loop lag p99 57 -> 21 ms.  The rest is the
+per-session event path at 10 Hz (the 0.1 s interval is set in radical.orbit's
+rhapsody plugin).  Numbers measured before this commit with telemetry on
+carry the old cost.
