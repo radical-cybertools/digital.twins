@@ -1,0 +1,74 @@
+{
+  "provenance": {
+    "experiment": "E2-C broker capacity (dt service sessions)",
+    "harness": "bench_broker.py",
+    "time": "2026-11-13T04:30:58-0800",
+    "host": "nid005860",
+    "python": "3.12.12",
+    "slurm_job": "61224556",
+    "digital_twins_commit": "78b6dc904ab86e9faea57d614897ac436f61ad63",
+    "ping_timeout": "20",
+    "args": {
+      "broker": "https://10.249.9.102:8151",
+      "inference": "dt_r6_ep_1",
+      "sessions": "64,256,384",
+      "seconds": 20.0,
+      "create_threads": 16,
+      "keep_going": true,
+      "start_at": null,
+      "one_session": false,
+      "dump_lat": false,
+      "out": "experiments/dt-paper/results/r6/t20s-notel/broker-capacity-r1-61224556-stack-r6-20261113.json"
+    }
+  },
+  "points": [
+    {
+      "sessions": 64,
+      "created": 64,
+      "create_s": 4.512991428375244,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794573063.3663974,
+      "load_end_epoch": 1794573083.4826415,
+      "requests": 7691,
+      "failed": 0,
+      "req_per_s": 382.3278326858543,
+      "client_cpu_s": 3.9799999999999986,
+      "client_cpu_pct": 19.785005514103492,
+      "p50_ms": 168.06864738464355,
+      "p99_ms": 251.4045238494873
+    },
+    {
+      "sessions": 256,
+      "created": 256,
+      "create_s": 54.55546021461487,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794573138.7567084,
+      "load_end_epoch": 1794573159.4351363,
+      "requests": 5470,
+      "failed": 0,
+      "req_per_s": 264.52687879793035,
+      "client_cpu_s": 2.84,
+      "client_cpu_pct": 13.734119484206987,
+      "p50_ms": 898.9963531494141,
+      "p99_ms": 1281.5890312194824
+    },
+    {
+      "sessions": 384,
+      "created": 384,
+      "create_s": 203.8783392906189,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794573396.027885,
+      "load_end_epoch": 1794573417.446045,
+      "requests": 4505,
+      "failed": 0,
+      "req_per_s": 210.33552873149506,
+      "client_cpu_s": 2.3299999999999983,
+      "client_cpu_pct": 10.878618911085086,
+      "p50_ms": 1672.3718643188477,
+      "p99_ms": 2344.4275856018066
+    }
+  ]
+}

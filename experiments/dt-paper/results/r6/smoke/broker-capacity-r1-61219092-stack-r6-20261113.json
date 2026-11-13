@@ -1,0 +1,37 @@
+{
+  "provenance": {
+    "experiment": "E2-C broker capacity (dt service sessions)",
+    "harness": "bench_broker.py",
+    "time": "2026-11-13T01:24:02-0800",
+    "host": "nid006663",
+    "python": "3.12.12",
+    "slurm_job": "61219092",
+    "digital_twins_commit": "431e1d385f37110f27ffaa30bf17962a8a0a4b6b",
+    "ping_timeout": null,
+    "args": {
+      "broker": "https://10.249.1.137:8151",
+      "inference": "dt_r6_ep_1",
+      "sessions": "1",
+      "seconds": 3.0,
+      "create_threads": 16,
+      "keep_going": true,
+      "out": "experiments/dt-paper/results/r6/smoke/broker-capacity-r1-61219092-stack-r6-20261113.json"
+    }
+  },
+  "points": [
+    {
+      "sessions": 1,
+      "created": 1,
+      "create_s": 2.545854091644287,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794561845.3805757,
+      "load_end_epoch": 1794561848.3820024,
+      "requests": 588,
+      "failed": 0,
+      "req_per_s": 195.90683345068544,
+      "p50_ms": 5.084633827209473,
+      "p99_ms": 6.00743293762207
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "provenance": {
+    "experiment": "E2-C broker capacity (dt service sessions)",
+    "harness": "bench_broker.py",
+    "time": "2026-11-13T03:54:06-0800",
+    "host": "nid006881",
+    "python": "3.12.12",
+    "slurm_job": "61222332",
+    "digital_twins_commit": "d6d2108e8c44906f615f7c60bf64c6b0573b30fd",
+    "ping_timeout": null,
+    "args": {
+      "broker": "https://10.249.17.74:8152",
+      "inference": "dt_r6_y1b_ep",
+      "sessions": "96",
+      "seconds": 20.0,
+      "create_threads": 16,
+      "keep_going": false,
+      "start_at": 1794571288.0,
+      "one_session": false,
+      "dump_lat": true,
+      "out": "experiments/dt-paper/results/r6/clients/clients-n384-p4-k3-stack-r6-20261113.json"
+    }
+  },
+  "points": [
+    {
+      "sessions": 96,
+      "created": 95,
+      "create_s": 380.7760534286499,
+      "create_errors": [
+        "RuntimeError: twin dceaad87-2ca1-46a7-b78c-cdc63aa0665e failed to initialize: twin initialization exceeded 300.0s"
+      ],
+      "n_create_errors": 1
+    }
+  ],
+  "stopped": "session creation failed at N=96"
+}

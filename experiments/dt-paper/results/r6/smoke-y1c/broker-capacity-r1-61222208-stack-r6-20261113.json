@@ -1,0 +1,58 @@
+{
+  "provenance": {
+    "experiment": "E2-C broker capacity (dt service sessions)",
+    "harness": "bench_broker.py",
+    "time": "2026-11-13T02:38:40-0800",
+    "host": "nid006850",
+    "python": "3.12.12",
+    "slurm_job": "61222208",
+    "digital_twins_commit": "7b9d1c8c1b7e002bebd276c18d7228a7ba44b7ad",
+    "ping_timeout": null,
+    "args": {
+      "broker": "https://10.249.20.103:8151",
+      "inference": "dt_r6_ep_1",
+      "sessions": "1,4",
+      "seconds": 3.0,
+      "create_threads": 16,
+      "keep_going": true,
+      "start_at": null,
+      "one_session": true,
+      "dump_lat": false,
+      "out": "experiments/dt-paper/results/r6/smoke-y1c/broker-capacity-r1-61222208-stack-r6-20261113.json"
+    }
+  },
+  "points": [
+    {
+      "sessions": 1,
+      "created": 1,
+      "create_s": 2.0407376289367676,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794566322.6252623,
+      "load_end_epoch": 1794566325.6297164,
+      "requests": 596,
+      "failed": 0,
+      "req_per_s": 198.3721411751561,
+      "client_cpu_s": 0.4800000000000004,
+      "client_cpu_pct": 15.976279826187083,
+      "p50_ms": 5.015373229980469,
+      "p99_ms": 6.033658981323242
+    },
+    {
+      "sessions": 4,
+      "created": 4,
+      "create_s": 0.5602984428405762,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794566326.2150478,
+      "load_end_epoch": 1794566329.2224298,
+      "requests": 1004,
+      "failed": 0,
+      "req_per_s": 333.84519426783555,
+      "client_cpu_s": 0.7699999999999996,
+      "client_cpu_pct": 25.60366529743359,
+      "p50_ms": 11.613845825195312,
+      "p99_ms": 17.1964168548584
+    }
+  ]
+}
