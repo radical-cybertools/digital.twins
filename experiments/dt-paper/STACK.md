@@ -16,8 +16,9 @@ is the commit that contains this file.
 
 - **Python 3.12** on every host.  The DT service compares the Python minor
   version across hosts and rejects skew; radical.3 has 3.12.3.
-- **dragonhpc 0.15.0** comes with rhapsody's `[dragon]` extra; none of the
-  DT harnesses need it.
+- **dragonhpc 0.15.0** comes with rhapsody's `[dragon]` extra; rounds up to 7
+  did not use it, round 8 runs endpoints on `dragon_native` (see the update
+  below), so Perlmutter endpoints need the extra.
 - **Not merged:** asyncflow none open; rhapsody
   #103 (flux), #107 and #64 (tests only), #78 (changes requested), #90;
   orbit #156 (Dragon DDict POC); ROSE #100-#108 (UQ / spec chain);
