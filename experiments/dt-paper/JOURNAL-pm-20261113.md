@@ -20,7 +20,8 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
 | 61221797 | r6-y2 | m5290 | 3 | 00:28:06 | 1.405 | 2.98 | 0.00 |
 | 61222208 | r6-smoke-y1c | m5290 | 3 | 00:00:52 | 0.043 | 3.03 | 0.00 |
 | 61222210 | r6-smoke-y1b | m5290 | 4 | 00:02:55 | 0.194 | 3.22 | 0.00 |
-| 61222333 | r6-y1c | m5290 | 3 | 00:06:43 | 0.336 | 3.56 | 0.00 |
+| 61222332 | r6-y1b | m5290 | 4 | 01:02:22 | 4.158 | 7.38 | 0.00 |
+| 61222333 | r6-y1c | m5290 | 3 | 00:06:43 | 0.336 | 7.71 | 0.00 |
 
 ## Y0: setup (2026-11-13 01:30)
 
@@ -193,3 +194,40 @@ keepalive timeouts, isolation check empty. `results/r6/onesess/`, table
   the dt service should share per-session machinery (broker participant,
   engine, backends) across sessions. That is a radical.orbit / digital.twins
   question, not measured further here.
+
+## Y1b: N sessions over P client processes (job 61222332, 4 nodes, 62 min)
+
+`r6/run_clients.sh`, default 3 s keepalive, one broker and one endpoint for
+the whole job, 20 s load window shared by all processes (`--start-at`),
+clients alternating over two nodes. Table `results/r6/clients/clients-table-61222332-stack-r6-20261113.md`.
+
+| N | P | processes ok | req/s | p50 ms | p99 ms | client CPU sum / max % | broker CPU % | RSS MB | threads | fds |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 128 | 1 | 1/1 | 82.2 | 1535 | 1891 | 7 / 7 | 45 | 440 | 737 | 2203 |
+| 128 | 4 | 4/4 | 86.8 | 1428 | 2041 | 9 / 2 | 46 | 519 | 737 | 2206 |
+| 128 | 8 | 8/8 | 82.6 | 1511 | 1884 | 10 / 1 | 45 | 565 | 737 | 2210 |
+| 256 | 1 | 1/1 | 20.2 | 12186 | 13915 | 2 / 2 | 28 | 996 | 1377 | 4379 |
+| 256 | 4 | 4/4 | 18.5 | 13219 | 15405 | 2 / 1 | 29 | 1166 | 1377 | 4382 |
+| 256 | 8 | 8/8 | 18.8 | 12239 | 13894 | 3 / 0 | 35 | 1260 | 1377 | 4386 |
+| 384 | 1 | 0/1 | – | – | – | – | – | – | – | – |
+| 384 | 4 | 3/4 | (11.5) | (21759) | (25926) | 2 / 1 | 37 | 1916 | 1900 | 6158 |
+| 384 | 8 | 5/8 | (20.4) | (10602) | (20033) | 3 / 1 | 33 | 1889 | 1300 | 4119 |
+
+- The client side is not the limit: at N = 128 and 256 the rate and the
+  latency are the same for 1, 4 and 8 processes (82-87 and 18.5-20.2 req/s),
+  and the clients use 1-10% of a core in total. Y1's collapse is in the
+  service, matching Y1c (one session: 830 / 842 req/s at the same N).
+- N = 384 is unstable when the sessions are opened at the same time:
+  - P=1: one of 384 twins exceeded the 300 s initialization limit (after
+    431.6 s); bench_broker drops a process on any create error.
+  - P=4: one process lost a twin the same way.
+  - P=8: three processes lost 9, 2 and 4 twins to `HTTP 504 ... call timed
+    out` from the endpoint's rhapsody service.
+  - Bracketed rows cover only the surviving processes (288 and 240
+    sessions), so they do not compare with the other rows.
+- 4 keepalive ping timeouts in the broker log, all during the 384-session
+  creation bursts (11:42, 11:55, 12:05 and 12:05 UTC); none at 128 or 256.
+- No failed requests once the sessions were up. Orbit isolation check empty.
+- Reading for the paper: Y1 (one client) is representative up to 256
+  sessions; at 384 the limit is session creation (endpoint rhapsody calls
+  time out under the burst), not the request path.

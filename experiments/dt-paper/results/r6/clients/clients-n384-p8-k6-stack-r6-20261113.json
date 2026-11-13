@@ -1,0 +1,37 @@
+{
+  "provenance": {
+    "experiment": "E2-C broker capacity (dt service sessions)",
+    "harness": "bench_broker.py",
+    "time": "2026-11-13T04:04:23-0800",
+    "host": "nid007051",
+    "python": "3.12.12",
+    "slurm_job": "61222332",
+    "digital_twins_commit": "d6d2108e8c44906f615f7c60bf64c6b0573b30fd",
+    "ping_timeout": null,
+    "args": {
+      "broker": "https://10.249.17.74:8152",
+      "inference": "dt_r6_y1b_ep",
+      "sessions": "48",
+      "seconds": 20.0,
+      "create_threads": 16,
+      "keep_going": false,
+      "start_at": 1794571905.0,
+      "one_session": false,
+      "dump_lat": true,
+      "out": "experiments/dt-paper/results/r6/clients/clients-n384-p8-k6-stack-r6-20261113.json"
+    }
+  },
+  "points": [
+    {
+      "sessions": 48,
+      "created": 46,
+      "create_s": 183.28954482078552,
+      "create_errors": [
+        "RuntimeError: twin 24763e04-46fb-490b-a807-fa29d6941ae4 failed to initialize: RuntimeError: HTTP 504 \u2014 [dt_r6_y1b_ep/rhapsody] \u2014 call timed out",
+        "RuntimeError: twin 9adcdb88-de0a-4ad3-bef4-133222baaacf failed to initialize: RuntimeError: HTTP 503 \u2014 [dt_r6_y1b_ep/rhapsody] \u2014 endpoint reconnected; a request sent while it was disconnected was not delivered, retry it"
+      ],
+      "n_create_errors": 2
+    }
+  ],
+  "stopped": "session creation failed at N=48"
+}
