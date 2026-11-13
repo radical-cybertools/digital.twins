@@ -231,3 +231,10 @@ clients alternating over two nodes. Table `results/r6/clients/clients-table-6122
 - Reading for the paper: Y1 (one client) is representative up to 256
   sessions; at 384 the limit is session creation (endpoint rhapsody calls
   time out under the burst), not the request path.
+
+## Y3: telemetry off (submitted)
+
+- Job 61224556 (`RES=r6/t20s-notel PING=20 TELEMETRY=0 REPEATS=1 SESSIONS="64 256 384"`,
+  regular, 3 nodes, 1:15, STEP_TIMEOUT 2400). Budget: 7.71 node-h used before
+  Y3 (ledger), over the page's 5; Andre relaxed the allocation guards
+  ("we can relax allocation guards quite a bit"), and Y3 adds at most 3.75.
