@@ -1,0 +1,46 @@
+{
+  "provenance": {
+    "experiment": "E2-C broker capacity (dt service sessions)",
+    "harness": "bench_broker.py",
+    "time": "2026-11-13T05:59:26-0800",
+    "host": "nid004340",
+    "python": "3.12.12",
+    "slurm_job": "61225659",
+    "digital_twins_commit": "ad94f9a925df4cfb483b71d2c78357d174976bc6",
+    "ping_timeout": null,
+    "args": {
+      "broker": "https://10.249.2.25:8196",
+      "inference": "dt_r7_ep_1",
+      "sessions": "256",
+      "seconds": 20.0,
+      "create_threads": 16,
+      "keep_going": true,
+      "start_at": null,
+      "one_session": false,
+      "twins_per_session": 16,
+      "load_marker": null,
+      "dump_lat": false,
+      "out": "experiments/dt-paper/results/r7/mixed/t16/broker-capacity-r1-61225659-stack-r7-20261113.json"
+    }
+  },
+  "points": [
+    {
+      "sessions": 256,
+      "twins_per_session": 16,
+      "service_sessions": 16,
+      "created": 256,
+      "create_s": 6.298770427703857,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "load_start_epoch": 1794578373.0333476,
+      "load_end_epoch": 1794578393.6297297,
+      "requests": 14672,
+      "failed": 0,
+      "req_per_s": 712.3581170458389,
+      "client_cpu_s": 5.900000000000002,
+      "client_cpu_pct": 28.64580759658159,
+      "p50_ms": 336.3616466522217,
+      "p99_ms": 698.5692977905273
+    }
+  ]
+}

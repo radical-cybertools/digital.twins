@@ -68,11 +68,20 @@ def open_twin(runtime, inference, offset):
     return dt, twin
 
 
-def open_session_twins(runtime, args, n, errors):
-    """--one-session (round 6, Y1c): one session, N twins on it."""
-    dt = runtime.get_plugin("broker", "dt", config=bel.engines(inference=args.inference))
+def open_session_twins(runtime, args, n, errors, per=None):
+    """N twins on N / per sessions, per twins each (round 7, Z3, --twins-per-session).
+
+    --one-session (round 6, Y1c) is per = N.  Sessions are opened first, then
+    the twins are built over all sessions on --create-threads threads.
+    """
+    per = per or n
+    s = -(-n // per)
+    with ThreadPoolExecutor(min(s, args.create_threads)) as pool:
+        dts = list(pool.map(lambda _: runtime.get_plugin(
+            "broker", "dt", config=bel.engines(inference=args.inference)), range(s)))
 
     def one(i):
+        dt = dts[i // per]
         twin = str(uuid.uuid4())
         bel.build_sibling(dt, twin, offset=i)
         for _ in range(3):                                     # warm-up
@@ -94,6 +103,8 @@ def one_n(runtime, args, n):
     sessions, errors = [], []
     if args.one_session:
         sessions = open_session_twins(runtime, args, n, errors)
+    elif args.twins_per_session:
+        sessions = open_session_twins(runtime, args, n, errors, args.twins_per_session)
     else:
         with ThreadPoolExecutor(min(n, args.create_threads)) as pool:
             futs = [pool.submit(open_twin, runtime, args.inference, i) for i in range(n)]
@@ -103,7 +114,9 @@ def one_n(runtime, args, n):
                 except Exception as exc:
                     errors.append(f"{type(exc).__name__}: {exc}"[:300])
     t_create = time.time() - t0
-    rec = {"sessions": n, "created": len(sessions), "create_s": t_create,
+    per = n if args.one_session else (args.twins_per_session or 1)
+    rec = {"sessions": n, "twins_per_session": per, "service_sessions": -(-n // per),
+           "created": len(sessions), "create_s": t_create,
            "create_errors": errors[:5], "n_create_errors": len(errors)}
     if errors:
         for dt in {id(dt): dt for dt, _ in sessions}.values():
@@ -139,6 +152,8 @@ def one_n(runtime, args, n):
             time.sleep(wait)
         stop = time.time() + args.seconds
     t_load = time.time()
+    if args.load_marker:                # round 7, Z2: the profiler starts on this
+        Path(f"{args.load_marker}.n{n}").write_text(f"{t_load}\n")
     c0 = os.times()                     # round 6: this client's CPU in the load phase
     threads = [threading.Thread(target=loop, args=(dt, twin, k))
                for k, (dt, twin) in enumerate(sessions)]
@@ -178,6 +193,10 @@ def main() -> int:
                    help="epoch at which the load phase starts (one N only)")
     p.add_argument("--one-session", action="store_true",
                    help="all N twins in one DT service session (round 6, Y1c)")
+    p.add_argument("--twins-per-session", type=int, default=None,
+                   help="T twins per DT service session, N / T sessions (round 7, Z3)")
+    p.add_argument("--load-marker", default=None,
+                   help="write the load start epoch to <path>.n<N> (round 7, Z2)")
     p.add_argument("--dump-lat", action="store_true",
                    help="keep every latency in the JSON")
     p.add_argument("--out", required=True)

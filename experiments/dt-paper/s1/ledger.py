@@ -31,14 +31,16 @@ ROUNDS = {  # round: (start, job-name prefixes, heading the table follows)
     "4": ("2026-11-11T03:00", ("r4-",), "## Node-hour ledger"),
     "5": ("2026-11-12T00:00", ("r5-",), "## Node-hour ledger"),
     "6": ("2026-11-13T00:00", ("r6-",), "## Node-hour ledger"),
+    "7": ("2026-11-13T05:00", ("r7-",), "## Node-hour ledger"),
 }
 JOURNALS = {"3": JOURNAL.with_name("JOURNAL-pm-20261110.md"),
             "3b": JOURNAL.with_name("JOURNAL-pm-20261110b.md"),
             "3c": JOURNAL.with_name("JOURNAL-pm-20261111.md"),
             "4": JOURNAL.with_name("JOURNAL-pm-20261111b.md"),
             "5": JOURNAL.with_name("JOURNAL-pm-20261112.md"),
-            "6": JOURNAL.with_name("JOURNAL-pm-20261113.md")}
-BUDGET = {"3": 25, "3b": 8, "3c": 1.5, "4": 8, "5": 6, "6": 5}
+            "6": JOURNAL.with_name("JOURNAL-pm-20261113.md"),
+            "7": JOURNAL.with_name("JOURNAL-pm-20261113b.md")}
+BUDGET = {"3": 25, "3b": 8, "3c": 1.5, "4": 8, "5": 6, "6": 5, "7": 4}
 HEAD = ("| job | name | account | nodes | elapsed | node-h | m5290 total | m5290_g total |\n"
         "|---|---|---|---|---|---|---|---|\n")
 
