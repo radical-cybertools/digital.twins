@@ -51,7 +51,9 @@ ASYNCFLOW="radical.asyncflow @ git+$GH/radical.asyncflow@24667a5eae6872f9863e31c
 # The [telemetry] extra is required: the ORBIT
 # plugin calls `session.start_telemetry()` whenever it exists, and that path
 # hard-imports opentelemetry.
-RHAPSODY="rhapsody-py[telemetry] @ git+$GH/rhapsody@5abecd6f89dcf3b18e72bb2504fd775883aabeed"
+# RHAPSODY_EXTRAS adds extras per host: `telemetry,dragon` where an endpoint runs
+# dragon_native (Perlmutter, radical.3's r3_site); the wire contract does not depend on it.
+RHAPSODY="rhapsody-py[${RHAPSODY_EXTRAS:-telemetry}] @ git+$GH/rhapsody@5abecd6f89dcf3b18e72bb2504fd775883aabeed"
 # orbit paper/dtaas: devel (0.8.0) + calls held for a suspect endpoint are
 # failed (503) on resume (#166), finished tasks released after 1 h and
 # telemetry bounded (#167), configurable keepalive deadline
