@@ -120,8 +120,8 @@ endpoint CPU are % of one core in the load window.
 | 256 | 291.9 (254.1 / 329.6) | 835.4 | 1,155 | 46.9 / 32.1 | 122 | 45 | 356 | 1,377 / 4,379 | 19.7 | 264.5 |
 | 384 | 256.0 (– / 256.0) | 1,379 | 1,881 | 461.8 failed / 150.9 | 122 | 39 | 484 | 2,017 / 6,555 | 11.2 | 210.3 |
 
-- **With telemetry off there is no collapse.** Throughput stays within 34%
-  of its peak (about 360 req/s at 16-64) up to 384 sessions, and p50 grows
+- **With telemetry off there is no collapse.** Throughput falls at most 30% below
+  its peak (367 req/s at 64) up to 384 sessions, and p50 grows
   linearly with N (closed loop). At 128 / 256 / 384 sessions that is
   4.3x / 15x / 23x round 6's Y1 (79.0 / 19.7 / 11.2).
 - The broker is CPU-bound at 120-123% from N = 4 on. The endpoint is not:
