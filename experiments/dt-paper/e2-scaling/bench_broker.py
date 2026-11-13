@@ -39,6 +39,16 @@ import bench_endpoint_loss as bel  # noqa: E402  (registers the user modules)
 from radical.orbit import EndpointRuntime  # type: ignore  # noqa: E402
 
 
+def git_head():
+    import subprocess
+    try:
+        return subprocess.check_output(
+            ["git", "-C", str(Path(__file__).resolve().parents[3]), "rev-parse", "HEAD"],
+            text=True).strip()
+    except Exception:
+        return None
+
+
 def pct(xs, q):
     xs = sorted(xs)
     return xs[min(len(xs) - 1, int(q * len(xs)))]
@@ -133,6 +143,8 @@ def main() -> int:
         "host": socket.gethostname(),
         "python": platform.python_version(),
         "slurm_job": os.environ.get("SLURM_JOB_ID"),
+        "digital_twins_commit": git_head(),          # round 6
+        "ping_timeout": os.environ.get("RADICAL_ORBIT_PING_TIMEOUT"),
         "args": vars(args)}, "points": []}
 
     runtime = EndpointRuntime(broker_url=args.broker)
