@@ -263,3 +263,36 @@ endpoint each. Tables: `results/r7/mixed/t<T>/broker-table-stack-r7-20261113.md`
 - 0 failures, 0 keepalive timeouts, isolation checks empty.
 - Endpoint threads do not grow monotonically with S (956 at S=64, 613 at
   S=256); not investigated.
+
+## Close-out (2026-11-13 06:45 PST)
+
+- Phases: Z0, Z1, Z2 (in two attempts; the first produced no recordings,
+  see above) and Z3 (stretch). All done.
+- Ledger (`python s1/ledger.py 7`): 5 jobs, 2.81 node-h on m5290 of the 4
+  budgeted.
+- Every result JSON (14) has provenance with the digital.twins commit;
+  every isolation check is empty; no allocation left (`squeue` empty).
+- Findings for E2:
+  1. **Telemetry off:** no collapse over N = 1-384 (Z1, 2 repeats). 256
+     req/s at 384 sessions, broker-bound at about 122%.
+  2. **The per-session cost** is rhapsody's per-session psutil telemetry
+     poller in the endpoint (Z2). It is not the broker's relaying and not
+     the dt service.
+  3. **At a fixed number of twins** the cost grows with the session count
+     (Z3: 875 to 20 req/s from 1 to 256 sessions).
+- Open questions for Andre:
+  - The per-session collector: the radical.orbit / rhapsody fix (one
+    collector per endpoint, a longer interval, or off for service sessions),
+    and whether the paper reports telemetry-on as the default or as a known
+    issue with the fix pending.
+  - Per-session telemetry files: they land in the endpoint's cwd (4.2 GB of
+    `telemetry-output/` from round 6 is still in `dt-pm6/digital.twins/`,
+    not deleted). Should they go elsewhere?
+  - Creation at 384 sessions stays fragile with telemetry off: one twin hit
+    the 300 s init limit in Z1 r1, and creation per session rises to 0.8 s.
+    It is a separate cost that this round did not locate.
+  - Z1's repeat spread reaches 23%. A third repeat would tighten the curve
+    if it goes into the paper.
+  - Endpoint threads in Z3 do not grow monotonically with S (956 at S=64,
+    613 at S=256).
+- Branch `exp/pm-round7-20261113` merged into `paper/dtaas` after this entry.
