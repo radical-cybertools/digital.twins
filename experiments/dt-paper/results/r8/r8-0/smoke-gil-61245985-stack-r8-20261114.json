@@ -1,0 +1,159 @@
+{
+  "provenance": {
+    "experiment": "R8-0 Dragon smoke",
+    "harness": "smoke_dragon.py",
+    "time": "2026-11-13T14:18:28-0800",
+    "host": "nid005592",
+    "python": "3.12.12",
+    "slurm_job": "61245985",
+    "harness_commit": "6c2c4fca8331c3d47c0e1566903f5fe47c666dc0",
+    "harness_dirty": true,
+    "packages": {
+      "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+      "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+      "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+      "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+      "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+      "dragonhpc": "0.15.0"
+    },
+    "backend": "dragon_native",
+    "workers_per_node": "default (physical cores)",
+    "telemetry": "on (default)",
+    "file_system": "/pscratch",
+    "args": {
+      "broker": "https://10.249.10.190:8181",
+      "endpoint": "r8_ep",
+      "backend": "dragon_native",
+      "step": "gil",
+      "state": "experiments/dt-paper/results/r8/r8-0/state-61245985.json",
+      "workers": 128,
+      "sessions_list": "1,4,16,64",
+      "ep_node": "nid005593",
+      "timeout": 120.0,
+      "reattach_wait": 180.0,
+      "out": "experiments/dt-paper/results/r8/r8-0/smoke-gil-61245985-stack-r8-20261114.json"
+    }
+  },
+  "step": "gil",
+  "burst": {
+    "k": 128,
+    "ms": 10000,
+    "wall_s": 10.092497211997397,
+    "svc_s": 10.089563608169556,
+    "pids": 128,
+    "hosts": [
+      "nid005593"
+    ],
+    "first_start_s": 0.03512883186340332,
+    "start_spread_s": 0.03734397888183594,
+    "tasks_per_s": 12.686376236962117,
+    "error": null
+  },
+  "probes": [
+    {
+      "t": 1.0520012378692627,
+      "twin_list_s": 0.002197222987888381,
+      "exe_s": 0.04930611897725612,
+      "errors": []
+    },
+    {
+      "t": 1.5960595607757568,
+      "twin_list_s": 0.0019409980159252882,
+      "exe_s": 0.04199353701551445,
+      "errors": []
+    },
+    {
+      "t": 2.141275644302368,
+      "twin_list_s": 0.001905479992274195,
+      "exe_s": 0.04319590900558978,
+      "errors": []
+    },
+    {
+      "t": 2.687389612197876,
+      "twin_list_s": 0.0018294129986315966,
+      "exe_s": 0.04416255699470639,
+      "errors": []
+    },
+    {
+      "t": 3.2347333431243896,
+      "twin_list_s": 0.0019235849904362112,
+      "exe_s": 0.04532018199097365,
+      "errors": []
+    },
+    {
+      "t": 3.7783286571502686,
+      "twin_list_s": 0.0016252879868261516,
+      "exe_s": 0.0418471849989146,
+      "errors": []
+    },
+    {
+      "t": 4.323254585266113,
+      "twin_list_s": 0.001843951002229005,
+      "exe_s": 0.042971456015948206,
+      "errors": []
+    },
+    {
+      "t": 4.869050741195679,
+      "twin_list_s": 0.0018651020072866231,
+      "exe_s": 0.043833912000991404,
+      "errors": []
+    },
+    {
+      "t": 5.41280460357666,
+      "twin_list_s": 0.0018953499966301024,
+      "exe_s": 0.04173807401093654,
+      "errors": []
+    },
+    {
+      "t": 5.9582719802856445,
+      "twin_list_s": 0.0019292650104034692,
+      "exe_s": 0.04341711601591669,
+      "errors": []
+    },
+    {
+      "t": 6.503649473190308,
+      "twin_list_s": 0.0018172389827668667,
+      "exe_s": 0.0434383169922512,
+      "errors": []
+    },
+    {
+      "t": 7.048742055892944,
+      "twin_list_s": 0.0018855910166166723,
+      "exe_s": 0.04309537500375882,
+      "errors": []
+    },
+    {
+      "t": 7.593662738800049,
+      "twin_list_s": 0.001909778016852215,
+      "exe_s": 0.04289500799495727,
+      "errors": []
+    },
+    {
+      "t": 8.13857626914978,
+      "twin_list_s": 0.0018447219918016344,
+      "exe_s": 0.04295424200245179,
+      "errors": []
+    },
+    {
+      "t": 8.683824062347412,
+      "twin_list_s": 0.002011203992879018,
+      "exe_s": 0.0431153740209993,
+      "errors": []
+    },
+    {
+      "t": 9.229809045791626,
+      "twin_list_s": 0.00195081700803712,
+      "exe_s": 0.04392334498697892,
+      "errors": []
+    },
+    {
+      "t": 9.773761749267578,
+      "twin_list_s": 0.0019379320146981627,
+      "exe_s": 0.041896448004990816,
+      "errors": []
+    }
+  ],
+  "probe_max_twin_list_s": 0.002197222987888381,
+  "probe_max_exe_s": 0.04930611897725612,
+  "probe_ok": true
+}

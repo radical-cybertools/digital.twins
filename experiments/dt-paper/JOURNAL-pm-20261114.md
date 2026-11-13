@@ -62,3 +62,59 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
   a twin_list within 1 s" while every pool worker runs a 10 s CPU task. A
   function-task probe would wait for a free worker, so the probe is an
   executable task (a native Process outside the pool) plus `twin_list()`.
+
+### R8-0 smoke, run 1 (job 61245985, debug, 2 nodes, about 10 min)
+
+Broker and client on nid005592; endpoint `r8_ep` in a single-node Dragon
+runtime on nid005593 (128 physical cores). Results in `results/r8/r8-0/`.
+
+- **Gate passed: dragon_native runs function tasks through ORBIT.**
+  - Endpoint up 12 s after launch.
+  - Twin ready 3.5 s after session open.
+  - Function task: 5.0-6.0 ms round trip (10 calls), each on a different
+    pool worker.
+  - Executable task (`/bin/hostname`, a native Process): 31-37 ms;
+    returns the stdout.
+  - 1,000 empty function tasks in one burst: 1.15 s, **873 tasks/s**
+    through ORBIT, on 128 worker pids.
+- **GIL case:** 128 function tasks of 10 s CPU each (one per worker) took
+  10.09 s. During the burst `twin_list()` answered in at most 2.2 ms, and an
+  executable task in at most 49 ms (17 probes, all under 1 s). The endpoint
+  stays responsive: the CPU work runs in worker processes, not in its
+  threads.
+- **Kill:** `pkill -KILL -f dragon` on the endpoint node plus `dragon-cleanup`
+  took 2.9 s and left 0 processes (from 130 Dragon native processes). The
+  restarted endpoint was in the topology at once (0.0 s: the broker still
+  held the old one).
+  - **Reattach failed:** for 180 s (88 tries) every get_inference returned
+    `HTTP 409 ... get_inference: RuntimeError: HTTP 404 — [r8_ep/rhapsody]
+    submit 1 task(s) — unknown session id: session.67f77076`.
+  - The DT session's backend keeps the remote rhapsody session id, which
+    died with the runtime, and does not create a new one on the restarted
+    endpoint.
+  - The restart came within about 3 s of the kill, likely before the broker
+    detected the loss.
+  - Rerun once (run 2) with the restart delayed until the broker no longer
+    holds the endpoint as present.
+- **radical.3:8010 → r3_site** (read-only use of the default credentials in
+  `~/.radical/orbit`, as round 2 S2; client log to a file):
+  - session ready 2.7 s;
+  - function task round trip p50 **434 ms** (10 calls, 431-437);
+  - executable task 453 ms, stdout `three`;
+  - 64 × 100 ms CPU on 32 workers: 0.38 s at the service, 0.56 s at the
+    client (ideal 0.2 s).
+- **Pool size follows the launch's CPU restriction, in physical cores.**
+  `taskset -c 0-15 dragon ...` gave a pool of **16** workers, not 8:
+  Perlmutter numbers CPUs 0-127 as the first hardware thread of each
+  physical core and 128-255 as the second, so 0-15 is 16 cores. 8 workers
+  need `taskset -c 0-7,128-135` (run 2 checks). 256 × 50 ms on 16 workers:
+  0.94 s (ideal 0.8 s).
+- **Sessions per endpoint: invalid in run 1.** A harness bug: twin ids came
+  from the millisecond clock, so concurrently created twins collided
+  (`twin id ... is already used`). The failed twins' sessions still built
+  their pools, so the counts are not per S.
+  - Valid: S = 1: one pool of 128 workers (130 Dragon native processes),
+    64 × 100 ms in 0.15 s, 8.0 GB of the node's memory.
+  - Indicative: about 24 sessions' pools, 3,076 Dragon processes and 6,588
+    threads, took 121 s to start and used about 172 GB.
+  - Twin ids are now uuids; run 2 repeats S = 1, 4, 16, 64.

@@ -16,7 +16,8 @@
 # reattach, remote (radical.3:8010 -> r3_site, if reachable), pool (endpoint
 # restarted under `taskset -c 0-15`), sessions (S = SESSIONS_LIST).
 # Knobs: STEPS ("basic gil kill remote pool sessions"), SESSIONS_LIST
-# (1,4,16,64), PORT (8181).
+# (1,4,16,64), PORT (8181), KILL_WAIT (1: restart after the broker detects
+# the loss), POOL_CPUS (taskset list for the pool step, 0-15).
 set -uo pipefail
 source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm8/digital.twins/experiments/dt-paper/r8/env-r8.sh}
 R=$X/results/${RES:-r8/r8-0}; mkdir -p $R
@@ -93,6 +94,9 @@ for s in $STEPS; do
       kill -KILL $EP 2>/dev/null; wait $EP 2>/dev/null
       srun --overlap -N1 -n1 -w $N1 dragon-cleanup > $R/dragon-cleanup-kill-$J.log 2>&1
       echo "[$(date -u +%T)] killed and cleaned up in $(echo "$(date +%s.%N) - $t0" | bc) s; node: $(srun --overlap -N1 -n1 -w $N1 $X/r8/node_probe.sh)"
+      # KILL_WAIT=1 (rerun): restart only once the broker no longer holds the
+      # endpoint as present (run 1 restarted within ~3 s, before detection)
+      [ "${KILL_WAIT:-0}" = 1 ] && echo "[$(date -u +%T)] broker lost the endpoint after $(timeout 150 python $X/r8/wait_lost.py $URL $EPN 120) s (from cleanup)"
       start_ep restart
       step reattach 300 --step reattach ;;
     remote)
@@ -107,7 +111,7 @@ for s in $STEPS; do
       fi ;;
     pool)
       stop_ep
-      start_ep taskset taskset -c 0-15
+      start_ep taskset taskset -c ${POOL_CPUS:-0-15}
       step pool 400 --step pool
       stop_ep
       start_ep main2 ;;

@@ -34,6 +34,7 @@ import subprocess
 import sys
 import threading
 import time
+import uuid
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -59,7 +60,7 @@ def open_twin(runtime, args):
     t0 = time.time()
     dt = runtime.get_plugin("broker", "dt", config=engines(args))
     t1 = time.time()
-    twin = dt.create_twin(f"r8-{int(t0 * 1000) % 10**9}")
+    twin = dt.create_twin(f"r8-{uuid.uuid4().hex[:12]}")  # unique across threads
     dt.add_investigator(twin, dt.package(r8_components.R8Investigator),
                         r8_components.IN, r8_components.OUT)
     dt.start(twin)

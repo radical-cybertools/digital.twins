@@ -1,0 +1,87 @@
+{
+  "provenance": {
+    "experiment": "R8-0 Dragon smoke",
+    "harness": "smoke_dragon.py",
+    "time": "2026-11-13T14:21:49-0800",
+    "host": "nid005592",
+    "python": "3.12.12",
+    "slurm_job": "61245985",
+    "harness_commit": "6c2c4fca8331c3d47c0e1566903f5fe47c666dc0",
+    "harness_dirty": true,
+    "packages": {
+      "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+      "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+      "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+      "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+      "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+      "dragonhpc": "0.15.0"
+    },
+    "backend": "dragon_native",
+    "workers_per_node": "default (physical cores)",
+    "telemetry": "on (default)",
+    "file_system": "/pscratch",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "endpoint": "r3_site",
+      "backend": "dragon_native",
+      "step": "remote",
+      "state": "smoke-state.json",
+      "workers": 128,
+      "sessions_list": "1,4,16,64",
+      "ep_node": null,
+      "timeout": 120.0,
+      "reattach_wait": 180.0,
+      "out": "experiments/dt-paper/results/r8/r8-0/smoke-remote-61245985-stack-r8-20261114.json"
+    }
+  },
+  "step": "remote",
+  "twin": {
+    "session_s": 0.17449522018432617,
+    "ready_s": 2.6864945888519287,
+    "first": {
+      "pid": 3990153,
+      "host": "three",
+      "t0": 1794608513.1676948,
+      "t1": 1794608513.1676984,
+      "svc_t0": 1794608513.1485596,
+      "svc_t1": 1794608513.4222848
+    }
+  },
+  "fn_s": [
+    0.43286735101719387,
+    0.43366839599912055,
+    0.4320820940192789,
+    0.43669385599787347,
+    0.43368364399066195,
+    0.43086064999806695,
+    0.4325498180114664,
+    0.4361975670035463,
+    0.4356661519850604,
+    0.433788245980395
+  ],
+  "fn_p50_s": 0.43367601999489125,
+  "fn_errors": [],
+  "exe": {
+    "s": 0.453340706997551,
+    "answer": {
+      "stdout": "three\n",
+      "svc_t0": 1794608517.9356327,
+      "svc_t1": 1794608518.2140894
+    },
+    "error": null
+  },
+  "burst_64x100ms": {
+    "k": 64,
+    "ms": 100,
+    "wall_s": 0.5574044969980605,
+    "svc_s": 0.3825531005859375,
+    "pids": 32,
+    "hosts": [
+      "three"
+    ],
+    "first_start_s": 0.023930072784423828,
+    "start_spread_s": 0.11255669593811035,
+    "tasks_per_s": 167.29703641657693,
+    "error": null
+  }
+}
