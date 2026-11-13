@@ -17,8 +17,10 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 6`.
 | 61219092 | r6-smoke | m5290 | 3 | 00:00:48 | 0.040 | 0.04 | 0.00 |
 | 61219149 | r6-y1 | m5290 | 3 | 00:30:46 | 1.538 | 1.58 | 0.00 |
 | 61219150 | r6-y2 | m5290 | 3 | 00:00:00 | 0.000 | 1.58 | 0.00 |
-| 61222208 | r6-smoke-y1c | m5290 | 3 | 00:00:52 | 0.043 | 1.62 | 0.00 |
-| 61222210 | r6-smoke-y1b | m5290 | 4 | 00:02:55 | 0.194 | 1.82 | 0.00 |
+| 61221797 | r6-y2 | m5290 | 3 | 00:28:06 | 1.405 | 2.98 | 0.00 |
+| 61222208 | r6-smoke-y1c | m5290 | 3 | 00:00:52 | 0.043 | 3.03 | 0.00 |
+| 61222210 | r6-smoke-y1b | m5290 | 4 | 00:02:55 | 0.194 | 3.22 | 0.00 |
+| 61222333 | r6-y1c | m5290 | 3 | 00:06:43 | 0.336 | 3.56 | 0.00 |
 
 ## Y0: setup (2026-11-13 01:30)
 
@@ -132,3 +134,31 @@ keepalive ping timeouts in either broker log; isolation check empty.
   checks empty.
 - Submitted: Y1b 61222332 (regular, 4 nodes, 2 h), Y1c 61222333 (regular,
   3 nodes, 90 min, `STEP_TIMEOUT=2400`).
+
+## Y2: keepalive deadline 20 s (done, 2026-11-13 03:10)
+
+Job 61221797 (r6-y2, regular, 3 nodes; `PING=20`, `STEP_TIMEOUT=2400`),
+2 repeats, all N in both: 0 failed requests, 0 keepalive timeouts,
+isolation check empty. `results/r6/t20s/`, table
+`broker-table-stack-r6-20261113.md`. The JSONs record
+`ping_timeout: 20`.
+
+| N | Y1 req/s (3 s) | Y2 req/s (20 s) | Y1 p50 ms | Y2 p50 ms | Y1 create s | Y2 create s |
+|---|---|---|---|---|---|---|
+| 1 | 200.8 | 198.2 | 5.0 | 5.0 | 2.0 | 2.0 |
+| 4 | 316.8 | 318.5 | 12.3 | 12.2 | 0.6 | 0.6 |
+| 16 | 352.7 | 360.7 | 43.3 | 42.5 | 0.8 | 0.8 |
+| 64 | 328.8 | 303.6 | 186.3 | 200.0 | 3.4 | 3.1 |
+| 128 | 79.0 | 113.5 | 1604.6 | 1160.1 | 9.7 | 8.6 |
+| 256 | 19.7 | 23.6 | 12467.8 | 10292.9 | 63.6 | 49.7 |
+| 384 | 11.2 | 11.9 | 27313.1 | 27199.6 | 181.2 | 162.1 |
+
+- Same shape as Y1: CPU-bound plateau up to 64 sessions, collapse from 128
+  with the broker's CPU at 30-55%. The 20 s deadline is a little better at
+  128-256 (113.5 vs 79.0, 23.6 vs 19.7 req/s; creation 11-22% faster), the
+  same at 384.
+- Decision for the paper's E2 figure: the default 3 s deadline. On
+  Perlmutter it never fired (0 timeouts at every N in four repeats), so
+  the figure needs no tuning; the 20 s numbers go next to it as the
+  sensitivity check. (On the laptop, 3 s stalled at 384; Perlmutter has
+  more headroom.)
