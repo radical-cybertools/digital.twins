@@ -10,7 +10,7 @@ is the commit that contains this file.
 |---|---|---|---|
 | radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation, #127 slow-submit warning, #128 finished tasks released | `24667a5eae6872f9863e31ca631d8af2bc945f04` |
 | rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits,  `28c8fa7cc7aa884a932316750874dbac4f056da3`| `28c8fa7cc7aa884a932316750874dbac4f056da3` |
-| radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume, #167 finished tasks released | `7904852ee6e0b23a4fb5277a735082216cc60493` |
+| radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume, #167 finished tasks released, #170 keepalive knob + coalesced topology | `adf25487c772791f99bf3812ea55b02bec6fc9b1` |
 | ROSE | `main` (Stream API, #98) | none | `9cc47a597063351c6192e3520f1bb0d39dd35230` |
 | digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106`, #59 cached version stamp, #60 lighter per-message path (paper-stack form, `fix/pm-message-path`) | this branch |
 
@@ -94,6 +94,17 @@ per submit round trip whatever the client concurrency (round 4 W2: one
 site 20 req/s at 50 ms of work).  #139 sends the tasks submitted during a
 send together in the next request.  Laptop, DT service path, one site,
 c=32: 17.9 -> 45.3 req/s (busy work), 71.9 -> 138.9 (asyncio.sleep).
+
+## Update 2026-11-13: broker capacity (radical.orbit #170)
+
+Every DT session adds a broker participant inside the broker process, and
+every join or drop broadcast the full topology to all of them, so creating
+sessions cost O(N^2) and at about 150 sessions the broker loop stalled past
+the 3 s keepalive deadline: every connection dropped, and the reconnects
+kept it there (round 3's stall at 256).  #170 coalesces topology broadcasts
+(`BrokerTuning.topology_coalesce`, 0.1 s) and makes the keepalive deadline
+configurable on both ends (`RADICAL_ORBIT_PING_TIMEOUT`, default 3 s, 0
+disables).  Laptop: 256 sessions at 3 s (stall at 384), 384 at 20 s.
 
 ## Verified (laptop, 2026-11-06)
 
