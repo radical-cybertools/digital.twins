@@ -9,7 +9,7 @@ is the commit that contains this file.
 | Repo | Base | Merged PRs | Commit |
 |---|---|---|---|
 | radical.asyncflow | `main` 548b41b | #100 hot path, #110 tickless run loop, #119 + #123 cancel routing, #121, #122, #124, #126 submit-failure isolation, #127 slow-submit warning, #128 finished tasks released | `24667a5eae6872f9863e31ca631d8af2bc945f04` |
-| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits, #134 finished tasks released (cherry-picked), #139 coalesced immediate sends, #147 one telemetry node sampler per process (cherry-picked) | `c675e3f08899618ca654fad329a07e09c0a8e0e7` |
+| rhapsody | `main` 689ded7 (has #112, #116) | #96 OrbitDataBackend, #91, #77, #123, #113 + #114 (Dragon 0.15), #125 executable stdout through ORBIT, #127 background immediate submits, #134 finished tasks released (cherry-picked), #139 coalesced immediate sends, #147 one telemetry node sampler per process (cherry-picked), #121 Dragon native backend (squashed) | `5abecd6f89dcf3b18e72bb2504fd775883aabeed` |
 | radical.orbit | `devel` b10479c (0.8.0) | #166 suspect-window calls failed on resume, #167 finished tasks released, #170 keepalive knob + coalesced topology | `adf25487c772791f99bf3812ea55b02bec6fc9b1` |
 | ROSE | `main` (Stream API, #98) | none | `9cc47a597063351c6192e3520f1bb0d39dd35230` |
 | digital.twins | `devel` f2872f8 | ROSE Stream port, orbit 0.8 session API, merge of `exp/pm-batch-20261106`, #59 cached version stamp, #60 lighter per-message path (paper-stack form, `fix/pm-message-path`) | this branch |
@@ -18,7 +18,7 @@ is the commit that contains this file.
   version across hosts and rejects skew; radical.3 has 3.12.3.
 - **dragonhpc 0.15.0** comes with rhapsody's `[dragon]` extra; none of the
   DT harnesses need it.
-- **Not merged:** asyncflow none open; rhapsody #121 (second Dragon backend),
+- **Not merged:** asyncflow none open; rhapsody
   #103 (flux), #107 and #64 (tests only), #78 (changes requested), #90;
   orbit #156 (Dragon DDict POC); ROSE #100-#108 (UQ / spec chain);
   digital.twins #29 (superseded by the Stream port).
@@ -133,3 +133,12 @@ process: 151% -> 53% CPU, event-loop lag p99 57 -> 21 ms.  The rest is the
 per-session event path at 10 Hz (the 0.1 s interval is set in radical.orbit's
 rhapsody plugin).  Numbers measured before this commit with telemetry on
 carry the old cost.
+
+## Update 2026-11-13: Dragon native backend
+
+rhapsody #121 (`dragon_native`, on Dragon 0.15.0) is on the stack, squashed
+onto its base.  From round 8 on, every CPU workload on an endpoint runs on
+`dragon_native` (Andre, 2026-11-13): CPU-bound Python tasks in the concurrent
+backend's thread pool share the endpoint process's GIL with its event loop
+(round 5 X4: a 63-task submit took 35 s and timed out).  `concurrent` stays as
+a comparison row.  The endpoint must run inside a Dragon runtime.
