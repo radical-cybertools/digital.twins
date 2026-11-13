@@ -28,7 +28,7 @@ python3 experiments/dt-paper/plots/make_figures.py --out ... --only e1-paths,e5-
 | `e1-paths` | E1 | `r3b/u2` (solo, xgf), `r3b/u3`, `s3` |
 | `e1-pool` | E1 | `r3c/v1` (c=500, bursts 2-5) |
 | `e1-exsitu` | E1 | `r3b/u5` (bare, zmq, dt, dt-batched) |
-| `e2-scaling` | E2 | `r3/t4` twins, joins, agents, broker capacity (round 6 replaces the broker panel) |
+| `e2-scaling` | E2 | `r3/t4` twins, joins, agents; `r6/t3s`, `r6/t20s-notel`, `r6/onesess` broker |
 | `e3-sites` | E3 | `r5/cpu5` (CPU work model), `r5/remote64` |
 | `e4-swap` | E4 | `r3/t5` swap, update, dip; `r3/t4` publish; `s2/update-*` |
 | `e5-endpoint-loss` | E5 | `c1`, `c2` |

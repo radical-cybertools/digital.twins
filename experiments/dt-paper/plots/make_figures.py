@@ -332,37 +332,51 @@ def fig_e2(fig):
     ax3.set_title("(c) agents")
     ax3.legend(frameon=False)
 
-    # TODO round 6: one broker at N = 1-384 with #170
-    points = {}
-    for run in SRC.load("r3/t4/broker-capacity-*stack-r3-*.json"):
-        for p in run["points"]:
-            points.setdefault(p["sessions"], []).append(p)
-    ns = sorted(points)
-    COLORS.update({"throughput": DT_A, "p50 latency": DT_B})
-    lines(
-        ax4,
-        [str(n) for n in ns],
-        {"throughput": [[p["req_per_s"] for p in points[n]] for n in ns]},
-    )
-    ax4.set_xlabel("sessions on one broker")
+    # round 6: one broker (radical.orbit #170), N service sessions with one
+    # twin each (telemetry on: the default; off: Y3, 20 s keepalive, which
+    # Y2 shows makes no difference), and N twins in one session (Y1c)
+    ns = [1, 4, 16, 64, 128, 256, 384]
+    curves = [
+        ("N sessions", "r6/t3s/broker-capacity-r*-stack-r6-*.json", DT_A, "-"),
+        (
+            "N sessions, endpoint telemetry off",
+            "r6/t20s-notel/broker-capacity-r*-stack-r6-*.json",
+            DT_C,
+            "--",
+        ),
+        (
+            "N twins in one session",
+            "r6/onesess/broker-capacity-r*-stack-r6-*.json",
+            DT_B,
+            "-",
+        ),
+    ]
+    for label, pattern, color, style in curves:
+        points = {}
+        for run in SRC.load(pattern):
+            for pt in run["points"]:
+                points.setdefault(pt["sessions"], []).append(pt["req_per_s"])
+        xs = [k for k, n in enumerate(ns) if n in points]
+        st = [spread(points[ns[k]]) for k in xs]
+        ax4.errorbar(
+            xs,
+            [v[0] for v in st],
+            yerr=[[v[1] for v in st], [v[2] for v in st]],
+            label=label,
+            color=color,
+            linestyle=style,
+            marker="o",
+            markersize=3,
+            linewidth=1.2,
+            elinewidth=0.6,
+            capsize=1.5,
+        )
+    ax4.set_xticks(range(len(ns)), [str(n) for n in ns])
+    logscale(ax4)
+    ax4.set_xlabel("twins on one broker")
     ax4.set_ylabel("throughput [req/s]")
-    ax4.set_ylim(bottom=0)
     ax4.set_title("(d) one broker")
-    lat = ax4.twinx()
-    lat.spines["right"].set_visible(True)
-    lat.grid(False)
-    lat.plot(
-        range(len(ns)),
-        [statistics.median(p["p50_ms"] for p in points[n]) for n in ns],
-        color=DT_B,
-        marker="s",
-        markersize=3,
-        linewidth=1.2,
-        linestyle="--",
-        label="p50 latency",
-    )
-    lat.set_ylabel("p50 latency [ms], dashed")
-    logscale(lat)
+    ax4.legend(frameon=False, fontsize=6, loc="lower left")
 
 
 def fig_e4_swap(fig):
