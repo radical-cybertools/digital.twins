@@ -26,15 +26,17 @@ python3 experiments/dt-paper/plots/make_figures.py --out ... --only e1-paths,e5-
 | Figure | Section | Sources |
 |---|---|---|
 | `e1-paths` | E1 | `r3b/u2` (solo, xgf), `r3b/u3`, `s3` |
-| `e1-inprocess` | E1 | `r3b/u2` (solo, inproc), `c3/p4` |
 | `e1-pool` | E1 | `r3c/v1` (c=500, bursts 2-5) |
 | `e1-exsitu` | E1 | `r3b/u5` (bare, zmq, dt, dt-batched) |
-| `e2-scaling` | E2 | `r3/t4` twins, joins |
-| `e2-agents-broker` | E2 | `r3/t4` agents, broker capacity |
-| `e3-sites` | E3 | `r4/local` (dt and xgf, spread and one), `r4/remote` |
-| `e4-propagation` | E4 | `r3/t5` update, `s2/update-*` |
-| `e4-swap` | E4 | `r3/t5` swap, dip; `r3/t4` publish |
-| `e5-endpoint-loss` | E5 | `s2`, `b1`, `c1`, `c2` |
+| `e2-scaling` | E2 | `r3/t4` twins, joins, agents, broker capacity (round 6 replaces the broker panel) |
+| `e3-sites` | E3 | `r5/cpu5` (CPU work model), `r5/remote64` |
+| `e4-swap` | E4 | `r3/t5` swap, update, dip; `r3/t4` publish; `s2/update-*` |
+| `e5-endpoint-loss` | E5 | `c1`, `c2` |
 | `e6-windfield` | E6 | `p8/surrogate-*`, `b3` |
+
+Colors are one code across figures: grey for a baseline without the DT
+(dark: the plain AsyncFlow task or bare learner; light: the hand-wired
+workflow), blue and orange for the DT (investigator, agent), light blue for a
+second DT variant or a remote path.  Dashed lines are baselines.
 
 `e3-sites` (E3, round 4) reads `results/r4/local/` and `results/r4/remote/`.
