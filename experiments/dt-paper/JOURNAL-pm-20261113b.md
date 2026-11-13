@@ -102,3 +102,36 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 7`.
 - Decision: Z3 was submitted while Z1 and Z2 still queued. The budget holds
   all three (about 1.3 + 0.5 + 0.5 node-h of 4), so the page's order
   only sets reporting priority, and queuing them together saves wall time.
+
+## Z1: telemetry off over the full range (done, job 61225635, 3 nodes, about 28 min)
+
+Round 6's Y1 setup with `RADICAL_ORBIT_RHAPSODY_TELEMETRY=0` on the
+endpoint, 2 repeats. Table: `results/r7/notel/broker-table-stack-r7-20261113.md`.
+Columns: req/s and p50 are medians, with r1 / r2 in brackets. Broker and
+endpoint CPU are % of one core in the load window.
+
+| N | req/s (r1 / r2) | p50 ms | p99 ms | create s (r1 / r2) | broker CPU % | endpoint CPU % | ep threads | broker threads / fds | Y1 telemetry on req/s | Y3 off, 20 s req/s |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 227.1 (228.6 / 225.6) | 4.3 | 5.3 | 2.0 / 2.0 | 71 | 43 | 70 | 71 / 44 | 200.8 | – |
+| 4 | 337.9 (327.6 / 348.3) | 11.7 | 16.3 | 0.6 / 0.6 | 120 | 59 | 104 | 117 / 95 | 316.8 | – |
+| 16 | 356.3 (316.5 / 396.0) | 45.2 | 88.7 | 0.8 / 0.8 | 123 | 57 | 116 | 177 / 299 | 352.7 | – |
+| 64 | 366.9 (329.0 / 404.8) | 177.5 | 269.1 | 3.2 / 3.2 | 123 | 52 | 164 | 417 / 1,115 | 328.8 | 382.3 |
+| 128 | 336.6 (313.0 / 360.2) | 367.5 | 558.7 | 8.6 / 7.8 | 122 | 50 | 228 | 737 / 2,203 | 79.0 | – |
+| 256 | 291.9 (254.1 / 329.6) | 835.4 | 1,155 | 46.9 / 32.1 | 122 | 45 | 356 | 1,377 / 4,379 | 19.7 | 264.5 |
+| 384 | 256.0 (– / 256.0) | 1,379 | 1,881 | 461.8 failed / 150.9 | 122 | 39 | 484 | 2,017 / 6,555 | 11.2 | 210.3 |
+
+- **With telemetry off there is no collapse.** Throughput stays within 34%
+  of its peak (about 360 req/s at 16-64) up to 384 sessions, and p50 grows
+  linearly with N (closed loop). At 128 / 256 / 384 sessions that is
+  4.3x / 15x / 23x round 6's Y1 (79.0 / 19.7 / 11.2).
+- The broker is CPU-bound at 120-123% from N = 4 on. The endpoint is not:
+  its CPU falls from 59% to 39% as N grows, and it has about one thread per
+  session (70 + N). So with telemetry off the broker is the limit.
+- Creation is fragile at 384 even with telemetry off. In r1 one twin
+  exceeded the 300 s initialization limit after 461.8 s, so r1 has no 384
+  point and the 384 row is r2 alone. The broker log has 2 keepalive
+  timeouts in r1 (during that creation burst) and 0 in r2. Creation per
+  session rises from 0.05 s (16-64) to 0.15 s (256) and 0.8 s (384).
+- The repeat spread is up to 23% (16 sessions: 316.5 / 396.0). It is not
+  tuned between repeats and is reported as measured.
+- Isolation check empty, no failed requests.

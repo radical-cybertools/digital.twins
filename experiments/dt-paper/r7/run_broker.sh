@@ -34,6 +34,10 @@ URL=https://$IP0:$PORT
 [ -n "${PING:-}" ] && export RADICAL_ORBIT_PING_TIMEOUT=$PING
 SES=${SESSIONS:-1 4 16 64 128 256 384}; SES=${SES// /,}
 PS=${PROFILE_S:-30}
+# py-spy record options; PYSPY_NB=1 adds --nonblocking (no pause per sample).
+# Z2 attempt 1 (100 Hz, blocking) fell 50 s behind with ~1,400 threads and
+# was killed by the timeout before writing; attempt 2 uses PYSPY_RATE=20 PYSPY_NB=1.
+PYREC="--rate ${PYSPY_RATE:-100} --idle${PYSPY_NB:+ --nonblocking}"
 echo "node0 $N0 ($IP0) node1 $N1 node2 $N2  broker $URL  ping ${PING:-default}  telemetry ${TELEMETRY:-default}  profile ${PROFILE:-0}  $(date -u +%FT%TZ)"
 ulimit -Sn $(ulimit -Hn)
 echo "ulimit -n soft $(ulimit -Sn)"; for n in $N1 $N2; do srun --overlap -N1 -n1 -w $n bash -c 'echo "$(hostname -s) soft $(ulimit -Sn) hard $(ulimit -Hn)"'; done
@@ -91,10 +95,10 @@ for r in ${REPEATS:-1 2}; do
       while [ ! -f $M.n$n1 ]; do sleep 0.5; done; sleep 2
       P=$PWD/$R/pyspy-$tag
       timeout 60 $PYSPY dump --pid $BP > $P-broker-dump.txt 2>&1
-      timeout $((PS + 30)) $PYSPY record --pid $BP --rate 100 --idle --duration $PS --format raw -o $P-broker.folded > $P-broker-record.log 2>&1 &
+      timeout $((PS + 180)) $PYSPY record --pid $BP $PYREC --duration $PS --format raw -o $P-broker.folded > $P-broker-record.log 2>&1 &
       srun --overlap -N1 -n1 -w $N1 bash -c "p=\$(pgrep -u $USER -o -f 'radical-orbit-endpoint.py -n $EPN'); \
         timeout 60 $PYSPY dump --pid \$p > $P-endpoint-dump.txt 2>&1; \
-        timeout $((PS + 30)) $PYSPY record --pid \$p --rate 100 --idle --duration $PS --format raw -o $P-endpoint.folded > $P-endpoint-record.log 2>&1"
+        timeout $((PS + 180)) $PYSPY record --pid \$p $PYREC --duration $PS --format raw -o $P-endpoint.folded > $P-endpoint-record.log 2>&1"
       wait
       echo "py-spy done $(date -u +%T)" ) > $R/pyspy-$tag.log 2>&1 &
   fi
