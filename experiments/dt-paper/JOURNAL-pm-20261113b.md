@@ -94,3 +94,11 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 7`.
   8172).
 - Decision: Z1 and Z2 run at the same time. They are independent and use
   different nodes, so this saves wall time at no node-h cost.
+- Z3: job 61225659 (regular, 3 nodes, 1 h). N = 256 twins with
+  `--twins-per-session T` for T = 256, 64, 16, 4, 1 (S = 1, 4, 16, 64,
+  256), telemetry on, default deadline, one repeat. Each T is its own
+  `run_broker.sh` call with a fresh broker and endpoint, results in
+  `results/r7/mixed/t<T>/`.
+- Decision: Z3 was submitted while Z1 and Z2 still queued. The budget holds
+  all three (about 1.3 + 0.5 + 0.5 node-h of 4), so the page's order
+  only sets reporting priority, and queuing them together saves wall time.
