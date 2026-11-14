@@ -1,0 +1,99 @@
+{
+ "provenance": {
+  "experiment": "R8-2 one engine",
+  "harness": "bench_engine.py",
+  "time": "2026-11-13T16:07:17-0800",
+  "host": "nid006698",
+  "python": "3.12.12",
+  "slurm_job": "61247176",
+  "harness_commit": "27cb8cfbccb83a1e05faa139d78b9b09007b85dd",
+  "harness_dirty": false,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.14.167:8221",
+   "endpoint": "r8_2_ep_2",
+   "backend": "dragon_native",
+   "twins": "1,4,16",
+   "per_session": 1,
+   "work_ms": 0.0,
+   "seconds": 15.0,
+   "timeout": 120.0,
+   "out": "experiments/dt-paper/results/r8/r8-2/engine-noop-persession-r2-61247176-stack-r8-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "twins": 1,
+   "per_session": 1,
+   "sessions": 1,
+   "created": 1,
+   "create_s": 1.5375921726226807,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "load_start_epoch": 1794614839.5315425,
+   "load_end_epoch": 1794614854.5360882,
+   "requests": 2909,
+   "req_per_s": 193.87458043494902,
+   "failed": 0,
+   "errors": [],
+   "p50_ms_median": 5.100741982460022,
+   "p50_ms_max": 5.100741982460022,
+   "p99_ms_median": 6.217440997716039,
+   "p99_ms_max": 6.217440997716039,
+   "worst_twin_req_per_s": 193.87458043494902,
+   "client_cpu_pct": 16.64249248074464,
+   "break": null
+  },
+  {
+   "twins": 4,
+   "per_session": 1,
+   "sessions": 4,
+   "created": 4,
+   "create_s": 5.088111400604248,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "load_start_epoch": 1794614865.042885,
+   "load_end_epoch": 1794614880.0525858,
+   "requests": 4008,
+   "req_per_s": 267.0273085414579,
+   "failed": 0,
+   "errors": [],
+   "p50_ms_median": 14.173295989166945,
+   "p50_ms_max": 14.219482021871954,
+   "p99_ms_median": 20.719549516797997,
+   "p99_ms_max": 20.8436899993103,
+   "worst_twin_req_per_s": 66.357085655512,
+   "client_cpu_pct": 19.576275430256363,
+   "break": null
+  },
+  {
+   "twins": 16,
+   "per_session": 1,
+   "sessions": 16,
+   "created": 0,
+   "create_s": 120.6320698261261,
+   "create_errors": [
+    "RuntimeError: twin r8e2-ae52efd44dda failed to initialize: RuntimeError: Session init timed out after 120.0s",
+    "RuntimeError: twin r8e2-aaaa09312e19 failed to initialize: RuntimeError: Session init timed out after 120.0s",
+    "RuntimeError: twin r8e2-13bf988bbd79 failed to initialize: RuntimeError: Session init timed out after 120.0s"
+   ],
+   "n_create_errors": 16,
+   "break": "creation: RuntimeError: twin r8e2-ae52efd44dda failed to initialize: RuntimeError: Session init timed out after 120.0s"
+  }
+ ],
+ "break": {
+  "twins": 16,
+  "why": "creation: RuntimeError: twin r8e2-ae52efd44dda failed to initialize: RuntimeError: Session init timed out after 120.0s"
+ }
+}

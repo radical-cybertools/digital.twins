@@ -22,7 +22,8 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61247053 | r8-b-smoke | m5290 | 5 | 00:01:32 | 0.128 | 1.42 | 0.02 |
 | 61247087 | r8-a | m5290 | 2 | 00:06:24 | 0.213 | 1.63 | 0.02 |
 | 61247141 | r8-1 | m5290 | 2 | 00:14:01 | 0.467 | 2.10 | 0.02 |
-| 61249075 | r8-1-local | m5290 | 2 | 00:11:36 | 0.387 | 2.49 | 0.02 |
+| 61247176 | r8-2 | m5290 | 3 | 00:25:34 | 1.278 | 3.38 | 0.02 |
+| 61249075 | r8-1-local | m5290 | 2 | 00:11:36 | 0.387 | 3.76 | 0.02 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -288,3 +289,57 @@ repeats; the DT's cost per request is the row's p50 minus bare's.
 - At 120 ms all rows serve about 325-356 req/s: 50 requests at once on 128
   workers, so one 120 ms round each, plus overhead.
 - Isolation checks empty.
+
+## R8-2: one engine (done, job 61247176, 3 nodes, about 27 min)
+
+`r8/bench_engine.py` through the DT service: broker on node 0, one Dragon
+endpoint (dragon_native, 128 workers) on node 1, the client on node 2; a
+fresh broker and endpoint per repeat, 3 repeats, 15 s closed loop per N.
+Each request is one function task of `--work-ms` CPU. Table:
+`results/r8/r8-2/engine-table-stack-r8-20261114.md`, made with `r8/engine_table.py`.
+
+| row | twins | req/s (min-max) | p50 ms | p99 ms | worst twin p99 ms | broker CPU % | client CPU % |
+|---|---|---|---|---|---|---|---|
+| no-op, one session | 1 | 191 (190-200) | 5.1 | 6.5 | 7 | 58 | 18 |
+| | 16 | 588 (586-596) | 26.0 | 64.2 | 70 | 84 | 30 |
+| | 64 | 774 (751-781) | 78.1 | 213.7 | 273 | 72 | 30 |
+| | 256 | 845 (824-848) | 287.3 | 552.2 | 604 | 65 | 28 |
+| | **1024** | 844 (785-847) | 1197 | 1420 | **1674** | 69 | 28 |
+| 20 ms, one session | 1 | 38 (37-38) | 26.4 | 27.5 | 28 | 17 | 5 |
+| | 16 | 447 (436-447) | 35.0 | 44.6 | 48 | 88 | 29 |
+| | 64 | 750 (745-757) | 80.6 | 231.0 | 292 | 78 | 31 |
+| | 256 | 953 (901-962) | 256.2 | 528.3 | 620 | 74 | 33 |
+| | **1024** | 879 (842-887) | 1123 | 1483 | **1837** | 71 | 29 |
+| no-op, one session per twin | 1 | 185 | 5.3 | 6.6 | 7 | 61 | 17 |
+| | 4 | 273 | 14.4 | 20.7 | 21 | 97 | 20 |
+| | 16 | 248 (2 of 3 repeats) | 58.8 | 202 | 220 | 89 | 18 |
+
+- **Break: N = 1024 twins on one engine** (worst twin p99 1.57-1.84 s in all
+  repeats, both task costs). N = 256 is the last point under 1 s. No failed
+  requests and no keepalive timeouts at any N.
+- **The plateau is about 850-950 req/s** from 256 twins, the same as round 6's
+  one-session ceiling (about 800-840, Y1c) and above round 2's 2.2k-thread-
+  pool comparison only in workload realism: round 2 was a local engine, not
+  the service. With 20 ms tasks the endpoint's 128 workers are never the
+  limit: 950 req/s × 20 ms is about 19 busy workers.
+- What saturates: no process reaches 100% of a core by these counters. The
+  broker is at 65-92%, the client at 28-33% (one Python process, 1,024
+  threads). Latency grows linearly with N past 256 (closed loop), so the
+  service path is throughput-bound at about 850-950 req/s, as in rounds 6/7
+  (Y1c: broker 68-96%).
+  - **Harness error:** the endpoint sampler measured the wrong process.
+    Under `dragon -s radical-orbit-endpoint.py` the oldest process whose
+    command line matches is the Dragon launcher, not the endpoint, so the
+    "endpoint CPU" column of this job is the launcher's and is left out.
+    `r8/proc_sampler.sh -f` now skips Dragon launcher command lines; R8-D
+    and R8-C use the fixed sampler.
+- **One session per twin** tops out at about 270 req/s from 4 sessions:
+  each session is a pool of 128 workers, so 16 sessions oversubscribe the
+  node 16×.
+  - In repeat 2, the 16 sessions failed to start (`twin ... failed to
+    initialize: RuntimeError: Session init timed out after 120.0s`); in
+    repeats 1 and 3 creation took 29 s and 57 s.
+  - So R8-0's "16 safe" is the edge, not a margin. R8-C's one-session-per-twin
+    row still goes to 16 as the page and R8-0 set; a failure there is that
+    row's break point.
+- Isolation check empty.
