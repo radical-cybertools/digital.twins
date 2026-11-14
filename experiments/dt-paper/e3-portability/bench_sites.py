@@ -53,7 +53,10 @@ from digitaltwin.service import register_user_modules  # noqa: E402
 
 register_user_modules([e3_components])
 
-BACKENDS = ["concurrent"]
+# round 8: E3_BACKENDS=dragon_native names the endpoints' backend (the DT
+# service always names one; the endpoint's RADICAL_ORBIT_RHAPSODY_BACKEND
+# applies only when none is named)
+BACKENDS = os.environ.get("E3_BACKENDS", "concurrent").split(",")
 
 
 def provenance(args) -> dict:
@@ -248,6 +251,12 @@ def main() -> int:
         p.error(f"spread needs {max(ns)} endpoints, got {len(args.endpoints)}")
 
     res = {"provenance": provenance(args), "work_model": args.work, "points": []}
+    try:  # round 8: all five packages, backend, telemetry, file system
+        sys.path.insert(0, str(HERE.parent / "r8"))
+        from prov import provenance as _r8prov
+        res["provenance"]["r8"] = _r8prov("R8-D sites", Path(__file__).name, backends=BACKENDS)
+    except Exception as exc:
+        res["provenance"]["r8"] = f"unavailable: {exc}"
     runtime = EndpointRuntime(broker_url=args.broker)
     runtime.start(wait=True)
     try:

@@ -1,0 +1,433 @@
+{
+ "provenance": {
+  "experiment": "R8-A task argument / return size",
+  "harness": "bench_echo.py",
+  "time": "2026-11-13T14:47:42-0800",
+  "host": "nid005145",
+  "python": "3.12.12",
+  "slurm_job": "61247087",
+  "harness_commit": "3b6849bed63cf1b99d9e61ab3b41dd3358eecd54",
+  "harness_dirty": true,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://95.217.193.116:8010",
+   "endpoint": "r3_site",
+   "backend": "dragon_native",
+   "sizes": "1000,100000,1000000,2096128,2098176,16000000",
+   "calls": 5,
+   "timeout": 120,
+   "out": "experiments/dt-paper/results/r8/r8-a/echo-r3-61247087-stack-r8-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "size": 1000,
+   "calls": [
+    {
+     "s": 0.42648334699333645,
+     "answer": {
+      "sent": 1000,
+      "returned": 1000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.25906848907470703,
+      "svc_t0": 1794610065.955093,
+      "svc_t1": 1794610066.2141807
+     },
+     "error": null
+    },
+    {
+     "s": 0.4268249299930176,
+     "answer": {
+      "sent": 1000,
+      "returned": 1000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.2598733901977539,
+      "svc_t0": 1794610066.381468,
+      "svc_t1": 1794610066.641349
+     },
+     "error": null
+    },
+    {
+     "s": 0.4239044239948271,
+     "answer": {
+      "sent": 1000,
+      "returned": 1000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.2574300765991211,
+      "svc_t0": 1794610066.8078496,
+      "svc_t1": 1794610067.06529
+     },
+     "error": null
+    },
+    {
+     "s": 0.424928900989471,
+     "answer": {
+      "sent": 1000,
+      "returned": 1000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.2582385540008545,
+      "svc_t0": 1794610067.2318246,
+      "svc_t1": 1794610067.4900732
+     },
+     "error": null
+    },
+    {
+     "s": 0.4269874239980709,
+     "answer": {
+      "sent": 1000,
+      "returned": 1000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.26060962677001953,
+      "svc_t0": 1794610067.65657,
+      "svc_t1": 1794610067.9171903
+     },
+     "error": null
+    }
+   ],
+   "ok": 5,
+   "p50_s": 0.42648334699333645,
+   "outcome": "5/5 returned 1000 bytes"
+  },
+  {
+   "size": 100000,
+   "calls": [
+    {
+     "s": 0.4347311000019545,
+     "answer": {
+      "sent": 100000,
+      "returned": 100000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.2683281898498535,
+      "svc_t0": 1794610068.0865464,
+      "svc_t1": 1794610068.355069
+     },
+     "error": null
+    },
+    {
+     "s": 0.43276069599960465,
+     "answer": {
+      "sent": 100000,
+      "returned": 100000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.2656419277191162,
+      "svc_t0": 1794610068.5218782,
+      "svc_t1": 1794610068.7879703
+     },
+     "error": null
+    },
+    {
+     "s": 0.4309511960018426,
+     "answer": {
+      "sent": 100000,
+      "returned": 100000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.26413440704345703,
+      "svc_t0": 1794610068.9543214,
+      "svc_t1": 1794610069.2187955
+     },
+     "error": null
+    },
+    {
+     "s": 0.43327581499761436,
+     "answer": {
+      "sent": 100000,
+      "returned": 100000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.26624202728271484,
+      "svc_t0": 1794610069.385469,
+      "svc_t1": 1794610069.6519163
+     },
+     "error": null
+    },
+    {
+     "s": 0.434945875997073,
+     "answer": {
+      "sent": 100000,
+      "returned": 100000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.26744794845581055,
+      "svc_t0": 1794610069.8189886,
+      "svc_t1": 1794610070.086888
+     },
+     "error": null
+    }
+   ],
+   "ok": 5,
+   "p50_s": 0.43327581499761436,
+   "outcome": "5/5 returned 100000 bytes"
+  },
+  {
+   "size": 1000000,
+   "calls": [
+    {
+     "s": 0.5074757309921551,
+     "answer": {
+      "sent": 1000000,
+      "returned": 1000000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.3391411304473877,
+      "svc_t0": 1794610070.2561488,
+      "svc_t1": 1794610070.5972228
+     },
+     "error": null
+    },
+    {
+     "s": 0.49566317300195806,
+     "answer": {
+      "sent": 1000000,
+      "returned": 1000000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.32433319091796875,
+      "svc_t0": 1794610070.764009,
+      "svc_t1": 1794610071.0929596
+     },
+     "error": null
+    },
+    {
+     "s": 0.493342481990112,
+     "answer": {
+      "sent": 1000000,
+      "returned": 1000000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.32245302200317383,
+      "svc_t0": 1794610071.25987,
+      "svc_t1": 1794610071.586123
+     },
+     "error": null
+    },
+    {
+     "s": 0.4827709910023259,
+     "answer": {
+      "sent": 1000000,
+      "returned": 1000000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.3127577304840088,
+      "svc_t0": 1794610071.753119,
+      "svc_t1": 1794610072.0690997
+     },
+     "error": null
+    },
+    {
+     "s": 0.4852731660066638,
+     "answer": {
+      "sent": 1000000,
+      "returned": 1000000,
+      "returned_type": "bytes",
+      "returned_head": null,
+      "task_s": 0.3167610168457031,
+      "svc_t0": 1794610072.2357259,
+      "svc_t1": 1794610072.5544546
+     },
+     "error": null
+    }
+   ],
+   "ok": 5,
+   "p50_s": 0.493342481990112,
+   "outcome": "5/5 returned 1000000 bytes"
+  },
+  {
+   "size": 2096128,
+   "calls": [
+    {
+     "s": 0.5487322440021671,
+     "answer": {
+      "sent": 2096128,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.3773841857910156,
+      "svc_t0": 1794610072.7231407,
+      "svc_t1": 1794610073.105362
+     },
+     "error": null
+    },
+    {
+     "s": 0.5077512269926956,
+     "answer": {
+      "sent": 2096128,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.3353722095489502,
+      "svc_t0": 1794610073.2720408,
+      "svc_t1": 1794610073.61296
+     },
+     "error": null
+    },
+    {
+     "s": 0.5095687829889357,
+     "answer": {
+      "sent": 2096128,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.33622241020202637,
+      "svc_t0": 1794610073.7799296,
+      "svc_t1": 1794610074.1225314
+     },
+     "error": null
+    },
+    {
+     "s": 0.5077286119922064,
+     "answer": {
+      "sent": 2096128,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.33531951904296875,
+      "svc_t0": 1794610074.2895157,
+      "svc_t1": 1794610074.6303234
+     },
+     "error": null
+    },
+    {
+     "s": 0.507292445996427,
+     "answer": {
+      "sent": 2096128,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.33311963081359863,
+      "svc_t0": 1794610074.7972128,
+      "svc_t1": 1794610075.1376324
+     },
+     "error": null
+    }
+   ],
+   "ok": 0,
+   "p50_s": null,
+   "outcome": "returned None NoneType None"
+  },
+  {
+   "size": 2098176,
+   "calls": [
+    {
+     "s": 0.5123702059936477,
+     "answer": {
+      "sent": 2098176,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.3393080234527588,
+      "svc_t0": 1794610075.306912,
+      "svc_t1": 1794610075.6525724
+     },
+     "error": null
+    },
+    {
+     "s": 0.5084272690000944,
+     "answer": {
+      "sent": 2098176,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.33478355407714844,
+      "svc_t0": 1794610075.8196971,
+      "svc_t1": 1794610076.1609867
+     },
+     "error": null
+    },
+    {
+     "s": 0.5123761590075446,
+     "answer": {
+      "sent": 2098176,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.3390626907348633,
+      "svc_t0": 1794610076.3277972,
+      "svc_t1": 1794610076.6732833
+     },
+     "error": null
+    },
+    {
+     "s": 0.5052843890007352,
+     "answer": {
+      "sent": 2098176,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.33202171325683594,
+      "svc_t0": 1794610076.8403146,
+      "svc_t1": 1794610077.178531
+     },
+     "error": null
+    },
+    {
+     "s": 0.5063961170089897,
+     "answer": {
+      "sent": 2098176,
+      "returned": null,
+      "returned_type": "NoneType",
+      "returned_head": "None",
+      "task_s": 0.33325624465942383,
+      "svc_t0": 1794610077.3456306,
+      "svc_t1": 1794610077.6848345
+     },
+     "error": null
+    }
+   ],
+   "ok": 0,
+   "p50_s": null,
+   "outcome": "returned None NoneType None"
+  },
+  {
+   "size": 16000000,
+   "calls": [
+    {
+     "s": 0.3532330739981262,
+     "answer": null,
+     "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8a-9edace1a079e: get_inference: RuntimeError: HTTP 413 \u2014 [r3_site/rhapsody] submit 1 task(s) \u2014 frame size 21335242 bytes exceeds cap 4194304 bytes"
+    },
+    {
+     "s": 0.3228392330056522,
+     "answer": null,
+     "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8a-9edace1a079e: get_inference: RuntimeError: HTTP 413 \u2014 [r3_site/rhapsody] submit 1 task(s) \u2014 frame size 21335242 bytes exceeds cap 4194304 bytes"
+    },
+    {
+     "s": 0.3381726859952323,
+     "answer": null,
+     "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8a-9edace1a079e: get_inference: RuntimeError: HTTP 413 \u2014 [r3_site/rhapsody] submit 1 task(s) \u2014 frame size 21335242 bytes exceeds cap 4194304 bytes"
+    },
+    {
+     "s": 0.3238546460052021,
+     "answer": null,
+     "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8a-9edace1a079e: get_inference: RuntimeError: HTTP 413 \u2014 [r3_site/rhapsody] submit 1 task(s) \u2014 frame size 21335242 bytes exceeds cap 4194304 bytes"
+    },
+    {
+     "s": 0.3213130350050051,
+     "answer": null,
+     "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8a-9edace1a079e: get_inference: RuntimeError: HTTP 413 \u2014 [r3_site/rhapsody] submit 1 task(s) \u2014 frame size 21335242 bytes exceeds cap 4194304 bytes"
+    }
+   ],
+   "ok": 0,
+   "p50_s": null,
+   "outcome": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8a-9edace1a079e: get_inference: RuntimeError: HTTP 413 \u2014 [r3_site/rhapsody] submit 1 task(s) \u2014 frame size 21335242 bytes exceeds cap 4194304 bytes"
+  }
+ ]
+}

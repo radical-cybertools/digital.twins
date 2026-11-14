@@ -1,0 +1,119 @@
+{
+ "provenance": {
+  "experiment": "R8-C WindField at scale",
+  "harness": "bench_windfield_scale.py",
+  "time": "2026-11-13T17:34:53-0800",
+  "host": "nid004747",
+  "python": "3.12.12",
+  "slurm_job": "61249380",
+  "harness_commit": "954ffd6a5d9c7445fb2f9688371b36ebc0e295c3",
+  "harness_dirty": false,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.4.91:8241",
+   "inference": "r8c_inf_2",
+   "learning": [
+    "r8c_l0_2",
+    "r8c_l1_2",
+    "r8c_l2_2",
+    "r8c_l3_2"
+   ],
+   "backend": "dragon_native",
+   "twins": "1,4,16,64,128,256",
+   "per_session": 0,
+   "rate": 1.0,
+   "warmup": 25.0,
+   "seconds": 60.0,
+   "model_path": "/pscratch/sd/m/merzky/dt-pm8/models/r8-model-10MB.bin",
+   "timeout": 60.0,
+   "out": "experiments/dt-paper/results/r8/r8-c/windfield-onesession-r2-61249380-stack-r8-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "twins": 1,
+   "per_session": 1,
+   "sessions": 1,
+   "created": 1,
+   "create_s": 2.229233503341675,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 85,
+   "probes": 60,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 196.6913938522339,
+   "p99_ms": 299.03435707092285,
+   "worst_twin_p99_ms": 299.03435707092285,
+   "arch_share": {
+    "pinn": 0.8333333333333334,
+    "fno": 0.16666666666666666,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": null,
+   "burst_makespan_s_max": null,
+   "train_s_p50": null,
+   "update_delay_s_p50": null,
+   "update_delay_s_max": null,
+   "updates_seen": 0,
+   "twin_states": {
+    "failed": 1
+   },
+   "load_start_epoch": 1794620120.3944957,
+   "load_end_epoch": 1794620180.3944957,
+   "client_cpu_pct": 0.3625048610909353,
+   "break": "twin states {'failed': 1}"
+  },
+  {
+   "twins": 4,
+   "per_session": 4,
+   "sessions": 1,
+   "created": 4,
+   "create_s": 2.3554294109344482,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 340,
+   "probes": 240,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 46.94342613220215,
+   "p99_ms": 150.10690689086914,
+   "worst_twin_p99_ms": 211.15827560424805,
+   "arch_share": {
+    "pinn": 0.8125,
+    "fno": 0.1875,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": null,
+   "burst_makespan_s_max": null,
+   "train_s_p50": null,
+   "update_delay_s_p50": null,
+   "update_delay_s_max": null,
+   "updates_seen": 0,
+   "twin_states": {
+    "failed": 4
+   },
+   "load_start_epoch": 1794620213.2719388,
+   "load_end_epoch": 1794620273.2719388,
+   "client_cpu_pct": 1.1017093543583059,
+   "break": "twin states {'failed': 4}"
+  }
+ ],
+ "break": {
+  "twins": 1,
+  "why": "twin states {'failed': 1}"
+ }
+}

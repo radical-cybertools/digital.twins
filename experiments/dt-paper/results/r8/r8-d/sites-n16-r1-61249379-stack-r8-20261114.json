@@ -1,0 +1,286 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: one twin on N sites",
+    "harness": "bench_sites.py",
+    "time": "2026-11-13T17:30:33-0800",
+    "host": "nid004614",
+    "python": "3.12.12",
+    "digital_twins_commit": "954ffd6a5d9c7445fb2f9688371b36ebc0e295c3",
+    "digital_twins_dirty": false,
+    "slurm_job": "61249379",
+    "args": {
+      "broker": "https://10.249.3.91:8231",
+      "endpoints": [
+        "r8d_s0",
+        "r8d_s1",
+        "r8d_s2",
+        "r8d_s3",
+        "r8d_s4",
+        "r8d_s5",
+        "r8d_s6",
+        "r8d_s7",
+        "r8d_s8",
+        "r8d_s9",
+        "r8d_s10",
+        "r8d_s11",
+        "r8d_s12",
+        "r8d_s13",
+        "r8d_s14",
+        "r8d_s15"
+      ],
+      "n": "16",
+      "layout": "spread",
+      "work_ms": 120.0,
+      "work": "cpu",
+      "seq": 20,
+      "tasks": 1920,
+      "concurrent": 256,
+      "bursts": 5,
+      "timeout": 120.0,
+      "out": "experiments/dt-paper/results/r8/r8-d/sites-n16-r1-61249379-stack-r8-20261114.json"
+    },
+    "r8": {
+      "experiment": "R8-D sites",
+      "harness": "bench_sites.py",
+      "time": "2026-11-13T17:30:33-0800",
+      "host": "nid004614",
+      "python": "3.12.12",
+      "slurm_job": "61249379",
+      "harness_commit": "954ffd6a5d9c7445fb2f9688371b36ebc0e295c3",
+      "harness_dirty": false,
+      "packages": {
+        "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+        "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+        "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+        "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+        "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+        "dragonhpc": "0.15.0"
+      },
+      "backend": "dragon_native",
+      "workers_per_node": "8",
+      "telemetry": "on (default)",
+      "file_system": "/pscratch",
+      "args": null,
+      "backends": [
+        "dragon_native"
+      ]
+    }
+  },
+  "work_model": "cpu",
+  "points": [
+    {
+      "n": 16,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "r8d_s0",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "r8d_s1",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_2": {
+          "endpoint_name": "r8d_s2",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_3": {
+          "endpoint_name": "r8d_s3",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_4": {
+          "endpoint_name": "r8d_s4",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_5": {
+          "endpoint_name": "r8d_s5",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_6": {
+          "endpoint_name": "r8d_s6",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_7": {
+          "endpoint_name": "r8d_s7",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_8": {
+          "endpoint_name": "r8d_s8",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_9": {
+          "endpoint_name": "r8d_s9",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_10": {
+          "endpoint_name": "r8d_s10",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_11": {
+          "endpoint_name": "r8d_s11",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_12": {
+          "endpoint_name": "r8d_s12",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_13": {
+          "endpoint_name": "r8d_s13",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_14": {
+          "endpoint_name": "r8d_s14",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_15": {
+          "endpoint_name": "r8d_s15",
+          "backends": [
+            "dragon_native"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1",
+        "site_2",
+        "site_3",
+        "site_4",
+        "site_5",
+        "site_6",
+        "site_7",
+        "site_8",
+        "site_9",
+        "site_10",
+        "site_11",
+        "site_12",
+        "site_13",
+        "site_14",
+        "site_15"
+      ],
+      "expected_endpoint": [
+        "r8d_s0",
+        "r8d_s1",
+        "r8d_s2",
+        "r8d_s3",
+        "r8d_s4",
+        "r8d_s5",
+        "r8d_s6",
+        "r8d_s7",
+        "r8d_s8",
+        "r8d_s9",
+        "r8d_s10",
+        "r8d_s11",
+        "r8d_s12",
+        "r8d_s13",
+        "r8d_s14",
+        "r8d_s15"
+      ],
+      "ran_on": {
+        "0": {
+          "r8d_s0": 605
+        },
+        "1": {
+          "r8d_s1": 605
+        },
+        "2": {
+          "r8d_s2": 605
+        },
+        "3": {
+          "r8d_s3": 605
+        },
+        "4": {
+          "r8d_s4": 604
+        },
+        "5": {
+          "r8d_s5": 604
+        },
+        "6": {
+          "r8d_s6": 604
+        },
+        "7": {
+          "r8d_s7": 604
+        },
+        "8": {
+          "r8d_s8": 604
+        },
+        "9": {
+          "r8d_s9": 604
+        },
+        "10": {
+          "r8d_s10": 604
+        },
+        "11": {
+          "r8d_s11": 604
+        },
+        "12": {
+          "r8d_s12": 604
+        },
+        "13": {
+          "r8d_s13": 604
+        },
+        "14": {
+          "r8d_s14": 604
+        },
+        "15": {
+          "r8d_s15": 604
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 7.96003794670105,
+      "seq_p50_ms": 128.42738100152928,
+      "bursts_s": [
+        2.884572069015121,
+        2.9101388600247446,
+        2.927531117980834,
+        2.8760142940154765,
+        2.811043077992508
+      ],
+      "req_per_s_bursts_2_5": 663.6764470718063,
+      "req_per_s_first": 665.6099948494424,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_15": {
+            "endpoint_name": "r8d_s15",
+            "backends": [
+              "dragon_native"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_15",
+        "lines": 2
+      }
+    }
+  ]
+}

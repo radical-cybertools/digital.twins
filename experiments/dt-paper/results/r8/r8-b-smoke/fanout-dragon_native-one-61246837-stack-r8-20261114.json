@@ -1,0 +1,105 @@
+{
+ "provenance": {
+  "experiment": "R8-B fan-out",
+  "harness": "bench_fanout.py",
+  "time": "2026-11-13T14:37:02-0800",
+  "host": "nid005145",
+  "python": "3.12.12",
+  "slurm_job": "61246837",
+  "harness_commit": "cb1c13ab13b71ef93e47c8af5ef1c5a480f750b8",
+  "harness_dirty": true,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "64",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.7.63:8191",
+   "endpoints": [
+    "r8b_s0"
+   ],
+   "layout": "one",
+   "backend": "dragon_native",
+   "workers": 64,
+   "ks": "16",
+   "ms_list": "100",
+   "repeats": 1,
+   "empty_k": 1024,
+   "burst_timeout": 400,
+   "probe_interval": 0.5,
+   "row": "dragon_native",
+   "out": "experiments/dt-paper/results/r8/r8-b-smoke/fanout-dragon_native-one-61246837-stack-r8-20261114.json"
+  }
+ },
+ "row": "dragon_native",
+ "points": [
+  {
+   "k": 16,
+   "ms": 100.0,
+   "wall_s": 0.11835090898966882,
+   "error": null,
+   "ideal_s": 0.1,
+   "workers": 64,
+   "ok_tasks": 16,
+   "failed": 0,
+   "task_errors": [],
+   "pids": 16,
+   "per_host": {
+    "nid005344": 16
+   },
+   "makespan_s": 0.1134481430053711,
+   "svc_s": 0.11679339408874512,
+   "first_start_s": 0.0070950984954833984,
+   "last_start_s": 0.01248025894165039,
+   "vs_ideal": 1.134481430053711,
+   "tasks_per_s": 136.99404940524673,
+   "probes": 0,
+   "probe_p50_s": null,
+   "probe_p99_s": null,
+   "probe_max_twin_list_s": null,
+   "probe_max_exe_s": null,
+   "probe_errors": [],
+   "break": null,
+   "repeat": 1
+  },
+  {
+   "k": 1024,
+   "ms": 0.0,
+   "wall_s": 1.1628395620064111,
+   "error": null,
+   "ideal_s": 0.0,
+   "workers": 64,
+   "ok_tasks": 1024,
+   "failed": 0,
+   "task_errors": [],
+   "pids": 64,
+   "per_host": {
+    "nid005344": 1024
+   },
+   "makespan_s": 0.583411455154419,
+   "svc_s": 1.1600055694580078,
+   "first_start_s": 0.18646812438964844,
+   "last_start_s": 0.5834090709686279,
+   "vs_ideal": null,
+   "tasks_per_s": 882.7543823590829,
+   "probes": 1,
+   "probe_p50_s": 0.9707364729983965,
+   "probe_p99_s": 0.9707364729983965,
+   "probe_max_twin_list_s": 0.0020089689933229238,
+   "probe_max_exe_s": 0.9707364729983965,
+   "probe_errors": [],
+   "break": null,
+   "repeat": 1,
+   "empty": true
+  }
+ ],
+ "breaks": {},
+ "ready_s": 3.041710615158081
+}

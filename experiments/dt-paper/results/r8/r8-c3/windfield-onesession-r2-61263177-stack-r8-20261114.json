@@ -1,0 +1,229 @@
+{
+ "provenance": {
+  "experiment": "R8-C WindField at scale",
+  "harness": "bench_windfield_scale.py",
+  "time": "2026-11-14T00:16:46-0800",
+  "host": "nid005142",
+  "python": "3.12.12",
+  "slurm_job": "61263177",
+  "harness_commit": "ead8719c02c772c9ab3700ff86e78be299386212",
+  "harness_dirty": true,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.7.93:8241",
+   "inference": "r8c_inf_2",
+   "learning": [
+    "r8c_l0_2",
+    "r8c_l1_2",
+    "r8c_l2_2",
+    "r8c_l3_2"
+   ],
+   "backend": "dragon_native",
+   "twins": "1,4,16,64,128,256,512,1024",
+   "per_session": 0,
+   "rate": 1.0,
+   "warmup": 25.0,
+   "seconds": 60.0,
+   "model_path": "/pscratch/sd/m/merzky/dt-pm8/models/r8-model-8.46MB.bin",
+   "timeout": 60.0,
+   "out": "experiments/dt-paper/results/r8/r8-c3/windfield-onesession-r2-61263177-stack-r8-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "twins": 1,
+   "per_session": 1,
+   "sessions": 1,
+   "created": 1,
+   "create_s": 2.2295827865600586,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 85,
+   "probes": 60,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 37.44697570800781,
+   "p99_ms": 298.74539375305176,
+   "worst_twin_p99_ms": 298.74539375305176,
+   "arch_share": {
+    "pinn": 0.8166666666666667,
+    "fno": 0.18333333333333332,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.27931785583496094,
+   "burst_makespan_s_max": 0.2882120609283447,
+   "train_s_p50": 2.0106111764907837,
+   "update_delay_s_p50": 1.3716000318527222,
+   "update_delay_s_max": 7.901662588119507,
+   "updates_seen": 16,
+   "twin_states": {
+    "running": 1
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794644234.1013982,
+   "load_end_epoch": 1794644294.1013982,
+   "client_cpu_pct": 0.36157089152165023,
+   "break": null
+  },
+  {
+   "twins": 4,
+   "per_session": 4,
+   "sessions": 1,
+   "created": 4,
+   "create_s": 2.2456040382385254,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 340,
+   "probes": 240,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 43.62642765045166,
+   "p99_ms": 303.1125068664551,
+   "worst_twin_p99_ms": 307.83557891845703,
+   "arch_share": {
+    "pinn": 0.7916666666666666,
+    "fno": 0.20833333333333334,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.2959616184234619,
+   "burst_makespan_s_max": 0.3771555423736572,
+   "train_s_p50": 2.0148184299468994,
+   "update_delay_s_p50": 0.8188920021057129,
+   "update_delay_s_max": 7.837049722671509,
+   "updates_seen": 61,
+   "twin_states": {
+    "running": 4
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794644326.8735225,
+   "load_end_epoch": 1794644386.8735225,
+   "client_cpu_pct": 1.1322667776540078,
+   "break": null
+  },
+  {
+   "twins": 16,
+   "per_session": 16,
+   "sessions": 1,
+   "created": 16,
+   "create_s": 2.52367901802063,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 1357,
+   "probes": 960,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 64.07630443572998,
+   "p99_ms": 257.97247886657715,
+   "worst_twin_p99_ms": 327.58593559265137,
+   "arch_share": {
+    "pinn": 0.803125,
+    "fno": 0.196875,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.38497447967529297,
+   "burst_makespan_s_max": 0.6239869594573975,
+   "train_s_p50": 2.015027165412903,
+   "update_delay_s_p50": 0.7584748268127441,
+   "update_delay_s_max": 7.782337427139282,
+   "updates_seen": 247,
+   "twin_states": {
+    "running": 16
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794644420.8486288,
+   "load_end_epoch": 1794644480.8486288,
+   "client_cpu_pct": 3.9630917409725845,
+   "break": null
+  },
+  {
+   "twins": 64,
+   "per_session": 64,
+   "sessions": 1,
+   "created": 64,
+   "create_s": 5.3525755405426025,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 5416,
+   "probes": 3763,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 145.28632164001465,
+   "p99_ms": 1464.1034603118896,
+   "worst_twin_p99_ms": 1597.4540710449219,
+   "arch_share": {
+    "pinn": 0.7975019930906192,
+    "fno": 0.2024980069093808,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.8781356811523438,
+   "burst_makespan_s_max": 1.4157981872558594,
+   "train_s_p50": 2.367050886154175,
+   "update_delay_s_p50": 1.0518735647201538,
+   "update_delay_s_max": 8.776026964187622,
+   "updates_seen": 974,
+   "twin_states": {
+    "running": 64
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794644517.848889,
+   "load_end_epoch": 1794644577.848889,
+   "client_cpu_pct": 14.485948626517242,
+   "break": "p99 1464 ms"
+  },
+  {
+   "twins": 128,
+   "per_session": 128,
+   "sessions": 1,
+   "created": 128,
+   "create_s": 11.857853174209595,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 10283,
+   "probes": 5028,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 1292.2343015670776,
+   "p99_ms": 3147.8774547576904,
+   "worst_twin_p99_ms": 3365.950584411621,
+   "arch_share": {
+    "pinn": 0.7919649960222752,
+    "fno": 0.20803500397772473,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 1.205322027206421,
+   "burst_makespan_s_max": 2.6164207458496094,
+   "train_s_p50": 2.7388737201690674,
+   "update_delay_s_p50": 1.909024953842163,
+   "update_delay_s_max": 12.889643669128418,
+   "updates_seen": 1427,
+   "twin_states": {
+    "running": 128
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794644623.1336913,
+   "load_end_epoch": 1794644683.1336913,
+   "client_cpu_pct": 24.65610194677928,
+   "break": "p99 3148 ms"
+  }
+ ],
+ "break": {
+  "twins": 64,
+  "why": "p99 1464 ms"
+ }
+}

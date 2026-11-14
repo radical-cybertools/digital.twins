@@ -1,0 +1,100 @@
+{
+  "provenance": {
+    "experiment": "R8-0 Dragon smoke",
+    "harness": "smoke_dragon.py",
+    "time": "2026-11-13T14:28:55-0800",
+    "host": "nid004381",
+    "python": "3.12.12",
+    "slurm_job": "61246494",
+    "harness_commit": "cb1c13ab13b71ef93e47c8af5ef1c5a480f750b8",
+    "harness_dirty": false,
+    "packages": {
+      "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+      "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+      "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+      "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+      "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+      "dragonhpc": "0.15.0"
+    },
+    "backend": "dragon_native",
+    "workers_per_node": "default (physical cores)",
+    "telemetry": "on (default)",
+    "file_system": "/pscratch",
+    "args": {
+      "broker": "https://10.249.2.51:8182",
+      "endpoint": "r8_ep",
+      "backend": "dragon_native",
+      "step": "basic",
+      "state": "experiments/dt-paper/results/r8/r8-0b/state-61246494.json",
+      "workers": 128,
+      "sessions_list": "1,4,16,64",
+      "ep_node": "nid005243",
+      "timeout": 120.0,
+      "reattach_wait": 180.0,
+      "out": "experiments/dt-paper/results/r8/r8-0b/smoke-basic-61246494-stack-r8-20261114.json"
+    }
+  },
+  "step": "basic",
+  "twin": {
+    "session_s": 0.00133514404296875,
+    "ready_s": 4.051387548446655,
+    "first": {
+      "pid": 649788,
+      "host": "nid005243",
+      "t0": 1794608939.5876567,
+      "t1": 1794608939.5876608,
+      "svc_t0": 1794608939.5720475,
+      "svc_t1": 1794608939.5903714
+    }
+  },
+  "fn_s": [
+    0.005885819002287462,
+    0.005431519995909184,
+    0.005401852002250962,
+    0.005348388003767468,
+    0.005132441001478583,
+    0.005153612000867724,
+    0.005224788998020813,
+    0.005613842004095204,
+    0.00511074899986852,
+    0.005438382999273017
+  ],
+  "fn_errors": [],
+  "fn_pids": [
+    649785,
+    649786,
+    649787,
+    649789,
+    649790,
+    649791,
+    649792,
+    649804,
+    649808,
+    649810
+  ],
+  "exe_s": [
+    0.04419901101209689,
+    0.030839582002954558,
+    0.03009562198712956
+  ],
+  "exe_answer": {
+    "stdout": "nid005243\n",
+    "svc_t0": 1794608939.6455567,
+    "svc_t1": 1794608939.6884139
+  },
+  "exe_errors": [],
+  "burst_1000_empty": {
+    "k": 1000,
+    "ms": 0,
+    "wall_s": 1.051190720012528,
+    "svc_s": 1.0489575862884521,
+    "pids": 128,
+    "hosts": [
+      "nid005243"
+    ],
+    "first_start_s": 0.15709877014160156,
+    "start_spread_s": 0.3279290199279785,
+    "tasks_per_s": 953.3273919475813,
+    "error": null
+  }
+}

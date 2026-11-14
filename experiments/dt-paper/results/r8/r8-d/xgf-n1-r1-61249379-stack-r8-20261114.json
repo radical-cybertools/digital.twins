@@ -1,0 +1,71 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: hand-wired N-site baseline",
+    "harness": "xgf_sites.py",
+    "time": "2026-11-13T17:34:05-0800",
+    "host": "nid004614",
+    "python": "3.12.12",
+    "digital_twins_commit": "954ffd6a5d9c7445fb2f9688371b36ebc0e295c3",
+    "digital_twins_dirty": false,
+    "slurm_job": "61249379",
+    "args": {
+      "broker": "https://10.249.3.91:8231",
+      "endpoints": [
+        "r8d_s0",
+        "r8d_s1",
+        "r8d_s2",
+        "r8d_s3",
+        "r8d_s4",
+        "r8d_s5",
+        "r8d_s6",
+        "r8d_s7",
+        "r8d_s8",
+        "r8d_s9",
+        "r8d_s10",
+        "r8d_s11",
+        "r8d_s12",
+        "r8d_s13",
+        "r8d_s14",
+        "r8d_s15"
+      ],
+      "n": "1",
+      "layout": "spread",
+      "work_ms": 120.0,
+      "work": "cpu",
+      "seq": 20,
+      "tasks": 120,
+      "concurrent": 16,
+      "bursts": 5,
+      "out": "experiments/dt-paper/results/r8/r8-d/xgf-n1-r1-61249379-stack-r8-20261114.json"
+    }
+  },
+  "work_model": "cpu",
+  "wiring_lines": 65,
+  "points": [
+    {
+      "n": 1,
+      "layout": "spread",
+      "sites": [
+        "r8d_s0"
+      ],
+      "ran_on": {
+        "0": {
+          "r8d_s0": 623
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 1.094735860824585,
+      "seq_p50_ms": 126.58059199748095,
+      "bursts_s": [
+        1.8802573859866243,
+        1.9009383239899762,
+        1.832848992984509,
+        1.8284511189849582,
+        1.8268887820013333
+      ],
+      "req_per_s_bursts_2_5": 65.55058010538103,
+      "req_per_s_first": 63.82104965753537,
+      "code_per_site": null
+    }
+  ]
+}

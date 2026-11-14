@@ -71,6 +71,13 @@ def main() -> int:
         "probes": [], "states": [],
     }
 
+    try:  # round 8: commits of all five repos, backend, telemetry, file system
+        sys.path.insert(0, str(root / "experiments" / "dt-paper" / "r8"))
+        from prov import provenance as _r8prov
+        res["provenance"]["r8"] = _r8prov("R8-E WindField decomposed", Path(__file__).name)
+    except Exception as exc:
+        res["provenance"]["r8"] = f"unavailable: {exc}"
+
     def save():
         Path(args.out).write_text(json.dumps(res, indent=1))
 
@@ -120,6 +127,7 @@ def main() -> int:
                        "wind_speed": round(r * 20, 1), "wind_avg": round(r * 15, 1),
                        "wind_dir": round(r * 360)}
             t0 = time.time()
+            data = {}
             try:
                 a = dt.get_inference(twin, TypedData(tsr.DAVIS_WIND_SENSOR, reading),
                                      tsr.WIND_FIELD, timeout=args.timeout)
@@ -127,9 +135,13 @@ def main() -> int:
                 arch, err = data.get("arch", "?"), None
             except Exception as exc:
                 arch, err = "error", f"{type(exc).__name__}: {exc}"[:300]
-            lat = time.time() - t0
+            t1 = time.time()
+            lat = t1 - t0
+            # round 8 (R8-E): send / receive epochs and, with the r8/timings
+            # xGFabric patch, the inference task's own times ("t")
             res["probes"].append({"t": t0 - t_start, "latency_s": lat, "arch": arch,
-                                  "error": err})
+                                  "error": err, "t_send": t0, "t_recv": t1,
+                                  "task": data.get("t")})
             if arch not in ("na",) or err:
                 print(f"[p8b] t={t0 - t_start:6.0f}s arch={arch} {lat * 1e3:8.1f} ms"
                       + (f" {err}" if err else ""), flush=True)

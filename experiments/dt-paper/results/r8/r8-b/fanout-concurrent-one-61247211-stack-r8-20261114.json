@@ -1,0 +1,147 @@
+{
+ "provenance": {
+  "experiment": "R8-B fan-out",
+  "harness": "bench_fanout.py",
+  "time": "2026-11-13T16:47:22-0800",
+  "host": "nid004202",
+  "python": "3.12.12",
+  "slurm_job": "61247211",
+  "harness_commit": "954ffd6a5d9c7445fb2f9688371b36ebc0e295c3",
+  "harness_dirty": false,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "concurrent",
+  "workers_per_node": "32",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.1.138:8191",
+   "endpoints": [
+    "r8b_s0"
+   ],
+   "layout": "one",
+   "backend": "concurrent",
+   "workers": 32,
+   "ks": "16,64,256,1024",
+   "ms_list": "100,10000",
+   "repeats": 3,
+   "empty_k": 0,
+   "burst_timeout": 400,
+   "probe_interval": 0.5,
+   "row": "concurrent",
+   "out": "experiments/dt-paper/results/r8/r8-b/fanout-concurrent-one-61247211-stack-r8-20261114.json"
+  }
+ },
+ "row": "concurrent",
+ "points": [
+  {
+   "k": 16,
+   "ms": 100.0,
+   "wall_s": 1.6203448809974361,
+   "error": null,
+   "ideal_s": 0.1,
+   "workers": 32,
+   "ok_tasks": 16,
+   "failed": 0,
+   "task_errors": [],
+   "pids": 1,
+   "per_host": {
+    "nid004633": 16
+   },
+   "makespan_s": 1.6112072467803955,
+   "svc_s": 1.6187920570373535,
+   "first_start_s": 0.006220340728759766,
+   "last_start_s": 1.2860076427459717,
+   "vs_ideal": 16.112072467803955,
+   "tasks_per_s": 9.883913088431223,
+   "probes": 1,
+   "probe_p50_s": 1.4252309059957042,
+   "probe_p99_s": 1.4252309059957042,
+   "probe_max_twin_list_s": 0.0014516689989250153,
+   "probe_max_exe_s": 1.4252309059957042,
+   "probe_errors": [],
+   "break": "probe p99 1.43 s",
+   "repeat": 1
+  },
+  {
+   "k": 64,
+   "ms": 100.0,
+   "wall_s": 6.373496371990768,
+   "error": null,
+   "ideal_s": 0.2,
+   "workers": 32,
+   "ok_tasks": 64,
+   "failed": 0,
+   "task_errors": [],
+   "pids": 1,
+   "per_host": {
+    "nid004633": 64
+   },
+   "makespan_s": 6.35633659362793,
+   "svc_s": 6.371274948120117,
+   "first_start_s": 0.016358137130737305,
+   "last_start_s": 5.969485759735107,
+   "vs_ideal": 31.78168296813965,
+   "tasks_per_s": 10.045085249206453,
+   "probes": 1,
+   "probe_p50_s": 6.178365103987744,
+   "probe_p99_s": 6.178365103987744,
+   "probe_max_twin_list_s": 0.0017919379752129316,
+   "probe_max_exe_s": 6.178365103987744,
+   "probe_errors": [],
+   "break": "probe p99 6.18 s",
+   "repeat": 1
+  },
+  {
+   "k": 16,
+   "ms": 10000.0,
+   "wall_s": 32.028749605000485,
+   "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8b-63c7ae4c6f2e: get_inference: RuntimeError: all 16 tasks failed: ['RuntimeError: HTTP 504 \u2014 [r8b_s0/rhapsody] submit 16 task(s) \u2014 call timed out', 'RuntimeError: HTTP 504 \u2014 [r8b_s0/rhapsody] submit 16 task(s) \u2014 call timed out']",
+   "ideal_s": 10.0,
+   "workers": 32,
+   "probes": 1,
+   "probe_p50_s": 43.648609123018105,
+   "probe_p99_s": 43.648609123018105,
+   "probe_max_twin_list_s": 0.0018312640022486448,
+   "probe_max_exe_s": 43.648609123018105,
+   "probe_errors": [
+    "exe RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8b-63c7ae4c6f2e: get_inference: RuntimeError: HTTP 504 \u2014 [r8b_s0/rhapsody] submit 1 task(s) \u2014 endpoint lost"
+   ],
+   "break": "burst: RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8b-63c7ae4c6f2e: get_inference: RuntimeError: all 16 tasks failed: ['RuntimeError: HTTP 504 \u2014 [r8b_s0/rhapsody] submit 16 task(s) \u2014 call time; probe p99 43.65 s; probe error: exe RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8b-63c7ae4c6f2e: get_inference: RuntimeError: HTTP 504 \u2014 [r8b_s0/rhapsody] submit 1 tas",
+   "repeat": 1
+  },
+  {
+   "k": 64,
+   "ms": 10000.0,
+   "wall_s": 0.01679575999150984,
+   "error": "RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8b-63c7ae4c6f2e: get_inference: RuntimeError: all 64 tasks failed: [\"RuntimeError: HTTP 502 \u2014 [r8b_s0/rhapsody] submit 64 task(s) \u2014 endpoint 'r8b_s0' unknown\", \"RuntimeError: HTTP 502 \u2014 [r8b_s0/rhapsody] submit 64 task(s) \u2014 endpoint 'r8b_s0' unknown\"]",
+   "ideal_s": 20.0,
+   "workers": 32,
+   "probes": 0,
+   "probe_p50_s": null,
+   "probe_p99_s": null,
+   "probe_max_twin_list_s": null,
+   "probe_max_exe_s": null,
+   "probe_errors": [],
+   "break": "burst: RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8b-63c7ae4c6f2e: get_inference: RuntimeError: all 64 tasks failed: [\"RuntimeError: HTTP 502 \u2014 [r8b_s0/rhapsody] submit 64 task(s) \u2014 endpoint ",
+   "repeat": 1
+  }
+ ],
+ "breaks": {
+  "100.0": {
+   "k": 16,
+   "why": "probe p99 1.43 s"
+  },
+  "10000.0": {
+   "k": 16,
+   "why": "burst: RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8b-63c7ae4c6f2e: get_inference: RuntimeError: all 16 tasks failed: ['RuntimeError: HTTP 504 \u2014 [r8b_s0/rhapsody] submit 16 task(s) \u2014 call time; probe p99 43.65 s; probe error: exe RuntimeError: HTTP 409 \u2014 [broker/dt] get_inference \u2014 twin r8b-63c7ae4c6f2e: get_inference: RuntimeError: HTTP 504 \u2014 [r8b_s0/rhapsody] submit 1 tas"
+  }
+ },
+ "ready_s": 0.5317268371582031
+}

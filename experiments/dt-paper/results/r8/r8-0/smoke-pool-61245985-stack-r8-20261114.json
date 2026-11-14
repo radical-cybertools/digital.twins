@@ -1,0 +1,73 @@
+{
+  "provenance": {
+    "experiment": "R8-0 Dragon smoke",
+    "harness": "smoke_dragon.py",
+    "time": "2026-11-13T14:22:21-0800",
+    "host": "nid005592",
+    "python": "3.12.12",
+    "slurm_job": "61245985",
+    "harness_commit": "6c2c4fca8331c3d47c0e1566903f5fe47c666dc0",
+    "harness_dirty": true,
+    "packages": {
+      "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+      "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+      "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+      "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+      "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+      "dragonhpc": "0.15.0"
+    },
+    "backend": "dragon_native",
+    "workers_per_node": "default (physical cores)",
+    "telemetry": "on (default)",
+    "file_system": "/pscratch",
+    "args": {
+      "broker": "https://10.249.10.190:8181",
+      "endpoint": "r8_ep",
+      "backend": "dragon_native",
+      "step": "pool",
+      "state": "experiments/dt-paper/results/r8/r8-0/state-61245985.json",
+      "workers": 128,
+      "sessions_list": "1,4,16,64",
+      "ep_node": "nid005593",
+      "timeout": 120.0,
+      "reattach_wait": 180.0,
+      "out": "experiments/dt-paper/results/r8/r8-0/smoke-pool-61245985-stack-r8-20261114.json"
+    }
+  },
+  "step": "pool",
+  "twin": {
+    "session_s": 0.0015285015106201172,
+    "ready_s": 1.527937889099121,
+    "first": {
+      "pid": 2261386,
+      "host": "nid005593",
+      "t0": 1794608543.5693557,
+      "t1": 1794608543.5693607,
+      "svc_t0": 1794608543.5609097,
+      "svc_t1": 1794608543.571381
+    }
+  },
+  "probe": {
+    "host": "nid005593",
+    "dragon_native_procs": 18,
+    "user_procs": 24,
+    "user_threads": 146,
+    "mem_avail_mb": 485567,
+    "mem_total_mb": 515140,
+    "t": 1794608544.3728702
+  },
+  "burst_256x50ms": {
+    "k": 256,
+    "ms": 50,
+    "wall_s": 0.9392820450011641,
+    "svc_s": 0.936617374420166,
+    "pids": 16,
+    "hosts": [
+      "nid005593"
+    ],
+    "first_start_s": 0.0605313777923584,
+    "start_spread_s": 0.8236308097839355,
+    "tasks_per_s": 273.32399226363117,
+    "error": null
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "provenance": {
+    "experiment": "E4 model-update propagation",
+    "harness": "bench_model_update.py",
+    "time": "2026-11-13T14:49:42-0800",
+    "host": "nid005145",
+    "python": "3.12.12",
+    "digital_twins_commit": "bdc5e1a2c188db79bba8001c67f28f937fd87395",
+    "digital_twins_dirty": false,
+    "backend": "orbit r3_site",
+    "notify_window": null,
+    "slurm_job": "61247087",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "endpoint": "r3_site",
+      "backends": [
+        "dragon_native"
+      ],
+      "workers": 8,
+      "intervals": "1",
+      "seconds": 20.0,
+      "max_versions": 500,
+      "payload_mb": 0.2,
+      "path_mb": 0.0,
+      "path_dir": "/tmp",
+      "out": "experiments/dt-paper/results/r8/r8-a/publish-r3-payload-0.2MB-61247087-stack-r8-20261114.json"
+    },
+    "r8": {
+      "experiment": "R8-A model publish",
+      "harness": "bench_model_update.py",
+      "time": "2026-11-13T14:49:42-0800",
+      "host": "nid005145",
+      "python": "3.12.12",
+      "slurm_job": "61247087",
+      "harness_commit": "bdc5e1a2c188db79bba8001c67f28f937fd87395",
+      "harness_dirty": true,
+      "packages": {
+        "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+        "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+        "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+        "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+        "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+        "dragonhpc": "0.15.0"
+      },
+      "backend": "dragon_native",
+      "workers_per_node": "default (physical cores)",
+      "telemetry": "on (default)",
+      "file_system": "/pscratch",
+      "args": null
+    }
+  },
+  "points": [
+    {
+      "rate_windows": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1
+      ],
+      "interval_s": 1.0,
+      "versions": 20,
+      "versions_seen": 20,
+      "requests": 47,
+      "inference": {
+        "n": 47,
+        "p50_ms": 490.16697000479326,
+        "p90_ms": 492.1436159929726,
+        "min_ms": 485.8492219937034,
+        "max_ms": 501.52418899233453
+      },
+      "answered": {
+        "n": 20,
+        "p50_ms": 791.0581539981649,
+        "p90_ms": 957.7370240003802,
+        "min_ms": 601.2229140033014,
+        "max_ms": 974.539939998067
+      },
+      "issued": {
+        "n": 20,
+        "p50_ms": 302.5966575005441,
+        "p90_ms": 465.18717998696957,
+        "min_ms": 109.69965200638399,
+        "max_ms": 473.01575100573245
+      },
+      "answered_raw_s": [
+        0.974539939998067,
+        0.9577370240003802,
+        0.9396283690002747,
+        0.9199652360111941,
+        0.9027853519946802,
+        0.8833302040002309,
+        0.8628419050073717,
+        0.8425295060005737,
+        0.8230815420101862,
+        0.8025576649961295,
+        0.7795586430002004,
+        0.7602662290009903,
+        0.7409992059983779,
+        0.7224369379982818,
+        0.701851115009049,
+        0.6816946350008948,
+        0.6615914190042531,
+        0.6400397219986189,
+        0.6189439390000189,
+        0.6012229140033014
+      ],
+      "payload_mb": 0.2,
+      "path_mb": 0.0
+    }
+  ]
+}

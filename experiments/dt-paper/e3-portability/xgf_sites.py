@@ -23,6 +23,7 @@ the DT service provides).
 """
 
 import argparse
+import os
 import asyncio
 import itertools
 import json
@@ -52,7 +53,7 @@ async def wire(broker, sites, work_ms, work_model="wall"):
     names = sorted(set(sites), key=sites.index)
     backends = [
         await OrbitExecutionBackend(broker_url=broker, endpoint_name=ep,
-                                    backends=["concurrent"], batch_window=0,
+                                    backends=os.environ.get("E3_BACKENDS", "concurrent").split(","), batch_window=0,  # round 8
                                     name=f"site_{k}")
         for k, ep in enumerate(names)
     ]

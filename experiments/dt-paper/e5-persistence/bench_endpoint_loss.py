@@ -61,8 +61,15 @@ register_user_modules([learner_components, twin_components])
 PROBE_VALUE = 3.0
 
 
+# round 8 (R8-5): E5_BACKEND names the endpoints' backend (dragon_native);
+# E5_LAUNCH prefixes the learning endpoint's command ("dragon -s"), which
+# then starts in its own process group so a kill takes its whole Dragon runtime;
+# E5_CLEANUP runs after every kill ("dragon-cleanup").  Defaults: as before.
+E5_BACKEND = os.environ.get("E5_BACKEND", "concurrent")
+
+
 def engines(**endpoints):
-    return {"engines": {name: {"endpoint_name": ep, "backends": ["concurrent"]}
+    return {"engines": {name: {"endpoint_name": ep, "backends": [E5_BACKEND]}
                         for name, ep in endpoints.items()}}
 
 
@@ -82,7 +89,8 @@ def provenance(args) -> dict:
         "python": platform.python_version(),
         "digital_twins_commit": git("rev-parse", "HEAD"),
         "digital_twins_dirty": bool(git("status", "--porcelain", "--", "src")),
-        "backend": "orbit, concurrent on both endpoints",
+        "backend": f"orbit, {E5_BACKEND} on both endpoints",
+        "launch": os.environ.get("E5_LAUNCH"), "cleanup": os.environ.get("E5_CLEANUP"),
         "slurm_job": os.environ.get("SLURM_JOB_ID"),
         "args": vars(args),
     }
@@ -103,16 +111,24 @@ class LearningEndpoint:
             "RADICAL_ORBIT_LOG_FILE":
                 f"{self.args.logs}/endpoint-{self.args.learning}-{self.incarnation}.log",
             "RADICAL_ORBIT_BROKER_URL": self.args.broker,
-            "RADICAL_ORBIT_RHAPSODY_BACKEND": "concurrent",
+            "RADICAL_ORBIT_RHAPSODY_BACKEND": E5_BACKEND,
             "DT_TEST_ENDPOINT_TAG": self.args.learning,
         })
         log = open(f"{self.args.logs}/endpoint-{self.args.learning}-"
                    f"{self.incarnation}.console.log", "w")
         t0 = time.time()
+        import shlex
+        import shutil
+        launch = shlex.split(os.environ.get("E5_LAUNCH", ""))
+        script = shutil.which("radical-orbit-endpoint.py") if launch else "radical-orbit-endpoint.py"
         self.proc = subprocess.Popen(
-            ["radical-orbit-endpoint.py", "-n", self.args.learning,
-             "-u", self.args.broker, "-p", "default", "--tunnel", "none"],
-            env=env, stdout=log, stderr=subprocess.STDOUT)
+            launch + [script, "-n", self.args.learning,
+                      "-u", self.args.broker, "-p", "default", "--tunnel", "none"],
+            env=env, stdout=log, stderr=subprocess.STDOUT,
+            # its own process group (killpg takes the whole runtime), same
+            # session: `dragon -s` started with start_new_session=True hangs
+            # without output (round 8, R8-5 attempt 1; checked by hand)
+            process_group=0 if launch else None)
         log.close()
         deadline = t0 + 120
         while time.time() < deadline:
@@ -125,10 +141,28 @@ class LearningEndpoint:
         raise RuntimeError("learning endpoint never advertised rhapsody")
 
     def kill(self):
-        self.proc.send_signal(signal.SIGKILL)
+        if os.environ.get("E5_LAUNCH"):  # the whole runtime: its process group
+            try:
+                os.killpg(self.proc.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        else:
+            self.proc.send_signal(signal.SIGKILL)
         self.proc.wait()
+        self.cleanup_s = None
+        if os.environ.get("E5_CLEANUP"):
+            import shlex
+            t0 = time.time()
+            subprocess.run(shlex.split(os.environ["E5_CLEANUP"]), timeout=180,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            self.cleanup_s = time.time() - t0
 
     def stop(self):
+        if self.proc and self.proc.poll() is None and os.environ.get("E5_LAUNCH"):
+            try:
+                os.killpg(self.proc.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
         if self.proc and self.proc.poll() is None:
             self.proc.terminate()
             try:
@@ -258,6 +292,7 @@ def kill_cycle(runtime, ep, args, k):
         "sibling_state": sibling_entry.get("state"),
         "sibling_after_ok": after["ok"],
         "endpoint_up_s": t_up,
+        "cleanup_s": getattr(ep, "cleanup_s", None),
         "resume_s": t_resume,
         "probes": probes,
     }

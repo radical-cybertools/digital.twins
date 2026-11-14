@@ -1,0 +1,81 @@
+{
+ "provenance": {
+  "experiment": "R8-B fan-out",
+  "harness": "bench_fanout.py",
+  "time": "2026-11-13T14:45:59-0800",
+  "host": "nid004999",
+  "python": "3.12.12",
+  "slurm_job": "61247053",
+  "harness_commit": "4eb762cb812e60d786f955a9735a4d56acc7af79",
+  "harness_dirty": false,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "concurrent",
+  "workers_per_node": "32",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.6.40:8191",
+   "endpoints": [
+    "r8b_s0",
+    "r8b_s1",
+    "r8b_s2",
+    "r8b_s3"
+   ],
+   "layout": "spread",
+   "backend": "concurrent",
+   "workers": 32,
+   "ks": "16",
+   "ms_list": "100",
+   "repeats": 1,
+   "empty_k": 0,
+   "burst_timeout": 400,
+   "probe_interval": 0.5,
+   "row": "concurrent",
+   "out": "experiments/dt-paper/results/r8/r8-b-smoke2/fanout-concurrent-spread-61247053-stack-r8-20261114.json"
+  }
+ },
+ "row": "concurrent",
+ "points": [
+  {
+   "k": 16,
+   "ms": 100.0,
+   "wall_s": 0.4168963959964458,
+   "error": null,
+   "ideal_s": 0.1,
+   "workers": 128,
+   "ok_tasks": 16,
+   "failed": 0,
+   "task_errors": [],
+   "pids": 4,
+   "per_host": {
+    "nid006194": 4,
+    "nid006271": 4,
+    "nid005500": 4,
+    "nid006091": 4
+   },
+   "makespan_s": 0.4092726707458496,
+   "svc_s": 0.41530942916870117,
+   "first_start_s": 0.006170511245727539,
+   "last_start_s": 0.17435956001281738,
+   "vs_ideal": 4.092726707458496,
+   "tasks_per_s": 38.52549178097448,
+   "probes": 1,
+   "probe_p50_s": 0.2152078170038294,
+   "probe_p99_s": 0.2152078170038294,
+   "probe_max_twin_list_s": 0.0012361400004010648,
+   "probe_max_exe_s": 0.2152078170038294,
+   "probe_errors": [],
+   "break": null,
+   "repeat": 1
+  }
+ ],
+ "breaks": {},
+ "ready_s": 0.5503201484680176
+}

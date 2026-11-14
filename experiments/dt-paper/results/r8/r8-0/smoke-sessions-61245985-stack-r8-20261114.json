@@ -1,0 +1,430 @@
+{
+  "provenance": {
+    "experiment": "R8-0 Dragon smoke",
+    "harness": "smoke_dragon.py",
+    "time": "2026-11-13T14:22:47-0800",
+    "host": "nid005592",
+    "python": "3.12.12",
+    "slurm_job": "61245985",
+    "harness_commit": "6c2c4fca8331c3d47c0e1566903f5fe47c666dc0",
+    "harness_dirty": true,
+    "packages": {
+      "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+      "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+      "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+      "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+      "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+      "dragonhpc": "0.15.0"
+    },
+    "backend": "dragon_native",
+    "workers_per_node": "default (physical cores)",
+    "telemetry": "on (default)",
+    "file_system": "/pscratch",
+    "args": {
+      "broker": "https://10.249.10.190:8181",
+      "endpoint": "r8_ep",
+      "backend": "dragon_native",
+      "step": "sessions",
+      "state": "experiments/dt-paper/results/r8/r8-0/state-61245985.json",
+      "workers": 128,
+      "sessions_list": "1,4,16,64",
+      "ep_node": "nid005593",
+      "timeout": 120.0,
+      "reattach_wait": 180.0,
+      "out": "experiments/dt-paper/results/r8/r8-0/smoke-sessions-61245985-stack-r8-20261114.json"
+    }
+  },
+  "step": "sessions",
+  "points": [
+    {
+      "sessions": 1,
+      "probe_before": {
+        "host": "nid005593",
+        "dragon_native_procs": 0,
+        "user_procs": 7,
+        "user_threads": 84,
+        "mem_avail_mb": 486267,
+        "mem_total_mb": 515140,
+        "t": 1794608567.9888217
+      },
+      "create_wall_s": 2.031106948852539,
+      "ready_s": [
+        2.0307815074920654
+      ],
+      "created": 1,
+      "create_errors": [],
+      "n_create_errors": 0,
+      "probe_ready": {
+        "host": "nid005593",
+        "dragon_native_procs": 130,
+        "user_procs": 136,
+        "user_threads": 483,
+        "mem_avail_mb": 480269,
+        "mem_total_mb": 515140,
+        "t": 1794608570.8590002
+      },
+      "burst_wall_s": 0.14888978004455566,
+      "bursts": [
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.1484790550020989,
+          "svc_s": 0.14596891403198242,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.022542238235473633,
+          "start_spread_s": 0.019659042358398438,
+          "tasks_per_s": 438.4495179979028,
+          "error": null
+        }
+      ],
+      "burst_errors": 0,
+      "makespan_max_s": 0.1484790550020989,
+      "probe_after": {
+        "host": "nid005593",
+        "dragon_native_procs": 130,
+        "user_procs": 136,
+        "user_threads": 482,
+        "mem_avail_mb": 480277,
+        "mem_total_mb": 515140,
+        "t": 1794608571.8539448
+      }
+    },
+    {
+      "sessions": 4,
+      "probe_before": {
+        "host": "nid005593",
+        "dragon_native_procs": 0,
+        "user_procs": 6,
+        "user_threads": 83,
+        "mem_avail_mb": 486332,
+        "mem_total_mb": 515140,
+        "t": 1794608583.1677072
+      },
+      "create_wall_s": 3.0356967449188232,
+      "ready_s": [
+        2.5338878631591797,
+        3.0342423915863037
+      ],
+      "created": 2,
+      "create_errors": [
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608583221 is already used by session session.fdef375a",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608583221 is already used by session session.fdef375a"
+      ],
+      "n_create_errors": 2,
+      "probe_ready": {
+        "host": "nid005593",
+        "dragon_native_procs": 260,
+        "user_procs": 266,
+        "user_threads": 882,
+        "mem_avail_mb": 474292,
+        "mem_total_mb": 515140,
+        "t": 1794608587.0798676
+      },
+      "burst_wall_s": 0.1979665756225586,
+      "bursts": [
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.16058819001773372,
+          "svc_s": 0.15739822387695312,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.02958059310913086,
+          "start_spread_s": 0.02303624153137207,
+          "tasks_per_s": 406.61195802331497,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.1972227320075035,
+          "svc_s": 0.19317054748535156,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.06639719009399414,
+          "start_spread_s": 0.022278308868408203,
+          "tasks_per_s": 331.31344727825666,
+          "error": null
+        }
+      ],
+      "burst_errors": 0,
+      "makespan_max_s": 0.1972227320075035,
+      "probe_after": {
+        "host": "nid005593",
+        "dragon_native_procs": 260,
+        "user_procs": 268,
+        "user_threads": 1010,
+        "mem_avail_mb": 474172,
+        "mem_total_mb": 515140,
+        "t": 1794608588.1872814
+      }
+    },
+    {
+      "sessions": 16,
+      "probe_before": {
+        "host": "nid005593",
+        "dragon_native_procs": 0,
+        "user_procs": 6,
+        "user_threads": 84,
+        "mem_avail_mb": 486495,
+        "mem_total_mb": 515140,
+        "t": 1794608599.6692533
+      },
+      "create_wall_s": 17.194824934005737,
+      "ready_s": [
+        17.168199062347412,
+        17.169387578964233,
+        17.186160564422607,
+        17.187743186950684,
+        17.188621282577515,
+        17.18970227241516,
+        17.191008806228638,
+        17.19398856163025
+      ],
+      "created": 8,
+      "create_errors": [
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608599722 is already used by session session.256125d9",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608599722 is already used by session session.256125d9",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608599724 is already used by session session.6bf9e575",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608599724 is already used by session session.6bf9e575",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608599725 is already used by session session.d5366856"
+      ],
+      "n_create_errors": 8,
+      "probe_ready": {
+        "host": "nid005593",
+        "dragon_native_procs": 1040,
+        "user_procs": 1046,
+        "user_threads": 3284,
+        "mem_avail_mb": 437920,
+        "mem_total_mb": 515140,
+        "t": 1794608618.0214818
+      },
+      "burst_wall_s": 0.7126955986022949,
+      "bursts": [
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.7105813739763107,
+          "svc_s": 0.6829404830932617,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.03687453269958496,
+          "start_spread_s": 0.03166770935058594,
+          "tasks_per_s": 93.71241211257968,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.7093503919895738,
+          "svc_s": 0.6821780204772949,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.11850118637084961,
+          "start_spread_s": 0.0317692756652832,
+          "tasks_per_s": 93.8171534099289,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.7102295359945856,
+          "svc_s": 0.6824929714202881,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.18816781044006348,
+          "start_spread_s": 0.03636598587036133,
+          "tasks_per_s": 93.77385948285168,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.7099945029767696,
+          "svc_s": 0.6846458911895752,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.22911763191223145,
+          "start_spread_s": 0.040158987045288086,
+          "tasks_per_s": 93.47898062865714,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.7101015790249221,
+          "svc_s": 0.6911954879760742,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.2725205421447754,
+          "start_spread_s": 0.03728485107421875,
+          "tasks_per_s": 92.5931970236116,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.7087123320088722,
+          "svc_s": 0.6723453998565674,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.14635109901428223,
+          "start_spread_s": 0.02908182144165039,
+          "tasks_per_s": 95.18916915866939,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.7098546130000614,
+          "svc_s": 0.6937906742095947,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.3186671733856201,
+          "start_spread_s": 0.04176974296569824,
+          "tasks_per_s": 92.2468438667216,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.7090627969882917,
+          "svc_s": 0.6894004344940186,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.3706979751586914,
+          "start_spread_s": 0.04011654853820801,
+          "tasks_per_s": 92.83429020025557,
+          "error": null
+        }
+      ],
+      "burst_errors": 0,
+      "makespan_max_s": 0.7105813739763107,
+      "probe_after": {
+        "host": "nid005593",
+        "dragon_native_procs": 1040,
+        "user_procs": 1052,
+        "user_threads": 3798,
+        "mem_avail_mb": 437140,
+        "mem_total_mb": 515140,
+        "t": 1794608619.9496129
+      }
+    },
+    {
+      "sessions": 64,
+      "probe_before": {
+        "host": "nid005593",
+        "dragon_native_procs": 0,
+        "user_procs": 6,
+        "user_threads": 94,
+        "mem_avail_mb": 485561,
+        "mem_total_mb": 515140,
+        "t": 1794608634.2119164
+      },
+      "create_wall_s": 121.00031089782715,
+      "ready_s": [
+        95.49507570266724,
+        95.49587440490723,
+        97.48984479904175
+      ],
+      "created": 3,
+      "create_errors": [
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608634266 is already used by session session.fa90b691",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608634267 is already used by session session.6a9abae4",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608634267 is already used by session session.6a9abae4",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608634268 is already used by session session.93abcdb5",
+        "RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608634268 is already used by session session.93abcdb5"
+      ],
+      "n_create_errors": 61,
+      "probe_ready": {
+        "host": "nid005593",
+        "dragon_native_procs": 3076,
+        "user_procs": 3082,
+        "user_threads": 6588,
+        "mem_avail_mb": 342813,
+        "mem_total_mb": 515140,
+        "t": 1794608756.6518958
+      },
+      "burst_wall_s": 0.31215620040893555,
+      "bursts": [
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.24158355398685671,
+          "svc_s": 0.23481059074401855,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.034898996353149414,
+          "start_spread_s": 0.024219274520874023,
+          "tasks_per_s": 272.5601081161213,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.2760659079940524,
+          "svc_s": 0.2717742919921875,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.08684396743774414,
+          "start_spread_s": 0.06534934043884277,
+          "tasks_per_s": 235.48952894278816,
+          "error": null
+        },
+        {
+          "k": 64,
+          "ms": 100,
+          "wall_s": 0.31101250601932406,
+          "svc_s": 0.3062312602996826,
+          "pids": 64,
+          "hosts": [
+            "nid005593"
+          ],
+          "first_start_s": 0.15833711624145508,
+          "start_spread_s": 0.0208892822265625,
+          "tasks_per_s": 208.9923802598357,
+          "error": null
+        }
+      ],
+      "burst_errors": 0,
+      "makespan_max_s": 0.31101250601932406,
+      "probe_after": {
+        "host": "nid005593",
+        "dragon_native_procs": 3076,
+        "user_procs": 3082,
+        "user_threads": 6588,
+        "mem_avail_mb": 342756,
+        "mem_total_mb": 515140,
+        "t": 1794608758.4464376
+      }
+    }
+  ],
+  "break": "S=4: RuntimeError: HTTP 400 \u2014 [broker/dt] create_twin \u2014 twin id r8-608583221 is already used by session session.fdef375a"
+}
