@@ -17,6 +17,7 @@ session, twins, clients, phases), setup and harness. Branch
 | 61292738 | diagnostic (smoke latency) | m5290 | 3 | 00:03:45 | 0.188 | 1.08 |
 | 61292923 | B3 endpoint profile | m5290 | 3 | 00:02:07 | 0.106 | 1.18 |
 | 61293158 | B4 | m5290 | 3 | 00:18:13 | 0.911 | 2.09 |
+| 61293157 | B2 | m5290 | 6 | 00:29:00 | 2.900 | 4.99 |
 
 ## B0: setup (2026-11-14)
 
@@ -256,3 +257,115 @@ allocation, each a new session: `b4base`, `b4noburst` (`--every 1000000`),
   per poll in Python; the C loop below it is not visible). The remaining
   ~70% is not attributed: no per-thread CPU at idle was captured (the
   `top -H` lines were cut by `tail`). Described, not fixed.
+
+## B2: WindField twins per experiment (job 61293157, regular, 6 nodes, 63d8692)
+
+R8-C's setup, both fixes (ve8b 63d8692, compression off): broker and
+client on node 0, inference endpoint on node 1, four learning endpoints;
+all twins in one DT session; 1 Hz stream per twin; corrected harness
+`r8b/bench_windfield_stream.py` (`r8b/run_windfield_b.sh`, row `b2`):
+- the 1 Hz probe as the answer-time measurement (marked, and since #64
+  read-only, so it feeds no investigator);
+- the **stream path** (reading published -> the agent's answer at the
+  twin's Sink investigator, `r8b/r8b_components.py`) on every answer;
+- 120 s per point after a 40 s warm-up (budget, see "Decisions");
+- p99 interpolated, max separate, every record in the JSON.
+2 repeats, a fresh broker and endpoints per repeat. Table
+`results/r8b/b2/b2-table.md` (`r8b/b2_table.py`).
+
+| twins | rep | probe p50 / p99 / max ms | stream p50 / p99 / max ms | worst twin p99 (stream) | stream answers | burst period s | burst makespan s | update delay p50 / max s | broker CPU % | endpoint CPU % | break |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 16 | 1 | 32 / 140 / 216 | 34 / 141 / 235 | 193 | 1,917 of 1,920 | 16.0 | 0.29 | 0.85 / 14.9 | 30 | 216 | – |
+| 16 | 2 | 34 / 145 / 262 | 34 / 144 / 274 | 164 | 1,919 of 1,920 | 16.0 | 0.30 | 0.84 / 15.8 | 34 | 212 | – |
+| 32 | 1 | 35 / 214 / 376 | 37 / 234 / 442 | 319 | 3,840 of 3,840 | 16.0 | 0.31 | 0.83 / 15.8 | 54 | 226 | – |
+| 32 | 2 | 39 / 272 / 423 | 39 / 275 / 427 | 326 | 3,839 of 3,840 | 16.0 | 0.32 | 0.80 / 14.9 | 58 | 223 | – |
+| 64 | 1 | 50 / 769 / 1,066 | 52 / 750 / 1,100 | 920 | 7,676 of 7,680 | 16.0 | 0.48 | 1.02 / 15.5 | 86 | 221 | – |
+| 64 | 2 | 58 / 951 / 1,195 | 56 / 947 / 1,171 | 1,002 | 7,673 of 7,680 | 16.0 | 0.54 | 1.03 / 15.9 | 92 | 219 | – |
+| 96 | 1 | 229 / 1,405 / 1,595 | 202 / 1,361 / 1,867 | 1,545 | 11,469 of 11,520 | 16.0 | 0.76 | 1.09 / 16.2 | 85 | 196 | p99 1,361 ms |
+| 96 | 2 | 201 / 1,450 / 1,679 | 202 / 1,561 / 1,812 | 1,734 | 11,518 of 11,520 | 16.0 | 0.69 | 1.22 / 16.5 | 96 | 195 | p99 1,561 ms |
+| 128 | 1 | 719 / 1,798 / 2,106 | 1,269 / 2,746 / 3,324 | 3,150 | 15,358 of 15,360 | 16.0 | 0.72 | 1.57 / 17.1 | 102 | 175 | p99 2,746 ms |
+| 128 | 2 | – | – | – | – | – | – | – | – | – | creation: 1 twin "failed to initialize: twin initialization exceeded 300.0s" |
+
+Round 8 R8-C (probe feeding the investigators, 8 s bursts, `xs[int(.99n)]`
+p99): 16 twins p50 65 / p99 263 ms, 64 twins p50 148 / p99 1,249 (1,034
+and 1,464), 128 twins p50 1,288 / p99 2,768; broker 28 / 83 / 113%,
+endpoint 193 / 205 / 161%.
+
+- **The break moves from 64 to 96 twins in one experiment.** At 64 twins
+  p99 is 750-951 ms (probe and stream agree within 20 ms), the worst
+  twin's 920-1,002 ms; at 96 both repeats break (p99 1,361 and 1,561 ms).
+- **The investigators burst every 16.0 s** at every N (#64 works);
+  bursts take 0.29 s at 16 twins and 0.7-0.8 s from 96 on.
+- **The stream path and the probe agree** (p50 within 2-4 ms, p99 within
+  about 20 ms up to 96 twins), so in this graph the probe's answer time
+  stands for the field's. At 128 the stream path is slower (p50 1,269
+  against 719 ms): queued streamed readings wait behind each other.
+- **Streamed answers lost:** 0-7 per point up to 64 twins (out of up to
+  7,680), 51 at 96 (repeat 1), 2 at 128: readings published near the end of
+  the window whose answers had not reached the Sink 3 s after the window.
+- **Update delay:** p50 0.8-1.6 s; max 15-17 s, because a model is "seen"
+  only when the selector picks its surrogate (80% PINN, 20% FNO, PCR never),
+  so an FNO version can wait several readings for its first answer.
+- **Broker CPU** rises to 86-92% at 64 twins and 102% at 128: in this
+  workload (stream frames, events and tasks) the broker is close to a full
+  core at the break, unlike B1's no-op closed loop. The inference endpoint
+  stays at 175-226%.
+- **Creation failure at 128 (repeat 2):** one twin of 128 failed with
+  "twin initialization exceeded 300.0s", though the whole build took
+  34.9 s by the client's clock. Described, not investigated (open question).
+- With half of round 8's investigator load (16 s bursts) and both fixes,
+  the experiment carries 1.5x the twins at the same break criterion.
+
+## Close-out (2026-11-14)
+
+- B0-B4 done. B2 at 120 s per point (not 5 min) and B4 on 3 nodes, both for
+  the budget (see "Decisions"). Total **4.99 of 6 node-h** on m5290 (ledger
+  above). No allocation left (`squeue` empty), no Dragon runtime: every run
+  ends with `dragon-cleanup` on its nodes. Every ORBIT job's isolation check
+  (`results/r8b/*/orbit-isolation-check-*.txt`) is empty.
+- Provenance in every new JSON: commits (`packages`), backend, venv,
+  `ws_compression`, `online_run_log_level`.
+- Results measured on `a3e64c7` (before #64): B1, B3 and both smokes;
+  B2 and B4 on `63d8692`.
+
+### For the paper
+
+- The two cheap fixes cut the broker's CPU at the ceiling (about 72% ->
+  57% of a core) but leave the no-op closed-loop ceiling at 800-850 req/s.
+  Neither the broker loop (45% busy) nor the endpoint work loop (52%) is
+  saturated there, so round 8's "the broker's event loop is the limit" is
+  corrected: the limit is not one saturated CPU.
+- In-cluster compression was already off in round 8 (orbit's auto mode).
+- WindField: with the query fix (#64) and both fixes, one experiment
+  carries 64 twins under 1 s p99 (750-951 ms) and breaks at 96 (round 8:
+  broke at 64). At the break the broker is near a full core (86-102%).
+- The one-twin tail of round 8 (301 ms) is pool warm-up: about +165 ms on
+  each of the 128 workers' first task in a new session.
+
+### Open questions for Andre
+
+1. **The ~830 req/s no-op ceiling**, with no thread saturated in broker or
+   endpoint: per-hop latency at 256 in flight (four ORBIT hops, two Dragon
+   queue hops per request), or a serial wait somewhere? The same pattern
+   showed in SwarmSlicer phase 7 today (ORBIT DDict at about 32k keys/s
+   from 16 nodes on with idle work loops). A per-hop timestamp trace would
+   tell.
+2. **dragon_native first-task cost:** each worker of a new pool costs
+   about 165 ms on its first task (128 per session). Pre-warm the pool at
+   session start (a no-op per worker) in rhapsody? With one pool per DT
+   session, every new experiment pays it.
+3. **The endpoint's steady ~135% CPU per session pool**, most of it
+   Dragon's `ProcessGroup._exq_monitor` polling the exception queue
+   (0.1 s patience, C-level timed waits). With R8-0's ~16 sessions per
+   endpoint that is many cores. Report to HPE, or create the pool's group
+   with `ignore_error_on_exit` as rhapsody does for executables?
+4. **Twin initialization timeout at 128 twins** (B2 repeat 2): "exceeded
+   300.0s" while the whole build took 34.9 s by the client's clock. Which
+   clock does the 300 s count from?
+5. **The broker near a full core at WindField's break** (86-102%) but not
+   in the no-op loop: stream frames and events per twin are the extra
+   broker work. More than one broker process (round 8's lever) is the next
+   step for this workload.
+6. The SwarmSlicer phase 6 attempt-2 broker profile with 10.6%
+   permessage-deflate is still unexplained (all in-cluster connections
+   chose `deflate off` here and in round 8).
