@@ -414,3 +414,88 @@ s, PINN 0.15 s, 3 × 38 × 85). Medians over all answers of the 3 runs, ms:
 - 1,952 answers, no failed probe, isolation checks empty (all 6 runs).
 - `e6-use-cases/README.md` updated: P8b ran (B3, round 2b) and R8-E
   decomposed it.
+
+## R8-B: fan-out (job 61247211, regular, 5 nodes, 29 min; concurrent spread rerun pending)
+
+`r8/bench_fanout.py`, `r8/run_fanout.sh`: one twin, one investigator,
+bursts of K function tasks in one gather, 3 repeats. Probes every 0.5 s
+during a burst: `twin_list()` and an executable task. Columns per cell:
+makespan s (ideal), probe p99 s.
+
+**dragon_native, 64 workers per site** (`taskset -c 0-63,128-191`):
+
+| K | 0.1 s, 1 site | 0.1 s, 4 sites | 10 s, 1 site | 10 s, 4 sites |
+|---|---|---|---|---|
+| 16 | 0.11 (0.10) | 0.11 (0.10) | 10.01 (10), 0.04 | 10.01 (10), 0.04 |
+| 64 | 0.13-0.15 (0.10) | 0.12 (0.10) | 10.03 (10), 0.05 | 10.02 (10), 0.04 |
+| 256 | 0.47-0.56 (0.40), 0.05 | 0.16-0.19 (0.10) | 40.08-40.09 (40), 0.04-0.12 | 10.05-10.06 (10), 0.04 |
+| 1024 | 1.92-1.99 (1.60), 0.37-0.49 | 0.55-0.67 (0.40), 0.04-0.16 | 160.2-160.4 (160), 0.05 | 40.15-40.19 (40), 0.05-0.21 |
+
+- **No break anywhere on dragon_native**: no failed task, probe p99 at most
+  0.49 s, and the first task starts within 0.01-0.27 s of the submit even at
+  K = 1024. 10 s CPU-bound tasks (the GIL case) run at the ideal makespan
+  within 0.3%.
+- Empty tasks, K = 1024 through ORBIT: **1,398-1,510 tasks/s on one site,
+  2,308-2,506 on four**.
+
+**concurrent, thread pool (32 threads), one site: breaks at K = 16.**
+- 0.1 s tasks: K = 16 makespan 1.61 s (ideal 0.10), probe p99 1.43 s; K = 64
+  6.36 s, probe p99 6.18 s. The thread pool serializes on the endpoint's GIL
+  and starves its event loop.
+- 10 s tasks, K = 16: **all 16 tasks failed**, `HTTP 504 — [r8b_s0/rhapsody]
+  submit 16 task(s)`, probe p99 43.6 s. K = 64 (one step past): all 64
+  failed, `HTTP 502 ... endpoint lost`: the broker declared the starved
+  endpoint lost.
+- The spread layout could not start after that (`twin ... failed to
+  initialize: engine endpoint lost: r8b_s0`): its failure is inherited
+  from the previous row, so it is rerun on fresh endpoints (job 61258304).
+
+**concurrent with a process pool** (`e6-use-cases/p8b_endpoint.py`,
+`ProcessPoolExecutor(64)`, one site), as a harness wrapper. The engine
+config cannot select a process pool, so the page's condition ("if the
+engine config can select it without a src change") is not met in the
+strict sense; the wrapper changes nothing installed. Logged as a decision.
+- 0.1 s: K = 16 0.41-0.47 s (ideal 0.10), K = 1024 2.09-2.23 s (1.60), probe
+  p99 at most 0.65 s.
+- 10 s: K = 1024 160.5-160.6 s (160).
+- No break, but each burst pays about 0.3 s extra at small K (process pool
+  hand-off), and the first task at K = 1024 starts 0.4-0.5 s late.
+
+**The batched-submit row** (`batch_window` > 0, `batch_limit` = 64) is
+skipped. The DT service builds every engine with `batch_window=0`
+(`session.py:839`) and takes no engine-config key for it, so the row
+would need a `src/` change.
+
+## R8-D: sites (job 61249379, regular, 17 nodes; NODE_FAIL in the teardown)
+
+`e3-portability/bench_sites.py` (`E3_BACKENDS=dragon_native`, spread, work
+model cpu, 120 ms per request), each site an endpoint in a Dragon runtime
+held to 8 workers (`taskset -c 0-7,128-135`). Client concurrency 16 × N,
+120 × N requests per burst, 5 bursts (median of 2-5), 3 repeats. All
+measurements finished; the node failure came 12 min after the last one,
+in the cleanup. The isolation check, run by hand afterwards, is empty.
+
+| sites | DT req/s (3 repeats) | speedup | seq p50 ms | broker CPU % | site 0 endpoint CPU % | hand-wired req/s |
+|---|---|---|---|---|---|---|
+| 1 | 65.2 / 65.5 / 65.4 | 1.0 | 128 | 18-20 | 162-172 | 65.6 / 65.7 / 65.7 |
+| 2 | 130.0 / 130.5 / 130.2 | 2.0 | 128 | 35-39 | 169-174 | 131.1 (×3) |
+| 4 | 257.7 / 257.7 / 257.4 | 3.9 | 128 | 69-73 | 177-183 | 260.8 / 260.8 / 260.9 |
+| 8 | 495.8 / 497.3 / 496.0 | 7.6 | 128 | 111-116 | 186-193 | – |
+| 16 | 663.7 / 688.4 / 680.8 | **10.4** | 128 | **118** | 163 | – |
+
+- **Scaling is linear to 8 sites (7.6×) and stops between 8 and 16
+  (10.4×)**, where the broker is CPU-bound at 118%, its ceiling in rounds 6,
+  7 and R8-2. 16 sites at 120 ms would serve 1,056 req/s; the broker carries
+  about 680.
+- Placement was correct in every run. 0 errors. The DT row is within 1% of
+  the hand-wired baseline at N = 1-4.
+- The endpoint process uses 1.6-1.9 cores at every load, even at 65 req/s.
+  The dragon_native backend's threads seem to poll; this is not a
+  saturation (site 0 at N = 16 serves 42 req/s).
+- **N = 4 with r3_site on radical.3** (three Perlmutter sites registered on
+  radical.3:8010 as `pm_r8d_s0..2`, 8 workers each, plus r3_site, 32
+  workers; 64 client threads from Perlmutter): 106.6 / 105.5 / 105.1 req/s,
+  seq p50 476-482 ms. The WAN round trip bounds it: 64 in flight / 0.48 s is
+  about 133 req/s. Placement was right; the harness reports it as "WRONG"
+  only because r3_site answers with its host name `three` (it has no
+  DT_TEST_ENDPOINT_TAG).
