@@ -677,8 +677,9 @@ def fig_sites(fig):
 
 def fig_twins(fig):
     """N twins in one experiment on one dragon_native engine, closed loop
-    (round 8 R8-2): throughput and the worst twin's p99."""
-    ax1, ax2 = fig.subplots(1, 2)
+    (round 8 R8-2): throughput and the worst twin's p99; and WindField
+    twins at 1 Hz (round 8b B2, stack 63d8692): answer time against twins."""
+    ax1, ax2, ax3 = fig.subplots(1, 3)
     series = (
         ("no-op tasks", "r8/r8-2/engine-noop-one-r*-stack-r8-*.json", DT_A, "-"),
         ("20 ms tasks", "r8/r8-2/engine-w20-one-r*-stack-r8-*.json", DT_B, "--"),
@@ -700,18 +701,45 @@ def fig_twins(fig):
                         markersize=3, linewidth=1.2, elinewidth=0.6, capsize=1.5)
     for ax in (ax1, ax2):
         ax.set_xscale("log", base=4)
-        ax.set_xticks(xs, [str(n) for n in xs])
+        ax.set_xticks(xs, [str(n) if n in (1, 16, 256) else "" for n in xs])
         ax.minorticks_off()
         ax.set_xlabel("twins in one experiment")
     ax1.set_ylabel("throughput [req/s]")
     ax1.set_ylim(bottom=0)
     ax1.set_title("(a) throughput")
-    ax1.legend(frameon=False)
+    ax1.legend(frameon=False, loc="lower right", fontsize=6)
     ax2.axhline(1000, color=BASE_LIGHT, linestyle=":", linewidth=1.0)
     ax2.text(1, 1050, "break: 1 s", fontsize=6, color=BASE)
     logscale(ax2)
     ax2.set_ylabel("worst twin p99 [ms]")
     ax2.set_title("(b) tail latency")
+
+    # (c) WindField twins at 1 Hz, all in one experiment: the 1 Hz probe's
+    # p50 and p99 (the stream path agrees within about 20 ms up to 96)
+    p50, p99 = {}, {}
+    for run in SRC.load("r8b/b2/windfield-b2-r*-stack-r8b-*.json"):
+        for p in run["points"]:
+            if p.get("n_create_errors") or not p.get("probe"):
+                continue
+            p50.setdefault(p["twins"], []).append(p["probe"]["p50_ms"])
+            p99.setdefault(p["twins"], []).append(p["probe"]["p99_ms"])
+    ws = sorted(p99)
+    COLORS.update({"p50": DT_A, "p99": DT_B})
+    for label, pts, style in (("p50", p50, "-"), ("p99", p99, "--")):
+        st = [spread(pts[n]) for n in ws]
+        ax3.errorbar(ws, [v[0] for v in st],
+                     yerr=[[v[1] for v in st], [v[2] for v in st]],
+                     label=label, color=COLORS[label], linestyle=style, marker="o",
+                     markersize=3, linewidth=1.2, elinewidth=0.6, capsize=1.5)
+    ax3.axhline(1000, color=BASE_LIGHT, linestyle=":", linewidth=1.0)
+    ax3.set_xscale("log", base=2)
+    ax3.set_xticks(ws, [str(n) if n != 96 else "" for n in ws])
+    ax3.minorticks_off()
+    logscale(ax3)
+    ax3.set_xlabel("WindField twins at 1 Hz")
+    ax3.set_ylabel("answer time [ms]")
+    ax3.set_title("(c) WindField")
+    ax3.legend(frameon=False, fontsize=6)
 
 
 # figures whose results are not in yet: rendered only with --only
@@ -727,7 +755,7 @@ FIGURES = {
     "e5-endpoint-loss": (fig_e5, 2.5),
     "e6-windfield": (fig_e6, 2.2),
     "sites": (fig_sites, 2.0),
-    "twins": (fig_twins, 2.0),
+    "twins": (fig_twins, 2.2),
 }
 
 
