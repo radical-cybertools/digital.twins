@@ -416,7 +416,7 @@ s, PINN 0.15 s, 3 × 38 × 85). Medians over all answers of the 3 runs, ms:
 - `e6-use-cases/README.md` updated: P8b ran (B3, round 2b) and R8-E
   decomposed it.
 
-## R8-B: fan-out (job 61247211, regular, 5 nodes, 29 min; concurrent spread rerun pending)
+## R8-B: fan-out (done; jobs 61247211 and 61258304)
 
 `r8/bench_fanout.py`, `r8/run_fanout.sh`: one twin, one investigator,
 bursts of K function tasks in one gather, 3 repeats. Probes every 0.5 s
@@ -450,6 +450,18 @@ makespan s (ideal), probe p99 s.
 - The spread layout could not start after that (`twin ... failed to
   initialize: engine endpoint lost: r8b_s0`): its failure is inherited
   from the previous row, so it is rerun on fresh endpoints (job 61258304).
+- **Rerun, concurrent thread pool, 4 sites** (job 61258304, regular, 5
+  nodes, 9 min; `results/r8/r8-b-concspread/`):
+  - 0.1 s tasks: K = 16 0.41 s (ideal 0.10), probe p99 0.22 s; **break at
+    K = 64**: 1.61 s, probe p99 1.43 s. K = 256 (one past): 6.34 s, probe
+    p99 6.14 s.
+  - 10 s tasks: **break at K = 16**: 39.9 s (ideal 10; 4 tasks serialize on
+    each site's GIL), probe p99 6.44 s. K = 64 (one past): the request
+    timed out (`HTTP 504 ... get_inference timed out`), and the probes got
+    409s.
+  - Four sites, four GILs: the break moves from K = 16 to K = 64 (0.1 s)
+    and stays at K = 16 for 10 s tasks. Each site still serializes its
+    share. dragon_native never breaks (above).
 
 **concurrent with a process pool** (`e6-use-cases/p8b_endpoint.py`,
 `ProcessPoolExecutor(64)`, one site), as a harness wrapper. The engine
