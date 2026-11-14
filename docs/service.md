@@ -70,7 +70,7 @@ dt = rt.get_plugin('broker', 'dt', sid=old_sid)             # reattach
 | `add_barrier(twin, barrier)` | Register a `Barrier` built locally.  Only a plain `Barrier` can be sent. |
 | `add_data_split_task(twin, pkg, input_dtype, output_dtypes)` | Add a split task: one input event, one output per dtype. |
 | `start(twin)` / `stop(twin)` | Run the graph / stop it (terminal). |
-| `get_inference(twin, in_data, output_dtype, timeout=600)` | Run the one non-persistent component that maps this input dtype to `output_dtype` and return its `TypedData`.  This is a single step: it does not traverse the graph or forward the result.  The twin must be running. |
+| `get_inference(twin, in_data, output_dtype, timeout=600)` | Run the one non-persistent component that maps this input dtype to `output_dtype` and return its `TypedData`.  This is a single step: it does not traverse the graph or forward the result, and it is read-only: the input is not an observation, so no `ON_INPUT` callback fires and no investigator trains on it.  Feed data through an input channel instead.  The twin must be running. |
 | `describe(twin)` | The graph as a serializable summary. |
 | `twin_list()` / `twin(twin_id)` | State of all twins in the session / of one twin. |
 | `twin_close(twin)` | Stop and remove a twin. |

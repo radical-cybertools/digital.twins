@@ -291,18 +291,8 @@ def fig_e1_exsitu(fig):
 
 
 def fig_e2(fig):
-    """E2: twins on one engine, joined streams, agents per twin, sessions
-    per broker."""
-    (ax1, ax2), (ax3, ax4) = fig.subplots(2, 2)
-    twins = SRC.load("r3/t4/twins-pm-pool64-r*-stack-r3-*.json")
-    ns = [p["twins"] for p in twins[0]["points"]]
-    agg = [[run["points"][i]["req_per_s"] for run in twins] for i in range(len(ns))]
-    lines(ax1, [str(n) for n in ns], {"dt": agg})
-    ax1.set_xlabel("twins on one engine")
-    ax1.set_ylabel("throughput [req/s]")
-    ax1.set_ylim(bottom=0)
-    ax1.set_title("(a) twins")
-
+    """Inputs per twin: joined streams, and agents per twin (round 3)."""
+    ax2, ax3 = fig.subplots(1, 2)
     join = SRC.load("r3/t4/join-pm-r*-stack-r3-*.json")
     ks = sorted(join[0]["max_sustainable"], key=int)
     ins = [[run["max_sustainable"][k]["inputs_per_s"] for run in join] for k in ks]
@@ -310,7 +300,7 @@ def fig_e2(fig):
     ax2.set_xlabel("joined input streams")
     ax2.set_ylabel("max sustainable [inputs/s]")
     ax2.set_ylim(bottom=0)
-    ax2.set_title("(b) joined streams")
+    ax2.set_title("(a) joined streams")
 
     runs = SRC.load("r3/t4/agents-pm-r*-stack-r3-*.json")
     ms = [1, 2, 4, 8, 16]
@@ -327,56 +317,9 @@ def fig_e2(fig):
         },
     )
     ax3.set_xlabel("agents in one twin")
-    ax3.set_ylabel("max sustainable [inputs/s]")
     ax3.set_ylim(bottom=0)
-    ax3.set_title("(c) agents")
+    ax3.set_title("(b) agents")
     ax3.legend(frameon=False)
-
-    # round 6: one broker (radical.orbit #170), N service sessions with one
-    # twin each (telemetry on: the default; off: Y3, 20 s keepalive, which
-    # Y2 shows makes no difference), and N twins in one session (Y1c)
-    ns = [1, 4, 16, 64, 128, 256, 384]
-    curves = [
-        ("N sessions", "r6/t3s/broker-capacity-r*-stack-r6-*.json", DT_A, "-"),
-        (
-            "N sessions, endpoint telemetry off",
-            "r6/t20s-notel/broker-capacity-r*-stack-r6-*.json",
-            DT_C,
-            "--",
-        ),
-        (
-            "N twins in one session",
-            "r6/onesess/broker-capacity-r*-stack-r6-*.json",
-            DT_B,
-            "-",
-        ),
-    ]
-    for label, pattern, color, style in curves:
-        points = {}
-        for run in SRC.load(pattern):
-            for pt in run["points"]:
-                points.setdefault(pt["sessions"], []).append(pt["req_per_s"])
-        xs = [k for k, n in enumerate(ns) if n in points]
-        st = [spread(points[ns[k]]) for k in xs]
-        ax4.errorbar(
-            xs,
-            [v[0] for v in st],
-            yerr=[[v[1] for v in st], [v[2] for v in st]],
-            label=label,
-            color=color,
-            linestyle=style,
-            marker="o",
-            markersize=3,
-            linewidth=1.2,
-            elinewidth=0.6,
-            capsize=1.5,
-        )
-    ax4.set_xticks(range(len(ns)), [str(n) for n in ns])
-    logscale(ax4)
-    ax4.set_xlabel("twins on one broker")
-    ax4.set_ylabel("throughput [req/s]")
-    ax4.set_title("(d) one broker")
-    ax4.legend(frameon=False, fontsize=6, loc="lower left")
 
 
 def fig_e4_swap(fig):
@@ -554,27 +497,59 @@ def fig_e6(fig):
     ax1.set_title("(a) surrogate, in-process")
     ax1.legend(frameon=False)
 
-    twin = SRC.load("b3/p8b-twin-pm-stack2b-*.json")[0]
-    arch = [("na", "no model\nyet"), ("pinn", "PINN"), ("fno", "FNO")]
-    probes = {
-        a: [
-            p["latency_s"] * 1e3
-            for p in twin["probes"]
-            if p.get("arch") == a and not p.get("error")
+    # (b) round 8 R8-E: one answer through the twin on dragon_native, split
+    # into its parts (medians per part over all probes of 3 runs per variant)
+    parts = [
+        ("framework in", None, DT_A),
+        ("tar extract", "extract_s", BASE_LIGHT),
+        ("model reload", "reload_s", BASE),
+        ("field", "field_s", DT_C),
+        ("other in task", None, "#cfcfcf"),
+        ("framework out", None, DT_B),
+    ]
+    rows = []
+    for var, vlabel in (("warm0", "reload"), ("warm1", "warm")):
+        probes = [
+            p
+            for run in SRC.load(f"r8/r8-e/{var}/twin-r*-stack-r8-*.json")
+            for p in run["probes"]
+            if not p.get("error") and p.get("task")
         ]
-        for a, _ in arch
-    }
-    COLORS["through twin"] = DT_A
-    bars(
-        ax2,
-        [lab for _, lab in arch],
-        {"through twin": [probes[a] for a, _ in arch]},
-        log=True,
-        err=p10_p90,
-        labels=True,
-    )
-    ax2.set_ylabel("inference latency [ms]")
-    ax2.set_title("(b) through the twin, GPU (p10-p90)")
+        for arch in ("pinn", "fno"):
+            ps = [p for p in probes if p.get("arch") == arch]
+
+            def med(xs):
+                xs = [x for x in xs if x is not None]
+                return statistics.median(xs) * 1e3 if xs else 0.0
+
+            t = [p["task"] for p in ps]
+            inside = med([x["task_end"] - x["task_start"] for x in t])
+            vals = {
+                "framework in": med([x["task_start"] - p["t_send"] for p, x in zip(ps, t)]),
+                "framework out": med([p["t_recv"] - x["task_end"] for p, x in zip(ps, t)]),
+            }
+            for label, key, _ in parts:
+                if key:
+                    vals[label] = med([x.get(key) for x in t])
+            vals["other in task"] = max(
+                0.0, inside - sum(vals[k] for k in ("tar extract", "model reload", "field"))
+            )
+            rows.append((f"{arch.upper()} {vlabel}", vals))
+    ys = list(range(len(rows)))[::-1]
+    left = [0.0] * len(rows)
+    for label, _, color in parts:
+        widths = [vals[label] for _, vals in rows]
+        ax2.barh(ys, widths, left=left, color=color, height=0.6, label=label)
+        left = [lft + w for lft, w in zip(left, widths)]
+    for y, total in zip(ys, left):
+        ax2.text(total + 10, y, f"{total:.0f}", va="center", fontsize=6)
+    ax2.set_yticks(ys, [name for name, _ in rows])
+    ax2.set_xlabel("one answer [ms]")
+    ax2.set_xlim(0, max(left) * 1.15)
+    ax2.grid(axis="x", color="#dddddd", linewidth=0.5)
+    ax2.grid(axis="y", visible=False)
+    ax2.set_title("(b) through the twin, A100, dragon_native")
+    ax2.legend(frameon=False, fontsize=5.5, loc="lower right")
 
 
 def fig_e3_sites(fig):
@@ -656,6 +631,89 @@ def fig_e3_sites(fig):
     ax2.set_title("(b) across facilities")
 
 
+def _sites_points(pattern):
+    """{n: [req/s per repeat]} from bench_sites results."""
+    out = {}
+    for run in SRC.load(pattern):
+        for p in run["points"]:
+            if "error" not in p and not p.get("n_errors"):
+                out.setdefault(p["n"], []).append(p["req_per_s_bursts_2_5"])
+    return out
+
+
+def fig_sites(fig):
+    """One twin on N sites, 120 ms CPU per request, 8 workers per site
+    (round 8 R8-D, dragon_native), DT service vs hand-wired."""
+    dt = _sites_points("r8/r8-d/sites-n*-r*-stack-r8-*.json")
+    xgf = _sites_points("r8/r8-d/xgf-n*-r*-stack-r8-*.json")
+    ns = sorted(dt)
+    one = statistics.median(dt[1])
+    ax1, ax2 = fig.subplots(1, 2)
+    for ax, scale, ylabel in (
+        (ax1, 1.0, "throughput [req/s]"),
+        (ax2, 1.0 / one, "speedup against one site"),
+    ):
+        ax.plot(ns, [n * one * scale for n in ns], color=BASE_LIGHT,
+                linestyle=":", linewidth=1.0, label="ideal")
+        for label, pts, color, style in (
+            ("DT service", dt, DT_A, "-"),
+            ("hand-wired", xgf, BASE, "--"),
+        ):
+            xs = sorted(pts)
+            st = [spread([v * scale for v in pts[n]]) for n in xs]
+            ax.errorbar(xs, [v[0] for v in st],
+                        yerr=[[v[1] for v in st], [v[2] for v in st]],
+                        label=label, color=color, linestyle=style, marker="o",
+                        markersize=3, linewidth=1.2, elinewidth=0.6, capsize=1.5)
+        ax.set_xscale("log", base=2)
+        ax.set_xticks(ns, [str(n) for n in ns])
+        ax.set_xlabel("sites")
+        ax.set_ylabel(ylabel)
+        ax.set_ylim(bottom=0)
+    ax1.set_title("(a) throughput")
+    ax2.set_title("(b) speedup")
+    ax1.legend(frameon=False)
+
+
+def fig_twins(fig):
+    """N twins in one experiment on one dragon_native engine, closed loop
+    (round 8 R8-2): throughput and the worst twin's p99."""
+    ax1, ax2 = fig.subplots(1, 2)
+    series = (
+        ("no-op tasks", "r8/r8-2/engine-noop-one-r*-stack-r8-*.json", DT_A, "-"),
+        ("20 ms tasks", "r8/r8-2/engine-w20-one-r*-stack-r8-*.json", DT_B, "--"),
+    )
+    for label, pattern, color, style in series:
+        rps, p99 = {}, {}
+        for run in SRC.load(pattern):
+            for p in run["points"]:
+                if p.get("failed") or p.get("n_create_errors"):
+                    continue
+                rps.setdefault(p["twins"], []).append(p["req_per_s"])
+                p99.setdefault(p["twins"], []).append(p["p99_ms_max"])
+        xs = sorted(rps)
+        for ax, pts in ((ax1, rps), (ax2, p99)):
+            st = [spread(pts[n]) for n in xs]
+            ax.errorbar(xs, [v[0] for v in st],
+                        yerr=[[v[1] for v in st], [v[2] for v in st]],
+                        label=label, color=color, linestyle=style, marker="o",
+                        markersize=3, linewidth=1.2, elinewidth=0.6, capsize=1.5)
+    for ax in (ax1, ax2):
+        ax.set_xscale("log", base=4)
+        ax.set_xticks(xs, [str(n) for n in xs])
+        ax.minorticks_off()
+        ax.set_xlabel("twins in one experiment")
+    ax1.set_ylabel("throughput [req/s]")
+    ax1.set_ylim(bottom=0)
+    ax1.set_title("(a) throughput")
+    ax1.legend(frameon=False)
+    ax2.axhline(1000, color=BASE_LIGHT, linestyle=":", linewidth=1.0)
+    ax2.text(1, 1050, "break: 1 s", fontsize=6, color=BASE)
+    logscale(ax2)
+    ax2.set_ylabel("worst twin p99 [ms]")
+    ax2.set_title("(b) tail latency")
+
+
 # figures whose results are not in yet: rendered only with --only
 PENDING = {}
 
@@ -663,11 +721,13 @@ FIGURES = {
     "e1-paths": (fig_e1_paths, 2.3),
     "e1-pool": (fig_e1_pool, 2.0),
     "e1-exsitu": (fig_e1_exsitu, 2.0),
-    "e2-scaling": (fig_e2, 3.8),
+    "e2-scaling": (fig_e2, 2.0),
     "e3-sites": (fig_e3_sites, 2.5),
     "e4-swap": (fig_e4_swap, 2.2),
     "e5-endpoint-loss": (fig_e5, 2.5),
     "e6-windfield": (fig_e6, 2.2),
+    "sites": (fig_sites, 2.0),
+    "twins": (fig_twins, 2.0),
 }
 
 
