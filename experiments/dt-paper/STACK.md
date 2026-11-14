@@ -143,3 +143,11 @@ onto its base.  From round 8 on, every CPU workload on an endpoint runs on
 backend's thread pool share the endpoint process's GIL with its event loop
 (round 5 X4: a 63-task submit took 35 s and timed out).  `concurrent` stays as
 a comparison row.  The endpoint must run inside a Dragon runtime.
+
+## Update 2026-11-14: round 8b
+
+digital.twins #63: the per-request `Online run: <component>` log line is at
+debug level (about 13% of the broker's busy time at its ceiling in round 8's
+profile).  Round 8b also runs with `RADICAL_ORBIT_WS_COMPRESSION=off` on the
+broker and every runtime inside the cluster (about 10% in the SwarmSlicer
+phase 6 broker profile).
