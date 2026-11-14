@@ -15,7 +15,7 @@
 # 1024 until the break (job 61258719 ran session groups of 16 before the
 # change: its N <= 16 points were one session anyway).  A fresh broker and endpoints per
 # repeat; broker and inference endpoint sampled from /proc.
-# Knobs: REPEATS ("1 2"), ROWS (required; ROWS_<repeat> overrides it per repeat), DUMP (or DUMP_<repeat>)
+# Knobs: REPEATS ("1 2"), ROWS (required; ROWS_<repeat> overrides it per repeat), DUMP (or DUMP_<repeat>; DUMP_AT s into the first row)
 #   (B4: py-spy dump of the idle
 # inference endpoint), MODEL_MB (10), PORT (8241), PYSPY, NLEARN (4 learning endpoints).
 set -uo pipefail
@@ -77,13 +77,15 @@ for r in ${REPEATS:-1 2}; do
   #   (round 8's harness; --per-session 0 = one session)
   rv=ROWS_$r; dv=DUMP_$r        # per-repeat overrides: ROWS_<r>, DUMP_<r>
   ROWS_R=${!rv:-${ROWS:?}}; DUMP_R=${!dv:-${DUMP:-}}
-  if [ -n "$DUMP_R" ]; then   # B4: what the idle inference endpoint does
-    EPID=$(srun --overlap -N1 -n1 -w ${SN[0]} $PWD/$X/r8b/pid_of.sh "radical-orbit-endpoint.py -n ${names[0]}")
-    echo "r$r inference endpoint pid $EPID on ${SN[0]}"
-    srun --overlap -N1 -n1 -w ${SN[0]} bash -c "top -b -n1 -H -p $EPID | head -25; $PYSPY dump --pid $EPID" \
-      > $R/endpoint-idle-dump-$tag-$D.txt 2>&1
-    srun --overlap -N1 -n1 -w ${SN[0]} timeout 60 $PYSPY record --pid $EPID --rate 20 --idle --nonblocking \
-      --duration 20 --format raw --threads -o $R/endpoint-idle-$tag-$D.txt > /dev/null 2>&1
+  if [ -n "$DUMP_R" ]; then   # B4: what the inference endpoint does with a session but little load
+    ( sleep ${DUMP_AT:-60}      # into the first row: twins created, warm-up done
+      EPID=$(srun --overlap -N1 -n1 -w ${SN[0]} $PWD/$X/r8b/pid_of.sh "radical-orbit-endpoint.py -n ${names[0]}" 2>/dev/null)
+      echo "inference endpoint pid $EPID on ${SN[0]} at $(date -u +%T)"
+      srun --overlap -N1 -n1 -w ${SN[0]} bash -c "top -b -n2 -d 2 -H -p $EPID | tail -40; $PYSPY dump --pid $EPID; \
+        echo '=== native'; $PYSPY dump --native --pid $EPID"
+      srun --overlap -N1 -n1 -w ${SN[0]} timeout 60 $PYSPY record --pid $EPID --rate 20 --idle --nonblocking \
+        --duration 20 --threads --format raw -o $PWD/$R/endpoint-session-$tag-$D.folded > /dev/null 2>&1
+    ) > $R/endpoint-session-dump-$tag-$D.txt 2>&1 &
   fi
   IFS='|' read -ra ROWLIST <<< "$ROWS_R"
   for row in "${ROWLIST[@]}"; do

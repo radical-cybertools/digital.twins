@@ -14,6 +14,8 @@ session, twins, clients, phases), setup and harness. Branch
 | 61292050 | B1 | m5290 | 3 | 00:11:32 | 0.577 | 0.58 |
 | 61292518 | smoke (B2/B4 harness) | m5290 | 3 | 00:02:20 | 0.117 | 0.69 |
 | 61292521 | B3 | m5290 | 3 | 00:03:57 | 0.198 | 0.89 |
+| 61292738 | diagnostic (smoke latency) | m5290 | 3 | 00:03:45 | 0.188 | 1.08 |
+| 61292923 | B3 endpoint profile | m5290 | 3 | 00:02:07 | 0.106 | 1.18 |
 
 ## B0: setup (2026-11-14)
 
@@ -119,3 +121,81 @@ counter) on ve8b, compression off. Plain 816.5 req/s, profiled 810.5
 - **But the broker idles more than half the time at the ceiling**, which
   together with B1 means the ~830 req/s limit sits elsewhere. Follow-up in
   the same B3 setup: a py-spy of the endpoint per thread (job below).
+
+### B3 follow-up: the endpoint per thread (job 61292923, debug, 3 nodes)
+
+Same setup, `RUNS_LIST=profiled PROFILE_EP=1` (new knob in
+`r8/run_broker_profile.sh`): in the same 30 s window, `top -H`, a py-spy
+dump and `py-spy record --rate 20 --idle --nonblocking --threads` on the
+endpoint process (found with `r8b/pid_of.sh`, which skips the Dragon
+launcher). 824.5 req/s, so profiling both does not lower the rate.
+Summary `results/r8b/b3/top-endpoint-threads-61292923.md`.
+
+| endpoint thread | busy share of 463 samples | top busy frames |
+|---|---|---|
+| `orbit-work` | 52% | `dragon.native.Queue.put` (queue.py:626) 20% of its busy samples, rhapsody `submit_tasks` (dragon_native.py:1630) 6%, JSON encode 6%, cloudpickle 4% |
+| `dragon_native_results` | 17% | rhapsody `_handle_messages` (dragon_native.py:691: unpickling results) 80% |
+| `orbit-transport` | 11% | socket and SSL writes |
+| `Thread-4 (_exq_monitor)` | 4% in Python, but **62% CPU in `top -H`** | Dragon `ProcessGroup._exq_monitor` (process_group.py:2209) in `Queue.poll` -> `_fli.poll` with a 0.1 s timeout: the CPU is spent in C inside the poll |
+
+- **No single thread is saturated at the ceiling**: broker loop about 45%,
+  endpoint work loop 52%. So the ~830 req/s closed-loop limit is not a
+  saturated CPU in either process; it looks like latency per hop (four
+  ORBIT hops and two Dragon queue hops per request) at 256 requests in
+  flight. Not proven; open question.
+- **Correction to round 8's write-up:** round 8 called the broker's one
+  event loop "the limit"; its own profile had the loop busy 312 of 600
+  samples (52%), and B1/B3 show the broker at 57-74% CPU with throughput
+  unchanged when its CPU drops. The limit is not the broker's CPU.
+- `_exq_monitor`: Dragon starts it for a ProcessGroup without
+  `ignore_error_on_exit`; rhapsody's executable groups pass
+  `ignore_error_on_exit=True` (dragon_native.py:1207), the worker pool
+  apparently does not. Lead for B4's "steady 133-140%" question.
+
+## Stack switch to 63d8692 (#64) (2026-11-14, during B3)
+
+The laptop updated the round 8b page while B1/B3 ran: stack `63d8692`
+(#63 plus **#64, queries are read-only**: `get_inference` fires no
+ON_INPUT); rebuild `ve8b`; merge `origin/paper/dtaas` into the branch; B2
+keeps the 1 Hz probe as the answer-time measurement, records the stream
+path too, and drops the old-harness N = 64 rerun.
+
+- Merged `origin/paper/dtaas` (`63d8692`) into the branch: `8a5084f`.
+- Old venv kept as `dt-pm8/ve8b-a3e64c7` (B1, B3 and the smokes ran on it;
+  their provenance records digitaltwin `a3e64c7` and venv `/ve8b`). New
+  `ve8b` at `63d86929`, same recipe, log `logs/install-ve8b-63d8692.log`,
+  `pip check` clean, py-spy 0.4.3 added.
+- B1 is labelled "measured on a3e64c7": R8-2's investigator subscribes to
+  no ON_INPUT, so #64 does not change that path.
+- My B2 harness already kept probes away from the investigators (a probe
+  marker); with #64 that is redundant and harmless. Per the page, B2's
+  probe now runs at 1 Hz.
+
+## Smoke tests of the B2/B4 harness (jobs 61292518, 61292738)
+
+- 61292518 (3 nodes, one learning endpoint, ve8b a3e64c7): the stream
+  bench works: 40 of 40 streamed answers reached the sink, the burst
+  period read 16.0 s, every record lands in the JSON. **But every answer
+  took about 177 ms more than its task** (PINN 197 ms, FNO 296 ms), in
+  both harnesses, until about 30 s after the session (and its new
+  128-worker `dragon_native` pool) was created; then 32 ms (PINN) and
+  134 ms (FNO). The second row, with a fresh session and 5 s warm-up,
+  stayed at 197 ms throughout.
+- 61292738 (diagnostic): round 8's harness at N = 1, 25 s warm-up, 30 s,
+  once without and once with py-spy attached to the inference endpoint
+  first: p50 35.5 and 36.3 ms, p99 304 and 299 ms (round 8: 36 / 301).
+  So py-spy is not the cause; **a new session's pool adds about 177 ms per
+  task for its first ~30 s.** Decision: B2 and B4 warm up 40 s per point
+  (each point is a new session). Described, not investigated further.
+
+## Decisions for B2 and B4 (budget)
+
+1.18 node-h used. B2 per the page (2 repeats x 5 points x >= 5 min on 6
+nodes) would need about 6.4 node-h alone. **B2:** 2 repeats, 120 s per
+point after 40 s warm-up (>= 1,920 probe and stream samples per point at
+N >= 16, >= 7 burst periods per investigator), about 3.5 node-h. **B4:**
+5 min per row as the page asks, on 3 nodes (`NLEARN=1`): a single twin
+uses only `learning_0`, so one learning endpoint is round 8's N = 1
+setup. The endpoint dump moves into the first row (25 s in, the session
+and its pool exist, only the 1 Hz stream runs), with `top -H`, a Python
+and a `--native` dump and a 20 s thread record.

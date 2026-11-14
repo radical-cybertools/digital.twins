@@ -1,0 +1,271 @@
+{
+ "provenance": {
+  "experiment": "R8-C WindField at scale",
+  "harness": "bench_windfield_scale.py",
+  "time": "2026-11-14T11:56:01-0800",
+  "host": "nid004250",
+  "python": "3.12.12",
+  "slurm_job": "61292518",
+  "harness_commit": "a3e64c7f14b803c03638301e349a2b7b846594d2",
+  "harness_dirty": true,
+  "packages": {
+   "digitaltwin": "a3e64c7f14b803c03638301e349a2b7b846594d2",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "venv": "/pscratch/sd/m/merzky/dt-pm8/ve8b",
+  "ws_compression": "off",
+  "online_run_log_level": "debug",
+  "args": {
+   "broker": "https://10.249.1.185:8611",
+   "inference": "r8c_inf_1",
+   "learning": [
+    "r8c_l0_1"
+   ],
+   "backend": "dragon_native",
+   "twins": "1",
+   "per_session": 0,
+   "rate": 1.0,
+   "warmup": 5.0,
+   "seconds": 15.0,
+   "model_path": "/pscratch/sd/m/merzky/dt-pm8/models/r8-model-10MB.bin",
+   "timeout": 60.0,
+   "every": 1000000,
+   "no_stream": false,
+   "records": true,
+   "out": "experiments/dt-paper/results/r8b/smoke/windfield-smokeo-r1-61292518-stack-r8b-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "twins": 1,
+   "per_session": 1,
+   "sessions": 1,
+   "created": 1,
+   "create_s": 2.322751998901367,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 15.0,
+   "published": 20,
+   "probes": 15,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 197.85356521606445,
+   "p99_ms": 299.0844249725342,
+   "worst_twin_p99_ms": 299.0844249725342,
+   "arch_share": {
+    "pinn": 0.9333333333333333,
+    "fno": 0.06666666666666667,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": null,
+   "burst_makespan_s_max": null,
+   "train_s_p50": null,
+   "update_delay_s_p50": null,
+   "update_delay_s_max": null,
+   "updates_seen": 0,
+   "twin_states": {
+    "running": 1
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794686168.9404812,
+   "load_end_epoch": 1794686183.9404812,
+   "client_cpu_pct": 0.4330531993508791,
+   "break": null,
+   "records": {
+    "probes": [
+     [
+      {
+       "t": 1794686168.9412181,
+       "lat": 0.19608592987060547,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686169.1349044,
+       "t_b0": null
+      },
+      {
+       "t": 1794686169.9413106,
+       "lat": 0.19736313819885254,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686170.136383,
+       "t_b0": null
+      },
+      {
+       "t": 1794686170.9414077,
+       "lat": 0.19785356521606445,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686171.1355016,
+       "t_b0": null
+      },
+      {
+       "t": 1794686171.9415026,
+       "lat": 0.1975109577178955,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686172.1355581,
+       "t_b0": null
+      },
+      {
+       "t": 1794686172.9415972,
+       "lat": 0.19860434532165527,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686173.1371102,
+       "t_b0": null
+      },
+      {
+       "t": 1794686173.9416938,
+       "lat": 0.2990844249725342,
+       "err": null,
+       "arch": "fno",
+       "v": 0,
+       "t_pub": 1794686163.6356843,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686174.237364,
+       "t_b0": null
+      },
+      {
+       "t": 1794686174.941791,
+       "lat": 0.19730520248413086,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686175.1363301,
+       "t_b0": null
+      },
+      {
+       "t": 1794686175.9418898,
+       "lat": 0.19803857803344727,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686176.1370518,
+       "t_b0": null
+      },
+      {
+       "t": 1794686176.9419909,
+       "lat": 0.1979084014892578,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686177.136502,
+       "t_b0": null
+      },
+      {
+       "t": 1794686177.942088,
+       "lat": 0.1985306739807129,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686178.1370566,
+       "t_b0": null
+      },
+      {
+       "t": 1794686178.9421837,
+       "lat": 0.19744253158569336,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686179.1361346,
+       "t_b0": null
+      },
+      {
+       "t": 1794686179.9422889,
+       "lat": 0.2004234790802002,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686180.1391783,
+       "t_b0": null
+      },
+      {
+       "t": 1794686180.942385,
+       "lat": 0.19731807708740234,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686181.1364286,
+       "t_b0": null
+      },
+      {
+       "t": 1794686181.9424937,
+       "lat": 0.1958777904510498,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686182.1349926,
+       "t_b0": null
+      },
+      {
+       "t": 1794686182.9425905,
+       "lat": 0.19823932647705078,
+       "err": null,
+       "arch": "pinn",
+       "v": 0,
+       "t_pub": 1794686163.6356704,
+       "burst_s": null,
+       "train_s": null,
+       "t_task": 1794686183.1374545,
+       "t_b0": null
+      }
+     ]
+    ],
+    "bursts": []
+   }
+  }
+ ]
+}
