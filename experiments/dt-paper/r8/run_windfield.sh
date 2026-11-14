@@ -3,16 +3,17 @@
 #SBATCH -J r8-c
 #SBATCH -C cpu
 #SBATCH -N 6
-#SBATCH -t 01:20:00
+#SBATCH -t 01:30:00
 #SBATCH -o /pscratch/sd/m/merzky/dt-pm8/logs/r8-c-%j.out
 #   sbatch -A m5290 -q regular r8/run_windfield.sh
 # Node 0: broker (--plugins dt, throwaway TLS, ORBIT data plane), the
 # client with the twins' stream publishers and probes
 # (r8/bench_windfield_scale.py); node 1: the inference endpoint; nodes 2-5:
 # four learning endpoints; every endpoint in a single-node Dragon runtime
-# on its whole node (dragon_native, 128 workers).  Rows per repeat: twins in
-# groups of 16 per DT service session, all twins in one session, one session
-# per twin up to 16 (R8-0's safe count).  A fresh broker and endpoints per
+# on its whole node (dragon_native, 128 workers).  One row per repeat since
+# 2026-11-14: all twins in one DT service session (one experiment), N = 1 ..
+# 1024 until the break (job 61258719 ran session groups of 16 before the
+# change: its N <= 16 points were one session anyway).  A fresh broker and endpoints per
 # repeat; broker and inference endpoint sampled from /proc.
 # Knobs: REPEATS ("1 2"), TWINS (1,4,16,64,128,256), MODEL_MB (10), PORT (8241).
 set -uo pipefail
@@ -66,7 +67,9 @@ for r in ${REPEATS:-1 2}; do
     > $R/endpoint-proc-$tag-$D.txt 2>/dev/null &
   ESAMP=$!
   export RADICAL_ORBIT_LOG_FILE=$L/client-r8c-$tag.log
-  for row in "group16 16 ${TWINS:-1,4,16,64,128,256}" "onesession 0 ${TWINS:-1,4,16,64,128,256}" "persession 1 1,4,16"; do
+  # 2026-11-14 (page, Andre): all twins in one DT session (one experiment);
+  # no session groups, no one-session-per-twin row; twins up to 1024
+  for row in "onesession 0 ${TWINS:-1,4,16,64,128,256,512,1024}"; do
     set -- $row
     f=$R/windfield-$1-$tag-$D
     timeout ${ROW_TIMEOUT:-1800} python $X/r8/bench_windfield_scale.py --broker $URL --inference ${names[0]} \

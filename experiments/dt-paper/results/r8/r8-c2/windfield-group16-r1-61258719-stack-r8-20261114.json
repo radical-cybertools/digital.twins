@@ -148,6 +148,42 @@
    "load_end_epoch": 1794642869.9801311,
    "client_cpu_pct": 4.090579721816638,
    "break": null
+  },
+  {
+   "twins": 64,
+   "per_session": 16,
+   "sessions": 4,
+   "created": 64,
+   "create_s": 10.176202774047852,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 5403,
+   "probes": 3742,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 167.7236557006836,
+   "p99_ms": 1427.0377159118652,
+   "worst_twin_p99_ms": 1580.5246829986572,
+   "arch_share": {
+    "pinn": 0.8046499198289685,
+    "fno": 0.19535008017103153,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.6656196117401123,
+   "burst_makespan_s_max": 1.3327279090881348,
+   "train_s_p50": 2.276453971862793,
+   "update_delay_s_p50": 1.0624604225158691,
+   "update_delay_s_max": 8.470551013946533,
+   "updates_seen": 961,
+   "twin_states": {
+    "running": 64
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794642911.799606,
+   "load_end_epoch": 1794642971.799606,
+   "client_cpu_pct": 15.36858188578684,
+   "break": "p99 1427 ms"
   }
  ]
 }

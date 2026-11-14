@@ -583,3 +583,23 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
     one is built. This matches R8-0's finding that an existing twin does
     not reattach to a restarted endpoint.
   - Isolation check empty.
+- **2026-11-14 page change (Andre):**
+  - New terms: an experiment is one DT session with one or more twins; the
+    number of sessions is not a scaling dimension.
+  - R8-C and R8-5 run all their twins in one session: no session groups,
+    no one-session-per-twin row.
+  - R8-C's twins go to 512 and 1,024 if no break by 256.
+  - "If R8-C is already running with session groups, finish the current
+    point, then switch."
+- **Job 61258719** (regular, 6 nodes, cancelled after 7 min, isolation
+  check empty; `results/r8/r8-c2/`) was running the session-groups row:
+  - N = 1, 4 and 16, one session each (a group holds 16): p50 35.6 / 40.5 /
+    65.3 ms, p99 303 / 307 / 251 ms, worst twin 303 / 320 / 305 ms;
+    burst makespan 0.28-0.36 s; update delay 0.8-1.7 s; 0 failures.
+  - N = 64 in 4 sessions: p50 168 ms, **p99 1,427 ms** (worst 1,581),
+    burst 0.67 s, update 1.06 s, 0 failures: a break by the p99 criterion.
+  - After that point, as the page says, it was cancelled.
+- **Job 61263177** (`RES=r8/r8-c3`): `r8/run_windfield.sh` now runs one row,
+  all twins in one session, N = 1, 4, 16, 64, 128, 256, 512, 1024 until the
+  break, 2 repeats, model file 8.46 MiB. R8-5 had already run (one session
+  per cycle, as E5 does), so it needs no change.
