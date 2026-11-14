@@ -29,6 +29,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61249075 | r8-1-local | m5290 | 2 | 00:11:36 | 0.387 | 6.17 | 2.11 |
 | 61249379 | r8-d | m5290 | 17 | 00:24:43 | 7.003 | 13.18 | 2.11 |
 | 61249380 | r8-c | m5290 | 6 | 00:20:34 | 2.057 | 15.23 | 2.11 |
+| 61258267 | r8-c-smoke | m5290 | 6 | 00:12:29 | 1.248 | 16.48 | 2.11 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -499,3 +500,28 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
   about 133 req/s. Placement was right; the harness reports it as "WRONG"
   only because r3_site answers with its host name `three` (it has no
   DT_TEST_ENDPOINT_TAG).
+
+## R8-C: WindField at scale (attempt 1 invalid, smoke passed, real run queued)
+
+- **Attempt 1, job 61249380** (regular, 6 nodes, 21 min): invalid, a
+  harness bug. `TrendLearner`'s inference returned the `r8c_field` dtype,
+  but it was added with output `r8c_trend`, so every twin failed on its
+  first input (`ValueError: Model Investigator ... returned r8c_field dtype.
+  Expected: r8c_trend`, broker log). Probes still answered, through the
+  agent, but no burst or model update ever ran. Each row stopped after
+  N = 4 on the "twin states failed" break.
+- I saw it about 3.5 h late, because the job-state Monitor had expired
+  unnoticed. The waiting method is now a no-timeout background waiter
+  that is re-armed after every event (memory note
+  `slurm-wait-no-expiring-monitors`).
+- Fix: `TREND` moved into `r8c_components.py`, `TrendLearner` returns it;
+  the harness records twins' `last_error`.
+- The model file is now 8.46 MiB, R8-E's measured FNO archive (`MODEL_MB=8.46`).
+- **Smoke, job 61258267** (debug, 6 nodes, N = 1, 4, 1 repeat;
+  `results/r8/r8-c-smoke/`). All rows ran, with 0 failed probes:
+  - groups of 16 and one session: p50 36-43 ms, p99 about 300 ms;
+    simulation burst makespan 0.28-0.30 s (16 × 0.25 s CPU); model update
+    seen 0.8-1.8 s after publish;
+  - one session per twin: N = 16 breaks with p99 1,180 ms (worst twin
+    1,700 ms), creation 24 s.
+- Real run: job 61258719 (`RES=r8/r8-c2`, 2 repeats, N = 1 .. 256).

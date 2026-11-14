@@ -1,0 +1,117 @@
+{
+ "provenance": {
+  "experiment": "R8-C WindField at scale",
+  "harness": "bench_windfield_scale.py",
+  "time": "2026-11-13T21:26:49-0800",
+  "host": "nid006677",
+  "python": "3.12.12",
+  "slurm_job": "61258267",
+  "harness_commit": "a5145d3c93b5ecedf7c91c00601b1408ddc7c58b",
+  "harness_dirty": false,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.19.40:8241",
+   "inference": "r8c_inf_1",
+   "learning": [
+    "r8c_l0_1",
+    "r8c_l1_1",
+    "r8c_l2_1",
+    "r8c_l3_1"
+   ],
+   "backend": "dragon_native",
+   "twins": "1,4",
+   "per_session": 16,
+   "rate": 1.0,
+   "warmup": 25.0,
+   "seconds": 60.0,
+   "model_path": "/pscratch/sd/m/merzky/dt-pm8/models/r8-model-8.46MB.bin",
+   "timeout": 60.0,
+   "out": "experiments/dt-paper/results/r8/r8-c-smoke/windfield-group16-r1-61258267-stack-r8-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "twins": 1,
+   "per_session": 16,
+   "sessions": 1,
+   "created": 1,
+   "create_s": 2.752976894378662,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 85,
+   "probes": 60,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 36.28420829772949,
+   "p99_ms": 298.1874942779541,
+   "worst_twin_p99_ms": 298.1874942779541,
+   "arch_share": {
+    "pinn": 0.75,
+    "fno": 0.25,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.27646708488464355,
+   "burst_makespan_s_max": 0.28821730613708496,
+   "train_s_p50": 2.0105721950531006,
+   "update_delay_s_p50": 1.8428466320037842,
+   "update_delay_s_max": 7.902203321456909,
+   "updates_seen": 17,
+   "twin_states": {
+    "running": 1
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794634037.314448,
+   "load_end_epoch": 1794634097.314448,
+   "client_cpu_pct": 0.370721863536411,
+   "break": null
+  },
+  {
+   "twins": 4,
+   "per_session": 16,
+   "sessions": 1,
+   "created": 4,
+   "create_s": 2.345078706741333,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 340,
+   "probes": 240,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 42.554259300231934,
+   "p99_ms": 297.8806495666504,
+   "worst_twin_p99_ms": 306.36072158813477,
+   "arch_share": {
+    "pinn": 0.7791666666666667,
+    "fno": 0.22083333333333333,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.2956526279449463,
+   "burst_makespan_s_max": 0.444537878036499,
+   "train_s_p50": 2.012434244155884,
+   "update_delay_s_p50": 0.8171734809875488,
+   "update_delay_s_max": 7.900333642959595,
+   "updates_seen": 59,
+   "twin_states": {
+    "running": 4
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794634130.3129675,
+   "load_end_epoch": 1794634190.3129675,
+   "client_cpu_pct": 1.0557105814506187,
+   "break": null
+  }
+ ]
+}
