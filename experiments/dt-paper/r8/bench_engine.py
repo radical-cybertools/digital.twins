@@ -112,6 +112,8 @@ def one_n(runtime, args, n):
 
     c0 = time.process_time()
     t_load = time.time()
+    if args.load_marker:  # the broker profile starts on this (round 8, broker profile)
+        Path(f"{args.load_marker}.n{n}").write_text(f"{t_load}\n")
     ths = [threading.Thread(target=loop, args=(k, dt, twin)) for k, (dt, twin) in enumerate(twins)]
     for t in ths:
         t.start()
@@ -154,6 +156,7 @@ def main() -> int:
     p.add_argument("--work-ms", type=float, default=0.0)
     p.add_argument("--seconds", type=float, default=20.0)
     p.add_argument("--timeout", type=float, default=120.0)
+    p.add_argument("--load-marker", default=None, help="write the load start epoch to <path>.n<N>")
     p.add_argument("--out", required=True)
     args = p.parse_args()
     res = {"provenance": provenance("R8-2 one engine", Path(__file__).name, args), "points": []}

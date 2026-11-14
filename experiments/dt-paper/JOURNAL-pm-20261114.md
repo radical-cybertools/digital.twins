@@ -8,6 +8,16 @@ off `49bd91f`, merged into `paper/dtaas` at the end. Work dir
 `/pscratch/sd/m/merzky/dt-pm8`. Budget 42 CPU node-h (m5290), 3 GPU node-h
 (m5290_g). Ledger: `python s1/ledger.py 8`. Never radical.3 port 8011.
 
+## Terms (from 2026-11-14, the page)
+
+A **project** (xGFabric) runs one broker with the DT service. An
+**experiment** is one science run of a use case: **one DT session**
+holding one or more **twins**. **Clients** (sensor feeds, the driver,
+dashboards) attach to the experiment. The page's units are **phases**.
+Earlier entries say "session" for a DT service session: read
+"experiment". Sweeps over sessions (R8-0, R8-2) measure the per-experiment
+cost; the number of experiments is not a scaling dimension.
+
 ## Node-hour ledger (round 8 budget: 42 CPU m5290, 3 GPU m5290_g)
 
 Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
@@ -32,9 +42,10 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61258267 | r8-c-smoke | m5290 | 6 | 00:12:29 | 1.248 | 16.48 | 2.11 |
 | 61258304 | r8-b-cs | m5290 | 5 | 00:08:24 | 0.700 | 17.18 | 2.11 |
 | 61258409 | r8-5 | m5290 | 2 | 00:02:50 | 0.094 | 17.28 | 2.11 |
-| 61261445 | r8-diag | m5290 | 1 | 00:01:52 | 0.031 | 17.31 | 2.11 |
-| 61261523 | r8-diag | m5290 | 1 | 00:00:26 | 0.007 | 17.31 | 2.11 |
-| 61261542 | r8-5 | m5290 | 2 | 00:05:50 | 0.194 | 17.51 | 2.11 |
+| 61258719 | r8-c | m5290 | 6 | 00:07:13 | 0.722 | 18.00 | 2.11 |
+| 61261445 | r8-diag | m5290 | 1 | 00:01:52 | 0.031 | 18.03 | 2.11 |
+| 61261523 | r8-diag | m5290 | 1 | 00:00:26 | 0.007 | 18.04 | 2.11 |
+| 61261542 | r8-5 | m5290 | 2 | 00:05:50 | 0.194 | 18.23 | 2.11 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -173,7 +184,7 @@ POOL_CPUS=0-7,128-135`, twin ids now uuids.
 | 16 | 16/16 | 38.3 | 2,078 | 6,492 | about 104 | 2.41 |
 | 64 | **0/64** | 241 (failed) | 4,352 | 9,192 | about 209 | – |
 
-  - S = 64 breaks: every session fails with `twin ... failed to initialize:
+  - S = 64 experiments on one endpoint break: every session fails with `twin ... failed to initialize:
     RuntimeError: Session init timed out after 120.0s` while 34 pools
     (4,352 processes) start on 128 cores.
   - At S = 16 the 1,024 tasks take 3× their ideal (0.8 s on 128 cores):
@@ -575,13 +586,14 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
 | learning resumed (a new learner twin on the restarted endpoint) | 9.1-9.4 s |
 | client reattach by session id (10×) | attach 0.02 s, first answer 0.19 s, state running, all ok |
 
-  - **Persistence holds on Dragon.** Losing the learning endpoint's whole
-    runtime never stops in-situ inference. Detection takes the broker's
-    grace of about 10 s. Kill, cleanup and restart bring learning back
-    within 9-10 s of the restart.
-  - As in E5, the twin whose learning endpoint died is failed and a new
-    one is built. This matches R8-0's finding that an existing twin does
-    not reattach to a restarted endpoint.
+  - **In-situ inference survives; learning resumes on a new twin.**
+    Losing the learning endpoint's whole Dragon runtime never stops
+    in-situ inference. Detection takes the broker's grace of about 10 s.
+    After cleanup and restart, learning resumes on a new twin 9-10 s after
+    the restart.
+  - As in E5, the twin whose learning endpoint died fails. This matches
+    R8-0's finding that an existing twin does not reattach to a restarted
+    endpoint.
   - Isolation check empty.
 - **2026-11-14 page change (Andre):**
   - New terms: an experiment is one DT session with one or more twins; the
