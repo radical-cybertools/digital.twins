@@ -21,6 +21,8 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61246837 | r8-b-smoke | m5290 | 5 | 00:07:30 | 0.625 | 1.29 | 0.02 |
 | 61247053 | r8-b-smoke | m5290 | 5 | 00:01:32 | 0.128 | 1.42 | 0.02 |
 | 61247087 | r8-a | m5290 | 2 | 00:06:24 | 0.213 | 1.63 | 0.02 |
+| 61247141 | r8-1 | m5290 | 2 | 00:14:01 | 0.467 | 2.10 | 0.02 |
+| 61249075 | r8-1-local | m5290 | 2 | 00:11:36 | 0.387 | 2.49 | 0.02 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -243,3 +245,46 @@ random bytes as the argument and the task returns S bytes; 5 calls each).
   rate at 5 req/s for the 20 s run (236 answers in the final window, once
   warm).
 - Isolation check empty.
+
+## R8-1: overhead on Dragon (done; jobs 61247141 and 61249075)
+
+`e1-overhead/bench_dt_insitu.py`, rows bare / investigator / agent, 200
+sequential requests (p50) and 50 at once (req/s), 5 repeats, each cell its
+own process. Harness additions:
+- `--work-ms`: the task holds its process's CPU for that long
+  (`thread_time`);
+- `--local-backend dragon_native`: the harness runs under `dragon -s`;
+- `--stream-broker`, needed because under Dragon the embedded ZMQ broker
+  cannot start: Dragon's multiprocessing bridge returns no `Pipe`
+  (`TypeError: 'NoneType' object is not callable` in `ctx.Pipe`). Every
+  local-dragon cell of job 61247141 failed that way; the twin's stream
+  client now goes to the job's ORBIT broker, which get_inference does not
+  use. The local-dragon cells were rerun in job 61249075 (debug).
+
+Table: `results/r8/r8-1/insitu-table-stack-r8-20261114.md`. Medians of 5
+repeats; the DT's cost per request is the row's p50 minus bare's.
+
+| setup | task | bare p50 ms | investigator: cost ms (ratio) | agent: cost ms (ratio) | bare / inv / agent req/s, 50 at once |
+|---|---|---|---|---|---|
+| local dragon_native | 0.58 ms | 1.92 | -0.36 (0.81x) | -0.38 (0.80x) | 2839 / 2867 / 2522 |
+| local dragon_native | 20 ms | 21.38 | -0.28 (0.99x) | +0.04 (1.00x) | 1356 / 1252 / 1156 |
+| local dragon_native | 120 ms | 121.88 | -0.10 (1.00x) | -0.31 (1.00x) | 356 / 356 / 359 |
+| ORBIT → Dragon endpoint | 0.58 ms | 3.87 | -0.12 (0.97x) | -0.21 (0.95x) | 907 / 967 / 880 |
+| ORBIT → Dragon endpoint | 20 ms | 24.86 | -0.36 (0.99x) | +0.62 (1.03x) | 976 / 837 / 972 |
+| ORBIT → Dragon endpoint | 120 ms | 125.68 | -0.23 (1.00x) | -0.46 (1.00x) | 324 / 328 / 327 |
+| local concurrent (process pool) | 0.58 ms | 3.02 | -0.98 (0.68x) | -1.21 (0.60x) | 1647 / 1620 / 1706 |
+| ORBIT → endpoint, concurrent | 0.58 ms | 3.44 | +0.22 (1.06x) | +0.27 (1.08x) | 608 / 623 / 623 |
+
+- **The DT layer costs nothing measurable on dragon_native**: at 20 and 120
+  ms it is within ±0.6 ms of bare locally and through ORBIT, inside the
+  repeats' spread.
+- At 0.58 ms the DT rows' p50 is *below* bare's in both local setups (0.6-0.8x).
+  Bare runs first in each process, so this is likely warm-up order
+  (the first row pays the pool's first contacts), not a DT gain; reported
+  as measured, not corrected.
+- **dragon_native is cheaper per task than concurrent** through ORBIT at
+  0.58 ms: 907 against 608 req/s, p50 3.87 against 3.44 ms (concurrent's
+  thread pool has a lower floor, but less throughput).
+- At 120 ms all rows serve about 325-356 req/s: 50 requests at once on 128
+  workers, so one 120 ms round each, plus overhead.
+- Isolation checks empty.

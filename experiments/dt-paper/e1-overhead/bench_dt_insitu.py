@@ -312,6 +312,8 @@ async def main() -> None:
                         help="round 8: CPU per task in ms (0: a no-op)")
     parser.add_argument("--local-backend", default=None, choices=[None, "dragon_native"],
                         help="round 8: local dragon_native pool (run under dragon -s)")
+    parser.add_argument("--stream-broker", default=None,
+                        help="round 8: ORBIT broker URL for the twin's stream client (local dragon_native)")
     parser.add_argument("--out", help="write results as JSON here")
 
     args = parser.parse_args()
@@ -333,9 +335,18 @@ async def main() -> None:
                 pass
         return x
 
-    broker = ZMQ_BrokerProcess()
-    await broker.start()
-    stream = await connect_stream_client("e1-insitu", *broker.get_connection_str())
+    if args.stream_broker:
+        # round 8: under `dragon -s`, Dragon's multiprocessing bridge has no
+        # Pipe, so ZMQ_BrokerProcess cannot start; the stream client goes to
+        # an ORBIT broker instead (get_inference bypasses the queues)
+        from digitaltwin.config import BACKEND_ORBIT
+        broker = None
+        stream = await connect_stream_client("e1-insitu", backend=BACKEND_ORBIT,
+                                             broker_url=args.stream_broker)
+    else:
+        broker = ZMQ_BrokerProcess()
+        await broker.start()
+        stream = await connect_stream_client("e1-insitu", *broker.get_connection_str())
 
     results = {"provenance": provenance(args, backend_label), "rows": {}}
     try:  # round 8: all five packages, backend, telemetry, file system
@@ -365,7 +376,8 @@ async def main() -> None:
                 results["rows"][name] = await runners[name]()
     finally:
         await stream.close()
-        await broker.stop()
+        if broker is not None:
+            await broker.stop()
         await flow.shutdown()
 
     for row in results["rows"].values():

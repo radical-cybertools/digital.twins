@@ -16,7 +16,8 @@
 #   local-conc / orbit-conc   the concurrent rows at 0.58 ms only (E1
 #                  continuity): local process pool, and the endpoint's
 #                  concurrent backend
-# Knobs: REPEATS (5), WORKS ("0.58 20 120"), TASKS (200), CONC (50), PORT (8211).
+# Knobs: REPEATS (5), WORKS ("0.58 20 120"), TASKS (200), CONC (50), PORT (8211),
+#   ROWS ("local-dragon orbit-dragon local-conc orbit-conc").
 set -uo pipefail
 source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm8/digital.twins/experiments/dt-paper/r8/env-r8.sh}
 R=$X/results/${RES:-r8/r8-1}; mkdir -p $R
@@ -65,13 +66,17 @@ cell() {  # label work_ms args...
     kill -0 $BP 2>/dev/null || { echo "broker died after dragon-cleanup"; exit 4; }
   fi
 }
+on() { [[ " ${ROWS:-local-dragon orbit-dragon local-conc orbit-conc} " == *" $1 "* ]]; }
 for r in $(seq 1 ${REPEATS:-5}); do
   for wk in ${WORKS:-0.58 20 120}; do
-    R8_BACKEND=dragon_native cell local-dragon $wk dragon -s $H --local-backend dragon_native
-    R8_BACKEND=dragon_native cell orbit-dragon $wk python $H --broker $URL --endpoint $EPN --backends dragon_native
+    # local-dragon: the twin's stream client goes to this job's ORBIT broker
+    # (--stream-broker): under dragon -s the embedded ZMQ broker cannot start
+    # (Dragon's multiprocessing bridge has no Pipe; run 1, job 61247141)
+    on local-dragon && R8_BACKEND=dragon_native cell local-dragon $wk dragon -s $H --local-backend dragon_native --stream-broker $URL
+    on orbit-dragon && R8_BACKEND=dragon_native cell orbit-dragon $wk python $H --broker $URL --endpoint $EPN --backends dragon_native
   done
-  R8_BACKEND=concurrent R8_WORKERS_PER_NODE=cpu-count cell local-conc 0.58 python $H
-  R8_BACKEND=concurrent R8_WORKERS_PER_NODE=32-threads cell orbit-conc 0.58 python $H --broker $URL --endpoint $EPN --backends concurrent
+  on local-conc && R8_BACKEND=concurrent R8_WORKERS_PER_NODE=cpu-count cell local-conc 0.58 python $H
+  on orbit-conc && R8_BACKEND=concurrent R8_WORKERS_PER_NODE=32-threads cell orbit-conc 0.58 python $H --broker $URL --endpoint $EPN --backends concurrent
 done
 srun --overlap -N1 -n1 -w $N1 pkill -TERM -u $USER -f "radical-orbit-endpoint.py -n $EPN" 2>/dev/null
 sleep 10; kill -TERM $EP 2>/dev/null; wait $EP 2>/dev/null
