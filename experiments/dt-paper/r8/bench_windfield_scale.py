@@ -50,7 +50,7 @@ from digitaltwin.service import register_user_modules  # noqa: E402
 from digitaltwin.streaming import ChannelPublisher  # noqa: E402
 
 register_user_modules([rc])
-TREND = DataType("r8c_trend")
+TREND = rc.TREND
 
 
 def pct(xs, q):
@@ -162,10 +162,13 @@ def one_n(runtime, args, n, run):
         t.join()
     stop_evt.set()
     pth.join(timeout=30)
-    states = {}
+    states, last_errors = {}, set()
     for dt, tw in twins:
         try:
-            st = dt.twin(tw).get("state")
+            info = dt.twin(tw)
+            st = info.get("state")
+            if info.get("last_error"):
+                last_errors.add(str(info["last_error"])[:200])
         except Exception as exc:
             st = f"error {type(exc).__name__}"
         states[st] = states.get(st, 0) + 1
@@ -195,7 +198,7 @@ def one_n(runtime, args, n, run):
         "update_delay_s_p50": statistics.median(first.values()) if first else None,
         "update_delay_s_max": max(first.values(), default=None),
         "updates_seen": len(first),
-        "twin_states": states, "load_start_epoch": t_meas, "load_end_epoch": t_end,
+        "twin_states": states, "twin_last_errors": sorted(last_errors)[:3], "load_start_epoch": t_meas, "load_end_epoch": t_end,
         "client_cpu_pct": 100 * (time.process_time() - c0) / (time.time() - t_meas + args.warmup),
     })
     reasons = []
@@ -204,7 +207,7 @@ def one_n(runtime, args, n, run):
     if rec["p99_ms"] and rec["p99_ms"] > 1000:
         reasons.append(f"p99 {rec['p99_ms']:.0f} ms")
     if set(states) - {"running"}:
-        reasons.append(f"twin states {states}")
+        reasons.append(f"twin states {states}: {sorted(last_errors)[:1]}")
     rec["break"] = "; ".join(reasons) or None
     for dt in dts:
         drop(dt)

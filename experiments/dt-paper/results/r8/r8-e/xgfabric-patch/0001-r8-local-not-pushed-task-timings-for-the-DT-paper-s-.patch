@@ -1,0 +1,391 @@
+From 63e8b9219e9476950f77198daedf940876c76cb1 Mon Sep 17 00:00:00 2001
+From: Andre Merzky <noreply@localhost>
+Date: Fri, 13 Nov 2026 14:31:36 -0800
+Subject: [PATCH 1/2] r8 (local, not pushed): task timings for the DT paper's
+ R8-E breakdown
+
+---
+ tasks/common/r8_timing.py          | 33 ++++++++++++++++++++++++++++++
+ tasks/do_fno/fno_investigator.py   | 16 ++++++++++++---
+ tasks/do_fno/main.py               | 12 +++++++++++
+ tasks/do_pcr/main.py               | 11 ++++++++++
+ tasks/do_pcr/pcr_investigator.py   | 25 ++++++++++++++++------
+ tasks/do_pinn/main.py              | 12 +++++++++++
+ tasks/do_pinn/pinn_investigator.py | 16 ++++++++++++---
+ tasks/wind_agent.py                | 10 +++++++++
+ 8 files changed, 123 insertions(+), 12 deletions(-)
+ create mode 100644 tasks/common/r8_timing.py
+
+diff --git a/tasks/common/r8_timing.py b/tasks/common/r8_timing.py
+new file mode 100644
+index 0000000..8eb172f
+--- /dev/null
++++ b/tasks/common/r8_timing.py
+@@ -0,0 +1,33 @@
++"""Round 8 (DT paper, R8-E) instrumentation, a local patch, never pushed.
++
++Task bodies record wall times here; `LAST` holds the most recent eval's
++phase times (setup, tar extraction, model reload, field, cleanup), which
++the investigators return with each answer.  `log()` appends one JSON line
++per event to $R8_TIMING_DIR/<name>-<pid>.jsonl (one file per process, so
++concurrent workers never interleave).  `CACHE` keeps loaded models per
++worker process, keyed by archive path, when R8_WARM_MODEL=1 (the
++warm-model variant).
++"""
++import json
++import os
++import time
++
++LAST: dict = {}
++CACHE: dict = {}
++
++
++def warm() -> bool:
++    return os.environ.get("R8_WARM_MODEL") == "1"
++
++
++def log(name: str, **rec) -> None:
++    d = os.environ.get("R8_TIMING_DIR")
++    if not d:
++        return
++    rec.setdefault("pid", os.getpid())
++    rec.setdefault("logged", time.time())
++    try:
++        with open(os.path.join(d, f"{name}-{os.getpid()}.jsonl"), "a") as f:
++            f.write(json.dumps(rec, default=str) + "\n")
++    except OSError:
++        pass
+diff --git a/tasks/do_fno/fno_investigator.py b/tasks/do_fno/fno_investigator.py
+index f82fbfa..cbc0ae0 100644
+--- a/tasks/do_fno/fno_investigator.py
++++ b/tasks/do_fno/fno_investigator.py
+@@ -52,9 +52,12 @@ class FNOInvestigator(ModelInvestigator):
+ 
+         @self.flow.function_task
+         async def do_inference(in_data: TypedData, config=None, model="na"):
++            import os as _os
++            import time as _time
++            _ts = _time.time()
+             if model == "na" or config is None:
+                 # pass through, no model yet
+-                return TypedData(WIND_FIELD, {"arch": "na"})
++                return TypedData(WIND_FIELD, {"arch": "na", "t": {"task_start": _ts, "task_end": _time.time(), "pid": _os.getpid()}})
+ 
+             from .main import tk_fno_eval
+ 
+@@ -63,7 +66,9 @@ class FNOInvestigator(ModelInvestigator):
+             wind = in_data.data["wind_speed"]
+             result = tk_fno_eval(config, model, wind)
+ 
+-            return TypedData(WIND_FIELD, {"arch": "fno", "result": result, "w": wind})
++            from ..common import r8_timing as _r8
++            _t = dict(_r8.LAST, task_start=_ts, task_end=_time.time(), pid=_os.getpid())
++            return TypedData(WIND_FIELD, {"arch": "fno", "result": result, "w": wind, "t": _t})
+ 
+         self.inference_task = do_inference
+ 
+@@ -82,8 +87,13 @@ class FNOInvestigator(ModelInvestigator):
+ 
+         @self.learner.training_task(as_executable=False)
+         async def do_fno(config, sims):
++            import time as _time
++            from ..common import r8_timing as _r8
+             from .main import tk_do_fno
+-            return tk_do_fno(config, sims)
++            _ts = _time.time()
++            _out = tk_do_fno(config, sims)
++            _r8.log("train", model="fno", t0=_ts, t1=_time.time(), sims=len(sims), out=_out)
++            return _out
+ 
+         self.config["TASK_COUNTER"] = self.task_counter
+         fno_tar = await do_fno(self.config.copy(), sim_fnames)
+diff --git a/tasks/do_fno/main.py b/tasks/do_fno/main.py
+index ebbf679..b8d5537 100644
+--- a/tasks/do_fno/main.py
++++ b/tasks/do_fno/main.py
+@@ -1,3 +1,4 @@
++import time
+ import glob
+ import subprocess
+ import tempfile
+@@ -86,6 +87,8 @@ def tk_do_fno(config, sims_list):
+ 
+ 
+ def tk_fno_eval(config, path_to_fno_tar, wind):
++    from ..common import r8_timing
++    _t0 = time.time()
+     env = register_task(
+         config,
+         config["AGENT_NAME"],
+@@ -108,6 +111,7 @@ def tk_fno_eval(config, path_to_fno_tar, wind):
+     # INFERENCE task dir, and close_task(clean=True) removes INTERIM_DIR
+     env["INTERIM_DIR"] = tempfile.mkdtemp(dir=env["INTERIM_DIR"])
+ 
++    _t1 = time.time()
+     cmd_tar = ["tar", "-xf", path_to_fno_tar, "-C", env["INTERIM_DIR"]]
+ 
+     tarproc = subprocess.Popen(
+@@ -123,6 +127,7 @@ def tk_fno_eval(config, path_to_fno_tar, wind):
+         raise ValueError(f"Error executing tar! {' '.join(cmd_tar)}")
+ 
+     # Now, files are in env['INTERIM_DIR']
++    _t2 = time.time()
+     model, meta = prepare(
+         env["INTERIM_DIR"] + "/model.weights.h5",
+         env["INTERIM_DIR"] + "/model_meta.json",
+@@ -130,6 +135,7 @@ def tk_fno_eval(config, path_to_fno_tar, wind):
+     )
+ 
+     x_norm_grid, y_norm_grid, x_lin, y_lin = precompute_static(meta)
++    _t3 = time.time()
+ 
+     x = np.linspace(x_min, x_max, 85)  # PCR counts
+     y = np.linspace(y_min, y_max, 38)  # PCR counts
+@@ -175,5 +181,11 @@ def tk_fno_eval(config, path_to_fno_tar, wind):
+         )
+     )
+ 
++    _t4 = time.time()
+     close_task(env, clean=True)
++    _t5 = time.time()
++    r8_timing.LAST.clear()
++    r8_timing.LAST.update(eval_start=_t0, setup_s=_t1 - _t0, extract_s=_t2 - _t1,
++                          reload_s=_t3 - _t2, field_s=_t4 - _t3, cleanup_s=_t5 - _t4,
++                          cached=False)
+     return out
+diff --git a/tasks/do_pcr/main.py b/tasks/do_pcr/main.py
+index 52aac1d..0c1d8b0 100644
+--- a/tasks/do_pcr/main.py
++++ b/tasks/do_pcr/main.py
+@@ -146,6 +146,8 @@ def tk_do_pcr_pack(config, *pcr_output_dirs):
+ 
+ 
+ def tk_pcr_eval(config, path_to_pcr_tar, wind):
++    from ..common import r8_timing
++    _t0 = time.time()
+     env = register_task(
+         config,
+         config["AGENT_NAME"],
+@@ -160,6 +162,7 @@ def tk_pcr_eval(config, path_to_pcr_tar, wind):
+     # INFERENCE task dir, and close_task(clean=True) removes INTERIM_DIR
+     env["INTERIM_DIR"] = tempfile.mkdtemp(dir=env["INTERIM_DIR"])
+ 
++    _t1 = time.time()
+     cmd_tar = ["tar", "-xf", path_to_pcr_tar, "-C", env["INTERIM_DIR"]]
+ 
+     tarproc = subprocess.Popen(
+@@ -174,11 +177,19 @@ def tk_pcr_eval(config, path_to_pcr_tar, wind):
+         logger.warning(f"Error executing tar!")
+         raise ValueError(f"Error executing tar! {' '.join(cmd_tar)}")
+ 
++    _t2 = time.time()
+     df = prepare(env["INTERIM_DIR"], logger)
++    _t3 = time.time()
+ 
+     out = []
+     out.append(predict_at_z(df, wind, 1))
+     out.append(predict_at_z(df, wind, 3))
+     out.append(predict_at_z(df, wind, 5))
++    _t4 = time.time()
+     close_task(env, clean=True)
++    _t5 = time.time()
++    r8_timing.LAST.clear()
++    r8_timing.LAST.update(eval_start=_t0, setup_s=_t1 - _t0, extract_s=_t2 - _t1,
++                          reload_s=_t3 - _t2, field_s=_t4 - _t3, cleanup_s=_t5 - _t4,
++                          cached=False)
+     return out
+diff --git a/tasks/do_pcr/pcr_investigator.py b/tasks/do_pcr/pcr_investigator.py
+index 6c3595d..2a9ea80 100644
+--- a/tasks/do_pcr/pcr_investigator.py
++++ b/tasks/do_pcr/pcr_investigator.py
+@@ -26,9 +26,12 @@ class PCRInvestigator(ModelInvestigator):
+ 
+         @self.flow.function_task
+         async def do_inference(in_data: TypedData, config=None, model="na"):
++            import os as _os
++            import time as _time
++            _ts = _time.time()
+             if model == "na" or config is None:
+                 # pass through, no model yet
+-                return TypedData(WIND_FIELD, {"arch": "na"})
++                return TypedData(WIND_FIELD, {"arch": "na", "t": {"task_start": _ts, "task_end": _time.time(), "pid": _os.getpid()}})
+ 
+             # PCR works on a range rather than a single data point.
+             # for now, assume the wind is stable.
+@@ -38,9 +41,9 @@ class PCRInvestigator(ModelInvestigator):
+             wind = np.ones(13) * wind_single
+             result = tk_pcr_eval(config, model, wind)
+ 
+-            return TypedData(
+-                WIND_FIELD, {"arch": "pcr", "result": result, "w": wind_single}
+-            )
++            from ..common import r8_timing as _r8
++            _t = dict(_r8.LAST, task_start=_ts, task_end=_time.time(), pid=_os.getpid())
++            return TypedData(WIND_FIELD, {"arch": "pcr", "result": result, "w": wind_single, "t": _t})
+ 
+         self.inference_task = do_inference
+ 
+@@ -90,12 +93,22 @@ class PCRInvestigator(ModelInvestigator):
+         @self.flow.function_task
+         async def partition(config, sims, sensor_vals):
+             from .main import tk_pcr_partition
+-            return tk_pcr_partition(config, sims, sensor_vals)
++            import time as _time
++            from ..common import r8_timing as _r8
++            _ts = _time.time()
++            _out = tk_pcr_partition(config, sims, sensor_vals)
++            _r8.log("train", model="pcr", step="tk_pcr_partition", t0=_ts, t1=_time.time(), out=_out)
++            return _out
+ 
+         @self.flow.function_task
+         async def do_pcr(config, machine_data_output):
+             from .main import tk_do_pcr
+-            return tk_do_pcr(config, machine_data_output)
++            import time as _time
++            from ..common import r8_timing as _r8
++            _ts = _time.time()
++            _out = tk_do_pcr(config, machine_data_output)
++            _r8.log("train", model="pcr", step="tk_do_pcr", t0=_ts, t1=_time.time(), out=_out)
++            return _out
+ 
+         @self.flow.function_task
+         async def do_pack(config, *pcr_output_dirs):
+diff --git a/tasks/do_pinn/main.py b/tasks/do_pinn/main.py
+index a87c5d8..9ce81b1 100644
+--- a/tasks/do_pinn/main.py
++++ b/tasks/do_pinn/main.py
+@@ -1,3 +1,4 @@
++import time
+ import glob
+ import subprocess
+ import tempfile
+@@ -86,6 +87,8 @@ def tk_do_pinn(config, sims_list):
+ 
+ 
+ def tk_pinn_eval(config, path_to_pinn_tar, wind):
++    from ..common import r8_timing
++    _t0 = time.time()
+     env = register_task(
+         config,
+         config["AGENT_NAME"],
+@@ -100,6 +103,7 @@ def tk_pinn_eval(config, path_to_pinn_tar, wind):
+     # INFERENCE task dir, and close_task(clean=True) removes INTERIM_DIR
+     env["INTERIM_DIR"] = tempfile.mkdtemp(dir=env["INTERIM_DIR"])
+ 
++    _t1 = time.time()
+     cmd_tar = ["tar", "-xf", path_to_pinn_tar, "-C", env["INTERIM_DIR"]]
+ 
+     tarproc = subprocess.Popen(
+@@ -115,11 +119,13 @@ def tk_pinn_eval(config, path_to_pinn_tar, wind):
+         raise ValueError(f"Error executing tar! {' '.join(cmd_tar)}")
+ 
+     # Now, files are in env['INTERIM_DIR'], named as tk_do_pinn archived them
++    _t2 = time.time()
+     model, metadata = prepare(
+         env["INTERIM_DIR"] + "/pinn.weights.h5",
+         env["INTERIM_DIR"] + "/pinn.model_meta.json",
+         logger,
+     )
++    _t3 = time.time()
+ 
+     # wind = (np.random.rand(1) * metadata["WS_MAX"])[0]
+ 
+@@ -131,5 +137,11 @@ def tk_pinn_eval(config, path_to_pinn_tar, wind):
+     out.append(pinn_predict_field(model, metadata, pts_interested, wind, z=3.0))
+     out.append(pinn_predict_field(model, metadata, pts_interested, wind, z=5.0))
+ 
++    _t4 = time.time()
+     close_task(env, clean=True)
++    _t5 = time.time()
++    r8_timing.LAST.clear()
++    r8_timing.LAST.update(eval_start=_t0, setup_s=_t1 - _t0, extract_s=_t2 - _t1,
++                          reload_s=_t3 - _t2, field_s=_t4 - _t3, cleanup_s=_t5 - _t4,
++                          cached=False)
+     return out
+diff --git a/tasks/do_pinn/pinn_investigator.py b/tasks/do_pinn/pinn_investigator.py
+index 59aad7f..d130789 100644
+--- a/tasks/do_pinn/pinn_investigator.py
++++ b/tasks/do_pinn/pinn_investigator.py
+@@ -52,9 +52,12 @@ class PINNInvestigator(ModelInvestigator):
+ 
+         @self.flow.function_task
+         async def do_inference(in_data: TypedData, config=None, model="na"):
++            import os as _os
++            import time as _time
++            _ts = _time.time()
+             if model == "na" or config is None:
+                 # pass through, no model yet
+-                return TypedData(WIND_FIELD, {"arch": "na"})
++                return TypedData(WIND_FIELD, {"arch": "na", "t": {"task_start": _ts, "task_end": _time.time(), "pid": _os.getpid()}})
+ 
+             from .main import tk_pinn_eval
+ 
+@@ -62,7 +65,9 @@ class PINNInvestigator(ModelInvestigator):
+             wind = in_data.data["wind_speed"]
+             result = tk_pinn_eval(config, model, wind)
+ 
+-            return TypedData(WIND_FIELD, {"arch": "pinn", "result": result, "w": wind})
++            from ..common import r8_timing as _r8
++            _t = dict(_r8.LAST, task_start=_ts, task_end=_time.time(), pid=_os.getpid())
++            return TypedData(WIND_FIELD, {"arch": "pinn", "result": result, "w": wind, "t": _t})
+ 
+         self.inference_task = do_inference
+ 
+@@ -80,8 +85,13 @@ class PINNInvestigator(ModelInvestigator):
+ 
+         @self.learner.training_task(as_executable=False)
+         async def do_pinn(config, sims):
++            import time as _time
++            from ..common import r8_timing as _r8
+             from .main import tk_do_pinn
+-            return tk_do_pinn(config, sims)
++            _ts = _time.time()
++            _out = tk_do_pinn(config, sims)
++            _r8.log("train", model="pinn", t0=_ts, t1=_time.time(), sims=len(sims), out=_out)
++            return _out
+ 
+         self.config["TASK_COUNTER"] = self.task_counter
+         pinn_tar = await do_pinn(self.config.copy(), sim_fnames)
+diff --git a/tasks/wind_agent.py b/tasks/wind_agent.py
+index fb5cb54..ad6ec39 100644
+--- a/tasks/wind_agent.py
++++ b/tasks/wind_agent.py
+@@ -37,8 +37,12 @@ class WindFieldAgent(SciAgent):
+ 
+         @self.flow.function_task
+         async def simulate(config, sensor_pt):
++            import time as _time
++            from .common import r8_timing as _r8
++            _ts = _time.time()
+             print("Do simulation")
+             wind, fname = tk_do_simulation(config, sensor_pt)
++            _r8.log("simulate", t0=_ts, t1=_time.time())
+             return wind, fname
+ 
+         async def wrapper(sensor_pt):
+@@ -55,9 +59,13 @@ class WindFieldAgent(SciAgent):
+ 
+         @self.flow.function_task
+         async def model_select(in_data: TypedData, models):
++            import time as _time
++            from .common import r8_timing as _r8
++            _ts = _time.time()
+             # select the model with the shortest compute time.
+             if len(models) == 0:
+                 # assume first investigator
++                _r8.log("select", t0=_ts, t1=_time.time(), choice=0, n_models=0)
+                 return 0
+ 
+             shortest = models[0]
+@@ -65,6 +73,8 @@ class WindFieldAgent(SciAgent):
+                 if model["pi_runtime"] < shortest["pi_runtime"]:
+                     shortest = model
+ 
++            _r8.log("select", t0=_ts, t1=_time.time(), choice=shortest["investigator"],
++                    n_models=len(models), runtimes=[m.get("pi_runtime") for m in models][-10:])
+             return shortest["investigator"]  # default to latest model
+ 
+         self.model_selector = model_select
+-- 
+2.51.0
+

@@ -29,6 +29,7 @@ from digitaltwin.components import DataType, ModelInvestigator, SciAgent, TypedD
 
 DAVIS = DataType("r8c_davis")
 FIELD = DataType("r8c_field")
+TREND = DataType("r8c_trend")
 
 
 def _spin(seconds):
@@ -121,7 +122,7 @@ class TrendLearner(ModelInvestigator):
 
     async def main_loop(self, runtime):
         async def inference(in_data, **kw):
-            return TypedData(FIELD, {"arch": "trend"})
+            return TypedData(TREND, {"arch": "trend"})  # its registered output
 
         async def on_input(in_data):
             self.n += 1

@@ -1,0 +1,132 @@
+{
+  "provenance": {
+    "experiment": "E3 portability: one twin on N sites",
+    "harness": "bench_sites.py",
+    "time": "2026-11-13T17:32:47-0800",
+    "host": "nid004614",
+    "python": "3.12.12",
+    "digital_twins_commit": "954ffd6a5d9c7445fb2f9688371b36ebc0e295c3",
+    "digital_twins_dirty": false,
+    "slurm_job": "61249379",
+    "args": {
+      "broker": "https://10.249.3.91:8231",
+      "endpoints": [
+        "r8d_s0",
+        "r8d_s1",
+        "r8d_s2",
+        "r8d_s3",
+        "r8d_s4",
+        "r8d_s5",
+        "r8d_s6",
+        "r8d_s7",
+        "r8d_s8",
+        "r8d_s9",
+        "r8d_s10",
+        "r8d_s11",
+        "r8d_s12",
+        "r8d_s13",
+        "r8d_s14",
+        "r8d_s15"
+      ],
+      "n": "2",
+      "layout": "spread",
+      "work_ms": 120.0,
+      "work": "cpu",
+      "seq": 20,
+      "tasks": 240,
+      "concurrent": 32,
+      "bursts": 5,
+      "timeout": 120.0,
+      "out": "experiments/dt-paper/results/r8/r8-d/sites-n2-r3-61249379-stack-r8-20261114.json"
+    },
+    "r8": {
+      "experiment": "R8-D sites",
+      "harness": "bench_sites.py",
+      "time": "2026-11-13T17:32:47-0800",
+      "host": "nid004614",
+      "python": "3.12.12",
+      "slurm_job": "61249379",
+      "harness_commit": "954ffd6a5d9c7445fb2f9688371b36ebc0e295c3",
+      "harness_dirty": false,
+      "packages": {
+        "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+        "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+        "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+        "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+        "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+        "dragonhpc": "0.15.0"
+      },
+      "backend": "dragon_native",
+      "workers_per_node": "8",
+      "telemetry": "on (default)",
+      "file_system": "/pscratch",
+      "args": null,
+      "backends": [
+        "dragon_native"
+      ]
+    }
+  },
+  "work_model": "cpu",
+  "points": [
+    {
+      "n": 2,
+      "layout": "spread",
+      "engines": {
+        "inference": {
+          "endpoint_name": "r8d_s0",
+          "backends": [
+            "dragon_native"
+          ]
+        },
+        "site_1": {
+          "endpoint_name": "r8d_s1",
+          "backends": [
+            "dragon_native"
+          ]
+        }
+      },
+      "sites": [
+        null,
+        "site_1"
+      ],
+      "expected_endpoint": [
+        "r8d_s0",
+        "r8d_s1"
+      ],
+      "ran_on": {
+        "0": {
+          "r8d_s0": 613
+        },
+        "1": {
+          "r8d_s1": 613
+        }
+      },
+      "placement_ok": true,
+      "ready_s": 1.823826789855957,
+      "seq_p50_ms": 127.52073699084576,
+      "bursts_s": [
+        1.9383686379878782,
+        1.8804968259937596,
+        1.8462720529932994,
+        1.8416960210015532,
+        1.8408766259963159
+      ],
+      "req_per_s_bursts_2_5": 130.1531708983076,
+      "req_per_s_first": 123.81545764645253,
+      "errors": [],
+      "n_errors": 0,
+      "code_per_site": {
+        "engine_config_entry": {
+          "site_1": {
+            "endpoint_name": "r8d_s1",
+            "backends": [
+              "dragon_native"
+            ]
+          }
+        },
+        "agent_sites_entry": "site_1",
+        "lines": 2
+      }
+    }
+  ]
+}

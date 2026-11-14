@@ -48,6 +48,27 @@ each; warm = median of 50 field evaluations, reload = prepare + field
   than moving to a GPU.
 - Cold start is dominated by the TensorFlow import (4.2-5.2 s).
 
-P8b (the twin end to end with real surrogates) was not run:
-`tk_pinn_eval` in xGFabric cannot run as is (see the journal) and there is
-no PCR model.
+P8b (the twin end to end with real surrogates) was not run in round 1:
+`tk_pinn_eval` in xGFabric could not run as is (see the journal) and there
+was no PCR model.  It ran later: round 2b B3 (`run_b3.sbatch`, xGFabric PR
+#17 `fix/pinn-eval`) end to end on the concurrent backend, and round 8
+R8-E (`r8/run_r8e.sbatch`) on `dragon_native`, decomposed per answer.
+
+## Round 8 R8-E (2026-11-13): WindField decomposed, on dragon_native
+
+One A100 node, both engines on `dragon_native` (endpoint inside a Dragon
+runtime), 3 runs of 1,200 s per variant.  Medians per answer
+(`results/r8/r8-e/`, journal `JOURNAL-pm-20261114.md`):
+
+| model | variant | total | framework in / out | tar extract | model reload | field |
+|---|---|---|---|---|---|---|
+| PINN | reload per call (xGFabric as is) | 155 ms | 16 / 4 ms | 31 ms | 82 ms | 17 ms |
+| PINN | warm model per worker (local patch) | 43 ms | 17 / 4 ms | 0 | 0 | 18 ms |
+| FNO | reload per call | 818 ms | 15 / 6 ms | 116 ms | 563 ms | 115 ms |
+| FNO | warm model per worker | 179 ms | 16 / 6 ms | 0 | 0 | 115 ms |
+
+The reload, not the framework, is the cost; a warm model cuts the answer
+3.6x (PINN) and 4.6x (FNO).  The tail (15-24 s) is a pool worker's first
+call: TensorFlow import plus CUDA initialization.  Models: FNO 8.9 MB,
+PINN 0.25 MB, PCR 0.8-1.7 MB.  Training: FNO about 250 s, PINN about 330 s,
+PCR partition about 275 s.

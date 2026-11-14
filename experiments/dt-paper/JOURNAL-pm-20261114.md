@@ -18,12 +18,17 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61246055 | r8-gpu-smoke | m5290_g | 1 | 00:00:23 | 0.006 | 0.31 | 0.01 |
 | 61246494 | r8-smoke-b | m5290 | 2 | 00:10:42 | 0.357 | 0.67 | 0.01 |
 | 61246506 | r8-gpu-smoke | m5290_g | 1 | 00:00:39 | 0.011 | 0.67 | 0.02 |
-| 61246837 | r8-b-smoke | m5290 | 5 | 00:07:30 | 0.625 | 1.29 | 0.02 |
-| 61247053 | r8-b-smoke | m5290 | 5 | 00:01:32 | 0.128 | 1.42 | 0.02 |
-| 61247087 | r8-a | m5290 | 2 | 00:06:24 | 0.213 | 1.63 | 0.02 |
-| 61247141 | r8-1 | m5290 | 2 | 00:14:01 | 0.467 | 2.10 | 0.02 |
-| 61247176 | r8-2 | m5290 | 3 | 00:25:34 | 1.278 | 3.38 | 0.02 |
-| 61249075 | r8-1-local | m5290 | 2 | 00:11:36 | 0.387 | 3.76 | 0.02 |
+| 61246711 | r8-e | m5290_g | 1 | 01:02:44 | 1.046 | 0.67 | 1.06 |
+| 61246713 | r8-e-warm | m5290_g | 1 | 01:02:41 | 1.045 | 0.67 | 2.11 |
+| 61246837 | r8-b-smoke | m5290 | 5 | 00:07:30 | 0.625 | 1.29 | 2.11 |
+| 61247053 | r8-b-smoke | m5290 | 5 | 00:01:32 | 0.128 | 1.42 | 2.11 |
+| 61247087 | r8-a | m5290 | 2 | 00:06:24 | 0.213 | 1.63 | 2.11 |
+| 61247141 | r8-1 | m5290 | 2 | 00:14:01 | 0.467 | 2.10 | 2.11 |
+| 61247176 | r8-2 | m5290 | 3 | 00:25:34 | 1.278 | 3.38 | 2.11 |
+| 61247211 | r8-b | m5290 | 5 | 00:28:55 | 2.410 | 5.79 | 2.11 |
+| 61249075 | r8-1-local | m5290 | 2 | 00:11:36 | 0.387 | 6.17 | 2.11 |
+| 61249379 | r8-d | m5290 | 17 | 00:24:43 | 7.003 | 13.18 | 2.11 |
+| 61249380 | r8-c | m5290 | 6 | 00:20:34 | 2.057 | 15.23 | 2.11 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -344,3 +349,68 @@ Each request is one function task of `--work-ms` CPU. Table:
     row still goes to 16 as the page and R8-0 set; a failure there is that
     row's break point.
 - Isolation check empty.
+
+## R8-E: WindField decomposed (done; GPU jobs 61246711 cold, 61246713 warm; 3 runs each)
+
+P8b on the round 8 stack, one A100 node each (regular, about 63 min,
+m5290_g):
+- broker, sensor (1 Hz) and client (probe every 3 s, 1,200 s per run) on
+  loopback;
+- the endpoint inside a single-node Dragon runtime, with both DT engines
+  (inference, learning) on `dragon_native` (`DT_*_BACKEND`). One pool per
+  engine: 64 workers each on the 64-core GPU node;
+- venv `ve8-xgf`; xGFabric `dt-pm8/xGFabric` on the local branch
+  `r8/timings` (3adefa8 plus two commits, never pushed; patches in
+  `results/r8/r8-e/xgfabric-patch/`). Commit 1 is task-side timings: phase
+  times inside `tk_*_eval`, returned with each answer, and jsonl logs of
+  the selector, simulations and trainings. Commit 2 is the warm-model
+  variant: a per-worker cache keyed by the archive path, on with
+  `R8_WARM_MODEL=1`;
+- harness: `p8b_client.py` now records send / receive epochs and the
+  task's times; `r8/run_r8e.sbatch`; table `r8/r8e_table.py`
+  (`results/r8/r8-e/r8e-table-stack-r8-20261114.md`).
+
+xGFabric's own precheck passed in both jobs (September archives: FNO 6.0
+s, PINN 0.15 s, 3 × 38 × 85). Medians over all answers of the 3 runs, ms:
+
+| model | variant | answers | total | to task start | in task | setup | tar extract | model reload | field | cleanup | return |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| PINN | reload per call (xGFabric) | 535 | 155.4 | 16.1 | 134.5 | 1.8 | 31.3 | 81.8 | 16.6 | 2.0 | 4.4 |
+| PINN | warm model | 417 | **42.9** | 16.9 | 20.9 | 1.7 | 0.0 | 0.0 | 17.5 | 0.9 | 4.1 |
+| FNO | reload per call | 109 | 817.8 | 14.8 | 795.3 | 1.7 | 116.0 | 563.2 | 115.0 | 4.4 | 6.1 |
+| FNO | warm model | 217 | **178.8** | 15.6 | 151.9 | 1.7 | 0.0 | 0.0 | 115.2 | 1.2 | 5.7 |
+| none yet ("na") | either | 674 | 11.9-12.5 | 9.1-9.7 | 0 | – | – | – | – | – | 2.5-2.6 |
+
+- **The reload is the cost, not the framework.** As xGFabric is written, each
+  answer pays tar extraction and a model rebuild: 113 ms for PINN, 679 ms
+  for FNO. Keeping the model per worker cuts the answer **3.6× (PINN) and
+  4.6× (FNO)**. The field itself is 17 ms (PINN) and 115 ms (FNO), close to
+  P8a's GPU warm numbers (13 / 97 ms).
+- **The framework's share** is "to task start" plus "return": client →
+  service, the selector task, and the inference dispatch through ORBIT to
+  the Dragon pool, about 15-17 ms in, 4-6 ms out. An answer before any
+  model exists ("na") costs 12 ms end to end. The selector's own body takes
+  under 0.01 ms; its cost is its task round trip, inside "to task start".
+- **Cold workers dominate the tail:** the worst answers take 15-24 s,
+  when an inference lands on a pool worker that has not imported TensorFlow
+  yet (12.5 s import in a worker, R8-0) plus CUDA initialization. Only 77%
+  (PINN) and 51% (FNO) of the warm variant's answers hit the cache; the
+  rest are first calls per worker. With 64 workers per pool and about 1
+  answer/s, the cache fills slowly. This is why per-run medians vary (cold
+  run 3: 9 FNO answers, p50 9.7 s).
+- **Sizes** (`archives-*.txt`):
+  - FNO archives 8.85-8.87 MB (8.46 MiB, used as the model file in R8-C);
+  - PINN 0.25 MB;
+  - PCR packed models 0.8-1.7 MB;
+  - PCR partitions are directories (`WindField/pcr/partition/<n>/`), not
+    one file.
+- **Training wall time per model** (task body, not the waits for readings
+  and simulations): FNO 249-260 s (p50; 210-331), PINN 316-354 s
+  (302-417), PCR partition 262-290 s, plus 7.3 s for the PCR fit.
+- **Selector choices over time** (quarters of the run): no model in the
+  first quarter, then FNO and PINN mixed (PINN 0.43-0.49, FNO 0.23-0.34),
+  then increasingly PINN as the profiler learns that it is cheaper (last
+  quarter: PINN 0.77-1.00).
+- 1,952 answers, no failed probe, isolation checks empty (all 6 runs).
+- `e6-use-cases/README.md` updated: P8b ran (B3, round 2b) and R8-E
+  decomposed it.

@@ -17,7 +17,8 @@
 #  process        endpoints restarted under e6-use-cases/p8b_endpoint.py
 #                 (concurrent backend with a spawn ProcessPoolExecutor,
 #                 P8B_WORKERS=64), not under Dragon; layout one
-# Knobs: ROWS ("dragon_native concurrent process"), KS, MS_LIST, REPEATS.
+# Knobs: ROWS ("dragon_native concurrent process"), KS, MS_LIST, REPEATS,
+#   CONC_LAYOUTS ("one spread"; the rerun of 61247211's spread row: "spread").
 set -uo pipefail
 source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm8/digital.twins/experiments/dt-paper/r8/env-r8.sh}
 R=$X/results/${RES:-r8/r8-b}; mkdir -p $R
@@ -88,7 +89,8 @@ run() {  # row backend workers layout
 for row in ${ROWS:-dragon_native concurrent process}; do
   case $row in
     dragon_native) start_eps dragon; run dragon_native dragon_native 64 one; run dragon_native dragon_native 64 spread ;;
-    concurrent) [ ${#EPS[@]} = 4 ] || start_eps dragon; run concurrent concurrent 32 one; run concurrent concurrent 32 spread; stop_eps ;;
+    concurrent) [ ${#EPS[@]} = 4 ] || start_eps dragon
+                for lay in ${CONC_LAYOUTS:-one spread}; do run concurrent concurrent 32 $lay; done; stop_eps ;;
     process) start_eps process; run process concurrent 64 one; stop_eps ;;
   esac
 done
