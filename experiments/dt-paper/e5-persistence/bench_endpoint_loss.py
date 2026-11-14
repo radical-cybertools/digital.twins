@@ -63,7 +63,7 @@ PROBE_VALUE = 3.0
 
 # round 8 (R8-5): E5_BACKEND names the endpoints' backend (dragon_native);
 # E5_LAUNCH prefixes the learning endpoint's command ("dragon -s"), which
-# then starts in its own session so a kill takes its whole Dragon runtime;
+# then starts in its own process group so a kill takes its whole Dragon runtime;
 # E5_CLEANUP runs after every kill ("dragon-cleanup").  Defaults: as before.
 E5_BACKEND = os.environ.get("E5_BACKEND", "concurrent")
 
@@ -125,7 +125,10 @@ class LearningEndpoint:
             launch + [script, "-n", self.args.learning,
                       "-u", self.args.broker, "-p", "default", "--tunnel", "none"],
             env=env, stdout=log, stderr=subprocess.STDOUT,
-            start_new_session=bool(launch))
+            # its own process group (killpg takes the whole runtime), same
+            # session: `dragon -s` started with start_new_session=True hangs
+            # without output (round 8, R8-5 attempt 1; checked by hand)
+            process_group=0 if launch else None)
         log.close()
         deadline = t0 + 120
         while time.time() < deadline:

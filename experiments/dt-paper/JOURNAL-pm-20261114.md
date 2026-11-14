@@ -525,3 +525,25 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
   - one session per twin: N = 16 breaks with p99 1,180 ms (worst twin
     1,700 ms), creation 24 s.
 - Real run: job 61258719 (`RES=r8/r8-c2`, 2 repeats, N = 1 .. 256).
+
+## R8-5: persistence on Dragon (attempt 1 failed at start; rerun queued)
+
+- Harness: `e5-persistence/bench_endpoint_loss.py` gained `E5_BACKEND`
+  (dragon_native for both endpoints), `E5_LAUNCH="dragon -s"` (the learning
+  endpoint inside its own Dragon runtime) and `E5_CLEANUP=dragon-cleanup`
+  (after every kill). The kill is SIGKILL to the runtime's whole process
+  group. `r8/run_persistence.sh`: broker and inference endpoint (own Dragon
+  runtime) on node 0; harness and learning endpoint on node 1, so the
+  cleanup touches only the learning runtime.
+- **Attempt 1 (job 61258409, 3 min):** the learning endpoint never came up
+  (`learning endpoint never advertised rhapsody`, no endpoint log at all).
+  I had started it with `start_new_session=True`. A by-hand check on a
+  1-node interactive allocation (`r8-diag`, about 3 min,
+  `attempt1/dragon-launch-diag.py`):
+  - `dragon -s prog` from Python without a new session: up and done in 11.9 s;
+  - with `start_new_session=True`: hangs 90 s with no output at all;
+  - with `process_group=0` (own group, same session): 12.0 s; `killpg(SIGKILL)`
+    leaves 0 Dragon processes.
+  **Finding:** a Dragon single-node launcher must stay in its caller's
+  session. The harness now uses `process_group=0`.
+- Rerun: job 61261542.
