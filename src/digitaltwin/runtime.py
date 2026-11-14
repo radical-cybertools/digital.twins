@@ -395,7 +395,9 @@ class RuntimeAPI:
         from the runtime.
 
         Supported events:
-            * :pyattr:`ON_INPUT` - send all input received by the agent.
+            * :pyattr:`ON_INPUT` - send every observation the agent receives:
+              inputs routed to it through the graph.  A query
+              (`get_inference`) is not an observation and fires nothing.
             * :pyattr:`ON_OUTPUT` - send all output emitted by the agent.
             * :pyattr:`ON_MODEL_PUBLISH` - for agents when an investigator
               publishes a model.
@@ -1388,7 +1390,7 @@ class DTRuntime:
             if component.output_dtype == req_dtype and component.is_persistent is False:
                 # check if agent or investigator
                 answer = await self._run_component(
-                    component, in_data, skip_queue_out=True
+                    component, in_data, skip_queue_out=True, observe=False
                 )
                 if answer is None:
                     return TypedData(NULL_DTYPE, None)
@@ -1504,7 +1506,11 @@ class DTRuntime:
         self.components[input_dtype].append(ant_comp)
 
     async def _run_component(
-        self, ant: _AnnotatedComponent, in_data: TypedData, skip_queue_out: bool = False
+        self,
+        ant: _AnnotatedComponent,
+        in_data: TypedData,
+        skip_queue_out: bool = False,
+        observe: bool = True,
     ):
         """Execute a component's main loop / its inference tasks.
 
@@ -1516,6 +1522,9 @@ class DTRuntime:
             in_data: Input :class:`TypedData` instance.
             skip_queue_out: Flag indicating whether to skip enqueuing the
                 output for the consumer.
+            observe: Whether *in_data* is an observation: fire the
+                component's and its investigators' ON_INPUT callbacks.  A
+                query (`get_inference`) is not, so it trains nothing.
 
         Returns:
             Final ``TypedData`` produced, or ``None`` for special cases (e.g.
@@ -1540,11 +1549,12 @@ class DTRuntime:
             await ant.component.update(in_data)
             return  # NULL_VAL.. Output done by component directly
 
-        await self._fire_inputs(ant, in_data)
+        if observe:
+            await self._fire_inputs(ant, in_data)
 
-        # and child investigators
-        for investigator in ant.investigators.values():
-            await self._fire_inputs(investigator, in_data)
+            # and child investigators
+            for investigator in ant.investigators.values():
+                await self._fire_inputs(investigator, in_data)
 
         # a streamed input after an inline callback failed the twin (or
         # during teardown) starts no inference; `get_inference` still answers
