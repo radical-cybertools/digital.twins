@@ -89,6 +89,80 @@ FRAME_OVERHEAD = 64 * 1024
 # Drop-oldest, matching the broker's own per-subscriber queues.
 INBOX_SIZE = 1024
 
+# the callback queue of a participant shared by a session's twins: one
+# dispatcher thread then serves every twin's frames, so it gets the depth
+# of that many per-twin participants' (ORBIT's default is 1024)
+SHARED_CALLBACK_QUEUE = 16384
+
+
+def start_participant(broker_url: Optional[str], name: str,
+                      timeout: Optional[float], **tuning) -> EndpointRuntime:
+    """Build and register a stream participant.  Blocking: run it in a
+    worker thread."""
+
+    logger.info("connecting stream participant %s", name)
+
+    # role: the default 'consumer' says nothing in a topology view.
+    # This participant is a twin's data plane.
+    runtime = EndpointRuntime(broker_url=broker_url, name=name, role="stream",
+                              **tuning)
+
+    # ORBIT's start() takes a finite deadline only; the streaming
+    # contract's "None waits forever" is approximated by a day -- a
+    # participant that cannot register within that is stuck, not
+    # waiting.
+    effective = 86400.0 if timeout is None else timeout
+
+    try:
+        runtime.start(wait=True, timeout=effective)
+
+        # start() returns *silently* when it merely timed out, so the
+        # registration has to be checked explicitly -- otherwise an
+        # unreachable broker would surface much later, as a stream
+        # that never delivers
+        if not runtime.wait_registered(timeout=0):
+            raise TimeoutError(
+                f"ORBIT broker at {runtime.broker_url} did not register"
+                f" {name} within {effective}s"
+            )
+
+    except BaseException:
+        # the runtime's threads and its socket are live from start();
+        # a caller that never reaches close() would keep them alive
+        runtime.stop()
+        raise
+
+    return runtime
+
+
+async def open_shared_participant(broker_url: Optional[str], name: str,
+                                  timeout: Optional[float]) -> EndpointRuntime:
+    """One stream participant for many twins (a DT session's).
+
+    Each twin's `OrbitPubSubBackend` rides on it as an injected runtime: it
+    registers its own callbacks (ORBIT counts the wire subscriptions per
+    pattern, so one twin's unsubscribe never cuts another's) and leaves
+    the runtime's lifetime to the owner, who stops it with
+    `close_participant`.  The broker then holds one connection per session
+    instead of one per twin.
+    """
+
+    return await asyncio.to_thread(start_participant, broker_url, name, timeout,
+                                   callback_queue=SHARED_CALLBACK_QUEUE)
+
+
+async def close_participant(runtime: EndpointRuntime) -> None:
+    """Stop a participant from `open_shared_participant`, reporting the
+    frames its callback queue dropped for all twins that rode on it."""
+
+    cb_dropped = getattr(getattr(runtime, "_cb", None), "dropped", 0) or 0
+    if cb_dropped:
+        logger.warning("shared stream participant dropped %d message(s) at"
+                       " the ORBIT callback queue", cb_dropped)
+
+    # blocking: closes the socket and joins its threads
+    await asyncio.to_thread(runtime.stop)
+
 
 class OrbitPubSubBackend(PubSubBackend):
     """A `PubSubBackend` over ORBIT eventing.
@@ -157,39 +231,7 @@ class OrbitPubSubBackend(PubSubBackend):
     def _start_runtime(self, timeout: Optional[float]) -> EndpointRuntime:
         """Build and register the participant.  Runs in a worker thread."""
 
-        logger.info("connecting stream participant %s", self.name)
-
-        # role: the default 'consumer' says nothing in a topology view.
-        # This participant is a twin's data plane.
-        runtime = EndpointRuntime(broker_url=self.broker_url, name=self.name,
-                                  role="stream")
-
-        # ORBIT's start() takes a finite deadline only; the streaming
-        # contract's "None waits forever" is approximated by a day -- a
-        # participant that cannot register within that is stuck, not
-        # waiting.
-        effective = 86400.0 if timeout is None else timeout
-
-        try:
-            runtime.start(wait=True, timeout=effective)
-
-            # start() returns *silently* when it merely timed out, so the
-            # registration has to be checked explicitly -- otherwise an
-            # unreachable broker would surface much later, as a stream
-            # that never delivers
-            if not runtime.wait_registered(timeout=0):
-                raise TimeoutError(
-                    f"ORBIT broker at {runtime.broker_url} did not register"
-                    f" {self.name} within {effective}s"
-                )
-
-        except BaseException:
-            # the runtime's threads and its socket are live from start();
-            # a caller that never reaches close() would keep them alive
-            runtime.stop()
-            raise
-
-        return runtime
+        return start_participant(self.broker_url, self.name, timeout)
 
     async def close(self):
         """Cancel the receive loop, drop every subscription, stop the
@@ -232,7 +274,11 @@ class OrbitPubSubBackend(PubSubBackend):
         samples should not have to be inferred from `seq` gaps.
         """
 
-        cb_dropped = getattr(getattr(runtime, "_cb", None), "dropped", 0) or 0
+        # a shared participant's dispatcher counts for all its riders: only
+        # its owner reports it (see `close_participant`)
+        cb_dropped = 0
+        if self._owns_runtime:
+            cb_dropped = getattr(getattr(runtime, "_cb", None), "dropped", 0) or 0
 
         if self.dropped or cb_dropped:
             logger.warning(

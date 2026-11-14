@@ -917,6 +917,7 @@ class PubSubConfig:
         self,
         timeout: Optional[float] = None,
         watch_subscriptions: bool = False,
+        runtime=None,
     ) -> PubSubBackend:
         """Open the transport alone, without namespace semantics.
 
@@ -929,6 +930,11 @@ class PubSubConfig:
 
         `watch_subscriptions` lets the backend answer `wait_for_subscriber`
         (a ZMQ publisher then opens an XPUB); other backends ignore it.
+
+        `runtime` (`orbit` kind only) is an already-registered ORBIT
+        participant to ride on -- one shared by a session's twins (see
+        `streaming_orbit.open_shared_participant`).  The backend then does
+        not own it.
         """
 
         if self.kind == BACKEND_ORBIT:
@@ -945,7 +951,8 @@ class PubSubConfig:
                 name = (f"dt_stream.{self.namespace.split('-')[0]}"
                         f".{uuid.uuid4().hex[:4]}")
 
-            backend = OrbitPubSubBackend(self.broker_url, name=name)
+            backend = OrbitPubSubBackend(self.broker_url, runtime=runtime,
+                                         name=name)
 
         elif self.kind == ZMQ_PS_Client.kind:
             backend = ZMQ_PS_Client(self.pub_addr, self.sub_addr,
@@ -961,13 +968,16 @@ class PubSubConfig:
 
         return backend
 
-    async def connect(self, timeout: Optional[float] = None) -> PubSubClient:
-        """Open a connected, namespaced client for this endpoint."""
+    async def connect(self, timeout: Optional[float] = None,
+                      runtime=None) -> PubSubClient:
+        """Open a connected, namespaced client for this endpoint
+        (`runtime`: see `connect_backend`)."""
 
         if self.namespace is None:
             raise ValueError("backend is None!")
 
-        return PubSubClient(await self.connect_backend(timeout), self.namespace)
+        return PubSubClient(await self.connect_backend(timeout, runtime=runtime),
+                            self.namespace)
 
 
 class ChannelPublisher:
@@ -1052,6 +1062,7 @@ async def connect_stream_client(
     *,
     backend: Optional[str] = None,
     broker_url: Optional[str] = None,
+    runtime=None,
 ) -> PubSubClient:
     """Build and connect a namespaced stream client from configuration.
 
@@ -1061,7 +1072,8 @@ async def connect_stream_client(
     -- each is ignored by the other, and both default to their own
     resolution.
 
-    The connect is bounded by `timeout` in either case.
+    The connect is bounded by `timeout` in either case.  `runtime` is an
+    ORBIT participant to share (see `PubSubConfig.connect_backend`).
     """
 
     name = stream_backend(backend)
@@ -1071,4 +1083,4 @@ async def connect_stream_client(
     else:
         cfg = PubSubConfig.resolve(namespace, pub_addr, sub_addr)
 
-    return await cfg.connect(timeout)
+    return await cfg.connect(timeout, runtime=runtime)
