@@ -369,3 +369,7 @@ endpoint 193 / 205 / 161%.
 6. The SwarmSlicer phase 6 attempt-2 broker profile with 10.6%
    permessage-deflate is still unexplained (all in-cluster connections
    chose `deflate off` here and in round 8).
+
+- Merged into `paper/dtaas` as `fa68273` (pushed); unit tests on the merged
+  tree: 257 passed (`PYTHONPATH=src`, ve8b; pytest, pytest-asyncio and
+  pytest-timeout installed into ve8b for this). No PRs.
