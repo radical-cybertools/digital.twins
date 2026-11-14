@@ -1,0 +1,404 @@
+inference endpoint pid 454750 on nid006540 at 20:09:46
+ 454790 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454791 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454792 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454793 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454794 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454795 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454796 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454797 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454798 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454799 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454800 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454801 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454802 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454803 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454804 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454805 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454806 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454807 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454808 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454809 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454810 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454811 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454812 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454813 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454814 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454815 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454816 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.10 radical-orbit-e
+ 454825 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.00 /pscratch/sd/m/
+ 454827 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.09 /pscratch/sd/m/
+ 454832 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.01 /pscratch/sd/m/
+ 454929 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.00 /pscratch/sd/m/
+ 454930 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.02 /pscratch/sd/m/
+ 454931 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.21 /pscratch/sd/m/
+ 454932 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.14 /pscratch/sd/m/
+ 454933 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.12 /pscratch/sd/m/
+ 454934 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.16 /pscratch/sd/m/
+ 454935 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.12 /pscratch/sd/m/
+ 454936 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.13 /pscratch/sd/m/
+ 454937 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.13 /pscratch/sd/m/
+ 454938 merzky    20   0 9571372 119104  16384 S 0.000 0.023   0:00.15 /pscratch/sd/m/
+Process 454750: /pscratch/sd/m/merzky/dt-pm8/ve8b/bin/python3.12 /pscratch/sd/m/merzky/dt-pm8/ve8b/bin/radical-orbit-endpoint.py -n r8c_inf_1 -u https://10.249.18.69:8721 -p default --tunnel none
+Python v3.12.12 (/opt/cray/pe/python/3.12.12/bin/python3.12)
+
+Thread 454750 (idle): "MainThread"
+    Condition.wait (threading.py:359)
+    Event.wait (threading.py:655)
+    main (radical-orbit-endpoint.py:115)
+    <module> (radical-orbit-endpoint.py:141)
+Thread 454825 (idle): "orbit-callbacks"
+    Condition.wait (threading.py:355)
+    Queue.get (queue.py:171)
+    CallbackDispatcher._run (orbit/runtime_support.py:62)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454826 (idle): "orbit-work"
+    EpollSelector.select (selectors.py:468)
+    BaseEventLoop._run_once (asyncio/base_events.py:1961)
+    BaseEventLoop.run_forever (asyncio/base_events.py:645)
+    EndpointRuntime._run_work_thread (orbit/runtime.py:592)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454827 (idle): "orbit-transport"
+    EpollSelector.select (selectors.py:468)
+    BaseEventLoop._run_once (asyncio/base_events.py:1961)
+    BaseEventLoop.run_forever (asyncio/base_events.py:645)
+    EndpointRuntime._run_transport_thread (orbit/runtime.py:604)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454832 (idle): "Local Executor Process Reaper"
+    Condition.wait (threading.py:359)
+    _ProcessReaper.run (psij/executors/local.py:176)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454927 (idle): "asyncio_0"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454928 (idle): "dragon_native_results"
+    Queue.get (dragon/native/queue.py:541)
+    DragonNativeExecutionBackend._drain_results (rhapsody/backends/execution/dragon_native.py:648)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454929 (idle): "dragon_native_timers"
+    Condition.wait (threading.py:355)
+    DragonNativeExecutionBackend._watch_timers (rhapsody/backends/execution/dragon_native.py:757)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454930 (idle): "dragon_native_workers"
+    Condition.wait (threading.py:359)
+    Event.wait (threading.py:655)
+    DragonNativeExecutionBackend._watch_workers (rhapsody/backends/execution/dragon_native.py:808)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454931 (idle): "dragon_native_ops_0"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454932 (idle): "dragon_native_ops_1"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454933 (idle): "dragon_native_ops_2"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454934 (idle): "dragon_native_ops_3"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454935 (idle): "dragon_native_ops_4"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454936 (idle): "dragon_native_ops_5"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454937 (idle): "dragon_native_ops_6"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 454938 (idle): "dragon_native_ops_7"
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 455212 (idle): "telemetry-dragon-adapter"
+    Queue.get (dragon/native/queue.py:541)
+    DragonTelemetryAdapter._collect_loop (rhapsody/telemetry/adapters/dragon.py:369)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 455343 (active): "Thread-4 (_exq_monitor)"
+    Queue._poll (dragon/native/queue.py:490)
+    Queue.poll (dragon/native/queue.py:716)
+    ProcessGroup._exq_monitor (dragon/native/process_group.py:2209)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+=== native
+Process 454750: /pscratch/sd/m/merzky/dt-pm8/ve8b/bin/python3.12 /pscratch/sd/m/merzky/dt-pm8/ve8b/bin/radical-orbit-endpoint.py -n r8c_inf_1 -u https://10.249.18.69:8721 -p default --tunnel none
+Python v3.12.12 (/opt/cray/pe/python/3.12.12/bin/python3.12)
+
+Thread 454750 (idle): "MainThread"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    lock_PyThread_acquire_lock (libpython3.12.so.1.0)
+    Condition.wait (threading.py:359)
+    Event.wait (threading.py:655)
+    main (radical-orbit-endpoint.py:115)
+    <module> (radical-orbit-endpoint.py:141)
+    __libc_start_call_main (libc.so.6)
+    __libc_start_main_impl (libc.so.6)
+Thread 454825 (idle): "orbit-callbacks"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    lock_PyThread_acquire_lock (libpython3.12.so.1.0)
+    Condition.wait (threading.py:355)
+    Queue.get (queue.py:171)
+    CallbackDispatcher._run (orbit/runtime_support.py:62)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454826 (idle): "orbit-work"
+    epoll_wait (libc.so.6)
+    select_epoll_poll_impl (selectmodule.c:1621)
+    select_epoll_poll (selectmodule.c.h:962)
+    EpollSelector.select (selectors.py:468)
+    BaseEventLoop._run_once (asyncio/base_events.py:1961)
+    BaseEventLoop.run_forever (asyncio/base_events.py:645)
+    EndpointRuntime._run_work_thread (orbit/runtime.py:592)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454827 (idle): "orbit-transport"
+    epoll_wait (libc.so.6)
+    select_epoll_poll_impl (selectmodule.c:1621)
+    select_epoll_poll (selectmodule.c.h:962)
+    EpollSelector.select (selectors.py:468)
+    BaseEventLoop._run_once (asyncio/base_events.py:1961)
+    BaseEventLoop.run_forever (asyncio/base_events.py:645)
+    EndpointRuntime._run_transport_thread (orbit/runtime.py:604)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454832 (idle): "Local Executor Process Reaper"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    lock_PyThread_acquire_lock (libpython3.12.so.1.0)
+    Condition.wait (threading.py:359)
+    _ProcessReaper.run (psij/executors/local.py:176)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454927 (idle): "asyncio_0"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454928 (idle): "dragon_native_results"
+    DragonNativeExecutionBackend._emit (rhapsody/backends/execution/dragon_native.py:1323)
+    DragonNativeExecutionBackend._handle_messages (rhapsody/backends/execution/dragon_native.py:698)
+    DragonNativeExecutionBackend._drain_results (rhapsody/backends/execution/dragon_native.py:671)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454929 (idle): "dragon_native_timers"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    lock_PyThread_acquire_lock (libpython3.12.so.1.0)
+    Condition.wait (threading.py:355)
+    DragonNativeExecutionBackend._watch_timers (rhapsody/backends/execution/dragon_native.py:757)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454930 (idle): "dragon_native_workers"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    lock_PyThread_acquire_lock (libpython3.12.so.1.0)
+    Condition.wait (threading.py:359)
+    Event.wait (threading.py:655)
+    DragonNativeExecutionBackend._watch_workers (rhapsody/backends/execution/dragon_native.py:808)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454931 (idle): "dragon_native_ops_0"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454932 (idle): "dragon_native_ops_1"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454933 (idle): "dragon_native_ops_2"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454934 (idle): "dragon_native_ops_3"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454935 (idle): "dragon_native_ops_4"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454936 (idle): "dragon_native_ops_5"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454937 (idle): "dragon_native_ops_6"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 454938 (idle): "dragon_native_ops_7"
+    __futex_abstimed_wait_common (libc.so.6)
+    __new_sem_wait_slow64.constprop.0 (libc.so.6)
+    PyThread_acquire_lock_timed (libpython3.12.so.1.0)
+    _queue_SimpleQueue_get_impl (_queuemodule.c:254)
+    _queue_SimpleQueue_get (_queuemodule.c.h:251)
+    _worker (concurrent/futures/thread.py:90)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 455212 (idle): "telemetry-dragon-adapter"
+    __futex_abstimed_wait_common (libc.so.6)
+    pthread_cond_timedwait@@GLIBC_2.3.2 (libc.so.6)
+    recv_mem (pydragon_fli.c:28477)
+    recv_mem (pydragon_fli.c:28346)
+    Queue.get (dragon/native/queue.py:541)
+    DragonTelemetryAdapter._collect_loop (rhapsody/telemetry/adapters/dragon.py:369)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)
+Thread 455343 (active): "Thread-4 (_exq_monitor)"
+    __futex_abstimed_wait_common (libc.so.6)
+    pthread_cond_timedwait@@GLIBC_2.3.2 (libc.so.6)
+    poll (pydragon_fli.c:34709)
+    poll (pydragon_fli.c:34622)
+    Queue._poll (dragon/native/queue.py:490)
+    Queue.poll (dragon/native/queue.py:716)
+    ProcessGroup._exq_monitor (dragon/native/process_group.py:2209)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+    thread_run (libpython3.12.so.1.0)
+    start_thread (libc.so.6)
+    clone3 (libc.so.6)

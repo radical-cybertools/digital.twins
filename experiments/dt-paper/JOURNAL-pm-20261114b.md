@@ -16,6 +16,7 @@ session, twins, clients, phases), setup and harness. Branch
 | 61292521 | B3 | m5290 | 3 | 00:03:57 | 0.198 | 0.89 |
 | 61292738 | diagnostic (smoke latency) | m5290 | 3 | 00:03:45 | 0.188 | 1.08 |
 | 61292923 | B3 endpoint profile | m5290 | 3 | 00:02:07 | 0.106 | 1.18 |
+| 61293158 | B4 | m5290 | 3 | 00:18:20 | 0.917 | 2.10 |
 
 ## B0: setup (2026-11-14)
 
@@ -199,3 +200,59 @@ uses only `learning_0`, so one learning endpoint is round 8's N = 1
 setup. The endpoint dump moves into the first row (25 s in, the session
 and its pool exist, only the 1 Hz stream runs), with `top -H`, a Python
 and a `--native` dump and a 20 s thread record.
+
+## B4: the 300 ms tail at one twin (job 61293158, debug, 3 nodes, 63d8692)
+
+Round 8's harness (`r8/bench_windfield_scale.py`, one session, 1 Hz probe,
+1 Hz stream; on 63d8692 the probe no longer feeds the investigators), N = 1,
+`--records`, 5 min after a 40 s warm-up per row, one learning endpoint
+(`NLEARN=1`; one twin uses only `learning_0`). Three rows in one
+allocation, each a new session: `b4base`, `b4noburst` (`--every 1000000`),
+`b4nostream` (`--no-stream`). Tables `results/r8b/b4/b4-tables.md`
+(`r8b/b4_table.py`).
+
+| row | probes | p50 ms | p99 ms (interpolated) | max ms | PINN p50 / max | FNO p50 / max |
+|---|---|---|---|---|---|---|
+| b4base | 300 | 33.8 | 136.1 | 143.4 | 33.5 / 143.4 | 133.8 / 137.2 |
+| b4noburst | 300 | 34.0 | 136.5 | 137.5 | 33.6 / 38.0 | 133.9 / 137.5 |
+| b4nostream | 300 | 35.1 | 225.9 | 305.6 | 34.7 / 225.2 | 134.9 / 305.6 |
+
+- b4base saw 40 burst starts (3 investigators, every 16 s: #64 works).
+  The slowest probes are FNO probes at 135-137 ms at every distance from a
+  burst start (-6 to +8 s). One PINN probe at 143 ms, 2.3 s before a burst.
+  **Bursts do not make the tail**: removing them (b4noburst) leaves p99
+  and max where they are.
+- The split around the worker-side `t_task`: submit + run 30 ms (PINN) and
+  130 ms (FNO), return path 3-4 ms in every row and in every slow probe.
+- **The ~300 ms answers appear only in b4nostream, and only in the first
+  20 s of its load window** (40-60 s after the session was created): FNO
+  294-306 ms, PINN 195-225 ms, i.e. **+165 ms per answer**, all of it on
+  the submit/run side. After that, the row is like the others.
+- **Cause, with evidence:** a new session's `dragon_native` pool (128
+  workers) charges about 165 ms the first time each worker runs a task.
+  With the stream off, the twin submits about 2 inference tasks per
+  second (selector plus surrogate per probe), so the 128 workers are all
+  warm after about 64 s: 40 s warm-up plus about 20 s into the load, as
+  seen. With the stream on (about 4 tasks/s) they are warm before the
+  40 s warm-up ends, so b4base and b4noburst show no slow answer. The
+  smoke tests showed the same: 2 twins with the stream (about 5 tasks/s)
+  turned normal about 30 s after session creation (61292518).
+- **Round 8's "p99" of 301 ms at N = 1** (60 probes, `xs[int(0.99*n)]` =
+  the slowest) fits this: round 8 warmed up 25 s, about 100 tasks, short
+  of 128, so a probe or two in the window landed on a cold worker; an FNO
+  probe (134 ms) on a cold worker is about 300 ms. Its p50 (36 ms) matches
+  B4's 34 ms.
+- **The endpoint's steady 133-140% CPU** comes with the session's pool,
+  not with load: the idle endpoint without a session is at 0% (smoke
+  61292518, `top -H` all threads 0.0); in B4 it jumps to 134-137% within
+  4 s of the first session and stays at 128-141% through all three rows,
+  stream or no stream, bursts or none. In both the Python and the
+  `--native` dump (`endpoint-session-dump-*.txt`, 25 s into the first row)
+  the only thread py-spy calls active is Dragon's
+  `ProcessGroup._exq_monitor` (process_group.py:2209), in `Queue.poll`
+  -> `pydragon_fli.c` `poll` -> `pthread_cond_timedwait`; B3's `top -H`
+  put that thread at 62% of a core. So most of the steady CPU is the pool's
+  exception-queue monitor looping on short timed waits (0.1 s patience
+  per poll in Python; the C loop below it is not visible). The remaining
+  ~70% is not attributed: no per-thread CPU at idle was captured (the
+  `top -H` lines were cut by `tail`). Described, not fixed.
