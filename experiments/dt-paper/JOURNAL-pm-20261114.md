@@ -718,3 +718,75 @@ service and asyncflow. Levers (not tried):
 - fewer frames per request (the task_status event and the twin_call
   response are separate frames);
 - more than one broker process.
+
+## Close-out (2026-11-14 00:45 PST)
+
+- **Phases:** R8-0 (gate), R8-E, R8-B, R8-A, R8-1, R8-2, R8-D, R8-C, R8-5
+  (stretch) and the optional broker profile are done. Every break point and
+  the reason it broke is above and on the page.
+  - Superseded or invalid, kept: R8-0 run 1's sessions step (twin-id
+    collision); R8-C jobs 61249380 (dtype bug) and 61258719 (session
+    groups); R8-5 attempt 1 (start_new_session); broker profile 61263350
+    (no py-spy).
+- **Ledger:** see the table at the top (`python s1/ledger.py 8`). About 20.3
+  CPU node-h of 42 on m5290 and 2.11 GPU node-h of 3 on m5290_g. My two
+  short `r8-diag` interactive jobs are not in the ledger, because they do
+  not carry the `r8-` prefix: about 0.1 node-h.
+- **Provenance:** every round 8 result JSON has it: 132 files. 119 carry the
+  full block from `r8/prov.py`: commits of all five packages, backend, workers
+  per node, telemetry, file system. The 13 hand-wired E3 baseline files
+  (`xgf_sites.py`, R8-D) carry the E3 harness's provenance only (digital.twins
+  commit, args); they ran in the same jobs on the same ve8.
+- **Isolation:** every check is empty: 22 files, plus jobs 61249379 (node
+  failure) and 61258719 (cancelled), checked by hand.
+- **No allocation and no Dragon runtime left:** every job ended; endpoints
+  got `dragon-cleanup`, and Slurm killed everything when allocations ended.
+- **Harness changes outside `r8/`:**
+  - e1-overhead/bench_dt_insitu.py: `--work-ms`, `--local-backend
+    dragon_native`, `--stream-broker`;
+  - e4-hot-swap/bench_model_update.py: `--payload-mb`, `--path-mb`;
+  - e3-portability/bench_sites.py, xgf_sites.py: `E3_BACKENDS`;
+  - e5-persistence/bench_endpoint_loss.py: `E5_BACKEND`, `E5_LAUNCH`,
+    `E5_CLEANUP`;
+  - e6-use-cases/p8b_client.py: probe epochs and task times; README updated.
+  - All defaults are unchanged. No `src/` or `deploy/` change. No fix
+    branches, no PRs.
+
+### Open questions for Andre
+
+1. **Silent return loss (R8-A):** task returns above about 1.5 MiB raw come
+   back as `None`, with no error. Make it an error, in the radical.orbit
+   rhapsody plugin's return-value limit or in rhapsody's orbit backend?
+2. **Frame cap and models (R8-A):** the 4 MiB frame cap rules out publishing
+   WindField's FNO (8.9 MB) or PCR by value. Is by-path the intended route
+   in the paper, or should by-value models travel once per worker rather
+   than with every task?
+3. **Twin after an endpoint restart (R8-0):** an existing twin never
+   recovers after its endpoint's Dragon runtime restarts (`404 unknown
+   session id`); only new twins work (as in E5). Should the DT service
+   recreate its remote rhapsody session on that 404?
+4. **One pool per experiment (R8-0, R8-2):** every DT session gets its own
+   dragon_native pool of one worker per physical core (128 on Perlmutter).
+   An endpoint carries about 16 experiments; 64 time out at start. Should
+   `workers_per_node` be passable through the engine config?
+5. **The broker is the framework's limit:** about 700-950 req/s (R8-2,
+   R8-D, broker profile). About half its time is the event loop's socket and
+   TLS writes, about 13% a per-request INFO log line
+   (`runtime.py:1533 "Online run: ..."`). The levers: that line at debug,
+   fewer frames per request, more than one broker process.
+6. **WindField at scale (R8-C):** one experiment breaks at 64 twins at
+   1 Hz, on the p99 tail, before any process saturates. Is 16 twins per
+   experiment the number for the paper? Would the fusion cases need more,
+   and so the broker levers in 5?
+7. **Warm models (R8-E):** keeping the model per worker cuts PINN answers
+   3.6× and FNO 4.6×. Take this into xGFabric (the patch is in
+   `results/r8/r8-e/xgfabric-patch/`)? The 15-24 s cold-worker tail (TF
+   import) stays unless workers are warmed at start.
+8. **dragon_native's idle cost (R8-D):** an endpoint process uses 1.6-1.9
+   cores even at low load; worth a look in rhapsody.
+9. **Launch traps** (for notes/dragon-perlmutter-pitfalls.md): `dragon -s`
+   hangs under `start_new_session=True` (use `process_group=0`); under
+   Dragon `multiprocessing.Pipe` is None; `pgrep -f <prog>` matches the
+   Dragon launcher first.
+
+- Branch `exp/pm-round8-20261114` merged into `paper/dtaas` after this entry.
