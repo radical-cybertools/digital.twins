@@ -151,3 +151,12 @@ debug level (about 13% of the broker's busy time at its ceiling in round 8's
 profile).  Round 8b also runs with `RADICAL_ORBIT_WS_COMPRESSION=off` on the
 broker and every runtime inside the cluster (about 10% in the SwarmSlicer
 phase 6 broker profile).
+
+## Update 2026-11-14: queries are read-only
+
+digital.twins #64 (Andre, option B): `get_inference` answers but fires no
+`ON_INPUT`, on the agent or its investigators; only inputs routed through
+the graph train the twin.  Before it, a client's probe also fed the
+investigators: round 8's R8-C at 1 Hz ran the bursts every 8 s instead of
+16 s.  A harness that fed a learner through `get_inference` must publish to
+an input channel instead.
