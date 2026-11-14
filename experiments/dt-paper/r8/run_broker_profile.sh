@@ -14,7 +14,7 @@
 #             kind) and, 5 s into the load window, py-spy dump plus
 #             `py-spy record --rate 20 --idle --nonblocking` for 30 s on
 #             the broker (folded); r8/folded_top.py summarizes it.
-# Knobs: TWINS (256), SECONDS_ (60), PORT (8261).
+# Knobs: TWINS (256), SECONDS_ (60), PORT (8261), RUNS_LIST ("plain profiled"), PYSPY.
 set -uo pipefail
 source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm8/digital.twins/experiments/dt-paper/r8/env-r8.sh}
 R=$X/results/${RES:-r8/broker-profile}; mkdir -p $R
@@ -27,7 +27,10 @@ IP0=$(ip -4 -o addr show hsn0 | awk '{print $4}' | cut -d/ -f1 | head -1)
 PORT=${PORT:-8261}
 URL=https://$IP0:$PORT
 SAMPLER=$PWD/$X/r8/proc_sampler.sh
-PYSPY=$(command -v py-spy)
+# py-spy is not in ve8 (round 7 added it to ve6); attempt 1 (job 61263350)
+# ran without it, so its profiled run has the frame counts but no stacks
+PYSPY=${PYSPY:-$(command -v py-spy || echo /pscratch/sd/m/merzky/dt-pm6/ve6/bin/py-spy)}
+[ -x "$PYSPY" ] || { echo "no py-spy at $PYSPY"; exit 2; }
 echo "node0 $N0 ($IP0) endpoint $N1 client $N2  broker $URL  py-spy $($PYSPY --version)  $(date -u +%FT%TZ)"
 ulimit -Sn $(ulimit -Hn)
 T=$W/tls/r8bp-$J; mkdir -p $T; chmod 700 $W/tls $T
@@ -39,7 +42,7 @@ chmod 600 $T/*
 export RADICAL_ORBIT_BROKER_CERT=$T/broker_cert.pem RADICAL_ORBIT_BROKER_KEY=$T/broker_key.pem
 export RADICAL_ORBIT_BROKER_TOKEN=$(cat $T/broker.token)
 STAMP=$W/orbit-stamp-r8bp-$J; touch $STAMP
-for run in plain profiled; do
+for run in ${RUNS_LIST:-plain profiled}; do
   tag=$run-$J
   bcmd=(radical-orbit-broker.py)
   if [ $run = profiled ]; then

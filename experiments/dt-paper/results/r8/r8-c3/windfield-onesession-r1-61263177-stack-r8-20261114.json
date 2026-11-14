@@ -1,0 +1,229 @@
+{
+ "provenance": {
+  "experiment": "R8-C WindField at scale",
+  "harness": "bench_windfield_scale.py",
+  "time": "2026-11-14T00:07:58-0800",
+  "host": "nid005142",
+  "python": "3.12.12",
+  "slurm_job": "61263177",
+  "harness_commit": "ead8719c02c772c9ab3700ff86e78be299386212",
+  "harness_dirty": true,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.7.93:8241",
+   "inference": "r8c_inf_1",
+   "learning": [
+    "r8c_l0_1",
+    "r8c_l1_1",
+    "r8c_l2_1",
+    "r8c_l3_1"
+   ],
+   "backend": "dragon_native",
+   "twins": "1,4,16,64,128,256,512,1024",
+   "per_session": 0,
+   "rate": 1.0,
+   "warmup": 25.0,
+   "seconds": 60.0,
+   "model_path": "/pscratch/sd/m/merzky/dt-pm8/models/r8-model-8.46MB.bin",
+   "timeout": 60.0,
+   "out": "experiments/dt-paper/results/r8/r8-c3/windfield-onesession-r1-61263177-stack-r8-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "twins": 1,
+   "per_session": 1,
+   "sessions": 1,
+   "created": 1,
+   "create_s": 2.2484238147735596,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 85,
+   "probes": 60,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 34.95466709136963,
+   "p99_ms": 303.1172752380371,
+   "worst_twin_p99_ms": 303.1172752380371,
+   "arch_share": {
+    "pinn": 0.85,
+    "fno": 0.15,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.2779703140258789,
+   "burst_makespan_s_max": 0.2909853458404541,
+   "train_s_p50": 2.011098623275757,
+   "update_delay_s_p50": 0.8353075981140137,
+   "update_delay_s_max": 7.998781204223633,
+   "updates_seen": 13,
+   "twin_states": {
+    "running": 1
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794643705.5340886,
+   "load_end_epoch": 1794643765.5340886,
+   "client_cpu_pct": 0.3621471150167431,
+   "break": null
+  },
+  {
+   "twins": 4,
+   "per_session": 4,
+   "sessions": 1,
+   "created": 4,
+   "create_s": 2.2519350051879883,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 340,
+   "probes": 240,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 41.9386625289917,
+   "p99_ms": 223.32000732421875,
+   "worst_twin_p99_ms": 323.81153106689453,
+   "arch_share": {
+    "pinn": 0.7708333333333334,
+    "fno": 0.22916666666666666,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.29462409019470215,
+   "burst_makespan_s_max": 0.35086846351623535,
+   "train_s_p50": 2.0129473209381104,
+   "update_delay_s_p50": 0.8921016454696655,
+   "update_delay_s_max": 7.891544580459595,
+   "updates_seen": 62,
+   "twin_states": {
+    "running": 4
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794643798.4094677,
+   "load_end_epoch": 1794643858.4094677,
+   "client_cpu_pct": 1.1436610793875932,
+   "break": null
+  },
+  {
+   "twins": 16,
+   "per_session": 16,
+   "sessions": 1,
+   "created": 16,
+   "create_s": 2.44792103767395,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 1354,
+   "probes": 960,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 65.40989875793457,
+   "p99_ms": 268.7087059020996,
+   "worst_twin_p99_ms": 352.6027202606201,
+   "arch_share": {
+    "pinn": 0.7947916666666667,
+    "fno": 0.20520833333333333,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.36472296714782715,
+   "burst_makespan_s_max": 0.6380183696746826,
+   "train_s_p50": 2.012020468711853,
+   "update_delay_s_p50": 0.7606067657470703,
+   "update_delay_s_max": 7.758109092712402,
+   "updates_seen": 247,
+   "twin_states": {
+    "running": 16
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794643892.3317986,
+   "load_end_epoch": 1794643952.3317986,
+   "client_cpu_pct": 4.03608875700068,
+   "break": null
+  },
+  {
+   "twins": 64,
+   "per_session": 64,
+   "sessions": 1,
+   "created": 64,
+   "create_s": 5.385588884353638,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 5393,
+   "probes": 3840,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 150.64942836761475,
+   "p99_ms": 1034.454584121704,
+   "worst_twin_p99_ms": 1080.2795886993408,
+   "arch_share": {
+    "pinn": 0.8104166666666667,
+    "fno": 0.18958333333333333,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.7355554103851318,
+   "burst_makespan_s_max": 1.2495858669281006,
+   "train_s_p50": 2.2670907974243164,
+   "update_delay_s_p50": 1.0614619255065918,
+   "update_delay_s_max": 8.34238338470459,
+   "updates_seen": 981,
+   "twin_states": {
+    "running": 64
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794643989.3048565,
+   "load_end_epoch": 1794644049.3048565,
+   "client_cpu_pct": 16.426713207357903,
+   "break": "p99 1034 ms"
+  },
+  {
+   "twins": 128,
+   "per_session": 128,
+   "sessions": 1,
+   "created": 128,
+   "create_s": 10.296715259552002,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 10428,
+   "probes": 5543,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 1283.0088138580322,
+   "p99_ms": 2387.287378311157,
+   "worst_twin_p99_ms": 2675.286054611206,
+   "arch_share": {
+    "pinn": 0.8038968067833303,
+    "fno": 0.19610319321666966,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.8962507247924805,
+   "burst_makespan_s_max": 1.945216178894043,
+   "train_s_p50": 2.508373737335205,
+   "update_delay_s_p50": 1.8566532135009766,
+   "update_delay_s_max": 10.832698583602905,
+   "updates_seen": 1529,
+   "twin_states": {
+    "running": 128
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794644092.706167,
+   "load_end_epoch": 1794644152.706167,
+   "client_cpu_pct": 28.83896061597564,
+   "break": "p99 2387 ms"
+  }
+ ],
+ "break": {
+  "twins": 64,
+  "why": "p99 1034 ms"
+ }
+}

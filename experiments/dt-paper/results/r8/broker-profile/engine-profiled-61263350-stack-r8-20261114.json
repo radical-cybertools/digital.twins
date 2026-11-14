@@ -1,0 +1,60 @@
+{
+ "provenance": {
+  "experiment": "R8-2 one engine",
+  "harness": "bench_engine.py",
+  "time": "2026-11-14T00:19:14-0800",
+  "host": "nid007142",
+  "python": "3.12.12",
+  "slurm_job": "61263350",
+  "harness_commit": "ead8719c02c772c9ab3700ff86e78be299386212",
+  "harness_dirty": true,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.20.0:8261",
+   "endpoint": "r8bp_ep_profiled",
+   "backend": "dragon_native",
+   "twins": "256",
+   "per_session": 0,
+   "work_ms": 0.0,
+   "seconds": 60.0,
+   "timeout": 120.0,
+   "load_marker": "/pscratch/sd/m/merzky/dt-pm8/digital.twins/experiments/dt-paper/results/r8/broker-profile/load-profiled-61263350",
+   "out": "experiments/dt-paper/results/r8/broker-profile/engine-profiled-61263350-stack-r8-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "twins": 256,
+   "per_session": 256,
+   "sessions": 1,
+   "created": 256,
+   "create_s": 7.43375563621521,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "load_start_epoch": 1794644362.1696343,
+   "load_end_epoch": 1794644422.3167887,
+   "requests": 44635,
+   "req_per_s": 742.0966211337648,
+   "failed": 0,
+   "errors": [],
+   "p50_ms_median": 323.27803001680877,
+   "p50_ms_max": 329.74798551003914,
+   "p99_ms_median": 599.3504590005614,
+   "p99_ms_max": 671.2509189965203,
+   "worst_twin_req_per_s": 2.826401379920242,
+   "client_cpu_pct": 25.767049432891966,
+   "break": null
+  }
+ ]
+}

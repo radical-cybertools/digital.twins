@@ -46,6 +46,8 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61261445 | r8-diag | m5290 | 1 | 00:01:52 | 0.031 | 18.03 | 2.11 |
 | 61261523 | r8-diag | m5290 | 1 | 00:00:26 | 0.007 | 18.04 | 2.11 |
 | 61261542 | r8-5 | m5290 | 2 | 00:05:50 | 0.194 | 18.23 | 2.11 |
+| 61263177 | r8-c | m5290 | 6 | 00:18:00 | 1.800 | 20.03 | 2.11 |
+| 61263350 | r8-bprof | m5290 | 3 | 00:04:03 | 0.203 | 20.23 | 2.11 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -529,7 +531,7 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
   only because r3_site answers with its host name `three` (it has no
   DT_TEST_ENDPOINT_TAG).
 
-## R8-C: WindField at scale (attempt 1 invalid, smoke passed, real run queued)
+## R8-C: WindField at scale (done, job 61263177; earlier attempts invalid or superseded)
 
 - **Attempt 1, job 61249380** (regular, 6 nodes, 21 min): invalid, a
   harness bug. `TrendLearner`'s inference returned the `r8c_field` dtype,
@@ -603,7 +605,7 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
   - R8-C's twins go to 512 and 1,024 if no break by 256.
   - "If R8-C is already running with session groups, finish the current
     point, then switch."
-- **Job 61258719** (regular, 6 nodes, cancelled after 7 min, isolation
+- **Job 61258719, superseded** (regular, 6 nodes, cancelled after 7 min, isolation
   check empty; `results/r8/r8-c2/`) was running the session-groups row:
   - N = 1, 4 and 16, one session each (a group holds 16): p50 35.6 / 40.5 /
     65.3 ms, p99 303 / 307 / 251 ms, worst twin 303 / 320 / 305 ms;
@@ -615,3 +617,46 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
   all twins in one session, N = 1, 4, 16, 64, 128, 256, 512, 1024 until the
   break, 2 repeats, model file 8.46 MiB. R8-5 had already run (one session
   per cycle, as E5 does), so it needs no change.
+
+### R8-C result (job 61263177, regular, 6 nodes, about 18 min; `results/r8/r8-c3/`)
+
+One experiment: all N twins in one DT session. Inference engine on one
+Dragon endpoint node, learning on four (`learning_0..3`, twin k on k % 4),
+128 workers each. Per twin: a 1 Hz Davis stream (90 B records); a probe
+inference once a second; 3 surrogate investigators (every 16 readings a
+burst of 16 × 0.25 s simulations, a 2 s training, a model published by path,
+8.46 MiB file); and a learner (4 s training every 4 readings). 2 repeats, 25 s
+warm-up, 60 s measured. Table `windfield-table-stack-r8-20261114.md`,
+made with `r8/windfield_table.py`; endpoint CPU is the endpoint process
+itself (68 threads; the fixed sampler).
+
+| twins | p50 ms | p99 ms | worst twin p99 ms | burst makespan s p50 / max | model-update delay s p50 / max | probes / failed | broker CPU % | inference endpoint CPU % |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 36.2 | 301 | 303 | 0.28 / 0.29 | 1.10 / 8.00 | 120 / 0 | 4 | 137 |
+| 4 | 42.8 | 263 | 324 | 0.30 / 0.38 | 0.86 / 7.89 | 480 / 0 | 9 | 155 |
+| 16 | 64.7 | 263 | 353 | 0.37 / 0.64 | 0.76 / 7.78 | 1,920 / 0 | 28 | 193 |
+| **64** | 148.0 | **1,249** (1,034 / 1,464) | 1,597 | 0.81 / 1.42 | 1.06 / 8.78 | 7,603 / 0 | 83 | 205 |
+| 128 | 1,288 | 2,768 | 3,366 | 1.05 / 2.62 | 1.88 / 12.89 | 10,571 / 0 | 113 | 161 |
+
+- **Break at 64 twins in one experiment, at the 1 Hz operating point:** p99
+  1,034 ms and 1,464 ms in the two repeats. 16 twins is the last point under
+  1 s (p99 263 ms, worst twin 353 ms). No probe failed at any N, and there
+  were no keepalive timeouts; the break is the p99 criterion alone.
+- **What broke:** no single process is saturated at 64 twins. The broker is
+  at 83% and the inference endpoint process at 205%, against a single-loop
+  ceiling of about 120% for the broker (R8-2, R8-D). The tail comes from
+  the combined load on the shared broker path. At 64 twins that is per
+  second about 128 inferences (each a selector task plus a model task),
+  about 190 simulation tasks from the bursts, 64 stream messages and the
+  trainings: about 500 task round trips/s plus the event and stream frames,
+  near the broker's ceiling. At 128 twins the broker saturates (113%) and
+  p50 jumps to 1.3 s.
+- Burst makespan rises from 0.28 s (1 twin) to 0.81 s (64), and the
+  model-update delay (publish to the first answer carrying the new model)
+  from about 0.8-1.1 s to 1.06 s (max 8.8 s: the first answer after a
+  publish that lands during a burst).
+- Against the WindField operating point (1 twin per broker): the framework
+  carries about 16-64× WindField's twin count at 1 Hz within the 1 s
+  target.
+- Isolation check empty. The superseded job 61258719's table (4 sessions
+  at N = 64: p99 1,427 ms) is kept in `results/r8/r8-c2/`.
