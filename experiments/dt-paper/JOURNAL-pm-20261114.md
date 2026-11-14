@@ -30,6 +30,11 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61249379 | r8-d | m5290 | 17 | 00:24:43 | 7.003 | 13.18 | 2.11 |
 | 61249380 | r8-c | m5290 | 6 | 00:20:34 | 2.057 | 15.23 | 2.11 |
 | 61258267 | r8-c-smoke | m5290 | 6 | 00:12:29 | 1.248 | 16.48 | 2.11 |
+| 61258304 | r8-b-cs | m5290 | 5 | 00:08:24 | 0.700 | 17.18 | 2.11 |
+| 61258409 | r8-5 | m5290 | 2 | 00:02:50 | 0.094 | 17.28 | 2.11 |
+| 61261445 | r8-diag | m5290 | 1 | 00:01:52 | 0.031 | 17.31 | 2.11 |
+| 61261523 | r8-diag | m5290 | 1 | 00:00:26 | 0.007 | 17.31 | 2.11 |
+| 61261542 | r8-5 | m5290 | 2 | 00:05:50 | 0.194 | 17.51 | 2.11 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -538,7 +543,7 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
     1,700 ms), creation 24 s.
 - Real run: job 61258719 (`RES=r8/r8-c2`, 2 repeats, N = 1 .. 256).
 
-## R8-5: persistence on Dragon (attempt 1 failed at start; rerun queued)
+## R8-5: persistence on Dragon (done; attempt 1 failed at start)
 
 - Harness: `e5-persistence/bench_endpoint_loss.py` gained `E5_BACKEND`
   (dragon_native for both endpoints), `E5_LAUNCH="dragon -s"` (the learning
@@ -558,4 +563,23 @@ in the cleanup. The isolation check, run by hand afterwards, is empty.
     leaves 0 Dragon processes.
   **Finding:** a Dragon single-node launcher must stay in its caller's
   session. The harness now uses `process_group=0`.
-- Rerun: job 61261542.
+- **Rerun, job 61261542** (regular, 2 nodes, 6 min): done.
+  `results/r8/r8-5/endpoint-loss-61261542-stack-r8-20261114.json`.
+
+| | 10 kills of the learning endpoint's whole Dragon runtime |
+|---|---|
+| detection (twin reports `engine endpoint lost: r8_5_learning_ep`) | 10.1-10.9 s |
+| in-situ probes answered during the loss | learner 101/101, sibling 101/101; the sibling answers after the loss too (10/10) |
+| `dragon-cleanup` on the node after each kill | 2.1-2.6 s |
+| restarted endpoint up | 6.3-6.5 s |
+| learning resumed (a new learner twin on the restarted endpoint) | 9.1-9.4 s |
+| client reattach by session id (10×) | attach 0.02 s, first answer 0.19 s, state running, all ok |
+
+  - **Persistence holds on Dragon.** Losing the learning endpoint's whole
+    runtime never stops in-situ inference. Detection takes the broker's
+    grace of about 10 s. Kill, cleanup and restart bring learning back
+    within 9-10 s of the restart.
+  - As in E5, the twin whose learning endpoint died is failed and a new
+    one is built. This matches R8-0's finding that an existing twin does
+    not reattach to a restarted endpoint.
+  - Isolation check empty.

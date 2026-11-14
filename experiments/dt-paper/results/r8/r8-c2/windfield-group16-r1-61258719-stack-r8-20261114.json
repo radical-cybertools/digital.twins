@@ -1,0 +1,153 @@
+{
+ "provenance": {
+  "experiment": "R8-C WindField at scale",
+  "harness": "bench_windfield_scale.py",
+  "time": "2026-11-13T23:49:55-0800",
+  "host": "nid005318",
+  "python": "3.12.12",
+  "slurm_job": "61258719",
+  "harness_commit": "d64cf10f304ef3651b638d8c90424bae0c54adb4",
+  "harness_dirty": false,
+  "packages": {
+   "digitaltwin": "49bd91f94a001c944ed133efb4cf75c4f47d4841",
+   "rhapsody": "5abecd6f89dcf3b18e72bb2504fd775883aabeed",
+   "radical.orbit": "adf25487c772791f99bf3812ea55b02bec6fc9b1",
+   "radical.asyncflow": "24667a5eae6872f9863e31ca631d8af2bc945f04",
+   "rose": "9cc47a597063351c6192e3520f1bb0d39dd35230",
+   "dragonhpc": "0.15.0"
+  },
+  "backend": "dragon_native",
+  "workers_per_node": "default (physical cores)",
+  "telemetry": "on (default)",
+  "file_system": "/pscratch",
+  "args": {
+   "broker": "https://10.249.8.163:8241",
+   "inference": "r8c_inf_1",
+   "learning": [
+    "r8c_l0_1",
+    "r8c_l1_1",
+    "r8c_l2_1",
+    "r8c_l3_1"
+   ],
+   "backend": "dragon_native",
+   "twins": "1,4,16,64,128,256",
+   "per_session": 16,
+   "rate": 1.0,
+   "warmup": 25.0,
+   "seconds": 60.0,
+   "model_path": "/pscratch/sd/m/merzky/dt-pm8/models/r8-model-8.46MB.bin",
+   "timeout": 60.0,
+   "out": "experiments/dt-paper/results/r8/r8-c2/windfield-group16-r1-61258719-stack-r8-20261114.json"
+  }
+ },
+ "points": [
+  {
+   "twins": 1,
+   "per_session": 16,
+   "sessions": 1,
+   "created": 1,
+   "create_s": 2.2650365829467773,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 85,
+   "probes": 60,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 35.55655479431152,
+   "p99_ms": 302.9656410217285,
+   "worst_twin_p99_ms": 302.9656410217285,
+   "arch_share": {
+    "pinn": 0.7833333333333333,
+    "fno": 0.21666666666666667,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.2757222652435303,
+   "burst_makespan_s_max": 0.2889723777770996,
+   "train_s_p50": 2.0097851753234863,
+   "update_delay_s_p50": 1.3287687301635742,
+   "update_delay_s_max": 7.896964073181152,
+   "updates_seen": 16,
+   "twin_states": {
+    "running": 1
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794642623.0710676,
+   "load_end_epoch": 1794642683.0710676,
+   "client_cpu_pct": 0.3565391645487694,
+   "break": null
+  },
+  {
+   "twins": 4,
+   "per_session": 16,
+   "sessions": 1,
+   "created": 4,
+   "create_s": 2.344670295715332,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 340,
+   "probes": 240,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 40.54665565490723,
+   "p99_ms": 307.06310272216797,
+   "worst_twin_p99_ms": 320.44315338134766,
+   "arch_share": {
+    "pinn": 0.7916666666666666,
+    "fno": 0.20833333333333334,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.291126012802124,
+   "burst_makespan_s_max": 0.3878638744354248,
+   "train_s_p50": 2.012023448944092,
+   "update_delay_s_p50": 1.7307097911834717,
+   "update_delay_s_max": 7.745040416717529,
+   "updates_seen": 65,
+   "twin_states": {
+    "running": 4
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794642716.076588,
+   "load_end_epoch": 1794642776.076588,
+   "client_cpu_pct": 1.1408764481584888,
+   "break": null
+  },
+  {
+   "twins": 16,
+   "per_session": 16,
+   "sessions": 1,
+   "created": 16,
+   "create_s": 2.452937126159668,
+   "create_errors": [],
+   "n_create_errors": 0,
+   "measure_s": 60.0,
+   "published": 1355,
+   "probes": 960,
+   "failed": 0,
+   "errors": [],
+   "p50_ms": 65.27221202850342,
+   "p99_ms": 250.7333755493164,
+   "worst_twin_p99_ms": 305.23681640625,
+   "arch_share": {
+    "pinn": 0.8041666666666667,
+    "fno": 0.19583333333333333,
+    "pcr": 0.0
+   },
+   "burst_makespan_s_p50": 0.3640758991241455,
+   "burst_makespan_s_max": 0.6244144439697266,
+   "train_s_p50": 2.0128087997436523,
+   "update_delay_s_p50": 0.7692255973815918,
+   "update_delay_s_max": 7.78663969039917,
+   "updates_seen": 239,
+   "twin_states": {
+    "running": 16
+   },
+   "twin_last_errors": [],
+   "load_start_epoch": 1794642809.9801311,
+   "load_end_epoch": 1794642869.9801311,
+   "client_cpu_pct": 4.090579721816638,
+   "break": null
+  }
+ ]
+}
