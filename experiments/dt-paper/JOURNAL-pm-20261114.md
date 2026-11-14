@@ -48,6 +48,7 @@ Updated after every job (sacct elapsed x nodes), `python s1/ledger.py 8`.
 | 61261542 | r8-5 | m5290 | 2 | 00:05:50 | 0.194 | 18.23 | 2.11 |
 | 61263177 | r8-c | m5290 | 6 | 00:18:00 | 1.800 | 20.03 | 2.11 |
 | 61263350 | r8-bprof | m5290 | 3 | 00:04:03 | 0.203 | 20.23 | 2.11 |
+| 61264017 | r8-bprof | m5290 | 3 | 00:02:10 | 0.108 | 20.34 | 2.11 |
 
 ## R8-0: setup (2026-11-13 14:20 PST)
 
@@ -660,3 +661,60 @@ itself (68 threads; the fixed sampler).
   target.
 - Isolation check empty. The superseded job 61258719's table (4 sessions
   at N = 64: p99 1,427 ms) is kept in `results/r8/r8-c2/`.
+
+## Broker profile at its ceiling (optional item; jobs 61263350 and 61264017)
+
+R8-2's setup: broker on node 0, one Dragon endpoint (128 workers), the client
+on node 2, 256 twins in one experiment (one DT session), no-op tasks, 60 s
+closed loop. `r8/run_broker_profile.sh`, `results/r8/broker-profile/`.
+
+- **Job 61263350**: the plain run gave **818.0 req/s** (p50 297 ms, p99 602
+  ms). The profiled run's py-spy did not start: ve8 has no py-spy, and my
+  script took it from PATH. Its frame counts are valid. Rerun:
+- **Job 61264017**: profiled run only, the broker under `r8/frame_counter.py`
+  and `py-spy record --rate 20 --idle --nonblocking` for 30 s (from 5 s
+  into the load; py-spy from ve6). **821.3 req/s** (p50 296 ms, p99 599 ms),
+  so the profiler does not slow it. 17,574 samples, 111 errors. Summary:
+  `top-broker-61264017.md` (`r8/folded_top.py`).
+
+**Where the broker's busy time goes.** 312 busy samples. Not counted: the
+frame counter's own `_dump` thread, which sleeps but which folded_top.py
+reports as busy (488 samples; it has no source for that file).
+
+| part | share of busy samples | top frames |
+|---|---|---|
+| asyncio event loop (socket writes, self-pipe wake-ups, callbacks) | about 47% | `_SelectorSocketTransport.write` (selector_events.py:1075), `_write_to_self` (selector_events.py:152), `Handle._run` |
+| radical.orbit (routing, protocol) | about 17% | `Broker._route_frame`, parse/pack |
+| **logging** | **about 13%** | `StreamHandler.flush` (logging/__init__.py:1144), `Logger.makeRecord` |
+| DT service (dt plugin) | about 8% | `wire.decode` (digitaltwin/service/wire.py:135), `DTSession.twin_call` (session.py:382) |
+| websockets, TLS | about 4% plus SSL writes inside asyncio | `SSLObject.write` (ssl.py:867) |
+| asyncflow | about 3% | `WorkflowEngine.task_callbacks` |
+| serialization, rhapsody | about 2-3% each | – |
+
+**What crosses the broker per request** (frame counter, load window, per second):
+- inbound: about 821 `twin_call` requests (one per request, about 0.7 KB) and
+  819 `rhapsody/task_status` events (one per request, 230 B);
+- inbound: only 7.3 `rhapsody/submit` requests of about 221 KB each. rhapsody
+  #139 coalesces about 112 tasks per submit frame, with 7.3 responses of
+  4.9 KB each;
+- outbound: 834 frames (1.02 per request).
+
+So each request costs the broker about 2 inbound frames and 1 outbound
+frame, and the DT service's own work (decode, twin_call, asyncflow
+callbacks) is a small part of it.
+
+**A finding (described, not fixed):** `src/digitaltwin/runtime.py:1533`
+logs `logger.info("Online run: %s.", ...)` for every component run. At the
+ceiling the broker writes one INFO line per request: 50,214 of the
+log's 51,512 lines, about 13% of its busy time, spent formatting and
+flushing log records on the event loop.
+
+**For the paper:** the framework's limit of about 700-950 req/s is the
+broker's one event loop. About half of its time goes to asyncio's socket
+and TLS writes and wake-ups, about a sixth to ORBIT routing, about an
+eighth to a per-request INFO log line, and under a tenth each to the DT
+service and asyncflow. Levers (not tried):
+- that log line at debug level;
+- fewer frames per request (the task_status event and the twin_call
+  response are separate frames);
+- more than one broker process.
