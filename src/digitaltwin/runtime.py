@@ -1530,7 +1530,7 @@ class DTRuntime:
         _COMPONENT.set(type(ant.component).__name__)
 
         await self.is_start.wait()
-        logger.info("Online run: %s.", type(ant.component).__name__)
+        logger.debug("Online run: %s.", type(ant.component).__name__)
 
         assert ant.input_dtype == TRUTHY or ant.input_dtype == in_data.dtype
 
