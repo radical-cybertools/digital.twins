@@ -488,8 +488,31 @@ class PluginDT(Plugin):
 
     # -- the data plane -----------------------------------------------------
 
+    async def open_stream_participant(self, sid: str, timeout: Optional[float]):
+        """One ORBIT stream participant for all twins of session `sid`, or
+        `None` on the ZMQ data plane (which has no participants)."""
+
+        if self.stream_backend != BACKEND_ORBIT:
+            return None
+
+        from ..streaming_orbit import open_shared_participant
+
+        return await open_shared_participant(
+            self.broker_url, f"dt_stream.{sid}", timeout
+        )
+
+    async def close_stream_participant(self, runtime) -> None:
+        """Stop a participant from `open_stream_participant`."""
+
+        from ..streaming_orbit import close_participant
+
+        await close_participant(runtime)
+
     async def connect_stream(
-        self, namespace: str, timeout: Optional[float] = CLIENT_CONNECT_TIMEOUT
+        self,
+        namespace: str,
+        timeout: Optional[float] = CLIENT_CONNECT_TIMEOUT,
+        runtime=None,
     ) -> PubSubClient:
         """A connected, namespaced stream client on the selected backend.
 
@@ -497,6 +520,10 @@ class PluginDT(Plugin):
         The `orbit` branch never touches `stream_addresses`, which is what
         keeps the embedded ZMQ broker from being started in a deployment
         that asked for the token-authenticated data plane.
+
+        `runtime` (from `open_stream_participant`) makes the twin's stream
+        ride on its session's shared participant instead of opening one of
+        its own.
         """
 
         if self.stream_backend == BACKEND_ORBIT:
@@ -505,6 +532,7 @@ class PluginDT(Plugin):
                 timeout=timeout,
                 backend=BACKEND_ORBIT,
                 broker_url=self.broker_url,
+                runtime=runtime,
             )
 
         pub_addr, sub_addr = await self.stream_addresses()
