@@ -36,6 +36,21 @@ def _git(*cmd):
         return None
 
 
+def _online_run_level():
+    """Level of digitaltwin's per-request 'Online run' log line (#63)."""
+    try:
+        import inspect
+        import digitaltwin.runtime as r
+        src = inspect.getsource(r)
+        i = src.find('"Online run')
+        if i < 0:
+            i = src.find("'Online run")
+        line = src[src.rfind("\n", 0, i):i]
+        return "debug" if "debug(" in line else "info" if "info(" in line else "unknown"
+    except Exception as exc:
+        return f"unknown ({type(exc).__name__})"
+
+
 def provenance(experiment, harness, args=None, **extra):
     return {
         "experiment": experiment,
@@ -45,12 +60,15 @@ def provenance(experiment, harness, args=None, **extra):
         "python": platform.python_version(),
         "slurm_job": os.environ.get("SLURM_JOB_ID"),
         "harness_commit": _git("rev-parse", "HEAD"),
-        "harness_dirty": bool(_git("status", "--porcelain", "--", "experiments/dt-paper/r8")),
+        "harness_dirty": bool(_git("status", "--porcelain", "--", "experiments/dt-paper/r8", "experiments/dt-paper/r8b")),
         "packages": {k: _commit(v) for k, v in DISTS.items()},
         "backend": os.environ.get("R8_BACKEND", "dragon_native"),
         "workers_per_node": os.environ.get("R8_WORKERS_PER_NODE", "default (physical cores)"),
         "telemetry": os.environ.get("R8_TELEMETRY", "on (default)"),
         "file_system": os.environ.get("R8_FS", "/pscratch"),
+        "venv": os.environ.get("R8_VENV", os.environ.get("VIRTUAL_ENV")),
+        "ws_compression": os.environ.get("RADICAL_ORBIT_WS_COMPRESSION", "unset (orbit default: auto)"),
+        "online_run_log_level": _online_run_level(),
         "args": vars(args) if args is not None else None,
         **extra,
     }

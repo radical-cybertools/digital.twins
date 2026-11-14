@@ -110,7 +110,8 @@ def one_n(runtime, args, n, run):
         learn = f"learning_{k % len(args.learning)}" if args.learning else None
         twin = dt.create_twin(f"r8c-{uuid.uuid4().hex[:12]}")
         dt.add_input(twin, rc.DAVIS, channels[k])
-        dt.add_agent(twin, dt.package(rc.WindAgent, learn=learn, model_path=args.model_path),
+        dt.add_agent(twin, dt.package(rc.WindAgent, learn=learn, model_path=args.model_path,
+                                      every=args.every),
                      rc.DAVIS, rc.FIELD)
         dt.add_investigator(twin, dt.package(rc.TrendLearner, learn=learn), rc.DAVIS, TREND)
         dt.start(twin)
@@ -135,7 +136,8 @@ def one_n(runtime, args, n, run):
     stop_evt = threading.Event()
     pstats = {"published": 0}
     pth = threading.Thread(target=publishers, args=(channels, args.rate, stop_evt, pstats), daemon=True)
-    pth.start()
+    if not args.no_stream:
+        pth.start()
     t_meas = time.time() + args.warmup
     t_end = t_meas + args.seconds
     probes = [[] for _ in twins]
@@ -161,7 +163,8 @@ def one_n(runtime, args, n, run):
     for t in ths:
         t.join()
     stop_evt.set()
-    pth.join(timeout=30)
+    if not args.no_stream:
+        pth.join(timeout=30)
     states, last_errors = {}, set()
     for dt, tw in twins:
         try:
@@ -209,6 +212,10 @@ def one_n(runtime, args, n, run):
     if set(states) - {"running"}:
         reasons.append(f"twin states {states}: {sorted(last_errors)[:1]}")
     rec["break"] = "; ".join(reasons) or None
+    if args.records:  # round 8b B4: every probe record and the burst starts
+        rec["records"] = {"probes": probes,
+                          "bursts": sorted({(k, p.get("arch"), p.get("v"), p.get("t_b0"), p.get("burst_s"))
+                                            for k, ps in enumerate(probes) for p in ps if p.get("t_b0")})}
     for dt in dts:
         drop(dt)
     return rec
@@ -228,6 +235,10 @@ def main() -> int:
     p.add_argument("--seconds", type=float, default=60.0)
     p.add_argument("--model-path", default="/pscratch/sd/m/merzky/dt-pm8/models/r8-model-10MB.bin")
     p.add_argument("--timeout", type=float, default=60.0)
+    p.add_argument("--every", type=int, default=16,
+                   help="readings per burst (round 8: 16; B4's no-burst ablation: very large)")
+    p.add_argument("--no-stream", action="store_true", help="B4 ablation: publish no stream")
+    p.add_argument("--records", action="store_true", help="write every probe record (round 8b B4)")
     p.add_argument("--out", required=True)
     args = p.parse_args()
     run = uuid.uuid4().hex[:6]

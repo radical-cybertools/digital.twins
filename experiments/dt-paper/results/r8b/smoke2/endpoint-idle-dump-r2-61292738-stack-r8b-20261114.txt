@@ -1,0 +1,75 @@
+top - 12:03:03 up 1 day, 22:20,  0 users,  load average: 6.00, 16.32, 53.46
+Threads:  69 total,   0 running,  69 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.3 us,  0.2 sy,  0.0 ni, 99.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem : 515140.8+total, 497369.1+free, 28256.72+used, 1494.211 buff/cache
+MiB Swap:    0.000 total,    0.000 free,    0.000 used. 486884.0+avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+1237292 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:01.40 /pscratch/sd/m/
+1237295 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237296 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237297 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237298 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237299 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237300 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237301 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237302 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237303 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237304 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237305 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237306 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237307 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237308 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237309 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237310 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+1237311 merzky    20   0 3322608 110572  18432 S 0.000 0.021   0:00.10 radical-orbit-e
+Process 1237292: /pscratch/sd/m/merzky/dt-pm8/ve8b/bin/python3.12 /pscratch/sd/m/merzky/dt-pm8/ve8b/bin/radical-orbit-endpoint.py -n r8c_inf_2 -u https://10.249.1.185:8621 -p default --tunnel none
+Python v3.12.12 (/opt/cray/pe/python/3.12.12/bin/python3.12)
+
+Thread 1237292 (idle): "MainThread"
+    Condition.wait (threading.py:359)
+    Event.wait (threading.py:655)
+    main (radical-orbit-endpoint.py:115)
+    <module> (radical-orbit-endpoint.py:141)
+Thread 1237358 (idle): "Thread-1 (_fetch_info)"
+    _PollLikeSelector.select (selectors.py:415)
+    Popen._communicate (subprocess.py:2115)
+    Popen.communicate (subprocess.py:1209)
+    run (subprocess.py:550)
+    run_cmd_strict (orbit/batch_system.py:74)
+    QueueInfoSlurm._collect_info (orbit/queue_info_slurm.py:209)
+    QueueInfo._collect_info_filtered (orbit/queue_info.py:174)
+    QueueInfo._get_cached (orbit/queue_info.py:88)
+    QueueInfo.get_info (orbit/queue_info.py:112)
+    QueueInfo.start_prefetch.<locals>._fetch_info (orbit/queue_info.py:58)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 1237364 (idle): "orbit-callbacks"
+    Condition.wait (threading.py:355)
+    Queue.get (queue.py:171)
+    CallbackDispatcher._run (orbit/runtime_support.py:62)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 1237365 (idle): "orbit-work"
+    EpollSelector.select (selectors.py:468)
+    BaseEventLoop._run_once (asyncio/base_events.py:1961)
+    BaseEventLoop.run_forever (asyncio/base_events.py:645)
+    EndpointRuntime._run_work_thread (orbit/runtime.py:592)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 1237367 (idle): "orbit-transport"
+    EpollSelector.select (selectors.py:468)
+    BaseEventLoop._run_once (asyncio/base_events.py:1961)
+    BaseEventLoop.run_forever (asyncio/base_events.py:645)
+    EndpointRuntime._run_transport_thread (orbit/runtime.py:604)
+    Thread.run (threading.py:1012)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)
+Thread 1237371 (idle): "Local Executor Process Reaper"
+    Condition.wait (threading.py:359)
+    _ProcessReaper.run (psij/executors/local.py:176)
+    Thread._bootstrap_inner (threading.py:1075)
+    Thread._bootstrap (threading.py:1032)

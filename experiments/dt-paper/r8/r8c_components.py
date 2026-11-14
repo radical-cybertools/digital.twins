@@ -76,10 +76,11 @@ class SurrogateInv(ModelInvestigator):
     async def main_loop(self, runtime):
         arch = self.arch
 
-        async def inference(in_data, v=0, path=None, t_pub=None, burst_s=None, train_s=None):
+        async def inference(in_data, v=0, path=None, t_pub=None, burst_s=None, train_s=None,
+                            t_b0=None):
             t_task = await self.infer_task(in_data.data)
             return TypedData(FIELD, {"arch": arch, "v": v, "t_pub": t_pub, "burst_s": burst_s,
-                                     "train_s": train_s, "t_task": t_task})
+                                     "train_s": train_s, "t_task": t_task, "t_b0": t_b0})
 
         async def on_input(in_data):
             self.readings += 1
@@ -94,7 +95,7 @@ class SurrogateInv(ModelInvestigator):
                 t2 = time.time()
                 runtime.publish_new_model({"v": self.readings // self.every, "path": self.model_path,
                                            "t_pub": time.time(), "burst_s": t1 - t0,
-                                           "train_s": t2 - t1})
+                                           "train_s": t2 - t1, "t_b0": t0})
             finally:
                 self.busy = False
 

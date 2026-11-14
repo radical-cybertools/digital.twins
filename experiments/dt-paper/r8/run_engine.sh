@@ -13,7 +13,9 @@
 # (r8/proc_sampler.sh: epoch, RSS kB, CPU ticks, threads, fds).  Rows per
 # repeat: no-op tasks and 20 ms tasks with all twins in one session (one
 # pool), then one session per twin up to 16 sessions (R8-0's safe count).
-# Knobs: REPEATS ("1 2 3"), TWINS (1,4,16,64,256,1024), SECONDS_ (15), PORT (8221).
+# Knobs: REPEATS ("1 2 3"), TWINS (1,4,16,64,256,1024), SECONDS_ (15), PORT (8221),
+# ROWS (default: the three rows below; round 8b: "noop-one 0 0 256"),
+# WS_CHECK (round 8b: run r8b/ws_check.py once per repeat and count INFO "Online run" lines).
 set -uo pipefail
 source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm8/digital.twins/experiments/dt-paper/r8/env-r8.sh}
 R=$X/results/${RES:-r8/r8-2}; mkdir -p $R
@@ -58,7 +60,10 @@ for r in ${REPEATS:-1 2 3}; do
   srun --overlap -N1 -n1 -w $N1 $SAMPLER -f "radical-orbit-endpoint.py -n $EPN" \
     > $R/endpoint-proc-$tag-$D.txt 2> $R/endpoint-proc-$tag-$D.err &
   ESAMP=$!
-  for row in "noop-one 0 0 ${TWINS:-1,4,16,64,256,1024}" "w20-one 20 0 ${TWINS:-1,4,16,64,256,1024}" "noop-persession 0 1 1,4,16"; do
+  [ -n "${WS_CHECK:-}" ] && echo "r$r ws: $(timeout 60 srun --overlap -N1 -n1 -w $N2 --export=ALL python $X/r8b/ws_check.py $URL 2>&1 | tail -1)"
+  ROWS_=${ROWS:-"noop-one 0 0 ${TWINS:-1,4,16,64,256,1024}|w20-one 20 0 ${TWINS:-1,4,16,64,256,1024}|noop-persession 0 1 1,4,16"}
+  IFS='|' read -ra ROWLIST <<< "$ROWS_"
+  for row in "${ROWLIST[@]}"; do
     set -- $row
     f=$R/engine-$1-$tag-$D
     timeout ${ROW_TIMEOUT:-1500} srun --overlap -N1 -n1 -w $N2 --export=ALL \
@@ -67,6 +72,7 @@ for r in ${REPEATS:-1 2 3}; do
     echo "[$(date -u +%T)] r$r $1 rc=$?"; grep "^N=" $f.log | cut -c1-200
   done
   echo "r$r keepalive ping timeouts in the broker log: $(grep -c 'keepalive ping timeout' $L/broker-r8-2-$tag.log 2>/dev/null)"
+  [ -n "${WS_CHECK:-}" ] && echo "r$r INFO 'Online run' lines in the broker log: $(grep -c 'INFO.*Online run' $L/broker-r8-2-$tag.log 2>/dev/null)"
   srun --overlap -N1 -n1 -w $N1 pkill -TERM -u $USER -f "radical-orbit-endpoint.py -n $EPN" 2>/dev/null
   sleep 10; kill -TERM $EP 2>/dev/null; wait $EP 2>/dev/null
   kill $SAMP $ESAMP 2>/dev/null
