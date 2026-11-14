@@ -14,7 +14,8 @@
 #             kind) and, 5 s into the load window, py-spy dump plus
 #             `py-spy record --rate 20 --idle --nonblocking` for 30 s on
 #             the broker (folded); r8/folded_top.py summarizes it.
-# Knobs: TWINS (256), SECONDS_ (60), PORT (8261), RUNS_LIST ("plain profiled"), PYSPY.
+# Knobs: TWINS (256), SECONDS_ (60), PORT (8261), RUNS_LIST ("plain profiled"), PYSPY,
+# PROFILE_EP (round 8b: also py-spy the endpoint per thread in the same window).
 set -uo pipefail
 source ${ENV_SH:-/pscratch/sd/m/merzky/dt-pm8/digital.twins/experiments/dt-paper/r8/env-r8.sh}
 R=$X/results/${RES:-r8/broker-profile}; mkdir -p $R
@@ -78,6 +79,16 @@ for run in ${RUNS_LIST:-plain profiled}; do
       timeout 240 $PYSPY record --pid $BP --rate 20 --idle --nonblocking --duration 30 \
         --format raw -o $P-broker.folded > $P-broker-record.log 2>&1
       echo "py-spy done $(date -u +%T)" ) > $R/pyspy-$tag.log 2>&1 &
+    if [ -n "${PROFILE_EP:-}" ]; then   # round 8b B3: the endpoint, per thread, same window
+      ( n=${TWINS:-256}
+        until [ -f $M.n$n ]; do sleep 0.5; done; sleep 5
+        P=$PWD/$R/pyspy-$tag
+        srun --overlap -N1 -n1 -w $N1 bash -c "p=\$($PWD/$X/r8b/pid_of.sh 'radical-orbit-endpoint.py -n $EPN' 2>/dev/null); \
+          echo endpoint pid \$p; top -b -n1 -H -p \$p | head -20; timeout 60 $PYSPY dump --pid \$p; \
+          timeout 240 $PYSPY record --pid \$p --rate 20 --idle --nonblocking --threads --duration 30 \
+            --format raw -o $P-endpoint.folded" > $P-endpoint-record.log 2>&1
+        echo "endpoint py-spy done $(date -u +%T)" ) > $R/pyspy-ep-$tag.log 2>&1 &
+    fi
   fi
   timeout 900 srun --overlap -N1 -n1 -w $N2 --export=ALL \
     python $X/r8/bench_engine.py --broker $URL --endpoint $EPN --work-ms 0 --per-session 0 \
