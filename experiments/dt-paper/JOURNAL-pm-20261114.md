@@ -318,9 +318,10 @@ Each request is one function task of `--work-ms` CPU. Table:
   repeats, both task costs). N = 256 is the last point under 1 s. No failed
   requests and no keepalive timeouts at any N.
 - **The plateau is about 850-950 req/s** from 256 twins, the same as round 6's
-  one-session ceiling (about 800-840, Y1c) and above round 2's 2.2k-thread-
-  pool comparison only in workload realism: round 2 was a local engine, not
-  the service. With 20 ms tasks the endpoint's 128 workers are never the
+  one-session ceiling (about 800-840, Y1c). It is below round 2's 2.2k
+  req/s on the thread pool (`bench_twins.py`), which ran the twins in a local
+  client-side runtime with no broker or DT service in the request path; here
+  every request crosses the broker twice. With 20 ms tasks the endpoint's 128 workers are never the
   limit: 950 req/s × 20 ms is about 19 busy workers.
 - What saturates: no process reaches 100% of a core by these counters. The
   broker is at 65-92%, the client at 28-33% (one Python process, 1,024
