@@ -13,6 +13,7 @@ parallel with SwarmSlicer phase 9 (also m5290, its own budget and ledger).
 |---|---|---|---|---|---|---|
 | 61363245 | C0 smoke | m5290 | 3 | 00:02:34 | 0.128 | 0.13 |
 | 61363584 | C2 | m5290 | 3 | 00:05:13 | 0.261 | 0.39 |
+| 61363794 | C5 + C6 | m5290 | 3 | 00:10:02 | 0.502 | 0.89 |
 
 ## C0: setup (2026-11-15)
 
@@ -69,3 +70,61 @@ broker 57-64%, endpoint 155-171%.
   (24 ms per twin). One participant instead of 1,024 makes no measurable
   difference in this no-op loop, where the stream carries nothing.
 - 0 INFO `Online run` lines; isolation checks empty.
+
+## C5: inputs per twin (job 61363794, debug, node 0 of 3)
+
+`e2-scaling/bench_streams_join.py` and `bench_agents.py` build their twin
+as `DTRuntime(None, stream)` with pass-through inferences: **no task runs
+on any engine**, so the backend cannot change them. Per the page, one run
+each on the current stack (ve8c, `a64effc`), round 3 T4's arguments
+(join: K = 1..32, default rates, 5 s per point; agents: M = 1, 2, 4, 8, 16,
+side and chain, 3 s per point), embedded ZMQ broker, plain Python on node 0.
+Max sustainable inputs/s by round 3's rule (highest rate before p50
+doubles, an output is lost, or the producer falls behind), against round
+3 T4's median of 5 (`results/r3/t4/`):
+
+| case | 1 | 2 | 4 | 8 | 16 | 32 |
+|---|---|---|---|---|---|---|
+| join K streams, r8c | 5,000 | 4,000 | 8,000 | 8,000 | 8,002 | 6,404 |
+| join, round 3 | 5,000 | 4,000 | 8,001 | 8,001 | 8,001 | 6,404 |
+| M agents side by side, r8c | 9,999 | 10,000 | 7,999 | 8,002 | 8,003 | – |
+| side, round 3 | 5,000 | 4,000 | 4,001 | 4,002 | 8,003 | – |
+| M agents chained, r8c | 10,000 | 9,999 | 5,000 | 2,000 | 2,000 | – |
+| chain, round 3 | 5,000 | 2,000 | 2,000 | 2,000 | 1,000 | – |
+
+- Joins: identical to round 3 at every K.
+- Agents: 1.5-5x round 3 up to M = 4 (side) and M = 4 (chain), equal or 2x
+  beyond. These rows are the stack's routing cost alone (no tasks): the
+  stack changes since round 3 (asyncflow's tickless loop and later
+  runtime work) show here, not dragon_native. One run, so steps of one
+  rate level (the rate grid is coarse: 1k, 2k, 4k, 5k, 8k, 10k) are within
+  noise.
+
+## C6: what a twin build costs, step by step (same job, stretch)
+
+`r8c/bench_build_steps.py` (new): one session, 16 WindField-like twins
+(round 8b's B2 graph: WindAgent with three surrogate investigators,
+TrendLearner, Sink) built one after another, shared stream on (default);
+broker node 0, inference endpoint node 1, learning endpoint node 2, both
+dragon_native. `results/r8c/c6/build-steps-*.json` (every twin's record).
+
+| step | median ms (16 twins) |
+|---|---|
+| create_twin (register, no wait) | 1.3 |
+| background init (wait_ready) | 1.4 |
+| add_input | 1.2 |
+| add_agent (WindAgent + 3 investigators) | 2.2 |
+| add_investigator (TrendLearner) | 1.3 |
+| add_investigator (Sink) | 1.1 |
+| start | 0.7 |
+| first get_inference | 209.0 (to the worker's task end 205.9, return 3.2) |
+| total | 218.1 |
+
+- **The build verbs are cheap: about 9 ms per twin together**, init
+  included. A twin build is about 0.2 s because of its **first
+  answer**: about 206 ms on the submit/run side for a 20 ms PINN (plus a
+  1 ms selector). That is B4's finding: a fresh session pool's worker
+  costs about 165 ms on its first task, and with 16 twins x 2 first tasks
+  on a 128-worker pool, every first answer lands on cold workers.
+- So B2's "about 0.1 s per twin" (16 builders in parallel) is the first
+  answer's cold workers, overlapped, not the service's build path.
