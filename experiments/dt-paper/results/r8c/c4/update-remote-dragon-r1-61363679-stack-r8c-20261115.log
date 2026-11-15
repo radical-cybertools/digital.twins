@@ -1,0 +1,5 @@
+Backend orbit held the run loop for 1.0 s in submit_tasks (1 task(s)); a backend should hand slow work to the background
+interval  1000.0 ms: 10/10 versions seen, answered p50 520.97 ms p90 696.71 ms, inference p50 352.28 ms
+interval   100.0 ms: 29/100 versions seen, answered p50 521.80 ms p90 663.19 ms, inference p50 352.26 ms
+interval    10.0 ms: 15/500 versions seen, answered p50 529.23 ms p90 669.72 ms, inference p50 352.41 ms
+results: experiments/dt-paper/results/r8c/c4/update-remote-dragon-r1-61363679-stack-r8c-20261115.json

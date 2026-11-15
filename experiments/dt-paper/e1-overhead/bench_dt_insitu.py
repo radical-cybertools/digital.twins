@@ -234,16 +234,49 @@ async def xgf_row(label, predict, args) -> dict:
         ctx.term()
 
 
+class OrbitStreamBroker:
+    """Round 8c: stands in for ZMQ_BrokerProcess when the harness runs under
+    `dragon -s` (no Pipe there, so no embedded ZMQ broker): the twin's stream
+    client goes to an ORBIT broker instead (as R8-1's --stream-broker)."""
+
+    def __init__(self, url):
+        self.url = url
+
+    async def start(self):
+        pass
+
+    async def stop(self):
+        pass
+
+
+async def stream_client(name, broker):
+    """A stream client on `broker`: ZMQ_BrokerProcess or OrbitStreamBroker."""
+    if isinstance(broker, OrbitStreamBroker):
+        from digitaltwin.config import BACKEND_ORBIT
+        return await connect_stream_client(name, backend=BACKEND_ORBIT, broker_url=broker.url)
+    return await connect_stream_client(name, *broker.get_connection_str())
+
+
+def add_dragon_args(p):
+    """Round 8c: the --local-backend / --stream-broker pair of R8-1, for the
+    E4 and E2 harnesses that build their engine with make_backend."""
+    p.add_argument("--local-backend", default=None, choices=[None, "dragon_native"],
+                   help="run the local engine on dragon_native (the harness under dragon -s)")
+    p.add_argument("--stream-broker", default=None,
+                   help="ORBIT broker URL for the twin's stream (needed under dragon -s)")
+
+
 async def make_backend(args):
     if getattr(args, "local_backend", None) == "dragon_native":
         # round 8: the harness itself runs under `dragon -s`
         from rhapsody.backends.execution.dragon_native import (  # type: ignore
             DragonNativeExecutionBackend,
         )
-        be = DragonNativeExecutionBackend(workers_per_node=args.workers)
+        # 0 or None: the backend's default, one worker per physical core (round 8c)
+        be = DragonNativeExecutionBackend(workers_per_node=args.workers or None)
         if hasattr(be, "__await__"):
             be = await be
-        return f"local dragon_native ({args.workers or 'physical cores'} workers)", be
+        return f"local dragon_native ({args.workers or 'physical cores'} workers per node)", be
     if args.broker or args.endpoint:
         from rhapsody.backends.execution.orbit import (  # type: ignore
             OrbitExecutionBackend,

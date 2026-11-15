@@ -60,7 +60,7 @@ def provenance(experiment, harness, args=None, **extra):
         "python": platform.python_version(),
         "slurm_job": os.environ.get("SLURM_JOB_ID"),
         "harness_commit": _git("rev-parse", "HEAD"),
-        "harness_dirty": bool(_git("status", "--porcelain", "--", "experiments/dt-paper/r8", "experiments/dt-paper/r8b")),
+        "harness_dirty": bool(_git("status", "--porcelain", "--", "experiments/dt-paper/r8", "experiments/dt-paper/r8b", "experiments/dt-paper/r8c")),
         "packages": {k: _commit(v) for k, v in DISTS.items()},
         "backend": os.environ.get("R8_BACKEND", "dragon_native"),
         "workers_per_node": os.environ.get("R8_WORKERS_PER_NODE", "default (physical cores)"),
@@ -69,6 +69,7 @@ def provenance(experiment, harness, args=None, **extra):
         "venv": os.environ.get("R8_VENV", os.environ.get("VIRTUAL_ENV")),
         "ws_compression": os.environ.get("RADICAL_ORBIT_WS_COMPRESSION", "unset (orbit default: auto)"),
         "online_run_log_level": _online_run_level(),
+        "shared_stream": os.environ.get("R8C_SHARED_STREAM", "stack default"),
         "args": vars(args) if args is not None else None,
         **extra,
     }

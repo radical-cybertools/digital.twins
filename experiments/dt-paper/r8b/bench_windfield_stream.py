@@ -116,12 +116,24 @@ def summary(lat_s):
             "p99_ms": pct(lat_s, 0.99) * 1e3, "max_ms": max(lat_s) * 1e3}
 
 
+def stream_participants(runtime):
+    """dt_stream.* participants in the broker's topology (round 8c, #66)."""
+    try:
+        names = [k for k in (runtime.topology() or {}) if str(k).startswith("dt_stream")]
+        return {"count": len(names), "names": sorted(names)[:4]}
+    except Exception as exc:
+        return {"error": f"{type(exc).__name__}: {exc}"[:200]}
+
+
 def one_n(runtime, args, n, run):
     engines = {"inference": {"endpoint_name": args.inference, "backends": [args.backend]}}
     for k, ep in enumerate(args.learning):
         engines[f"learning_{k}"] = {"endpoint_name": ep, "backends": [args.backend]}
     t0 = time.time()
-    dt = runtime.get_plugin("broker", "dt", config={"engines": engines})
+    cfg = {"engines": engines}
+    if args.shared_stream is not None:  # round 8c: #66, one stream participant per session
+        cfg["shared_stream"] = args.shared_stream == "on"
+    dt = runtime.get_plugin("broker", "dt", config=cfg)
     channels = [f"r8b/{run}/n{n}/t{k}" for k in range(n)]
     errors = []
 
@@ -145,7 +157,9 @@ def one_n(runtime, args, n, run):
             except Exception as exc:
                 errors.append(f"{type(exc).__name__}: {exc}"[:300])
     rec = {"twins": n, "sessions": 1, "created": len(twins), "create_s": time.time() - t0,
-           "create_errors": errors[:3], "n_create_errors": len(errors)}
+           "create_errors": errors[:3], "n_create_errors": len(errors),
+           "shared_stream": args.shared_stream or "default (on)",
+           "stream_participants": stream_participants(runtime)}
     if errors:
         drop(dt)
         rec["break"] = f"creation: {errors[0][:200]}"
@@ -285,11 +299,17 @@ def main() -> int:
     p.add_argument("--seconds", type=float, default=120.0)
     p.add_argument("--model-path", default="/pscratch/sd/m/merzky/dt-pm8/models/r8-model-10MB.bin")
     p.add_argument("--timeout", type=float, default=60.0)
+    p.add_argument("--run-all-to", type=int, default=0,
+                   help="round 8c: run every N up to this; larger N only if nothing broke yet "
+                        "(default 0: round 8b's rule, one step past the break)")
+    p.add_argument("--shared-stream", choices=["on", "off"], default=None,
+                   help="round 8c: set the session's shared_stream (#66); unset = stack default (on)")
     p.add_argument("--out", required=True)
     args = p.parse_args()
     run = uuid.uuid4().hex[:6]
-    res = {"provenance": provenance("R8b-B2 WindField per experiment, stream path",
-                                    Path(__file__).name, args), "points": []}
+    res = {"provenance": provenance("R8b-B2 / R8c-C1 WindField per experiment, stream path",
+                                    Path(__file__).name, args,
+                                    shared_stream=args.shared_stream or "default (on)"), "points": []}
     rt = EndpointRuntime(broker_url=args.broker)
     rt.start(wait=True)
     broke = None
@@ -307,13 +327,19 @@ def main() -> int:
                   f"{rec.get('stream_expected')} probe {(rec.get('probe') or {}).get('p50_ms')} "
                   f"burst period {rec.get('burst_period_s_p50')} burst {rec.get('burst_makespan_s_p50')} "
                   f"update {rec.get('update_delay_s_p50')} create {rec.get('create_s')} "
+                  f"stream participants {(rec.get('stream_participants') or {}).get('count')} "
                   f"break {rec.get('break')}", flush=True)
             time.sleep(5)
-            if broke is not None:
-                break
-            if rec.get("break"):
+            if rec.get("break") and broke is None:
                 broke = n
                 res["break"] = {"twins": n, "why": rec["break"]}
+            if args.run_all_to:   # round 8c: every N <= run_all_to; beyond only before a break
+                nxt = [int(x) for x in args.twins.split(",") if x and int(x) > n]
+                if broke is not None and nxt and nxt[0] > args.run_all_to:
+                    break
+                continue
+            if broke is not None and broke != n:
+                break
     finally:
         Path(args.out).write_text(json.dumps(res, default=str))
         rt.stop()

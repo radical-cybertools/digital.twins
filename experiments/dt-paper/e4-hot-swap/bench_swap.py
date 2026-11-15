@@ -40,7 +40,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "e1-overhead"))
 
-from bench_dt_insitu import X, Y, make_backend  # noqa: E402
+from bench_dt_insitu import (X, Y, OrbitStreamBroker, add_dragon_args,  # noqa: E402
+                             make_backend, stream_client)
 
 from radical.asyncflow import WorkflowEngine  # type: ignore  # noqa: E402
 
@@ -108,7 +109,7 @@ def summarize(xs):
 
 
 async def run(flow, broker, predict, args):
-    stream = await connect_stream_client("e4-swap", *broker.get_connection_str())
+    stream = await stream_client("e4-swap", broker)
     rt = DTRuntime(flow, stream)
     agent = Agent(flow, predict)
     rt.add_agent(agent, X, Y)
@@ -199,6 +200,7 @@ async def main():
     p.add_argument("--swaps", type=int, default=20)
     p.add_argument("--interval", type=float, default=0.5,
                    help="seconds between swaps")
+    add_dragon_args(p)  # round 8c
     p.add_argument("--out")
     args = p.parse_args()
     args.backends = [b for b in args.backends.split(",") if b]
@@ -210,7 +212,7 @@ async def main():
     async def predict(k):
         return k
 
-    broker = ZMQ_BrokerProcess()
+    broker = OrbitStreamBroker(args.stream_broker) if args.stream_broker else ZMQ_BrokerProcess()
     await broker.start()
     try:
         r = await run(flow, broker, predict, args)

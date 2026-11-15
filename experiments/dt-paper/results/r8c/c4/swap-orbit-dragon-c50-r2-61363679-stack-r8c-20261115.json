@@ -1,0 +1,68 @@
+{
+  "provenance": {
+    "experiment": "E4 hot-swap turnaround",
+    "harness": "bench_swap.py",
+    "time": "2026-11-15T14:34:02-0800",
+    "host": "nid006498",
+    "python": "3.12.12",
+    "digital_twins_commit": "f323767ff145b837077581a736dd8d9f4b1aad70",
+    "digital_twins_dirty": false,
+    "backend": "orbit r8c_c4_ep",
+    "notify_window": null,
+    "slurm_job": "61363679",
+    "args": {
+      "broker": "https://10.249.17.225:8851",
+      "endpoint": "r8c_c4_ep",
+      "backends": [
+        "dragon_native"
+      ],
+      "workers": 8,
+      "concurrency": 50,
+      "swaps": 20,
+      "interval": 0.5,
+      "local_backend": null,
+      "stream_broker": null,
+      "out": "experiments/dt-paper/results/r8c/c4/swap-orbit-dragon-c50-r2-61363679-stack-r8c-20261115.json"
+    }
+  },
+  "swaps": 20,
+  "missed": 0,
+  "answers": 10098,
+  "turnaround": {
+    "n": 20,
+    "p50_ms": 66.90319848712534,
+    "p90_ms": 89.98195099411532,
+    "min_ms": 49.74861803930253,
+    "max_ms": 94.57828098675236
+  },
+  "turnaround_s": [
+    0.0845492200460285,
+    0.07169846497708932,
+    0.0678926240070723,
+    0.06591377296717837,
+    0.07362293096957728,
+    0.07520496402867138,
+    0.06371644698083401,
+    0.050127663009334356,
+    0.09457828098675236,
+    0.07225204701535404,
+    0.049986247962806374,
+    0.05239853996317834,
+    0.04974861803930253,
+    0.08201258798362687,
+    0.05831073998706415,
+    0.08998195099411532,
+    0.07351715600816533,
+    0.06182369199814275,
+    0.05074638995574787,
+    0.059942308987956494
+  ],
+  "stale_after_first": 0,
+  "gap": {
+    "n": 20,
+    "p50_ms": 53.251271485351026,
+    "p90_ms": 123.61569103086367,
+    "min_ms": 49.34116895310581,
+    "max_ms": 150.89111198903993
+  }
+}

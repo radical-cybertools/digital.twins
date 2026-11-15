@@ -1,0 +1,8 @@
+backend: orbit r8c_c3_ep
+xgf zmq request/reply        n=1000  mean=   4.31ms  p50=   4.09  p90=   4.56  p99=   5.40  max= 140.10
+xgf zmq request/reply        500 concurrent requests in 495.8ms (1008 req/s)
+xgf zmq request/reply        500 concurrent requests in 537.7ms (930 req/s)
+xgf zmq request/reply        500 concurrent requests in 602.5ms (830 req/s)
+xgf zmq request/reply        500 concurrent requests in 569.5ms (878 req/s)
+xgf zmq request/reply        500 concurrent requests in 503.8ms (993 req/s)
+results: experiments/dt-paper/results/r8c/c3/insitu-orbit-dragon-c500-solo-xgf-r5-61363587-stack-r8c-20261115.json

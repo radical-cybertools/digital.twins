@@ -36,7 +36,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "e1-overhead"))
 
-from bench_dt_insitu import X, Y, make_backend  # noqa: E402
+from bench_dt_insitu import (X, Y, OrbitStreamBroker, add_dragon_args,  # noqa: E402
+                             make_backend, stream_client)
 
 from radical.asyncflow import WorkflowEngine  # type: ignore  # noqa: E402
 
@@ -87,7 +88,7 @@ class Publisher(ModelInvestigator):
 
 
 async def one_rate(flow, broker, predict, rate, conc, seconds):
-    stream = await connect_stream_client("e2-publish", *broker.get_connection_str())
+    stream = await stream_client("e2-publish", broker)
     rt = DTRuntime(flow, stream)
     pub = Publisher(flow, predict, rate)
     rt.add_investigator(pub, X, Y)
@@ -167,6 +168,7 @@ async def main():
     p.add_argument("--concurrency", type=int, default=1)
     p.add_argument("--rates", default="0,1,10,100,1000,max")
     p.add_argument("--seconds", type=float, default=10.0)
+    add_dragon_args(p)  # round 8c
     p.add_argument("--out")
     args = p.parse_args()
     args.backends = [b for b in args.backends.split(",") if b]
@@ -179,7 +181,7 @@ async def main():
     async def predict(v):
         return v
 
-    broker = ZMQ_BrokerProcess()
+    broker = OrbitStreamBroker(args.stream_broker) if args.stream_broker else ZMQ_BrokerProcess()
     await broker.start()
     results = {"provenance": provenance(args, backend_label), "points": []}
     try:
