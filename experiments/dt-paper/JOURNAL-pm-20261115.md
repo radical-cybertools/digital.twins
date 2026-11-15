@@ -371,3 +371,6 @@ dragon_native. `results/r8c/c6/build-steps-*.json` (every twin's record).
 4. With #66, 64 WindField twins hold and 96 break: is the paper's number
    "64 twins per experiment under 1 s p99" (shared stream), with the 128
    point as the overload case?
+
+- Merged into `paper/dtaas` as `f090278` (pushed); unit tests on the merged
+  tree: 262 passed (`PYTHONPATH=src`, ve8c). No PRs.
