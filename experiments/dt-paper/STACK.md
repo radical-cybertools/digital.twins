@@ -160,3 +160,14 @@ the graph train the twin.  Before it, a client's probe also fed the
 investigators: round 8's R8-C at 1 Hz ran the bursts every 8 s instead of
 16 s.  A harness that fed a learner through `get_inference` must publish to
 an input channel instead.
+
+## Update 2026-11-15: round 8c stack (a64effc)
+
+- digital.twins #65: in `_init_twin`, a step's own timeout keeps its message;
+  only the expired 300 s twin deadline reads "initialization exceeded".
+- digital.twins #66: one ORBIT stream participant per DT session, shared by
+  its twins (one per twin before; `shared_stream: false` restores that).
+  Rounds 8 and 8b ran one participant per twin.
+- radical.3:8010 (broker and `r3_site` on `dragon_native`) runs `a64effc`
+  since 2026-11-15 (`~/paper-dtaas/ve` -> `ve-a64effc`); port 8011 (E5 30-day
+  run) unchanged.
