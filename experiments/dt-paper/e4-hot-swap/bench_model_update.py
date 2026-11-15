@@ -44,7 +44,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "e1-overhead"))
 
-from bench_dt_insitu import X, Y, make_backend  # noqa: E402
+from bench_dt_insitu import (X, Y, OrbitStreamBroker, add_dragon_args,  # noqa: E402
+                             make_backend, stream_client)
 
 from radical.asyncflow import WorkflowEngine  # type: ignore  # noqa: E402
 
@@ -103,7 +104,7 @@ def summarize(xs):
 
 
 async def one_interval(flow, broker, predict, interval, n, extra=None):
-    stream = await connect_stream_client("e4-update", *broker.get_connection_str())
+    stream = await stream_client("e4-update", broker)
     rt = DTRuntime(flow, stream)
     inv = Versioned(flow, predict, interval, n, extra)
     rt.add_investigator(inv, X, Y)
@@ -199,6 +200,7 @@ async def main():
     p.add_argument("--path-mb", type=float, default=0.0,
                    help="round 8: model published by path, a file of this many MB")
     p.add_argument("--path-dir", default="/tmp")
+    add_dragon_args(p)  # round 8c
     p.add_argument("--out")
     args = p.parse_args()
     args.backends = [b for b in args.backends.split(",") if b]
@@ -231,7 +233,7 @@ async def main():
                     left -= n_
         extra["path"] = str(mp)
 
-    broker = ZMQ_BrokerProcess()
+    broker = OrbitStreamBroker(args.stream_broker) if args.stream_broker else ZMQ_BrokerProcess()
     await broker.start()
     results = {"provenance": provenance(args, label), "points": []}
     try:  # round 8: all five packages, backend, telemetry, file system
