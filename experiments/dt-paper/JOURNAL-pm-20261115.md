@@ -318,3 +318,56 @@ dragon_native. `results/r8c/c6/build-steps-*.json` (every twin's record).
   on a 128-worker pool, every first answer lands on cold workers.
 - So B2's "about 0.1 s per twin" (16 builders in parallel) is the first
   answer's cold workers, overlapped, not the service's build path.
+
+## Close-out (2026-11-15)
+
+- C0-C6 done; C1 at 60 s per point after 20 s warm-up and C4's updates at 10
+  s per interval (budget, see the phases); C5 once (pure stream path, per
+  the page). **4.78 of 6 node-h** on m5290 (ledger above). No allocation
+  and no Dragon runtime left (every run ends with `dragon-cleanup` on its
+  nodes; `squeue` shows only SwarmSlicer's own job). Every ORBIT job's
+  isolation check (`results/r8c/*/orbit-isolation-check-*.txt`) is empty.
+- Provenance in every new JSON: commits (`packages`), backend, venv,
+  `ws_compression` (orbit's default, `auto`), shared stream (`--shared-stream`
+  or `stack default`), online-run log level.
+
+### For the paper
+
+- **#66 (one stream participant per session)** does not move WindField's
+  break (96 twins per experiment), but it makes 64 twins hold reliably
+  (p99 612-652 ms), cuts the median past the break 5x (128 twins: 0.3
+  against 1.6-1.8 s), takes about 20 points of a core off the broker at
+  128 twins and cuts the 128-twin build from 11 s to 4 s; no twin failed to
+  initialize.
+- The no-op closed loop is unchanged (800-860 req/s, 1,024 twins built in
+  25 s).
+- E1 on dragon_native: through ORBIT the DT rows cost nothing measurable
+  and burst throughput matches round 3b; the redrawn figure's p50 includes
+  a 0.58 ms CPU task that round 3b's did not (see C3).
+- E4 on dragon_native: swap through ORBIT at c = 50 is 2.3x faster (75
+  against 170 ms); publish to first use 1.8 ms local, 5 ms ORBIT, 522 ms
+  WAN; publishing up to 100 models/s costs inference nothing.
+- Inputs per twin: pure stream path, no engine involved; joins as round 3,
+  agents 1.5-5x faster than round 3 at small M.
+- A twin build's verbs cost about 9 ms per twin; its first answer (about
+  0.2 s) is cold pool workers.
+
+### Open questions for Andre
+
+1. **The E1 paths figure's task:** C3 used `--work-ms 0.58` (the page's
+   "0.58 ms task", R8-1's reading). Round 3b's runs had no-op tasks, where
+   0.58 ms was the whole local request. Should the redrawn figure use a
+   no-op task (like for like with 3b's bars) or keep 0.58 ms of CPU?
+2. **The service row is 170 ms slower on dragon_native** (516 against S3's
+   346 ms per request, about one WAN round trip more), while the client
+   rows through radical.3 are unchanged (350 ms). Does the broker-side DT
+   plugin's path to a remote dragon_native endpoint add a round trip (a
+   state event, a result fetch) that the concurrent backend did not?
+3. **Local dragon_native costs about 1 ms more per request than the local
+   process pool** (C3 local p50 1.57 against 0.58 ms with the task, swap
+   1.8 against 0.8 ms, no-publish throughput 1,063 against 1,675 req/s at
+   c = 1). The figures' local bars will move; is that the paper's story
+   (dragon_native is the default) or should local stay on the pool?
+4. With #66, 64 WindField twins hold and 96 break: is the paper's number
+   "64 twins per experiment under 1 s p99" (shared stream), with the 128
+   point as the overload case?
