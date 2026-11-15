@@ -373,3 +373,36 @@ endpoint 193 / 205 / 161%.
 - Merged into `paper/dtaas` as `fa68273` (pushed); unit tests on the merged
   tree: 257 passed (`PYTHONPATH=src`, ve8b; pytest, pytest-asyncio and
   pytest-timeout installed into ve8b for this). No PRs.
+
+### Answers from Andre (2026-11-15, on the laptop)
+
+1. **The ~830 req/s ceiling:** converge for now. The paper states it as
+   measured, not one saturated CPU, per-hop latency the leading (unproven)
+   explanation. The SwarmSlicer session follows up (same pattern in its
+   phase 7).
+2. **Pool first-task cost:** the paper states it as a one-time cost per
+   experiment (about 165 ms on each worker's first task). A rhapsody PR
+   pre-warms the pool; it stays off the paper stack.
+3. **`_exq_monitor` CPU:** both: a report to HPE (drafted from B3's
+   endpoint profile), and in the same rhapsody PR the pool's ProcessGroup
+   with `ignore_error_on_exit=True`, if dead-worker detection does not
+   depend on the monitor. The paper's limits name about 1.35 cores per
+   idle pool.
+4. **The 300 s initialization timeout:** found in the code. `_init_twin`
+   reported every `TimeoutError` as "exceeded 300.0s"; the real one was the
+   stream participant's own 30 s ORBIT registration
+   (`STREAM_CONNECT_TIMEOUT`), with 128 per-twin participants registering
+   with a broker near a full core. Fixed: digital.twins #65 (a step's own
+   timeout keeps its message), on paper/dtaas as 9068a23. No rerun for it
+   alone: 128 is past the break.
+5. **More than one broker process for WindField:** do the cheaper fix
+   first: one ORBIT stream participant per session, shared by its twins
+   (digital.twins #66, on paper/dtaas as a64effc; `shared_stream: false`
+   restores one per twin). Round 8c reruns B2 with it on and off. More
+   than one broker process stays ORBIT roadmap work.
+6. **The 10.6% deflate in SwarmSlicer phase 6:** handed to the SwarmSlicer
+   session with question 1.
+
+Also decided since round 8b: queries are read-only (#64), already in B2.
+Round 8c (planned): B2 and the R8-2 closed loop on a64effc, and E1, E4 and
+inputs per twin on `dragon_native`.
