@@ -14,6 +14,7 @@ parallel with SwarmSlicer phase 9 (also m5290, its own budget and ledger).
 | 61363245 | C0 smoke | m5290 | 3 | 00:02:34 | 0.128 | 0.13 |
 | 61363584 | C2 | m5290 | 3 | 00:05:13 | 0.261 | 0.39 |
 | 61363794 | C5 + C6 | m5290 | 3 | 00:10:02 | 0.502 | 0.89 |
+| 61363581 | C1 | m5290 | 6 | 00:21:19 | 2.132 | 3.02 |
 
 ## C0: setup (2026-11-15)
 
@@ -70,6 +71,60 @@ broker 57-64%, endpoint 155-171%.
   (24 ms per twin). One participant instead of 1,024 makes no measurable
   difference in this no-op loop, where the stream carries nothing.
 - 0 INFO `Online run` lines; isolation checks empty.
+
+## C1: WindField twins per experiment, shared stream on and off (job 61363581, regular, 6 nodes)
+
+Round 8b's B2 (`r8b/run_windfield_b.sh`, `r8b/bench_windfield_stream.py`:
+broker and client on node 0, inference endpoint node 1, four learning
+endpoints, all dragon_native; one session; 1 Hz stream per twin, the 1 Hz
+read-only probe and the stream-path Sink) on ve8c (`a64effc`), compression
+orbit's default (`auto`). Per repeat (a fresh broker and endpoints), first
+`--shared-stream on` (the default), then `off`, each at N = 64, 96, 128,
+and 160 only if 128 held (`--run-all-to 128`; 128 broke everywhere, so no
+160). 2 repeats.
+
+**Decision (budget):** 60 s per point after a 20 s warm-up, not B2's 120 s
+after 40 s. At N >= 64 the pool is warm within seconds (2 x N tasks/s
+against 128 workers; B4); 60 s still gives >= 3,840 stream samples per
+point. B2's length would have needed about 5 node-h, twice C1's cap.
+
+| shared | twins | rep | probe p50 / p99 ms | stream p50 / p99 / max ms | worst twin p99 | stream answers | burst period / makespan s | update p50 s | broker / endpoint CPU % | build s | participants | create errors | break |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| on | 64 | r1 | 48 / 648 | 51 / 652 / 840 | 754 | 3835 of 3840 | 16.0 / 0.49 | 1.05 | 80 / 224 | 3.4 | 1 | 0 | – |
+| on | 64 | r2 | 47 / 604 | 49 / 612 / 883 | 744 | 3838 of 3840 | 16.0 / 0.50 | 1.07 | 82 / 225 | 3.4 | 1 | 0 | – |
+| on | 96 | r1 | 261 / 1,284 | 186 / 1,547 / 1,895 | 1,741 | 5734 of 5760 | 16.0 / 0.80 | 1.05 | 72 / 197 | 3.7 | 1 | 0 | p99 1547 ms |
+| on | 96 | r2 | 151 / 1,185 | 114 / 1,137 / 1,374 | 1,227 | 5757 of 5760 | 16.0 / 0.69 | 1.07 | 78 / 209 | 3.8 | 1 | 0 | p99 1137 ms |
+| on | 128 | r1 | 369 / 1,922 | 344 / 2,221 / 2,422 | 2,362 | 7676 of 7680 | 16.0 / 0.88 | 1.20 | 83 / 189 | 4.1 | 1 | 0 | p99 2221 ms |
+| on | 128 | r2 | 318 / 1,878 | 297 / 2,327 / 2,587 | 2,502 | 7664 of 7680 | 16.0 / 0.96 | 1.27 | 88 / 189 | 4.4 | 1 | 0 | p99 2327 ms |
+| off | 64 | r1 | 149 / 1,349 | 63 / 1,365 / 1,929 | 1,572 | 3839 of 3840 | 16.0 / 0.45 | 1.35 | 72 / 212 | 5.4 | 64 | 0 | p99 1365 ms |
+| off | 64 | r2 | 84 / 665 | 69 / 688 / 894 | 776 | 3839 of 3840 | 16.0 / 0.48 | 1.07 | 80 / 216 | 5.6 | 64 | 0 | – |
+| off | 96 | r1 | 229 / 1,146 | 184 / 1,125 / 1,297 | 1,228 | 5758 of 5760 | 16.0 / 0.57 | 1.15 | 88 / 201 | 7.3 | 96 | 0 | p99 1125 ms |
+| off | 96 | r2 | 170 / 1,251 | 167 / 1,263 / 1,491 | 1,380 | 5743 of 5760 | 16.0 / 0.72 | 1.16 | 91 / 200 | 8.0 | 96 | 0 | p99 1263 ms |
+| off | 128 | r1 | 934 / 1,663 | 1,752 / 2,864 / 3,056 | 2,981 | 7680 of 7680 | 16.0 / 0.67 | 1.62 | 105 / 169 | 10.8 | 128 | 0 | p99 2864 ms |
+| off | 128 | r2 | 934 / 1,691 | 1,550 / 2,590 / 2,880 | 2,853 | 7672 of 7680 | 16.0 / 0.68 | 1.60 | 108 / 172 | 11.3 | 128 | 0 | p99 2590 ms |
+
+Round 8b B2 (shared participants did not exist: one per twin): 64 twins p99
+750 / 947 ms, 96 twins 1,361 / 1,561 ms (break), 128 twins p50 1,269 ms /
+p99 2,746 ms; broker 86-92% / 85-96% / 102%; build 5.2-5.4 / 7.6-8.3 /
+10.9 s; one twin failed to initialize at 128 (repeat 2).
+
+- **Sharing does not move the break: 96 twins with either setting**, as in
+  B2 (p99 1,137-1,547 ms on, 1,125-1,263 ms off).
+- **Sharing makes 64 twins hold:** on, p99 612 and 652 ms (worst twin 744 /
+  754); off, one repeat breaks at 64 (p99 1,365 ms, worst twin 1,572) and
+  the other holds at 688 ms. B2 (one participant per twin) was 750 / 947.
+- **Past the break, sharing cuts the median 5x:** 128 twins, stream p50 297 /
+  344 ms on against 1,550 / 1,752 off (probe 318 / 369 against 934).
+- **The broker's CPU at 128 twins: 83-88% on, 105-108% off** (B2: 102%), so
+  one participant per twin cost the broker about 20 points of a core there.
+- **Build time: on 3.4 s (64) to 4.1-4.4 s (128), off 5.4 to 10.8-11.3 s**
+  (B2 5.2-10.9): the per-twin participant registration was most of it.
+- **No twin failed to initialize** in either setting (B2 lost one at 128);
+  0 create errors everywhere, so #65's message was not needed.
+- The topology shows 1 `dt_stream.*` participant with sharing on and N with
+  it off at every point; bursts every 16.0 s; 0-26 streamed answers missing
+  per point (end of window).
+- Isolation check empty.
 
 ## C5: inputs per twin (job 61363794, debug, node 0 of 3)
 
