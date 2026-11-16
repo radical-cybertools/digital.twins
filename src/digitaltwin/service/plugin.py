@@ -25,6 +25,7 @@ endpoint hosting works the same way.  The plugin owns
 """
 
 import asyncio
+import json
 import logging
 import os
 import time
@@ -52,12 +53,14 @@ from ..streaming import (
 )
 from .client import DTClient
 from .session import VERBS, DTSession, ROLES, default_engine_setting
+from .wire import FRAME_CAP
 
 log = logging.getLogger("radical.orbit")
 
 # route templates -- single-sourced between registration and the client
 ROUTE_TWIN_CREATE = "twin_create/{sid}"
 ROUTE_TWIN_LIST = "twin_list/{sid}"
+ROUTE_TWIN = "twin/{sid}/{twin_id}"
 ROUTE_TWIN_CLOSE = "twin_close/{sid}/{twin_id}"
 ROUTE_TWIN_CALL = "twin_call/{sid}/{twin_id}"
 ROUTE_ADMIN_SESSIONS = "admin/sessions"
@@ -77,6 +80,10 @@ UI_ASSETS = {
     "dt_sample.js": "application/javascript",
     "dt_explorer.js": "application/javascript",
 }
+
+# `admin/sessions` lists every twin only while the listing stays under
+# this; past it, twins are reported as counts per state
+ADMIN_SESSIONS_BYTES = FRAME_CAP // 2
 
 # how often the supervisor checks that the stream broker is still alive
 BROKER_WATCH_INTERVAL = 5.0
@@ -139,6 +146,7 @@ class PluginDT(Plugin):
 
         self.add_route_post(ROUTE_TWIN_CREATE, self.twin_create)
         self.add_route_get(ROUTE_TWIN_LIST, self.twin_list)
+        self.add_route_get(ROUTE_TWIN, self.twin_state)
         self.add_route_post(ROUTE_TWIN_CLOSE, self.twin_close)
         self.add_route_post(ROUTE_TWIN_CALL, self.twin_call)
         self.add_route_get(ROUTE_ADMIN_SESSIONS, self.admin_sessions)
@@ -319,7 +327,24 @@ class PluginDT(Plugin):
         )
 
     async def twin_list(self, request: Request) -> dict:
-        return await self._forward(request.path_params["sid"], DTSession.twin_list)
+        """One page of a session's twins (`offset`, `limit` query params)."""
+
+        query = getattr(request, "query_params", None) or {}
+        offset = _non_negative_int(query.get("offset"), "offset") or 0
+        limit = _non_negative_int(query.get("limit"), "limit")
+
+        return await self._forward(
+            request.path_params["sid"], DTSession.twin_list, offset=offset, limit=limit
+        )
+
+    async def twin_state(self, request: Request) -> dict:
+        """One twin's entry: what a client polls while it waits for a twin."""
+
+        return await self._forward(
+            request.path_params["sid"],
+            DTSession.twin_state,
+            twin_id=request.path_params["twin_id"],
+        )
 
     async def twin_close(self, request: Request) -> dict:
         return await self._forward(
@@ -381,6 +406,21 @@ class PluginDT(Plugin):
             else:
                 entry["sid"] = sid
             sessions.append(entry)
+
+        # Every twin of every session must still fit one frame: past the
+        # budget, sessions report their twins as counts per state instead
+        # (`twin_states`, `twins_total`); `twin_list` pages through them.
+        if len(json.dumps(sessions, default=str)) > ADMIN_SESSIONS_BYTES:
+            for entry in sessions:
+                twins = entry.get("twins")
+                if not twins:
+                    continue
+                states: dict = {}
+                for twin in twins:
+                    states[twin.get("state")] = states.get(twin.get("state"), 0) + 1
+                entry["twin_states"] = states
+                entry["twins_total"] = len(twins)
+                entry["twins"] = []
 
         return {"sessions": sessions, "stream_broker": self.stream_summary()}
 
@@ -627,6 +667,20 @@ async def _body(request: Request) -> dict:
         return {}
 
     return data if isinstance(data, dict) else {}
+
+
+def _non_negative_int(value: Any, name: str) -> Optional[int]:
+    """A query parameter that must be a non-negative integer, if given."""
+
+    if value is None or value == "":
+        return None
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        number = -1
+    if number < 0:
+        raise http_exception(ValueError(f"'{name}' must be a non-negative integer"))
+    return number
 
 
 def _twin_id(twin_id: Any) -> str:
