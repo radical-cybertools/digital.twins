@@ -146,6 +146,29 @@ throwaway broker and one concurrent endpoint (`r8e/run_idle_local.sh`),
   (`HTTP 500 ... frame size 4357700 bytes exceeds cap 4194304 bytes` at
   4,000), so listing fails, and so does every `create_twin` that waits.
 
-Fixes (not made yet): a per-twin route (`twin/{sid}/{twin_id}`, the session
-already has `_twin_state`) used by `twin()` and `wait_ready()`, and
-pagination for `twin_list`.  After them, rerun 1k-16k.
+Fixed by digital.twins #67 (on `paper/dtaas` as `8f29224`): a per-twin route
+(`twin/{sid}/{twin_id}`) used by `twin()` and `wait_ready()`, `twin_list` in
+pages that fit a frame (`offset` / `limit` / `next`), and `admin/sessions`
+reporting counts per state past its budget.  Rerun with the fix (run 3):
+
+| idle twins | build of the step | per twin | broker RSS | broker CPU | probe p50 / p99 | `twin_list` (all pages) |
+|---|---|---|---|---|---|---|
+| 1,000 | 9.5 s | 9.5 ms | 192 MB | 0.8% | 47 / 149 ms | 0.34 s, 1.5 MB, 1 page |
+| 2,000 | 9.1 s for 1,000 more | 9.1 ms | 262 MB | 0.8% | 49 / 151 ms | 0.27 s, 3.0 MB, 2 pages |
+| 4,000 | 17.9 s for 2,000 more | 9.0 ms | 391 MB | 1.1% | 49 / 150 ms | 0.55 s, 5.9 MB, 3 pages |
+| 8,000 | 38.8 s for 4,000 more | 9.7 ms | 647 MB | 1.0% | 61 / 172 ms | 1.97 s, 11.8 MB, 6 pages |
+| 16,000 | 87.1 s for 8,000 more | 10.9 ms | 1,153 MB | 0.9% | 72 / 181 ms | 2.30 s, 23.6 MB, 12 pages |
+
+- **16,000 idle twins in one experiment work:** build cost per twin stays at
+  about 9-11 ms (it was 66-202 ms and rising), no build errors, and every
+  twin is running.
+- **Memory:** about 64 MB per thousand twins on the broker (1.15 GB at
+  16,000); the endpoint does not grow (one shared engine and pool).
+- **CPU:** idle twins cost the broker about 1% of a core at any N.
+- **Live requests** slow slightly with N (p50 47 -> 72 ms, p99 149 -> 181
+  ms at 16,000): not yet explained, small.
+- **Listing all twins** takes 2.3 s at 16,000 (12 pages of about 2 MB); it
+  is an observation path, not a hot one.
+
+So a broker holds thousands of quiet twins today; the levers above are
+about thousands of *active* ones.
