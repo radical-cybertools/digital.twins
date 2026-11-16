@@ -291,9 +291,10 @@ def fig_e1_exsitu(fig):
 
 
 def fig_e2(fig):
-    """Inputs per twin: joined streams, and agents per twin (round 3)."""
+    """Inputs per twin: joined streams, and agents per twin (round 8c C5,
+    stack a64effc, one run; pure stream path, no engine)."""
     ax2, ax3 = fig.subplots(1, 2)
-    join = SRC.load("r3/t4/join-pm-r*-stack-r3-*.json")
+    join = SRC.load("r8c/c5/join-pm-r*-stack-r8c-*.json")
     ks = sorted(join[0]["max_sustainable"], key=int)
     ins = [[run["max_sustainable"][k]["inputs_per_s"] for run in join] for k in ks]
     lines(ax2, ks, {"dt": ins})
@@ -302,7 +303,7 @@ def fig_e2(fig):
     ax2.set_ylim(bottom=0)
     ax2.set_title("(a) joined streams")
 
-    runs = SRC.load("r3/t4/agents-pm-r*-stack-r3-*.json")
+    runs = SRC.load("r8c/c5/agents-pm-r*-stack-r8c-*.json")
     ms = [1, 2, 4, 8, 16]
     COLORS.update({"side by side": DT_A, "chained": DT_B})
     lines(
@@ -323,12 +324,13 @@ def fig_e2(fig):
 
 
 def fig_e4_swap(fig):
-    """E4: hot-swap turnaround, and inference while models are published."""
+    """E4: hot-swap turnaround, and inference while models are published
+    (round 8c C4, dragon_native, stack a64effc)."""
     configs = [
-        ("local\nc=1", "r3/t5/swap-pm-pool8-c1-r*-stack-r3-*.json"),
-        ("local\nc=50", "r3/t5/swap-pm-pool8-c50-r*-stack-r3-*.json"),
-        ("ORBIT\nc=1", "r3/t5/swap-pm-orbit-cross-c1-r*-stack-r3-*.json"),
-        ("ORBIT\nc=50", "r3/t5/swap-pm-orbit-cross-c50-r*-stack-r3-*.json"),
+        ("local\nc=1", "r8c/c4/swap-local-dragon-c1-r*-stack-r8c-*.json"),
+        ("local\nc=50", "r8c/c4/swap-local-dragon-c50-r*-stack-r8c-*.json"),
+        ("ORBIT\nc=1", "r8c/c4/swap-orbit-dragon-c1-r*-stack-r8c-*.json"),
+        ("ORBIT\nc=50", "r8c/c4/swap-orbit-dragon-c50-r*-stack-r8c-*.json"),
     ]
     ax1, axp, ax2 = fig.subplots(1, 3, gridspec_kw={"width_ratios": [4, 3, 3]})
     COLORS["turnaround"] = DT_A
@@ -349,9 +351,9 @@ def fig_e4_swap(fig):
     # publish to first answer with the new model; the publish interval
     # (1 s, 100 ms, 10 ms) makes no difference, so its points are pooled
     paths = [
-        ("local", "r3/t5/update-pm-local-pool8-r*-stack-r3-*.json"),
-        ("ORBIT", "r3/t5/update-pm-orbit-cross-r*-stack-r3-*.json"),
-        ("WAN", "s2/update-pm-remote-r*-stack-*.json"),
+        ("local", "r8c/c4/update-local-dragon-r*-stack-r8c-*.json"),
+        ("ORBIT", "r8c/c4/update-orbit-dragon-r*-stack-r8c-*.json"),
+        ("WAN", "r8c/c4/update-remote-dragon-r*-stack-r8c-*.json"),
     ]
     COLORS["model update"] = DT_A
     bars(
@@ -370,8 +372,8 @@ def fig_e4_swap(fig):
     for ax in (ax1, axp):
         ax.tick_params(axis="x", labelsize=6)
 
-    dip = SRC.load("r3/t5/dip-pm-pool8-c50-r*-stack-r3-*.json")
-    pub = SRC.load("r3/t4/publish-pm-pool8-c1-r*-stack-r3-*.json")
+    dip = SRC.load("r8c/c4/dip-local-dragon-c50-r*-stack-r8c-*.json")
+    pub = SRC.load("r8c/c4/publish-local-dragon-c1-r*-stack-r8c-*.json")
     rates = [1.0, 10.0, 100.0]
     COLORS.update({"c=1": DT_A, "c=50": DT_C})
 
@@ -677,12 +679,13 @@ def fig_sites(fig):
 
 def fig_twins(fig):
     """N twins in one experiment on one dragon_native engine, closed loop
-    (round 8 R8-2): throughput and the worst twin's p99; and WindField
-    twins at 1 Hz (round 8b B2, stack 63d8692): answer time against twins."""
+    (round 8 R8-2, round 8c C2 points): throughput and the worst twin's
+    p99; and WindField twins at 1 Hz (round 8c C1, stack a64effc): answer
+    time against twins."""
     ax1, ax2, ax3 = fig.subplots(1, 3)
     series = (
-        ("no-op tasks", "r8/r8-2/engine-noop-one-r*-stack-r8-*.json", DT_A, "-"),
-        ("20 ms tasks", "r8/r8-2/engine-w20-one-r*-stack-r8-*.json", DT_B, "--"),
+        ("no-op", "r8/r8-2/engine-noop-one-r*-stack-r8-*.json", DT_A, "-"),
+        ("20 ms", "r8/r8-2/engine-w20-one-r*-stack-r8-*.json", DT_B, "--"),
     )
     for label, pattern, color, style in series:
         rps, p99 = {}, {}
@@ -699,6 +702,18 @@ def fig_twins(fig):
                         yerr=[[v[1] for v in st], [v[2] for v in st]],
                         label=label, color=color, linestyle=style, marker="o",
                         markersize=3, linewidth=1.2, elinewidth=0.6, capsize=1.5)
+    # round 8c C2 (stack a64effc, shared stream participant): the same
+    # no-op loop at 256 and 1,024 twins, as points
+    c2r, c2p = {}, {}
+    for run in SRC.load("r8c/c2/engine-noop-one-rcur*-stack-r8c-*.json"):
+        for p in run["points"]:
+            c2r.setdefault(p["twins"], []).append(p["req_per_s"])
+            c2p.setdefault(p["twins"], []).append(p["p99_ms_max"])
+    for ax, pts in ((ax1, c2r), (ax2, c2p)):
+        ks = sorted(pts)
+        ax.plot(ks, [statistics.median(pts[k]) for k in ks], linestyle="none",
+                marker="s", markersize=4, markerfacecolor="none", color=BASE,
+                label="no-op, round 8c")
     for ax in (ax1, ax2):
         ax.set_xscale("log", base=4)
         ax.set_xticks(xs, [str(n) if n in (1, 16, 256) else "" for n in xs])
@@ -707,25 +722,30 @@ def fig_twins(fig):
     ax1.set_ylabel("throughput [req/s]")
     ax1.set_ylim(bottom=0)
     ax1.set_title("(a) throughput")
-    ax1.legend(frameon=False, loc="lower right", fontsize=6)
+    ax1.legend(frameon=False, loc="lower right", fontsize=5.5, handlelength=1.5,
+               bbox_to_anchor=(1.06, 0.0))
     ax2.axhline(1000, color=BASE_LIGHT, linestyle=":", linewidth=1.0)
     ax2.text(1, 1050, "break: 1 s", fontsize=6, color=BASE)
     logscale(ax2)
     ax2.set_ylabel("worst twin p99 [ms]")
     ax2.set_title("(b) tail latency")
 
-    # (c) WindField twins at 1 Hz, all in one experiment: the 1 Hz probe's
-    # p50 and p99 (the stream path agrees within about 20 ms up to 96)
-    p50, p99 = {}, {}
-    for run in SRC.load("r8b/b2/windfield-b2-r*-stack-r8b-*.json"):
-        for p in run["points"]:
-            if p.get("n_create_errors") or not p.get("probe"):
-                continue
-            p50.setdefault(p["twins"], []).append(p["probe"]["p50_ms"])
-            p99.setdefault(p["twins"], []).append(p["probe"]["p99_ms"])
+    # (c) WindField twins at 1 Hz, all in one experiment (round 8c C1, stack
+    # a64effc): the 1 Hz probe's p50 and p99 with the session's shared
+    # stream participant, and p99 with one participant per twin
+    p50, p99, p99off = {}, {}, {}
+    for setting, store in (("on", (p50, p99)), ("off", (None, p99off))):
+        for run in SRC.load(f"r8c/c1/windfield-{setting}-r*-stack-r8c-*.json"):
+            for p in run["points"]:
+                if p.get("n_create_errors") or not p.get("probe"):
+                    continue
+                if store[0] is not None:
+                    store[0].setdefault(p["twins"], []).append(p["probe"]["p50_ms"])
+                store[1].setdefault(p["twins"], []).append(p["probe"]["p99_ms"])
     ws = sorted(p99)
-    COLORS.update({"p50": DT_A, "p99": DT_B})
-    for label, pts, style in (("p50", p50, "-"), ("p99", p99, "--")):
+    COLORS.update({"p50": DT_A, "p99": DT_B, "p99, per-twin stream": BASE_LIGHT})
+    for label, pts, style in (("p50", p50, "-"), ("p99", p99, "--"),
+                              ("p99, per-twin stream", p99off, ":")):
         st = [spread(pts[n]) for n in ws]
         ax3.errorbar(ws, [v[0] for v in st],
                      yerr=[[v[1] for v in st], [v[2] for v in st]],
@@ -733,7 +753,7 @@ def fig_twins(fig):
                      markersize=3, linewidth=1.2, elinewidth=0.6, capsize=1.5)
     ax3.axhline(1000, color=BASE_LIGHT, linestyle=":", linewidth=1.0)
     ax3.set_xscale("log", base=2)
-    ax3.set_xticks(ws, [str(n) if n != 96 else "" for n in ws])
+    ax3.set_xticks(ws, [str(n) for n in ws])
     ax3.minorticks_off()
     logscale(ax3)
     ax3.set_xlabel("WindField twins at 1 Hz")
