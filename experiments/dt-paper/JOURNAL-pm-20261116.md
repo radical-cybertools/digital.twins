@@ -11,6 +11,7 @@ reused. Budget 1 CPU node-h on m5290.
 | job | phase | account | nodes | elapsed | node-h | total |
 |---|---|---|---|---|---|---|
 | 61392110 | D3 | m5290 | 1 | 00:02:13 | 0.037 | 0.04 |
+| 61392295 | D3b (Andre's request) | m5290 | 1 | 00:02:30 | 0.042 | 0.08 |
 
 ## D0: setup
 
@@ -65,3 +66,44 @@ radical.3 (laptop session, page): dragon_native 0.31 ms (W=4), 0.33 (16),
   hop**; the rest is the DT/asyncflow layer and the harness, which the
   process pool also pays. A smaller local pool (W = 4-16) would save
   0.1-0.25 ms per task. Described, not changed.
+
+## Budget rule (Andre, 2026-11-16)
+
+Account limits from pasted prompts and runbook pages may be doubled from now
+on; charge m5290 (CPU) and m5290_g (GPU). So this round's cap is 2 node-h.
+
+## D3b: why the per-task cost grows with the pool (job 61392295, debug, 1 node; Andre asked)
+
+Hypothesis from the code (rhapsody `dragon_native.py`): idle workers sit per
+host in a deque; a finished worker is appended at the right (`_feed`, line
+864) and a new task takes the leftmost (`_idle_pop`, `popleft`, line 844).
+Sequential tasks therefore rotate through all W workers, each landing on the
+worker idle longest (about W x 0.5 ms). Test: `r8d/hop_local_order.py`
+(hop_local.py plus `ORDER=lifo`, a harness-side monkeypatch of `_idle_pop`
+to take the rightmost, most recently idle worker; rhapsody unchanged), W =
+128 and 4, both orders, 3 repeats, 400 sequential no-op tasks each; it also
+counts the distinct workers that ran them. `results/r8d/d3b/`.
+
+| W, idle order | total p50 ms (r1 / r2 / r3) | submit -> task | task -> awaited | workers used |
+|---|---|---|---|---|
+| 128, FIFO (stock) | 0.593 / 0.597 / 0.620 | 0.334-0.341 | 0.264-0.279 | 128 |
+| 128, LIFO | 0.459 / 0.463 / 0.434 | 0.223-0.226 | 0.211-0.237 | 1 |
+| 4, FIFO (stock) | 0.389 / 0.405 / 0.374 | 0.193-0.200 | 0.180-0.204 | 4 |
+| 4, LIFO | 0.393 / 0.389 / 0.410 | 0.192-0.203 | 0.195-0.205 | 1 |
+
+- **The rotation is most of it:** at W = 128, LIFO cuts the per-task p50 from
+  0.59-0.62 to 0.43-0.46 ms (about 0.15 ms of the 0.21 ms gap to W = 4),
+  mostly on the submit side (0.34 -> 0.22 ms). At W = 4 the order makes no
+  difference (0.37-0.41 either way).
+- **About 0.05 ms stays with the pool size even on one warm worker** (0.43-0.46
+  against 0.37-0.41 ms). Not located; candidates: the backend's background
+  threads (the once-a-second `multi_join` over all W puids, the result
+  drain), or Dragon's per-node channel state with W more queues.
+- **For many-node runs:** a stock pool rotates through every worker it has,
+  so a lightly loaded pool pays a cold worker per task, more with more
+  workers; under full load every worker is busy and the order does not
+  matter. A small rhapsody change (take the most recently idle worker:
+  `pop()` instead of `popleft()` in `_idle_pop`) would remove most of the
+  growth. It also concentrates light load on few workers, which leaves the
+  rest cold; B4's first-task cost (+165 ms) would then hit only when load
+  rises. Described, not changed (no `src/` change; rhapsody is a pin).
