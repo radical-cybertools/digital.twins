@@ -124,6 +124,28 @@ added latency when idle.  About 1 week.
 
 ## Idle cost
 
-Measurement: `experiments/dt-paper/r8e/bench_idle_twins.py`, results in
-`experiments/dt-paper/results/r8e/` (laptop, 2026-11-16; filled in below
-when the run is done).
+Measurement: `experiments/dt-paper/r8e/bench_idle_twins.py` (WindField
+graph per twin, built and started, no inputs), on the laptop with a
+throwaway broker and one concurrent endpoint (`r8e/run_idle_local.sh`),
+2026-11-16.  Results: `experiments/dt-paper/results/r8e/`.
+
+| idle twins | build of the step | per twin | broker RSS | broker CPU | probe p50 / p99 | `twin_list` |
+|---|---|---|---|---|---|---|
+| 1,000 | 66-70 s | 66-70 ms | 203 MB | 0.9-1.3% | 52-68 / 156-169 ms | 0.1-0.4 s, 1.5 MB |
+| 2,000 | 163-202 s | 163-202 ms | 287 MB | 1.1-1.2% | 50-62 / 155-173 ms | 0.2-0.3 s, 3.0 MB |
+| 4,000 | fails | | | | | over the 4 MiB frame cap |
+
+- **Idle twins are cheap to keep:** about 80 MB of broker memory per
+  thousand, about 1% of a core, and no effect on a live request's latency.
+- **Building is O(N^2)**, and it is a client bug, not a broker cost:
+  `DTClient.create_twin(wait=True)` polls `twin(twin_id)` until the twin is
+  ready, and `twin()` fetches the whole `twin_list` to pick one entry
+  (`src/digitaltwin/service/client.py`).  Every build downloads the state
+  of every twin already in the experiment (1.5 MB per poll at 1,000 twins).
+- **Past about 2,700 twins `twin_list` exceeds ORBIT's 4 MiB frame cap**
+  (`HTTP 500 ... frame size 4357700 bytes exceeds cap 4194304 bytes` at
+  4,000), so listing fails, and so does every `create_twin` that waits.
+
+Fixes (not made yet): a per-twin route (`twin/{sid}/{twin_id}`, the session
+already has `_twin_state`) used by `twin()` and `wait_ready()`, and
+pagination for `twin_list`.  After them, rerun 1k-16k.
