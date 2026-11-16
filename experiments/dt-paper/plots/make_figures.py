@@ -191,17 +191,18 @@ def later_bursts(run, row):
 
 
 def fig_e1_paths(fig):
-    """E1: p50 per request and burst throughput, local pool to radical.3."""
-    # round 3b (U2, U3): each row, xgf included, in its own process; the
-    # service path was measured once, in round 2 (S3)
-    local = solo("r3b/u2/insitu-pm-pool8-c50-solo-{row}-r*-stack-r3b-*.json")
-    cross = solo("r3b/u2/insitu-pm-orbit-cross-c1-solo-{row}-r*-stack-r3b-*.json")
-    remote = SRC.load("r3b/u3/insitu-pm-remote-c1-r*-stack-r3b-*.json")
-    service = SRC.load("s3/service-remote-stack-*.json")[0]
-    burst_local = solo("r3b/u2/insitu-pm-pool8-c500-solo-{row}-r*-stack-r3b-*.json")
-    burst_cross = solo(
-        "r3b/u2/insitu-pm-orbit-cross-c500-solo-{row}-r*-stack-r3b-*.json"
-    )
+    """E1: p50 per request and burst throughput, local pool to radical.3.
+
+    Round 8d (D1): dragon_native, no-op tasks, each row (xgf included) in
+    its own process, 5 repeats; p50 from each c=500 run's sequential part,
+    throughput the median of its bursts 2-5.  radical.3 client: 3 repeats,
+    c=1.  Service: round 8d D2, a twin in radical.3's DT plugin
+    (R8Investigator) on a dragon_native endpoint, both dragon_native orders.
+    """
+    local = solo("r8d/d1/insitu-local-dragon-c500-solo-{row}-r*-stack-*.json")
+    cross = solo("r8d/d1/insitu-orbit-dragon-c500-solo-{row}-r*-stack-*.json")
+    remote = SRC.load("r8d/d1/insitu-remote-dragon-c1-r*-stack-*.json")
+    service = SRC.load("r8d/d2/service-split-dragon_native-o*-stack-*.json")
 
     ax1, ax2 = fig.subplots(1, 2, gridspec_kw={"width_ratios": [4, 2.4]})
     cats = [
@@ -210,7 +211,7 @@ def fig_e1_paths(fig):
         "radical.3\nclient",
         "radical.3\nservice",
     ]
-    svc = [rep["p50_ms"] for rep in service["repeats"]]
+    svc = [rep["p50_ms"] for run in service for rep in run["repeats"]]
     p50 = {
         r: [
             [run["rows"][r]["p50_ms"] for run in local[r]],
@@ -232,8 +233,8 @@ def fig_e1_paths(fig):
 
     burst = {
         r: [
-            [later_bursts(run, r) for run in burst_local[r]],
-            [later_bursts(run, r) for run in burst_cross[r]],
+            [later_bursts(run, r) for run in local[r]],
+            [later_bursts(run, r) for run in cross[r]],
         ]
         for r in [*ROWS, XGF]
     }
