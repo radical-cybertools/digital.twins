@@ -116,13 +116,14 @@ def main():
                     except Exception as exc:
                         errors.append(f"{type(exc).__name__}: {exc}"[:200])
             build_s = time.time() - t0
-            # wait until every twin left 'initializing'
+            # wait until a sample of twins left 'initializing' (twin_list
+            # itself outgrows ORBIT's frame cap past about 2,700 twins)
             t1 = time.time()
             while True:
                 states = {}
-                lst = dt.twin_list()
-                for t in lst:
-                    states[t.get("state")] = states.get(t.get("state"), 0) + 1
+                for tw in random.sample(twins, min(50, len(twins))):
+                    st = dt.twin(tw).get("state")
+                    states[st] = states.get(st, 0) + 1
                 if states.get("initializing", 0) == 0 or time.time() - t1 > 600:
                     break
                 time.sleep(2)
@@ -140,9 +141,13 @@ def main():
                     errs += 1
                 lat.append(time.time() - a)
             a = time.time()
-            lst = dt.twin_list()
+            tl_err = None
+            try:
+                lst = dt.twin_list()
+                tl_bytes = len(json.dumps(lst))
+            except Exception as exc:
+                tl_bytes, tl_err = None, f"{type(exc).__name__}: {exc}"[:200]
             tl_s = time.time() - a
-            tl_bytes = len(json.dumps(lst))
             lat.sort()
             pt = {"twins": n, "created": len(twins), "build_errors": errors[:3],
                   "n_build_errors": len(errors), "build_s": build_s,
@@ -150,13 +155,13 @@ def main():
                   "ready_wait_s": ready_s, "states": states, "proc": proc,
                   "probe_p50_ms": 1e3 * statistics.median(lat),
                   "probe_p99_ms": 1e3 * lat[int(0.99 * (len(lat) - 1))],
-                  "probe_errors": errs, "twin_list_s": tl_s, "twin_list_bytes": tl_bytes}
+                  "probe_errors": errs, "twin_list_s": tl_s, "twin_list_bytes": tl_bytes, "twin_list_error": tl_err}
             res["points"].append(pt)
             save()
             print(f"N={n:6d} built {len(twins)} (+{len(errors)} err) in {build_s:6.1f} s, ready +{ready_s:5.1f} s, "
                   f"states {states} | broker {proc.get('broker')} | endpoint {proc.get('endpoint')} | "
                   f"probe p50 {pt['probe_p50_ms']:.1f} p99 {pt['probe_p99_ms']:.1f} ms err {errs} | "
-                  f"twin_list {tl_s:.2f} s {tl_bytes/1e6:.1f} MB", flush=True)
+                  f"twin_list {tl_s:.2f} s " + (f"{tl_bytes/1e6:.1f} MB" if tl_bytes else f"FAILED {tl_err}"), flush=True)
             if errors and len(errors) > n // 10:
                 res["stopped"] = f"too many build errors at {n}: {errors[0]}"
                 break
