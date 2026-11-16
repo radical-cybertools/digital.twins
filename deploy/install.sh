@@ -57,8 +57,9 @@ RHAPSODY="rhapsody-py[${RHAPSODY_EXTRAS:-telemetry}] @ git+$GH/rhapsody@5abecd6f
 # orbit paper/dtaas: devel (0.8.0) + calls held for a suspect endpoint are
 # failed (503) on resume (#166), finished tasks released after 1 h and
 # telemetry bounded (#167), configurable keepalive deadline
-# (RADICAL_ORBIT_PING_TIMEOUT) and coalesced topology broadcasts (#170)
-ORBIT="radical.orbit @ git+$GH/radical.orbit@adf25487c772791f99bf3812ea55b02bec6fc9b1"
+# (RADICAL_ORBIT_PING_TIMEOUT) and coalesced topology broadcasts (#170),
+# an oversized return value fails its task (#171)
+ORBIT="radical.orbit @ git+$GH/radical.orbit@22501475fc5f27b3c2b5de2d027ce446c36d7f91"
 # ROSE paper/dtaas: main with the Stream API (#98).  The dist name is
 # `rose-surrogate-explorer`; a `rose @ ...` direct URL is rejected by pip
 ROSE="rose-surrogate-explorer @ git+$GH/ROSE@9cc47a597063351c6192e3520f1bb0d39dd35230"

@@ -171,3 +171,10 @@ an input channel instead.
 - radical.3:8010 (broker and `r3_site` on `dragon_native`) runs `a64effc`
   since 2026-11-15 (`~/paper-dtaas/ve` -> `ve-a64effc`); port 8011 (E5 30-day
   run) unchanged.
+
+## Update 2026-11-16: radical.orbit 2250147 (#171)
+
+radical.orbit #171: a task whose return value exceeds the frame budget is
+reported FAILED with the error as its exception (it came back DONE with
+`return_value` None before: round 8's R8-A).  digital.twins `deploy/install.sh`
+pins orbit `2250147` (paper/dtaas: #166, #167, #170, #171).
