@@ -258,3 +258,20 @@ dn conc conc dn, 50 requests x 3 repeats each, no reattaches. WAN connect
    against 3b's 0.58)?
 3. Keep the local pool at one worker per core (the default), knowing a
    lightly loaded pool pays 0.6 ms per task hop (D3, D3b)?
+
+### Answers from Andre (2026-11-16, on the laptop)
+
+1. **OffsetModel's extra round trip:** hunted down later; for now converge on
+   a solid set of plots so others can start on the paper. A TODO in the
+   paper marks it (the two-cell test: R8Investigator with a TypedData
+   argument, OffsetModel with a float). Note: a laptop A/B the same day
+   (client and endpoint on the laptop, `s3_service.py` with OffsetModel,
+   radical.3:8010) showed no extra round trip on dragon_native (130 vs 135 ms
+   concurrent), so it needs dragon_native, OffsetModel and the Perlmutter
+   setup together.
+2. **E1 paths figure:** yes, redrawn from D1 (no-op tasks, dragon_native),
+   with the service bar from D2 (R8Investigator, two round trips).
+3. **Pool size:** keep one worker per core (the default); the paper states
+   the per-task cost (0.38 ms at 4 workers, 0.61 ms at 128). Taking the most
+   recently idle worker (D3b) is a later rhapsody change, with the pool
+   pre-warm.
