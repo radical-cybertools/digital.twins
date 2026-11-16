@@ -47,7 +47,11 @@ COLORS = {
 }
 LABELS = {"bare": "bare AsyncFlow", "xgf": "hand-wired (xGFabric)"}
 DASHED = set()  # series drawn dashed by lines()
-WIDTH = 4.8  # article class text width, inches
+# IEEE conference (CCGrid) layout: a column figure is 3.5 in wide, a
+# full-width one (figure*) 7.16 in; FIG_WIDTH / FIG_WIDE_WIDTH or --width
+# / --wide-width override them (e.g. 4.8 for the old article class)
+WIDTH = float(os.environ.get("FIG_WIDTH", "3.5"))
+WIDE_WIDTH = float(os.environ.get("FIG_WIDE_WIDTH", "7.16"))
 
 plt.rcParams.update(
     {
@@ -716,7 +720,7 @@ def fig_twins(fig):
                 label="no-op, round 8c")
     for ax in (ax1, ax2):
         ax.set_xscale("log", base=4)
-        ax.set_xticks(xs, [str(n) if n in (1, 16, 256) else "" for n in xs])
+        ax.set_xticks(xs, [str(n) for n in xs])
         ax.minorticks_off()
         ax.set_xlabel("twins in one experiment")
     ax1.set_ylabel("throughput [req/s]")
@@ -765,17 +769,20 @@ def fig_twins(fig):
 # figures whose results are not in yet: rendered only with --only
 PENDING = {}
 
+# name -> (function, height in inches, layout): "col" for a column figure,
+# "wide" for a full-width figure* (three panels, or two whose category
+# labels do not fit a column)
 FIGURES = {
-    "e1-paths": (fig_e1_paths, 2.3),
-    "e1-pool": (fig_e1_pool, 2.0),
-    "e1-exsitu": (fig_e1_exsitu, 2.0),
-    "e2-scaling": (fig_e2, 2.0),
-    "e3-sites": (fig_e3_sites, 2.5),
-    "e4-swap": (fig_e4_swap, 2.2),
-    "e5-endpoint-loss": (fig_e5, 2.5),
-    "e6-windfield": (fig_e6, 2.2),
-    "sites": (fig_sites, 2.0),
-    "twins": (fig_twins, 2.2),
+    "e1-paths": (fig_e1_paths, 2.3, "wide"),
+    "e1-pool": (fig_e1_pool, 2.0, "col"),
+    "e1-exsitu": (fig_e1_exsitu, 2.0, "col"),
+    "e2-scaling": (fig_e2, 1.9, "col"),
+    "e3-sites": (fig_e3_sites, 2.5, "col"),
+    "e4-swap": (fig_e4_swap, 2.2, "wide"),
+    "e5-endpoint-loss": (fig_e5, 2.2, "wide"),
+    "e6-windfield": (fig_e6, 2.2, "wide"),
+    "sites": (fig_sites, 1.9, "col"),
+    "twins": (fig_twins, 2.2, "wide"),
 }
 
 
@@ -785,8 +792,11 @@ def main():
     )
     ap.add_argument("--out", required=True, help="directory for the PDFs")
     ap.add_argument("--only", help="comma separated figure names")
+    ap.add_argument("--width", type=float, help="column figure width, inches")
+    ap.add_argument("--wide-width", type=float, help="full-width figure width, inches")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
+    widths = {"col": args.width or WIDTH, "wide": args.wide_width or WIDE_WIDTH}
 
     commit = subprocess.run(
         ["git", "-C", HERE, "rev-parse", "HEAD"],
@@ -796,9 +806,9 @@ def main():
     ).stdout.strip()
     names = args.only.split(",") if args.only else list(FIGURES)
     for name in names:
-        func, height = {**FIGURES, **PENDING}[name]
+        func, height, layout = {**FIGURES, **PENDING}[name]
         SRC.current = name
-        fig = plt.figure(figsize=(WIDTH, height), layout="constrained")
+        fig = plt.figure(figsize=(widths[layout], height), layout="constrained")
         func(fig)
         path = os.path.join(args.out, f"{name}.pdf")
         fig.savefig(path, metadata={"CreationDate": None})  # reproducible
