@@ -417,66 +417,43 @@ def _outcomes(run):
 
 
 def fig_e5(fig):
-    """E5: in-situ inference while a learning endpoint dies, and recovery."""
+    """E5: in-situ inference while a learning endpoint dies, and recovery
+    (round 8 R8-5: dragon_native on both endpoints, cluster, 10 kills of the
+    learning endpoint's whole Dragon runtime)."""
     ax1, ax2 = fig.subplots(1, 2, gridspec_kw={"width_ratios": [3, 2]})
-    # the session's other twin, probed while the learning endpoint is lost
-    # (from the kill until the loss is reported), current stack (round 2c)
-    runs = [
-        ("cluster", "c2/endpoint-loss-pm-stack2c-*.json"),
-        ("radical.3", "c1/endpoint-loss-remote-run*-*.json"),
-    ]
+    run = SRC.load("r8/r8-5/endpoint-loss-*-stack-r8-*.json")[0]
+    # every probe from a kill until the endpoint is back, by twin: the twin
+    # whose learning endpoint died, and its sibling in the same session
+    twins = [("learner", "twin that lost\nits learner"), ("sibling", "sibling twin")]
     rtts, counts = [], []
-    for _, pattern in runs:
-        probes = [
-            p
-            for run in SRC.load(pattern)
-            for k in run["kills"]
-            for p in k.get("probes", [])
-            if p["twin"] == "sibling"
-        ]
+    for key, _ in twins:
+        probes = [p for k in run["kills"] for p in k.get("probes", []) if p["twin"] == key]
         rtts.append([p["rtt"] * 1e3 for p in probes if p["ok"]])
         counts.append((sum(p["ok"] for p in probes), len(probes)))
     COLORS["in-situ inference"] = DT_A
-    bars(
-        ax1,
-        [r[0] for r in runs],
-        {"in-situ inference": rtts},
-        log=True,
-        err=p10_p90,
-    )
+    bars(ax1, [lab for _, lab in twins], {"in-situ inference": rtts}, err=p10_p90)
+    ax1.set_ylim(0, 1.2 * max(statistics.median(r) for r in rtts))
     for j, (ok, n) in enumerate(counts):
-        ax1.annotate(
-            f"{ok}/{n}",
-            (j, 1.0),
-            xycoords=("data", "axes fraction"),
-            ha="center",
-            va="top",
-            fontsize=6,
-        )
+        ax1.annotate(f"{ok}/{n} answered", (j, 1.0), xycoords=("data", "axes fraction"),
+                     ha="center", va="top", fontsize=6)
     ax1.set_ylabel("latency while the endpoint\nis lost, p50 [ms]")
     ax1.set_title("(a) in-situ inference")
 
-    cluster = SRC.load("c2/endpoint-loss-pm-stack2c-*.json")[0]
-    remote = SRC.load("c1/endpoint-loss-remote-run*-stack2c-*.json")
     keys = [
-        ("detect_s", "detect"),
+        ("detect_s", "loss\nreported"),
+        ("endpoint_up_s", "endpoint\nback"),
         ("resume_s", "learning\nresumed"),
         ("attach_s", "client\nreattach"),
     ]
 
-    def per_kill(run, key):
+    def per_kill(key):
         items = run["reattaches"] if key == "attach_s" else run["kills"]
         return [k[key] for k in items if k.get(key) is not None]
 
-    series = {
-        "cluster": [per_kill(cluster, k) for k, _ in keys],
-        "radical.3": [[v for r in remote for v in per_kill(r, k)] for k, _ in keys],
-    }
-    COLORS.update({"cluster": DT_A, "radical.3": DT_C})
-    bars(ax2, [lab for _, lab in keys], series, labels=True)
+    COLORS["cluster"] = DT_A
+    bars(ax2, [lab for _, lab in keys], {"cluster": [per_kill(k) for k, _ in keys]}, labels=True)
     ax2.set_ylabel("seconds")
     ax2.set_title("(b) recovery")
-    ax2.legend(frameon=False)
 
 
 def fig_e6(fig):
