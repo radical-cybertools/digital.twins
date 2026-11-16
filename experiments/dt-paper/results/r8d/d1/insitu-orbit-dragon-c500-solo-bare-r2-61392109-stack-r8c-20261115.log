@@ -1,0 +1,8 @@
+backend: orbit r8d_ep
+bare asyncflow task          n=1000  mean=   3.32ms  p50=   3.27  p90=   3.64  p99=   4.03  max=   4.73
+bare asyncflow task          500 concurrent requests in 422.8ms (1183 req/s)
+bare asyncflow task          500 concurrent requests in 574.2ms (871 req/s)
+bare asyncflow task          500 concurrent requests in 415.2ms (1204 req/s)
+bare asyncflow task          500 concurrent requests in 417.3ms (1198 req/s)
+bare asyncflow task          500 concurrent requests in 504.0ms (992 req/s)
+results: experiments/dt-paper/results/r8d/d1/insitu-orbit-dragon-c500-solo-bare-r2-61392109-stack-r8c-20261115.json

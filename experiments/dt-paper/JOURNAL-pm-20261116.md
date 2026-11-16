@@ -12,6 +12,7 @@ reused. Budget 1 CPU node-h on m5290.
 |---|---|---|---|---|---|---|
 | 61392110 | D3 | m5290 | 1 | 00:02:13 | 0.037 | 0.04 |
 | 61392295 | D3b (Andre's request) | m5290 | 1 | 00:02:30 | 0.042 | 0.08 |
+| 61392109 | D1 + D2 | m5290 | 2 | 00:23:37 | 0.787 | 0.87 |
 
 ## D0: setup
 
@@ -107,3 +108,89 @@ counts the distinct workers that ran them. `results/r8d/d3b/`.
   growth. It also concentrates light load on few workers, which leaves the
   rest cold; B4's first-task cost (+165 ms) would then hit only when load
   rises. Described, not changed (no `src/` change; rhapsody is a pin).
+
+## D1: E1 paths with no-op tasks (job 61392109, regular, 2 nodes, with D2)
+
+`r8d/run_c3.sh` with `WORK_MS=0` (round 3b's no-op task), L / O 5
+repeats, R 3 repeats (budget, D0), rows in their own processes, round 3b's
+rotated orders. Every rc 0. Table `results/r8d/d1/d1-table.md`
+(`r8d/d1_table.py`).
+
+## p50 per request, ms (median of repeats, min-max)
+
+| path | row | dragon_native, no-op (r8d) | round 3b (concurrent pool / endpoint) |
+|---|---|---|---|
+| local | bare | 0.91 (0.90-0.98) | 0.58 (0.58-0.59) |
+| local | investigator | 0.98 (0.88-1.00) | 0.59 (0.59-0.65) |
+| local | agent | 1.00 (0.99-1.00) | 0.60 (0.59-0.61) |
+| local | xgf | 1.30 (1.26-1.34) | 0.87 (0.86-0.88) |
+| ORBIT cross-node | bare | 3.38 (3.27-3.45) | 2.96 (2.83-3.14) |
+| ORBIT cross-node | investigator | 3.36 (3.25-3.41) | 2.87 (2.82-2.96) |
+| ORBIT cross-node | agent | 3.29 (3.24-3.36) | 3.01 (2.70-3.36) |
+| ORBIT cross-node | xgf | 3.60 (3.49-3.73) | 3.22 (2.96-3.67) |
+| radical.3 client | bare | 348.62 (341.65-354.65) | 353.91 (351.73-359.33) |
+| radical.3 client | investigator | 348.34 (341.46-354.65) | 353.98 (351.62-359.40) |
+| radical.3 client | agent | 348.46 (341.53-354.74) | 353.85 (351.73-359.29) |
+
+## throughput under bursts of 500, req/s (per run median of bursts 2-5; median of repeats, min-max)
+
+| path | row | dragon_native, no-op (r8d) | round 3b |
+|---|---|---|---|
+| local | bare | 3,073 (2,918-3,197) | 3,672 (3,512-3,768) |
+| local | investigator | 2,949 (2,730-3,236) | 3,462 (3,378-3,527) |
+| local | agent | 2,768 (2,696-2,878) | 3,025 (2,987-3,232) |
+| local | xgf | 2,162 (2,083-2,249) | 2,506 (2,465-2,622) |
+| ORBIT cross-node | bare | 1,095 (1,082-1,165) | 1,064 (1,030-1,124) |
+| ORBIT cross-node | investigator | 1,074 (1,035-1,105) | 1,035 (963-1,084) |
+| ORBIT cross-node | agent | 1,072 (1,029-1,107) | 1,006 (951-1,055) |
+| ORBIT cross-node | xgf | 963 (912-992) | 967 (904-984) |
+
+- **Now like for like with round 3b.** Local dragon_native costs +0.33 ms
+  per request over 3b's process pool of 8 (bare 0.91 against 0.58 ms; DT
+  rows +0.07-0.09 over bare, xgf +0.39); D3 puts 0.26 ms of that in the
+  128-worker pool's task hop (0.61 against a 4-process pool's 0.35 ms), of
+  which D3b shows most is the worker rotation.
+- **Through ORBIT +0.42 ms** (bare 3.38 against 2.96 ms); the DT rows equal
+  bare (3.29-3.36); throughput under bursts equal or above 3b (1,072-1,095
+  against 1,006-1,064 req/s).
+- **Locally, burst throughput is 10-16% below 3b** (bare 3,073 against 3,672).
+- **radical.3 client rows:** 348.5 ms (3b 353.9): the WAN.
+- Compared with round 8c's C3 (0.58 ms CPU task): local 0.91 against 1.57
+  ms, ORBIT 3.38 against 3.80, so the task accounted for 0.42-0.66 ms of
+  C3's p50.
+
+## D2: the service row split, dragon_native against concurrent (same job)
+
+`r8d/service_split.py` against `radical.3:8010` (default credentials read
+only), a twin in its DT plugin with `R8Investigator`, the engine on a
+Perlmutter endpoint on node 1, client node 0; order dragon_native,
+concurrent, concurrent, dragon_native; 50 requests x 3 repeats each after
+10 warm-up; no-op task; `RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW=0`. WAN connect
+median 0.172 s.
+
+| order | backend | rep | p50 ms | client -> task start | task | task end -> client | session + twin s |
+|---|---|---|---|---|---|---|---|
+| 2 | concurrent | 0 | 339.0 | 169.0 | 0.005 | 170.0 | 1.54 |
+| 2 | concurrent | 1 | 339.2 | 169.1 | 0.005 | 170.2 | 1.54 |
+| 2 | concurrent | 2 | 339.4 | 169.3 | 0.005 | 170.1 | 1.54 |
+| 3 | concurrent | 0 | 347.2 | 170.3 | 0.004 | 176.8 | 1.58 |
+| 3 | concurrent | 1 | 347.1 | 170.3 | 0.005 | 176.8 | 1.58 |
+| 3 | concurrent | 2 | 346.7 | 170.2 | 0.005 | 176.5 | 1.58 |
+| 1 | dragon_native | 0 | 351.8 | 172.6 | 0.004 | 179.0 | 2.95 |
+| 1 | dragon_native | 1 | 351.8 | 172.6 | 0.004 | 179.2 | 2.94 |
+| 1 | dragon_native | 2 | 351.9 | 172.7 | 0.004 | 179.1 | 2.95 |
+| 4 | dragon_native | 0 | 347.6 | 177.8 | 0.004 | 169.8 | 2.87 |
+| 4 | dragon_native | 1 | 347.7 | 177.8 | 0.004 | 169.8 | 2.87 |
+| 4 | dragon_native | 2 | 347.7 | 177.8 | 0.004 | 169.8 | 2.86 |
+
+- **No extra round trip on either backend:** p50 339-352 ms per request
+  for both, about 2 x the 0.172 s connect time: one trip out (client ->
+  radical.3 -> Perlmutter endpoint, about 170-178 ms to the task's start)
+  and one back (about 170-179 ms). The two backends agree within the
+  run-to-run spread; dragon_native's session + twin build is 2.9 s against
+  1.5 s (the pool).
+- So round 8c's service row (516 ms, `s3/s3_service.py`) does not come from
+  dragon_native as such. Its twin differs from D2's: `OffsetModel`
+  (`test/integration/twin_components.py`) passes a **pickled `TypedData`**
+  as the task's argument, D2's `R8Investigator` a float. D2b measures
+  `s3_service.py` itself on both backends (job 61392547).

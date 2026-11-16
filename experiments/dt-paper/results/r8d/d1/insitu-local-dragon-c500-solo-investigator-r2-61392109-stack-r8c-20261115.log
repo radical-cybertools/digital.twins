@@ -1,0 +1,9 @@
+backend: local dragon_native (physical cores workers per node)
+DT investigator              n=1000  mean=   1.05ms  p50=   0.99  p90=   1.53  p99=   1.68  max=   5.16
+DT investigator              500 concurrent requests in 175.0ms (2857 req/s)
+DT investigator              500 concurrent requests in 166.0ms (3011 req/s)
+DT investigator              500 concurrent requests in 168.8ms (2961 req/s)
+DT investigator              500 concurrent requests in 170.3ms (2936 req/s)
+DT investigator              500 concurrent requests in 258.1ms (1937 req/s)
+results: experiments/dt-paper/results/r8d/d1/insitu-local-dragon-c500-solo-investigator-r2-61392109-stack-r8c-20261115.json
++++ head proc exited, code 0

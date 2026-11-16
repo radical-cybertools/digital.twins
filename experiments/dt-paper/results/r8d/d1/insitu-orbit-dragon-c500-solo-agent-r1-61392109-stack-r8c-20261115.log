@@ -1,0 +1,8 @@
+backend: orbit r8d_ep
+DT agent + selector          n=1000  mean=   3.40ms  p50=   3.36  p90=   3.74  p99=   4.11  max=   4.58
+DT agent + selector          500 concurrent requests in 555.3ms (900 req/s)
+DT agent + selector          500 concurrent requests in 421.2ms (1187 req/s)
+DT agent + selector          500 concurrent requests in 419.5ms (1192 req/s)
+DT agent + selector          500 concurrent requests in 502.5ms (995 req/s)
+DT agent + selector          500 concurrent requests in 506.4ms (987 req/s)
+results: experiments/dt-paper/results/r8d/d1/insitu-orbit-dragon-c500-solo-agent-r1-61392109-stack-r8c-20261115.json
