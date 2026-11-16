@@ -169,22 +169,48 @@ class DTClient(PluginClient):
             time.sleep(POLL_INTERVAL)
 
     def twin_list(self) -> list[dict]:
-        """State of every twin in this session -- the observation path."""
+        """State of every twin in this session -- the observation path.
+
+        Fetched page by page (the service bounds a page so it fits one
+        frame); a service without paging answers in one page.
+        """
 
         self._require_session()
-        resp = self._request("GET", self._url(f"twin_list/{self.sid}"))
-        self._raise(resp, "twin_list")
+        twins: list[dict] = []
+        offset: Optional[int] = 0
 
-        return resp.json()["twins"]
+        while offset is not None:
+            resp = self._request(
+                "GET", self._url(f"twin_list/{self.sid}"), params={"offset": offset}
+            )
+            self._raise(resp, "twin_list")
+            page = resp.json()
+            twins.extend(page["twins"])
+            offset = page.get("next")
+
+        return twins
 
     def twin(self, twin_id: str) -> dict:
-        """One twin's entry from `twin_list`."""
+        """One twin's `twin_list` entry, fetched alone.
 
-        for twin in self.twin_list():
-            if twin["twin_id"] == twin_id:
-                return twin
+        Against a service without the per-twin route this falls back to
+        scanning `twin_list` -- and a 404 for an unknown twin stays one.
+        """
 
-        raise RuntimeError(f"unknown twin: {twin_id}")
+        self._require_session()
+        resp = self._request("GET", self._url(f"twin/{self.sid}/{twin_id}"))
+
+        if resp.status_code == 404 and "unknown twin" not in resp.text:
+            for twin in self.twin_list():
+                if twin["twin_id"] == twin_id:
+                    return twin
+            raise RuntimeError(f"unknown twin: {twin_id}")
+
+        if resp.status_code == 404:
+            raise RuntimeError(f"unknown twin: {twin_id}")
+
+        self._raise(resp, "twin")
+        return resp.json()
 
     def twin_close(self, twin_id: str) -> str:
         """Stop and forget a twin.  A no-op on an already closed one."""
