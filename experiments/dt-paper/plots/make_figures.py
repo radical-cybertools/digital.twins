@@ -684,18 +684,8 @@ def fig_twins(fig):
                         yerr=[[v[1] for v in st], [v[2] for v in st]],
                         label=label, color=color, linestyle=style, marker="o",
                         markersize=3, linewidth=1.2, elinewidth=0.6, capsize=1.5)
-    # round 8c C2 (stack a64effc, shared stream participant): the same
-    # no-op loop at 256 and 1,024 twins, as points
-    c2r, c2p = {}, {}
-    for run in SRC.load("r8c/c2/engine-noop-one-rcur*-stack-r8c-*.json"):
-        for p in run["points"]:
-            c2r.setdefault(p["twins"], []).append(p["req_per_s"])
-            c2p.setdefault(p["twins"], []).append(p["p99_ms_max"])
-    for ax, pts in ((ax1, c2r), (ax2, c2p)):
-        ks = sorted(pts)
-        ax.plot(ks, [statistics.median(pts[k]) for k in ks], linestyle="none",
-                marker="s", markersize=4, markerfacecolor="none", color=BASE,
-                label="no-op, round 8c")
+    # the closed-loop curve ran on stack 49bd91f; round 8c C2 (a64effc)
+    # confirmed the same ceiling at 256 and 1,024 twins on the current stack
     for ax in (ax1, ax2):
         ax.set_xscale("log", base=4)
         ax.set_xticks(xs, [str(n) for n in xs])
@@ -713,21 +703,17 @@ def fig_twins(fig):
     ax2.set_title("(b) tail latency")
 
     # (c) WindField twins at 1 Hz, all in one experiment (round 8c C1, stack
-    # a64effc): the 1 Hz probe's p50 and p99 with the session's shared
-    # stream participant, and p99 with one participant per twin
-    p50, p99, p99off = {}, {}, {}
-    for setting, store in (("on", (p50, p99)), ("off", (None, p99off))):
-        for run in SRC.load(f"r8c/c1/windfield-{setting}-r*-stack-r8c-*.json"):
-            for p in run["points"]:
-                if p.get("n_create_errors") or not p.get("probe"):
-                    continue
-                if store[0] is not None:
-                    store[0].setdefault(p["twins"], []).append(p["probe"]["p50_ms"])
-                store[1].setdefault(p["twins"], []).append(p["probe"]["p99_ms"])
+    # a64effc, the current stack): the 1 Hz probe's p50 and p99
+    p50, p99 = {}, {}
+    for run in SRC.load("r8c/c1/windfield-on-r*-stack-r8c-*.json"):
+        for p in run["points"]:
+            if p.get("n_create_errors") or not p.get("probe"):
+                continue
+            p50.setdefault(p["twins"], []).append(p["probe"]["p50_ms"])
+            p99.setdefault(p["twins"], []).append(p["probe"]["p99_ms"])
     ws = sorted(p99)
-    COLORS.update({"p50": DT_A, "p99": DT_B, "p99, per-twin stream": BASE_LIGHT})
-    for label, pts, style in (("p50", p50, "-"), ("p99", p99, "--"),
-                              ("p99, per-twin stream", p99off, ":")):
+    COLORS.update({"p50": DT_A, "p99": DT_B})
+    for label, pts, style in (("p50", p50, "-"), ("p99", p99, "--")):
         st = [spread(pts[n]) for n in ws]
         ax3.errorbar(ws, [v[0] for v in st],
                      yerr=[[v[1] for v in st], [v[2] for v in st]],
