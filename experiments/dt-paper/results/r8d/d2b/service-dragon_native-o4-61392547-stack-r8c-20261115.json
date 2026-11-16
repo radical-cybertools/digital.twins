@@ -1,0 +1,59 @@
+{
+  "provenance": {
+    "experiment": "S3 service-path in-situ inference",
+    "harness": "s3_service.py",
+    "time": "2026-11-16T00:11:26-0800",
+    "host": "nid006676",
+    "slurm_job": "61392547",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "inference": "pm_r8d_d2b_dragon_61392547",
+      "n": 50,
+      "repeats": 3,
+      "reattaches": 0,
+      "gap": 2.0,
+      "out": "experiments/dt-paper/results/r8d/d2b/service-dragon_native-o4-61392547-stack-r8c-20261115.json"
+    }
+  },
+  "repeats": [
+    {
+      "repeat": 0,
+      "session_and_twin_s": 2.888672351837158,
+      "n": 50,
+      "p50_ms": 522.6768255233765,
+      "p90_ms": 524.4934558868408,
+      "p99_ms": 531.6846370697021,
+      "min_ms": 521.1493968963623,
+      "max_ms": 531.6846370697021
+    },
+    {
+      "repeat": 1,
+      "session_and_twin_s": 2.882671356201172,
+      "n": 50,
+      "p50_ms": 522.437572479248,
+      "p90_ms": 525.5146026611328,
+      "p99_ms": 555.0944805145264,
+      "min_ms": 521.1217403411865,
+      "max_ms": 555.0944805145264
+    },
+    {
+      "repeat": 2,
+      "session_and_twin_s": 2.8822193145751953,
+      "n": 50,
+      "p50_ms": 522.9984521865845,
+      "p90_ms": 524.8417854309082,
+      "p99_ms": 541.1074161529541,
+      "min_ms": 521.5082168579102,
+      "max_ms": 541.1074161529541
+    }
+  ],
+  "reattaches": [],
+  "summary": {
+    "p50_ms": 522.6768255233765,
+    "session_and_twin_s": 2.882671356201172,
+    "reattaches_ok": 0,
+    "reattaches": 0,
+    "attach_s": null,
+    "first_answer_s": null
+  }
+}

@@ -1,0 +1,9 @@
+backend: local dragon_native (physical cores workers per node)
+DT agent + selector          n=1000  mean=   1.07ms  p50=   1.00  p90=   1.56  p99=   1.77  max=   6.99
+DT agent + selector          500 concurrent requests in 191.9ms (2605 req/s)
+DT agent + selector          500 concurrent requests in 176.3ms (2836 req/s)
+DT agent + selector          500 concurrent requests in 179.3ms (2788 req/s)
+DT agent + selector          500 concurrent requests in 269.9ms (1853 req/s)
+DT agent + selector          500 concurrent requests in 182.0ms (2748 req/s)
+results: experiments/dt-paper/results/r8d/d1/insitu-local-dragon-c500-solo-agent-r4-61392109-stack-r8c-20261115.json
++++ head proc exited, code 0

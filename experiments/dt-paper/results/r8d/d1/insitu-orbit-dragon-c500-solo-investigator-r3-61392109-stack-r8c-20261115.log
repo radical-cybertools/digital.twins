@@ -1,0 +1,8 @@
+backend: orbit r8d_ep
+DT investigator              n=1000  mean=   3.32ms  p50=   3.25  p90=   3.72  p99=   4.10  max=   4.69
+DT investigator              500 concurrent requests in 428.4ms (1167 req/s)
+DT investigator              500 concurrent requests in 478.6ms (1045 req/s)
+DT investigator              500 concurrent requests in 488.0ms (1025 req/s)
+DT investigator              500 concurrent requests in 502.5ms (995 req/s)
+DT investigator              500 concurrent requests in 434.0ms (1152 req/s)
+results: experiments/dt-paper/results/r8d/d1/insitu-orbit-dragon-c500-solo-investigator-r3-61392109-stack-r8c-20261115.json

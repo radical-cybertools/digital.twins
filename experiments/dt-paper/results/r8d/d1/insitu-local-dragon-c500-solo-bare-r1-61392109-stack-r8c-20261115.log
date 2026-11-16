@@ -1,0 +1,9 @@
+backend: local dragon_native (physical cores workers per node)
+bare asyncflow task          n=1000  mean=   1.03ms  p50=   0.95  p90=   1.54  p99=   1.75  max=   4.12
+bare asyncflow task          500 concurrent requests in 179.1ms (2792 req/s)
+bare asyncflow task          500 concurrent requests in 168.7ms (2964 req/s)
+bare asyncflow task          500 concurrent requests in 171.2ms (2921 req/s)
+bare asyncflow task          500 concurrent requests in 171.5ms (2915 req/s)
+bare asyncflow task          500 concurrent requests in 171.8ms (2911 req/s)
+results: experiments/dt-paper/results/r8d/d1/insitu-local-dragon-c500-solo-bare-r1-61392109-stack-r8c-20261115.json
++++ head proc exited, code 0

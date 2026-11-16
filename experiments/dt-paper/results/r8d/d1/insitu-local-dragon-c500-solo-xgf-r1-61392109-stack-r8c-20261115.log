@@ -1,0 +1,9 @@
+backend: local dragon_native (physical cores workers per node)
+xgf zmq request/reply        n=1000  mean=   1.36ms  p50=   1.26  p90=   1.84  p99=   2.20  max=   5.91
+xgf zmq request/reply        500 concurrent requests in 226.3ms (2209 req/s)
+xgf zmq request/reply        500 concurrent requests in 216.9ms (2306 req/s)
+xgf zmq request/reply        500 concurrent requests in 219.9ms (2274 req/s)
+xgf zmq request/reply        500 concurrent requests in 301.5ms (1658 req/s)
+xgf zmq request/reply        500 concurrent requests in 224.8ms (2225 req/s)
+results: experiments/dt-paper/results/r8d/d1/insitu-local-dragon-c500-solo-xgf-r1-61392109-stack-r8c-20261115.json
++++ head proc exited, code 0
