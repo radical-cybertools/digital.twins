@@ -1,0 +1,59 @@
+{
+  "provenance": {
+    "experiment": "S3 service-path in-situ inference",
+    "harness": "s3_service.py",
+    "time": "2026-11-16T00:08:19-0800",
+    "host": "nid006676",
+    "slurm_job": "61392547",
+    "args": {
+      "broker": "https://95.217.193.116:8010",
+      "inference": "pm_r8d_d2b_concurrent_61392547",
+      "n": 50,
+      "repeats": 3,
+      "reattaches": 0,
+      "gap": 2.0,
+      "out": "experiments/dt-paper/results/r8d/d2b/service-concurrent-o2-61392547-stack-r8c-20261115.json"
+    }
+  },
+  "repeats": [
+    {
+      "repeat": 0,
+      "session_and_twin_s": 1.5513062477111816,
+      "n": 50,
+      "p50_ms": 354.1877269744873,
+      "p90_ms": 354.82001304626465,
+      "p99_ms": 355.0279140472412,
+      "min_ms": 353.1050682067871,
+      "max_ms": 355.0279140472412
+    },
+    {
+      "repeat": 1,
+      "session_and_twin_s": 1.547844409942627,
+      "n": 50,
+      "p50_ms": 354.1337251663208,
+      "p90_ms": 354.60901260375977,
+      "p99_ms": 354.94184494018555,
+      "min_ms": 353.3039093017578,
+      "max_ms": 354.94184494018555
+    },
+    {
+      "repeat": 2,
+      "session_and_twin_s": 1.548372745513916,
+      "n": 50,
+      "p50_ms": 353.8264036178589,
+      "p90_ms": 354.61926460266113,
+      "p99_ms": 355.96323013305664,
+      "min_ms": 352.5252342224121,
+      "max_ms": 355.96323013305664
+    }
+  ],
+  "reattaches": [],
+  "summary": {
+    "p50_ms": 354.1337251663208,
+    "session_and_twin_s": 1.548372745513916,
+    "reattaches_ok": 0,
+    "reattaches": 0,
+    "attach_s": null,
+    "first_answer_s": null
+  }
+}

@@ -13,6 +13,7 @@ reused. Budget 1 CPU node-h on m5290.
 | 61392110 | D3 | m5290 | 1 | 00:02:13 | 0.037 | 0.04 |
 | 61392295 | D3b (Andre's request) | m5290 | 1 | 00:02:30 | 0.042 | 0.08 |
 | 61392109 | D1 + D2 | m5290 | 2 | 00:23:37 | 0.787 | 0.87 |
+| 61392547 | D2b | m5290 | 2 | 00:07:58 | 0.266 | 1.13 |
 
 ## D0: setup
 
@@ -194,3 +195,66 @@ median 0.172 s.
   (`test/integration/twin_components.py`) passes a **pickled `TypedData`**
   as the task's argument, D2's `R8Investigator` a float. D2b measures
   `s3_service.py` itself on both backends (job 61392547).
+
+## D2b: round 8c's service row itself, both backends (job 61392547, regular, 2 nodes)
+
+`r8d/run_d2b.sh`: `s3/s3_service.py` (round 8c's harness: a twin in
+radical.3's DT plugin with `OffsetModel`, one task whose argument is a
+pickled `TypedData`) against `radical.3:8010`, a dragon_native endpoint
+(inside Dragon) and a concurrent endpoint (plain launch) on node 1, order
+dn conc conc dn, 50 requests x 3 repeats each, no reattaches. WAN connect
+0.172 s. Isolation check empty.
+
+| order | backend | p50 ms (3 repeats) | session + twin s |
+|---|---|---|---|
+| 1 | dragon_native | 517.6 / 516.8 / 516.8 | 2.90 |
+| 2 | concurrent | 354.2 / 354.1 / 353.8 | 1.55 |
+| 3 | concurrent | 344.7 / 344.7 / 344.3 | 1.52 |
+| 4 | dragon_native | 522.7 / 522.4 / 523.0 | 2.88 |
+
+- **Reproduced, and it is the backend with this graph:** with `OffsetModel`
+  dragon_native takes 517-523 ms per request (3 WAN round trips), concurrent
+  344-354 ms (2), in the same job, both orders. With D2's `R8Investigator`
+  (a float argument, a dict back) both backends take 2 round trips.
+- So the extra round trip needs both dragon_native and something in
+  `OffsetModel`'s task: its argument (a pickled `TypedData`), its return (a
+  plain int wrapped by the component), or its published model kwargs
+  (`offset`). The endpoint's rhapsody plugin decodes cloudpickle fields in
+  place (`plugin_rhapsody.py:553-575`), with no separate fetch, so the code
+  read does not explain it. Not located; described, not fixed. Next test
+  (cheap, laptop or one job): `R8Investigator` with a `TypedData` argument,
+  and `OffsetModel` with a float, to find which of the three it is.
+
+## Close-out (2026-11-16)
+
+- D0-D3 done, plus D2b (the service row on round 8c's own harness) and
+  D3b (the idle-order test, Andre's request). **1.13 node-h** on m5290,
+  within the doubled cap of 2. No allocation and no Dragon runtime left;
+  every ORBIT job's isolation check is empty. R ran 3 repeats and D2 50
+  requests per repeat (budget decisions made before the cap was doubled).
+
+### For the paper
+
+- **E1 paths, no-op tasks (D1), like for like with round 3b:** local
+  dragon_native 0.91 ms per request (3b's process pool 0.58), through
+  ORBIT 3.38 ms (2.96), radical.3 348.5 ms (353.9); the DT rows cost
+  nothing measurable over bare on every path; burst throughput through
+  ORBIT at or above 3b, locally 10-16% below.
+- **Local dragon_native's per-task hop grows with the pool (D3):** 0.38 ms
+  at 4 workers, 0.61 ms at 128; most of the growth is the idle-worker
+  rotation (D3b: taking the most recently idle worker cuts 128 workers to
+  0.43-0.46 ms). Left as is (Andre, 2026-11-16).
+- **The service row's extra WAN round trip (D2, D2b):** not the backend in
+  general (2 round trips on both with a float-argument task), but
+  dragon_native with round 8c's `OffsetModel` task (3 round trips, 517-523
+  ms, against 344-354 ms on concurrent).
+
+### Open questions for Andre
+
+1. Which part of `OffsetModel`'s task (pickled `TypedData` argument, int
+   return, published `offset` kwargs) costs dragon_native an extra WAN round
+   trip? A two-cell test would tell (journal, D2b).
+2. The E1 paths figure: redraw from D1 (no-op tasks; local bars now 0.91 ms
+   against 3b's 0.58)?
+3. Keep the local pool at one worker per core (the default), knowing a
+   lightly loaded pool pays 0.6 ms per task hop (D3, D3b)?
