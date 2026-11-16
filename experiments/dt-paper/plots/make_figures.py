@@ -208,8 +208,8 @@ def fig_e1_paths(fig):
     cats = [
         "local\npool",
         "ORBIT\ncross-node",
-        "radical.3\nclient",
-        "radical.3\nservice",
+        "remote broker\nclient",
+        "remote broker\nservice",
     ]
     svc = [rep["p50_ms"] for run in service for rep in run["repeats"]]
     p50 = {
@@ -217,7 +217,8 @@ def fig_e1_paths(fig):
             [run["rows"][r]["p50_ms"] for run in local[r]],
             [run["rows"][r]["p50_ms"] for run in cross[r]],
             row_values(remote, "p50_ms")[r] if r in ROWS else [],
-            svc if r == "bare" else [],
+            # the service twin runs an investigator (R8Investigator): DT colour
+            svc if r == "investigator" else [],
         ]
         for r in [*ROWS, XGF]
     }
@@ -325,7 +326,9 @@ def fig_e2(fig):
     ax3.set_xlabel("agents in one twin")
     ax3.set_ylim(bottom=0)
     ax3.set_title("(b) agents")
-    ax3.legend(frameon=False)
+    fig.legend(*ax3.get_legend_handles_labels(), loc="outside lower center", ncol=2,
+               frameon=False, fontsize=6.5, title="agents in one twin:",
+               title_fontsize=6.5)
 
 
 def fig_e4_swap(fig):
@@ -358,7 +361,7 @@ def fig_e4_swap(fig):
     paths = [
         ("local", "r8c/c4/update-local-dragon-r*-stack-r8c-*.json"),
         ("ORBIT", "r8c/c4/update-orbit-dragon-r*-stack-r8c-*.json"),
-        ("WAN", "r8c/c4/update-remote-dragon-r*-stack-r8c-*.json"),
+        ("remote\nbroker", "r8c/c4/update-remote-dragon-r*-stack-r8c-*.json"),
     ]
     COLORS["model update"] = DT_A
     bars(
@@ -399,7 +402,7 @@ def fig_e4_swap(fig):
     ax2.set_ylabel("throughput vs no updates")
     ax2.set_title("(c) while updating")
     ax2.set_ylim(0, 1.45)
-    ax2.legend(frameon=False, ncol=2, loc="upper center", fontsize=6)
+    ax2.legend(frameon=False, ncol=2, loc="upper center", fontsize=6.5)
 
 
 def _outcomes(run):
@@ -452,7 +455,7 @@ def fig_e5(fig):
 
     COLORS["cluster"] = DT_A
     bars(ax2, [lab for _, lab in keys], {"cluster": [per_kill(k) for k, _ in keys]}, labels=True)
-    ax2.set_ylabel("seconds")
+    ax2.set_ylabel("time [s]")
     ax2.set_title("(b) recovery")
 
 
@@ -532,8 +535,8 @@ def fig_e6(fig):
     ax2.set_xlim(0, max(left) * 1.15)
     ax2.grid(axis="x", color="#dddddd", linewidth=0.5)
     ax2.grid(axis="y", visible=False)
-    ax2.set_title("(b) through the twin, A100, dragon_native")
-    ax2.legend(frameon=False, fontsize=5.5, loc="lower right")
+    ax2.set_title("(b) through the twin, A100")
+    ax2.legend(frameon=False, fontsize=6.5, loc="lower right")
 
 
 def fig_e3_sites(fig):
@@ -694,7 +697,7 @@ def fig_twins(fig):
     ax1.set_ylabel("throughput [req/s]")
     ax1.set_ylim(bottom=0)
     ax1.set_title("(a) throughput")
-    ax1.legend(frameon=False, loc="lower right", fontsize=5.5, handlelength=1.5,
+    ax1.legend(frameon=False, loc="lower right", fontsize=6.5, handlelength=1.5,
                bbox_to_anchor=(1.06, 0.0))
     ax2.axhline(1000, color=BASE_LIGHT, linestyle=":", linewidth=1.0)
     ax2.text(1, 1050, "break: 1 s", fontsize=6, color=BASE)
@@ -727,7 +730,7 @@ def fig_twins(fig):
     ax3.set_xlabel("WindField twins at 1 Hz")
     ax3.set_ylabel("answer time [ms]")
     ax3.set_title("(c) WindField")
-    ax3.legend(frameon=False, fontsize=6)
+    ax3.legend(frameon=False, fontsize=6.5)
 
 
 # figures whose results are not in yet: rendered only with --only
