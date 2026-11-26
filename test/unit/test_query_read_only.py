@@ -3,7 +3,7 @@ ON_INPUT, so it trains nothing.  Streamed inputs still do."""
 
 import asyncio
 
-from digitaltwin import (
+from radical.doppelganger import (
     CODEC_JSON,
     NULL_DTYPE,
     ChannelPublisher,

@@ -6,8 +6,8 @@ import time
 
 import numpy as np
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import UtilityTask
-from digitaltwin.streaming import PubSubClient
+from radical.doppelganger.components import UtilityTask
+from radical.doppelganger.streaming import PubSubClient
 from dtypes import *
 from al.sim import plot_image
 import matplotlib

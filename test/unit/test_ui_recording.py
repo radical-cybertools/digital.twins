@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-UI = Path(__file__).resolve().parents[2] / "src/digitaltwin/service/ui"
+UI = Path(__file__).resolve().parents[2] / "src/radical/doppelganger/service/ui"
 ASSIGNMENT = "window.DT_SAMPLE ="
 
 SCHEMA = "dt-dash-recording/1"
@@ -292,8 +292,8 @@ def test_the_topic_the_dashboard_parses_is_the_one_the_client_builds():
     the topic on `/` and strips the terminator, and this is the code that
     produces it.  A change to either side has to fail here."""
 
-    streaming = pytest.importorskip("digitaltwin.streaming")
-    from digitaltwin.components import DataType
+    streaming = pytest.importorskip("radical.doppelganger.streaming")
+    from radical.doppelganger.components import DataType
 
     client = streaming.PubSubClient.__new__(streaming.PubSubClient)
     client.namespace = "11111111-2222-3333-4444-555555555555"
@@ -313,7 +313,7 @@ def test_the_page_and_the_plugin_ship_the_same_assets():
     serve -- the live mode only works same-origin."""
 
     pytest.importorskip("radical.orbit")
-    from digitaltwin.service.plugin import UI_ASSETS
+    from radical.doppelganger.service.plugin import UI_ASSETS
 
     page = (UI / "index.html").read_text()
     # the page loads its scripts with a `?v=` cache-buster; the plugin routes

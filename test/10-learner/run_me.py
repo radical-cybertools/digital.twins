@@ -20,8 +20,8 @@ import time
 
 from radical.orbit import EndpointRuntime
 
-from digitaltwin.components import NULL_DTYPE, TRUTHY, TypedData
-from digitaltwin.service import register_user_modules
+from radical.doppelganger.components import NULL_DTYPE, TRUTHY, TypedData
+from radical.doppelganger.service import register_user_modules
 
 from dtypes import PREDICTION_DTYPE, SENSOR_DTYPE
 from model import CalibrationLearner

@@ -1,7 +1,7 @@
 import time
 
-from digitaltwin import NULL_DTYPE, TypedData, UtilityTask
-from digitaltwin.components import DataType
+from radical.doppelganger import NULL_DTYPE, TypedData, UtilityTask
+from radical.doppelganger.components import DataType
 
 
 class MonitorTask(UtilityTask):

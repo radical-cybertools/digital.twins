@@ -9,8 +9,8 @@ from rose import Learner
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import tensorflow as tf
-from digitaltwin.components import ModelInvestigator, TypedData
-from digitaltwin.runtime import RuntimeAPI
+from radical.doppelganger.components import ModelInvestigator, TypedData
+from radical.doppelganger.runtime import RuntimeAPI
 from .sim import do_simulation
 from .train import do_train
 from .active import do_active

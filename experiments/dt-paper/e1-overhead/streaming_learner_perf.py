@@ -24,8 +24,8 @@ from unittest.mock import MagicMock
 from radical.asyncflow import WorkflowEngine
 from rose.al.streaming_learner import StreamingActiveLearner
 
-from digitaltwin.components import DataType
-from digitaltwin.streaming import PubSubClient, ZMQ_Broker, ZMQ_PS_Client
+from radical.doppelganger.components import DataType
+from radical.doppelganger.streaming import PubSubClient, ZMQ_Broker, ZMQ_PS_Client
 
 PUB_ADDR = "tcp://127.0.0.1:5100"
 SUB_ADDR = "tcp://127.0.0.1:5101"

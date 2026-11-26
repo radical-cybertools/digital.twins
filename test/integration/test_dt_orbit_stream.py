@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from digitaltwin.components import (
+from radical.doppelganger.components import (
     NULL_DTYPE,
     TRUTHY,
     Barrier,
@@ -23,9 +23,9 @@ from digitaltwin.components import (
     JoinDataType,
     TypedData,
 )
-from digitaltwin.config import BACKEND_ORBIT
-from digitaltwin.service import register_user_modules
-from digitaltwin.streaming import (
+from radical.doppelganger.config import BACKEND_ORBIT
+from radical.doppelganger.service import register_user_modules
+from radical.doppelganger.streaming import (
     ChannelPublisher,
     PubSubConfig,
     connect_stream_client,

@@ -160,7 +160,7 @@ Limits:
   unreachable `learning` endpoint does).
 - The dashboard draws lanes for `inference` and `learning` only; tasks on
   other engines do not appear there.
-- Client and service must run the same `digitaltwin` version (0.1.0
+- Client and service must run the same `radical.doppelganger` version (0.1.0
   introduced `engine=`).  The check needs installed packages: run from a
   source tree, both sides report `unknown` and the check passes.
 
@@ -170,7 +170,7 @@ Instruments are not twin components.  They publish to a named channel, and
 any number of twins bind that channel with `add_input`:
 
 ```python
-from digitaltwin.streaming import ChannelPublisher, PubSubConfig
+from radical.doppelganger.streaming import ChannelPublisher, PubSubConfig
 
 dt.add_input(twin, SENSOR, 'lab/probe-3')
 
@@ -218,7 +218,7 @@ and publishes nothing by itself.  There are two ways to see results:
 
 ```python
 import asyncio
-from digitaltwin.streaming import connect_stream_client
+from radical.doppelganger.streaming import connect_stream_client
 
 pub_addr, sub_addr = dt.admin_sessions()['stream_broker']['addresses']
 client = await connect_stream_client(twin, pub_addr, sub_addr)
