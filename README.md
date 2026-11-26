@@ -19,7 +19,9 @@ Main set of features implemented:
 
 ## Running the unit tests:
 
-1. `pip install .[test,service,learn]`
+1. `pip install .[test,service,learn]` (in a venv that had the package
+   under its old name, `pip uninstall digitaltwin` first: both would
+   register the `dt` plugin)
 2. `pytest` (or `tox` for all supported interpreters)
 
 The `learn` extra currently needs ROSE from **PR #98** (commit

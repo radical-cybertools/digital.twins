@@ -7,7 +7,7 @@ module must stay importable on its own.
 
 import asyncio
 
-from radical.doppelganger.components import ModelInvestigator, TypedData, UtilityTask
+from digitaltwin.components import ModelInvestigator, TypedData, UtilityTask
 
 from dtypes import INFERENCE_DTYPE, SENSOR_DTYPE
 

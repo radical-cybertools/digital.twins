@@ -241,6 +241,15 @@ def test_a_missing_version_is_rejected(missing):
         check_versions(stamp)
 
 
+def test_a_pre_rename_client_is_named():
+    stamp = {k: v for k, v in version_stamp().items()
+             if k != "radical.doppelganger"}
+    stamp["digitaltwin"] = "0.0.1"
+
+    with pytest.raises(ValueError, match="pre-rename package `digitaltwin` 0.0.1"):
+        check_versions(stamp)
+
+
 def test_the_stamp_pins_doppelganger_too():
     assert "radical.doppelganger" in version_stamp()
 

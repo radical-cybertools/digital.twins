@@ -94,7 +94,9 @@ def _minor(version: str) -> tuple:
 # How closely each version has to line up.  Python and cloudpickle break
 # pickle compatibility at minor-version granularity; `radical.doppelganger` is
 # resolved by reference, so any difference at all is a different service.
-_COMPARE = {"python": _minor, "cloudpickle": _minor, "radical.doppelganger": str}
+_DT_KEY = "radical.doppelganger"
+_PRE_RENAME_KEY = "digitaltwin"
+_COMPARE = {"python": _minor, "cloudpickle": _minor, _DT_KEY: str}
 
 
 def check_versions(stamp: dict) -> None:
@@ -105,6 +107,15 @@ def check_versions(stamp: dict) -> None:
     """
 
     theirs = stamp or {}
+
+    # the package was called `digitaltwin` before it was released; name
+    # that rather than report a missing field
+    if _PRE_RENAME_KEY in theirs and _DT_KEY not in theirs:
+        raise ValueError(
+            f"client runs the pre-rename package `digitaltwin`"
+            f" {theirs[_PRE_RENAME_KEY]}, service runs {_DT_KEY}"
+            f" {_dt_version()} -- install the same {_DT_KEY} on both sides"
+        )
 
     for key, mine in version_stamp().items():
         yours = theirs.get(key)

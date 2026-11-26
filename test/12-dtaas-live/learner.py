@@ -11,8 +11,8 @@ narration instead of snapping to converged on the first window.
 
 import os
 
-from radical.doppelganger.components import DataType, TypedData
-from radical.doppelganger.learn import StreamingLearnerInvestigator
+from digitaltwin.components import DataType, TypedData
+from digitaltwin.learn import StreamingLearnerInvestigator
 
 from dtypes import INFERENCE_DTYPE, SENSOR_DTYPE
 
