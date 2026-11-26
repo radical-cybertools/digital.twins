@@ -112,7 +112,7 @@ this configuration from the environment:
 Start a second endpoint and point the learning role at it:
 
 ```sh
-# terminal 3
+# terminal 4
 RADICAL_ORBIT_RHAPSODY_BACKEND=concurrent \
 radical-orbit-endpoint.py -n learn_ep
 

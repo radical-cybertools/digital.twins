@@ -110,9 +110,12 @@ producers you trust as much as the service itself.
 ## Asking the twin
 
 `await runtime.get_inference(TypedData(READING, x), PREDICTION)` sends
-one input through the component that serves `READING → PREDICTION` and
+one input to the component that serves `READING → PREDICTION` and
 returns its answer to the caller.  It is how a client queries a twin.
-The answer bypasses the graph; components downstream do not see it.
+The answer goes only to the caller; components downstream do not see
+it.  The input is an input like any other for the serving component:
+its `ON_INPUT` subscribers see it, so a streaming learner adds it to its
+next window.  Keep held-out evaluation data out of `get_inference`.
 
 ## In-situ and ex-situ
 

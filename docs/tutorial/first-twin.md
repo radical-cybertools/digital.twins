@@ -74,8 +74,9 @@ This one loops forever and publishes readings into the twin's stream.
 
 The five numbered steps are all a local twin needs: a stream broker, an
 execution engine, a runtime, the graph, and something that uses it.
-`runtime.get_inference` sends one input through the graph and returns
-the answer to the caller.
+`runtime.get_inference` sends one input to the surrogate and returns
+the answer to the caller.  The learner also trains on these probes,
+which is harmless here: it labels every input with the simulation.
 
 [Concepts](concepts.md) explains each of these parts.
 [Your own surrogate](surrogate.md) replaces the model with yours.

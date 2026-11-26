@@ -16,8 +16,15 @@ the one place that lists what v1 does not do; other pages link here.
   `DT_STREAM_BACKEND=zmq`, the default, the stream broker binds to
   loopback; do not expose its ports.  A shared deployment uses
   `DT_STREAM_BACKEND=orbit`, which puts the streams inside the token
-  domain.  See [Choosing a data plane](../use/data-plane.md) and
+  domain.  Binding the ZMQ broker to anything but loopback
+  (`DT_STREAM_PUB_ADDR`, `DT_STREAM_SUB_ADDR`) needs a deliberate decision
+  and a private or firewalled network.  See
+  [Choosing a data plane](../use/data-plane.md) and
   [Data-plane trust](../develop/design/data-plane-trust.md).
+- **External channels decode with the codec their binding names.**
+  `json`, the default, and `raw` are safe to accept from a producer you
+  do not control.  `cloudpickle` executes code on decode: use it only for
+  producers inside the trust domain.
 
 ## Versions
 
@@ -37,6 +44,9 @@ the one place that lists what v1 does not do; other pages link here.
   shipped component and its arguments, and to a task's return value.
   Oversized payloads fail with a `ValueError` at the sender.  Stream a
   reference and stage the bytes for anything larger.
+- **Task return values may be any picklable object.**  ORBIT returns a
+  function task's result by cloudpickle when it is not JSON, so numbers,
+  arrays and dicts all come back intact.  The 4 MiB limit applies.
 - **Learner state crosses the wire every window.**  A learner's model is
   passed to its criterion and inference tasks by value.  Keep models to
   lists of numbers or small arrays; stage large artifacts.

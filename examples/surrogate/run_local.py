@@ -39,7 +39,7 @@ async def served_rmse(runtime) -> float:
     errors = []
     for x in PROBES:
         answer = await runtime.get_inference(TypedData(READING, x), PREDICTION)
-        if answer.data is None:             # a failed twin answers nothing
+        if answer.data is None:             # no component serves the pair
             return math.inf
         errors.append((answer.data - simulate(x, noise=0.0)) ** 2)
 

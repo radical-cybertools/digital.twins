@@ -63,7 +63,7 @@ def served_rmse(dt, twin) -> float:
     errors = []
     for x in PROBES:
         answer = dt.get_inference(twin, TypedData(READING, x), PREDICTION)
-        if answer.data is None:             # a failed twin answers nothing
+        if answer.data is None:             # no component serves the pair
             return math.inf
         errors.append((answer.data - physics.simulate(x, noise=0.0)) ** 2)
 
@@ -100,7 +100,11 @@ def main(timeout: float) -> int:
                 print("surrogate is accurate: done")
                 return 0
 
-        print(f"no accurate surrogate after {timeout:.0f} s: {dt.twin(twin)}")
+            # a failed twin keeps answering with its last model: ask it
+            if dt.twin(twin)["state"] == "failed":
+                break
+
+        print(f"no accurate surrogate: {dt.twin(twin)}")
         return 1
 
     finally:
