@@ -14,6 +14,9 @@ pytestmark = pytest.mark.integration
 EXAMPLES = Path(__file__).resolve().parents[2] / "examples"
 
 
+# above the job's --timeout=120, which also counts the endpoint fixture's
+# start-up: the subprocess timeout must be the one that fires
+@pytest.mark.timeout(300)
 def test_the_surrogate_example_learns_on_the_service(stack, learning_endpoint):
     pytest.importorskip("rose.al.streaming_learner")
 

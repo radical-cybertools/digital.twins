@@ -24,12 +24,13 @@ The extras:
 
 The first PyPI releases are in preparation.  Until rhapsody,
 radical.asyncflow and ROSE are released with it, install the exact
-versions the project tests with, in this order:
+dependency versions the project tests with, then the package from its
+`devel` branch:
 
 <!-- stack-pins -->
 
-These pins come from `deploy/install.sh`, which is also what deployments
-use.  Two traps they avoid:
+The dependency pins come from `deploy/install.sh`, which is also what
+deployments use.  Two traps they avoid:
 
 - PyPI's `rose` is an unrelated package.  `pip install rose` installs it
   without complaint, and the learner then fails on `import rose.al`.

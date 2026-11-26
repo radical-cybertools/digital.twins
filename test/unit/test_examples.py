@@ -14,6 +14,8 @@ import pytest
 EXAMPLES = Path(__file__).resolve().parents[2] / "examples"
 
 
+# above the job's --timeout=120: the subprocess timeout must be the one that fires
+@pytest.mark.timeout(200)
 def test_the_surrogate_example_learns_locally():
     pytest.importorskip("rose.al.streaming_learner")
 

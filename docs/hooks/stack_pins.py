@@ -1,11 +1,13 @@
 """MkDocs hook: render the pre-release dependency pins from deploy/install.sh.
 
 Until rhapsody, asyncflow and ROSE are released together with this
-package, a working install needs the exact versions and commits
-`deploy/install.sh` pins.  The page carries the marker
+package, a working install needs the exact dependency versions and
+commits `deploy/install.sh` pins.  The page carries the marker
 `<!-- stack-pins -->`; this hook replaces it with those pins, so the
-docs and the installer cannot disagree.  Remove the hook and the marker
-once the stack installs from PyPI.
+docs and the installer cannot disagree on the dependencies.  The package
+itself comes from the `devel` branch: the installer's own `REF` pins a
+deployment commit, not what a new user should start from.  Remove the
+hook and the marker once the stack installs from PyPI.
 """
 
 import re
