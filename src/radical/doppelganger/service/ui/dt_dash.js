@@ -100,7 +100,7 @@
     cyan:         '#40c8e8',
     amber:        '#e8a040',
     green:        '#5acd83',
-    // the deck's AsyncFlow level colour (docs/dtaas-architecture.svg): a
+    // the deck's AsyncFlow level colour (docs/images/dtaas-architecture.svg): a
     // task result comes back *through* the engine, so it is drawn in the
     // engine's own colour and not in the stream green it used to share
     violet:       '#a78bfa',

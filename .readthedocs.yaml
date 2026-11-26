@@ -1,0 +1,14 @@
+version: 2
+
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "3.12"
+
+mkdocs:
+  configuration: mkdocs.yml
+
+# the site imports no package code: only the toolchain is installed
+python:
+  install:
+    - requirements: docs/requirements.txt

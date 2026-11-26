@@ -19,7 +19,7 @@ a JSON file that records host, python and the digital_twins commit.
     python experiments/dt-paper/e1-overhead/bench_dt_insitu.py
 
     # tasks on an ORBIT endpoint (start it with
-    # RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW=0, see README.md)
+    # RADICAL_ORBIT_RHAPSODY_NOTIFY_WINDOW=0, see docs/tutorial/service.md)
     python experiments/dt-paper/e1-overhead/bench_dt_insitu.py \\
         --broker https://127.0.0.1:8031 --endpoint dt_test_task_ep
 

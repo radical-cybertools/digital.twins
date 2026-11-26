@@ -1,0 +1,89 @@
+site_name: RADICAL Doppelganger
+site_url: https://radicaldoppelganger.readthedocs.io/en/latest/
+site_author: RADICAL Cybertools
+site_description: Digital twins as a service (DTaaS) on ORBIT, Rhapsody, AsyncFlow and ROSE.
+
+repo_name: radical-cybertools/digital.twins
+repo_url: https://github.com/radical-cybertools/digital.twins
+edit_uri: edit/devel/docs/
+
+copyright: Copyright &copy; 2025—Present by <a target="_blank" href="https://radical.rutgers.edu">RADICAL Lab</a>
+
+theme:
+  name: material
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      primary: blue grey
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      primary: blue grey
+      accent: teal
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+hooks:
+  - docs/hooks/stack_pins.py
+
+# the hook is build machinery, not a page
+exclude_docs: |
+  hooks/
+  requirements.txt
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: ['.']
+      check_paths: true
+      dedent_subsections: true
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Overview:
+      - The stack: overview/stack-map.md
+      - Status and limits: overview/status-and-limits.md
+  - Build a twin:
+      - Install: tutorial/install.md
+      - Your first twin: tutorial/first-twin.md
+      - Concepts: tutorial/concepts.md
+      - Your own surrogate: tutorial/surrogate.md
+      - Train it online: tutorial/learning.md
+      - Run the twin on the service: tutorial/service.md
+  - Use the service:
+      - Service guide: use/service.md
+      - Choosing a data plane: use/data-plane.md
+      - Watching it run: use/dashboard.md
+      - Engine telemetry: use/telemetry.md
+  - Develop:
+      - Documentation layout: develop/docs.md
+      - Design:
+          - Endpoint loss (R8): develop/design/endpoint-loss.md
+          - Data-plane trust (R7): develop/design/data-plane-trust.md
+          - Dashboard internals: develop/design/dashboard.md
+          - DTaaS v1 plan: develop/design/dtaas-v1-plan.md
+          - ORBIT P0 plan: develop/design/orbit-p0-liveness-scoped-calls-plan.md

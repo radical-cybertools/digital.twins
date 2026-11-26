@@ -41,9 +41,9 @@ class OffsetModel(ModelInvestigator):
     """Inference on the engine: `sensor value + offset`.
 
     Note the split: the *task* returns a plain value and the component
-    wraps it in `TypedData`.  Task arguments keep full cloudpickle
-    fidelity, but return values only survive the ORBIT rhapsody plugin
-    when they are JSON-safe (or `bytes`) -- see README.
+    wraps it in `TypedData`.  Task arguments travel by
+    cloudpickle; a JSON-safe return value travels as JSON, anything else
+    by cloudpickle (see docs/overview/status-and-limits.md, "Sizes").
     """
 
     def __init__(self, flow, offset: int = 100):
