@@ -1073,7 +1073,8 @@ class DTSession(PluginSession):
             # looks at `twin.engines`
             twin.engines = {self.default_engine()}
 
-            async with asyncio.timeout(TWIN_INIT_TIMEOUT):
+            deadline = asyncio.timeout(TWIN_INIT_TIMEOUT)
+            async with deadline:
                 # Every configured engine is built here, concurrently: a
                 # learner or a placed component must not pay a two-minute
                 # backend init inside a short `add_*` verb.  A lost engine
@@ -1125,8 +1126,14 @@ class DTSession(PluginSession):
         except asyncio.CancelledError:
             twin.fail("twin initialization was cancelled")
             raise
-        except TimeoutError:
-            twin.fail(f"twin initialization exceeded {TWIN_INIT_TIMEOUT}s")
+        except TimeoutError as exc:
+            # only the twin-wide deadline is "initialization exceeded"; a
+            # step's own timeout (the stream connect's 30 s) keeps its
+            # message, which says which step and why
+            if deadline.expired():
+                twin.fail(f"twin initialization exceeded {TWIN_INIT_TIMEOUT}s")
+            else:
+                twin.fail(exc)
         except BaseException as exc:
             twin.fail(exc)
 

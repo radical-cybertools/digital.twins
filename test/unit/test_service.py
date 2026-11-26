@@ -1406,6 +1406,47 @@ async def test_a_twin_is_bound_only_to_the_default_role():
     await session.close()
 
 
+async def test_a_step_timeout_keeps_its_own_message():
+    """A step that times out on its own (the stream connect) fails the
+    twin with its message, not with the twin-wide 300 s deadline's."""
+
+    session = DTSession("s1", _dual(inference="ep1"))
+    _slow_build(session, 0)
+
+    class _Plugin:
+        async def connect_stream(self, twin_id, timeout):
+            raise TimeoutError(f"stream participant did not register within {timeout}s")
+
+    session._plugin = _Plugin()
+    twin = session.twins["t1"] = TwinInstance("t1")
+    await session._init_twin(twin)
+
+    assert twin.state == "failed"
+    assert "did not register" in twin.last_error
+    assert "initialization exceeded" not in twin.last_error
+    await session.close()
+
+
+async def test_the_twin_deadline_says_initialization_exceeded(monkeypatch):
+    import radical.doppelganger.service.session as sess
+
+    monkeypatch.setattr(sess, "TWIN_INIT_TIMEOUT", 0.05)
+    session = DTSession("s1", _dual(inference="ep1"))
+    _slow_build(session, 0)
+
+    class _Plugin:
+        async def connect_stream(self, twin_id, timeout):
+            await asyncio.sleep(1.0)
+
+    session._plugin = _Plugin()
+    twin = session.twins["t1"] = TwinInstance("t1")
+    await session._init_twin(twin)
+
+    assert twin.state == "failed"
+    assert "initialization exceeded" in twin.last_error
+    await session.close()
+
+
 class _SharingPlugin:
     """Records the stream participants a session opens and closes."""
 
