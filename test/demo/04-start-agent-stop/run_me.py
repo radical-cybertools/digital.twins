@@ -3,9 +3,9 @@ from concurrent.futures import ProcessPoolExecutor
 from radical.asyncflow import WorkflowEngine
 from rhapsody.backends import ConcurrentExecutionBackend
 
-from digitaltwin.runtime import DTRuntime
-from digitaltwin.streaming import connect_stream_client
-from digitaltwin.components import TRUTHY, NULL_DTYPE
+from radical.doppelganger.runtime import DTRuntime
+from radical.doppelganger.streaming import connect_stream_client
+from radical.doppelganger.components import TRUTHY, NULL_DTYPE
 
 from dtypes import *
 from sensor import MySensor

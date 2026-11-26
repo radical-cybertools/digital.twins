@@ -47,7 +47,7 @@ from bench_insitu import report  # noqa: E402
 
 from radical.asyncflow import WorkflowEngine  # type: ignore  # noqa: E402
 
-from digitaltwin import (  # noqa: E402
+from radical.doppelganger import (  # noqa: E402
     DataType,
     DTRuntime,
     ModelInvestigator,
@@ -56,7 +56,7 @@ from digitaltwin import (  # noqa: E402
     ZMQ_BrokerProcess,
     connect_stream_client,
 )
-from digitaltwin.components import NULL_DTYPE  # noqa: E402
+from radical.doppelganger.components import NULL_DTYPE  # noqa: E402
 
 X = DataType("e1-in")
 Y = DataType("e1-out")

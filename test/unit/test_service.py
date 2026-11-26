@@ -17,7 +17,7 @@ pytest.importorskip("radical.orbit")
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from digitaltwin.components import (  # noqa: E402
+from radical.doppelganger.components import (  # noqa: E402
     TRUTHY,
     Barrier,
     DataType,
@@ -25,15 +25,15 @@ from digitaltwin.components import (  # noqa: E402
     SplitTask,
     UtilityTask,
 )
-from digitaltwin.runtime import DTRuntime  # noqa: E402
-from digitaltwin.service.client import DTClient  # noqa: E402
-from digitaltwin.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
-from digitaltwin.service.session import (  # noqa: E402
+from radical.doppelganger.runtime import DTRuntime  # noqa: E402
+from radical.doppelganger.service.client import DTClient  # noqa: E402
+from radical.doppelganger.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
+from radical.doppelganger.service.session import (  # noqa: E402
     ENV_DEFAULT_ENGINE,
     DTSession,
     TwinInstance,
 )
-from digitaltwin.service.wire import (  # noqa: E402
+from radical.doppelganger.service.wire import (  # noqa: E402
     MAX_PAYLOAD,
     Package,
     check_versions,
@@ -166,7 +166,7 @@ def test_twin_close_is_idempotent_for_unknown_twins(client):
 def _session_with_twins(plugin, client, n, monkeypatch):
     """A session holding `n` registered twins, initialization skipped."""
 
-    from digitaltwin.service.session import TwinInstance
+    from radical.doppelganger.service.session import TwinInstance
 
     sid = client.post("/dt/register_session", json={}).json()["sid"]
     session = plugin._sessions[sid]
@@ -207,7 +207,7 @@ def test_twin_list_pages_by_offset_and_limit(plugin, client, monkeypatch):
 def test_a_twin_list_page_stops_at_its_byte_budget(plugin, client, monkeypatch):
     import json
 
-    import digitaltwin.service.session as sess
+    import radical.doppelganger.service.session as sess
 
     sid, session = _session_with_twins(plugin, client, 10, monkeypatch)
     one = len(json.dumps(session.twins["t0000"].summary(), default=str))
@@ -219,7 +219,7 @@ def test_a_twin_list_page_stops_at_its_byte_budget(plugin, client, monkeypatch):
 
 
 def test_admin_sessions_counts_twins_past_its_budget(plugin, client, monkeypatch):
-    import digitaltwin.service.plugin as plug
+    import radical.doppelganger.service.plugin as plug
 
     sid, _ = _session_with_twins(plugin, client, 4, monkeypatch)
     entry = lambda: next(  # noqa: E731
@@ -259,7 +259,7 @@ def _dt_client(test_client, sid):
 def test_the_client_fetches_every_page_and_one_twin_alone(plugin, client, monkeypatch):
     import json
 
-    import digitaltwin.service.session as sess
+    import radical.doppelganger.service.session as sess
 
     sid, session = _session_with_twins(plugin, client, 7, monkeypatch)
     one = len(json.dumps(session.twins["t0000"].summary(), default=str))
@@ -358,7 +358,7 @@ def test_version_stamp_matches_itself():
         ("python", "2.7"),
         ("cloudpickle", "0.1"),
         # by-reference pickling of component classes: any difference counts
-        ("digitaltwin", version_stamp()["digitaltwin"] + ".dev1"),
+        ("radical.doppelganger", version_stamp()["radical.doppelganger"] + ".dev1"),
     ],
 )
 def test_version_skew_is_rejected(key, value):
@@ -366,7 +366,7 @@ def test_version_skew_is_rejected(key, value):
         check_versions({**version_stamp(), key: value})
 
 
-@pytest.mark.parametrize("missing", ["python", "cloudpickle", "digitaltwin"])
+@pytest.mark.parametrize("missing", ["python", "cloudpickle", "radical.doppelganger"])
 def test_a_missing_version_is_rejected(missing):
     stamp = {k: v for k, v in version_stamp().items() if k != missing}
 
@@ -374,18 +374,26 @@ def test_a_missing_version_is_rejected(missing):
         check_versions(stamp)
 
 
-def test_the_stamp_pins_digitaltwin_too():
-    assert "digitaltwin" in version_stamp()
+def test_a_pre_rename_client_is_named():
+    stamp = {k: v for k, v in version_stamp().items() if k != "radical.doppelganger"}
+    stamp["digitaltwin"] = "0.0.1"
+
+    with pytest.raises(ValueError, match="pre-rename package `digitaltwin` 0.0.1"):
+        check_versions(stamp)
+
+
+def test_the_stamp_pins_doppelganger_too():
+    assert "radical.doppelganger" in version_stamp()
 
 
 def test_the_package_version_is_looked_up_once(monkeypatch):
-    from digitaltwin.service import wire
+    from radical.doppelganger.service import wire
 
     calls = []
     real = wire.metadata.version
 
     def counting(name):
-        if name == "digitaltwin":
+        if name == "radical.doppelganger":
             calls.append(name)
         return real(name)
 
@@ -394,7 +402,7 @@ def test_the_package_version_is_looked_up_once(monkeypatch):
     try:
         for _ in range(100):
             check_versions(version_stamp())
-        assert calls == ["digitaltwin"]
+        assert calls == ["radical.doppelganger"]
     finally:
         wire._dt_version.cache_clear()
 
@@ -458,7 +466,7 @@ class _FakeEngineFactory:
 @pytest.fixture(autouse=True)
 def _fake_engine(monkeypatch):
     monkeypatch.setattr(
-        "digitaltwin.service.session.WorkflowEngine", _FakeEngineFactory
+        "radical.doppelganger.service.session.WorkflowEngine", _FakeEngineFactory
     )
 
 
@@ -662,7 +670,7 @@ async def test_a_learner_gets_the_learning_label():
     """Role injection, by subclass check -- there is no user-facing
     role selector in v1."""
 
-    learn = pytest.importorskip("digitaltwin.learn")
+    learn = pytest.importorskip("radical.doppelganger.learn")
 
     class _Learner(learn.StreamingLearnerInvestigator):
         def __init__(self, flow, learn_backend=None):
@@ -815,7 +823,7 @@ async def test_stream_broker_starts_on_loopback_once(plugin):
 async def test_supervisor_respawns_on_the_same_addresses(plugin, monkeypatch):
     """A silently dead stream broker would stall every twin's stream."""
 
-    monkeypatch.setattr("digitaltwin.service.plugin.BROKER_WATCH_INTERVAL", 0.1)
+    monkeypatch.setattr("radical.doppelganger.service.plugin.BROKER_WATCH_INTERVAL", 0.1)
 
     try:
         addrs = await plugin.stream_addresses()
@@ -1070,7 +1078,7 @@ async def test_a_pool_backed_role_targets_the_dispatcher(monkeypatch):
     dispatcher session per DT session (keyed by the DT sid), the
     session-level pool configs declared with it."""
 
-    import digitaltwin.service.session as session_mod
+    import radical.doppelganger.service.session as session_mod
 
     session = DTSession("s1")
     session.config = {
@@ -1096,7 +1104,7 @@ async def test_a_pool_backed_role_targets_the_dispatcher(monkeypatch):
 
 
 async def test_a_pool_needs_a_pool_capable_backend(monkeypatch):
-    import digitaltwin.service.session as session_mod
+    import radical.doppelganger.service.session as session_mod
 
     session = DTSession("s1")
     session.config = {"engines": {"learning": {"pool": "exsitu"}}}
@@ -1295,7 +1303,7 @@ def test_add_barrier_sends_the_spec_not_the_barrier():
     """A client-built barrier travels as name, hardness and per-dtype
     flags; the asyncio primitives it holds stay behind."""
 
-    from digitaltwin.service.client import DTClient
+    from radical.doppelganger.service.client import DTClient
 
     sent = []
     client = DTClient.__new__(DTClient)
@@ -1355,7 +1363,7 @@ async def test_add_data_split_task_verb_registers_the_split():
 
 
 def test_add_barrier_refuses_a_subclass():
-    from digitaltwin.service.client import DTClient
+    from radical.doppelganger.service.client import DTClient
 
     class Custom(Barrier):
         pass
@@ -1706,7 +1714,7 @@ async def test_the_engine_kwarg_is_consumed_not_forwarded():
 
 
 def test_a_placed_learner_gets_its_learner_label():
-    learn = pytest.importorskip("digitaltwin.learn")
+    learn = pytest.importorskip("radical.doppelganger.learn")
 
     class _Learner(learn.StreamingLearnerInvestigator):
         def __init__(self, flow, learn_backend=None):
@@ -1861,7 +1869,7 @@ def test_a_reattach_ignores_the_engines_config(client):
 
 
 def test_the_client_sends_engine_only_when_set():
-    from digitaltwin.service.client import _placed
+    from radical.doppelganger.service.client import _placed
 
     assert _placed(None) == {}
     assert _placed("site_b") == {"engine": "site_b"}

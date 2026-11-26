@@ -2,7 +2,7 @@ import asyncio
 import logging
 import random
 
-from digitaltwin.components import UtilityTask
+from radical.doppelganger.components import UtilityTask
 
 from dtypes import SENSOR_DTYPE
 

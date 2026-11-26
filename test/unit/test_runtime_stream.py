@@ -8,7 +8,7 @@ catches that here.
 
 import asyncio
 
-from digitaltwin import (
+from radical.doppelganger import (
     NULL_DTYPE,
     TRUTHY,
     DTRuntime,
@@ -17,7 +17,7 @@ from digitaltwin import (
     TypedData,
     UtilityTask,
 )
-from digitaltwin.streaming import PubSubClient
+from radical.doppelganger.streaming import PubSubClient
 
 SENSOR = DataType("sensor")
 INFERENCE = DataType("inference")

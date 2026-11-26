@@ -21,8 +21,8 @@ import logging
 import math
 import random
 
-from digitaltwin.components import TypedData
-from digitaltwin.learn import StreamingLearnerInvestigator
+from radical.doppelganger.components import TypedData
+from radical.doppelganger.learn import StreamingLearnerInvestigator
 
 from dtypes import PREDICTION_DTYPE
 

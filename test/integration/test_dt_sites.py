@@ -9,8 +9,8 @@ import uuid
 
 import pytest
 
-from digitaltwin.components import DataType, TypedData
-from digitaltwin.service import register_user_modules
+from radical.doppelganger.components import DataType, TypedData
+from radical.doppelganger.service import register_user_modules
 
 import twin_components
 

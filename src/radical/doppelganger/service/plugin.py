@@ -358,7 +358,7 @@ class PluginDT(Plugin):
 
         Body: `{"verb": str, "payload": <b64 cloudpickle of
         {"args": [...], "kwargs": {...}}>, "client": {"python":…,
-        "cloudpickle":…, "digitaltwin":…}}`.
+        "cloudpickle":…, "radical.doppelganger":…}}`.
         """
 
         sid = request.path_params["sid"]

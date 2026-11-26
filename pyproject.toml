@@ -3,7 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "digitaltwin"
+name = "radical.doppelganger"
 version = "0.1.0"
 description = "Experimental digital twin framework"
 # 3.11+: `async with asyncio.timeout(...)`, `enum.StrEnum`, and
@@ -17,12 +17,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# the ORBIT service plugin (`digitaltwin.service`) and its client
+# the ORBIT service plugin (`radical.doppelganger.service`) and its client
 service = [
     "radical.orbit>=0.7",
     "rhapsody-py[telemetry]>=0.4.0",
 ]
-# ex-situ learning (`digitaltwin.learn`).  A separate extra rather than
+# ex-situ learning (`radical.doppelganger.learn`).  A separate extra rather than
 # part of `service`: the learner runs perfectly well against a local
 # engine with no ORBIT in sight, and a service host that only serves
 # in-situ twins should not have to carry ROSE and its dependencies.
@@ -39,7 +39,7 @@ test = [
 # discovered and imported by the ORBIT plugin host at startup; a broker or
 # endpoint then hosts it with `--plugins default,dt`
 [project.entry-points."radical.orbit.plugins"]
-dt = "digitaltwin.service.plugin:PluginDT"
+dt = "radical.doppelganger.service.plugin:PluginDT"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -47,7 +47,7 @@ where = ["src"]
 # the dashboard: the Explorer reads `ui_module` off the installed package,
 # and the plugin serves the rest from `{namespace}/ui`
 [tool.setuptools.package-data]
-"digitaltwin.service" = ["ui/*.html", "ui/*.js"]
+"radical.doppelganger.service" = ["ui/*.html", "ui/*.js"]
 
 [tool.pytest.ini_options]
 testpaths = ["test/unit", "test/integration"]

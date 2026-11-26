@@ -1,4 +1,4 @@
-# src/digitaltwin/streaming.py
+# src/radical/doppelganger/streaming.py
 """Streaming facilities for the digital-twin runtime.
 
 The digital twin framework itself has an abstract :class:`PubSubClient` that

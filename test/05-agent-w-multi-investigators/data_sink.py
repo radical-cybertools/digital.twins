@@ -1,7 +1,7 @@
 import asyncio
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import UtilityTask
+from radical.doppelganger.components import UtilityTask
 from dtypes import *
 
 import logging
