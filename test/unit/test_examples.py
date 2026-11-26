@@ -4,6 +4,7 @@ The docs include their code from `examples/`, so a passing run here is
 what keeps the tutorials true.
 """
 
+import signal
 import subprocess
 import sys
 
@@ -13,17 +14,38 @@ import pytest
 
 EXAMPLES = Path(__file__).resolve().parents[2] / "examples"
 
+RUN_TIMEOUT = 150.0
 
-# above the job's --timeout=120: the subprocess timeout must be the one that fires
-@pytest.mark.timeout(200)
+
+def run_example(argv: list, cwd: Path, timeout: float, **kwargs):
+    """Run an example script; on a hang, interrupt it so its `finally`
+    tears down what it started (the broker child, a service session)."""
+
+    proc = subprocess.Popen([sys.executable, *argv], cwd=cwd, text=True,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            **kwargs)
+    try:
+        out, err = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        proc.send_signal(signal.SIGINT)
+        try:
+            out, err = proc.communicate(timeout=30)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            out, err = proc.communicate()
+        pytest.fail(f"{argv[0]} timed out:\n{out[-2000:]}{err[-2000:]}")
+
+    return proc.returncode, out, err
+
+
+# above the job's --timeout=120: the subprocess timeout must be the one
+# that fires, with room for the interrupt's grace period
+@pytest.mark.timeout(RUN_TIMEOUT + 60)
 def test_the_surrogate_example_learns_locally():
     pytest.importorskip("rose.al.streaming_learner")
 
-    result = subprocess.run(
-        [sys.executable, "run_local.py", "--timeout", "90"],
-        cwd=EXAMPLES / "surrogate",
-        capture_output=True, text=True, timeout=150,
-    )
+    rc, out, err = run_example(["run_local.py", "--timeout", "90"],
+                               EXAMPLES / "surrogate", RUN_TIMEOUT)
 
-    assert result.returncode == 0, result.stdout[-2000:] + result.stderr[-2000:]
-    assert "surrogate is accurate" in result.stdout
+    assert rc == 0, out[-2000:] + err[-2000:]
+    assert "surrogate is accurate" in out

@@ -109,9 +109,11 @@ def main(timeout: float) -> int:
 
     finally:
         # sessions outlive their client; end this one explicitly
-        if dt is not None:
-            dt.unregister_session()
-        runtime.stop()
+        try:
+            if dt is not None:
+                dt.unregister_session()
+        finally:
+            runtime.stop()
 # --8<-- [end:main]
 
 

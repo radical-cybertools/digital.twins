@@ -1,7 +1,8 @@
 # Install
 
-Doppelganger needs Python 3.11 or newer.  Use one virtual environment per
-project.
+Doppelganger needs Python 3.11 or newer.  The pinned pre-release stack
+and the deployments use Python 3.12, and for the service every host must
+run the same Python minor.  Use one virtual environment per project.
 
 ## From a release
 
@@ -37,7 +38,13 @@ dependency versions the project tests with, then the package from its
 The dependency pins are the `ASYNCFLOW`, `RHAPSODY`, `ORBIT` and `ROSE`
 lines of `deploy/install.sh`, which is also what deployments use; the
 site renders them as commands above.  They are the versions the project
-last tested; `devel` can move ahead of them until they are updated.  Two traps they avoid:
+last tested; `devel` can move ahead of them until they are updated.
+
+Until the release, `deploy/install.sh` itself still deploys the package
+under its old name, `digitaltwin`.  A service built with it refuses a
+client installed from this page (see
+[Upgrading from `digitaltwin`](#upgrading-from-digitaltwin)); build the
+service hosts from the same commands instead.  Two traps they avoid:
 
 - PyPI's `rose` is an unrelated package.  `pip install rose` installs it
   without complaint, and the learner then fails on `import rose.al`.
