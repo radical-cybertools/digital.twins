@@ -75,8 +75,8 @@ class Pretrained(ModelInvestigator):
 
 The published model is passed to the inference task by value, and on the
 service it crosses the network to the endpoint that runs the task.
-Keep it to plain numbers, lists and small arrays: well under the 4 MiB
-message limit.  For a large network, publish a path or URL that the
+Keep it to plain numbers, lists and string-keyed dicts, well under the
+2 MiB limit for a task's return value.  For a large network, publish a path or URL that the
 endpoint can read and load the weights inside the task.  See
 [Status and limits › Sizes](../overview/status-and-limits.md#sizes).
 

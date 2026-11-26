@@ -34,8 +34,10 @@ dependency versions the project tests with, then the package from its
 
 <!-- stack-pins -->
 
-The dependency pins come from `deploy/install.sh`, which is also what
-deployments use.  Two traps they avoid:
+The dependency pins are the `ASYNCFLOW`, `RHAPSODY`, `ORBIT` and `ROSE`
+lines of `deploy/install.sh`, which is also what deployments use; the
+site renders them as commands above.  They are the versions the project
+last tested; `devel` can move ahead of them until they are updated.  Two traps they avoid:
 
 - PyPI's `rose` is an unrelated package.  `pip install rose` installs it
   without complaint, and the learner then fails on `import rose.al`.

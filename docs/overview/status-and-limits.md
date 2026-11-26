@@ -40,13 +40,18 @@ the one place that lists what v1 does not do; other pages link here.
 ## Sizes
 
 - **4 MiB per message.**  ORBIT caps a frame at 4 MiB, and 64 KiB of that
-  is reserved for the envelope.  This applies to a stream message, to a
-  shipped component and its arguments, and to a task's return value.
-  Oversized payloads fail with a `ValueError` at the sender.  Stream a
-  reference and stage the bytes for anything larger.
-- **Task return values may be any picklable object.**  ORBIT returns a
-  function task's result by cloudpickle when it is not JSON, so numbers,
-  arrays and dicts all come back intact.  The 4 MiB limit applies.
+  is reserved for the envelope.  This applies to a stream message and to
+  a shipped component and its arguments.  Oversized payloads fail with a
+  `ValueError` at the sender.  Stream a reference and stage the bytes for
+  anything larger.
+- **2 MiB per task return value.**  On the service, an endpoint refuses a
+  larger result and the task fails with `return_value too large`.
+- **JSON-safe return values come back as JSON.**  On the service, a task
+  result that `json.dumps` accepts travels as JSON: a tuple comes back as
+  a list, and integer dict keys come back as strings.  Any other result
+  (arrays, objects, `bytes`) is cloudpickled and comes back intact.
+  Return lists and string-keyed dicts to get the same value locally and
+  on the service.
 - **Learner state crosses the wire every window.**  A learner's model is
   passed to its criterion and inference tasks by value.  Keep models to
   lists of numbers or small arrays; stage large artifacts.
