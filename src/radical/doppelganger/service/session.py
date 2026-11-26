@@ -38,16 +38,22 @@ except ImportError as _exc:  # the 'learn' extra (ROSE) is optional
     # logged, not swallowed: without this, a service built *with* the
     # extra but with a broken ROSE looks identical to one built without
     # it -- the learner twins just quietly get one engine
-    log.info("[dt] ex-situ learning unavailable (%s); install the 'learn'"
-             " extra to host StreamingLearnerInvestigator twins", _exc)
+    log.info(
+        "[dt] ex-situ learning unavailable (%s); install the 'learn'"
+        " extra to host StreamingLearnerInvestigator twins",
+        _exc,
+    )
     StreamingLearnerInvestigator = None
 
 # The two reserved roles.  They name function, not placement: every twin
-# component's tasks run on the default role ('inference' unless moved, see
-# ENV_DEFAULT_ENGINE); only a StreamingLearnerInvestigator labels its
-# learner tasks 'learning', and only when the session configured a backend
-# for that role.  One engine per session carries both backends;
-# asyncflow routes per task on the label.
+# component's tasks run on the default engine ('inference' unless moved, see
+# ENV_DEFAULT_ENGINE); a StreamingLearnerInvestigator labels its learner
+# tasks 'learning' when the session configured a backend for that role.
+# A session may configure further, named engines (`engines: {"site_b":
+# {...}}`), one per site; a component is placed on one with `engine=` on
+# its `add_*` verb, or by labelling a task `backend=<name>` itself.  One
+# asyncflow engine per session carries every backend and routes per task
+# on the label.
 ROLE_INFERENCE = "inference"
 ROLE_LEARNING = "learning"
 ROLES = (ROLE_INFERENCE, ROLE_LEARNING)
@@ -206,13 +212,15 @@ class TwinInstance:
             # uid -> submitting component's class name, for the same ring.
             # A uid absent here is unattributed, not wrong -- the dashboard
             # shows a dash for it.
-            "task_components": ({} if self.runtime is None
-                                else self.runtime.task_components()),
+            "task_components": (
+                {} if self.runtime is None else self.runtime.task_components()
+            ),
             # The graph itself: what the dashboard draws its twin cards
             # from.  Class names, kinds, dtypes and model-parameter names
             # only -- never a model, so the entry stays poll-sized.
-            "components": ([] if self.runtime is None
-                           else self.runtime.describe()["components"]),
+            "components": (
+                [] if self.runtime is None else self.runtime.describe()["components"]
+            ),
             # The twin's latest visual output (a small data-URI image a
             # component rendered), id-tagged so the dashboard dedups and
             # builds its own gallery.  `None` until something is recorded.
@@ -351,8 +359,11 @@ class DTSession(PluginSession):
         return self._twin_state(twin)
 
     async def twin_call(
-        self, twin_id: str, verb: str, payload: Optional[str] = None,
-        stamp: Optional[dict] = None
+        self,
+        twin_id: str,
+        verb: str,
+        payload: Optional[str] = None,
+        stamp: Optional[dict] = None,
     ) -> dict:
         """Apply exactly one graph verb to one twin.
 
@@ -403,8 +414,9 @@ class DTSession(PluginSession):
 
         return {**self._twin_state(twin), **(extra or {})}
 
-    def _decode_call(self, verb: str, payload: Optional[str],
-                     stamp: Optional[dict]) -> tuple:
+    def _decode_call(
+        self, verb: str, payload: Optional[str], stamp: Optional[dict]
+    ) -> tuple:
         """Version-check and unpickle one verb's arguments."""
 
         try:
@@ -420,8 +432,7 @@ class DTSession(PluginSession):
             ) from exc
 
         if not isinstance(call, dict):
-            raise HTTPException(
-                status_code=400, detail=f"malformed {verb} payload")
+            raise HTTPException(status_code=400, detail=f"malformed {verb} payload")
 
         return tuple(call.get("args") or ()), dict(call.get("kwargs") or {})
 
@@ -434,10 +445,15 @@ class DTSession(PluginSession):
         """
 
         if not self.is_active:
-            raise HTTPException(
-                status_code=410, detail=f"session {self.sid} is closed")
+            raise HTTPException(status_code=410, detail=f"session {self.sid} is closed")
 
     # -- verbs --------------------------------------------------------------
+
+    # `engine=` on the four component verbs: the service consumes it (it is
+    # never forwarded to the runtime or to a component's `main_loop`), and
+    # checks it before the component is built -- a component that decorates
+    # nothing would otherwise accept a misspelled name.  No `await` between
+    # that check and `_instantiate`'s binding (see there).
 
     async def _verb_add_task(
         self,
@@ -446,9 +462,13 @@ class DTSession(PluginSession):
         input_dtype: DataType,
         output_dtype: DataType,
         is_persistent: bool = False,
+        *,
+        engine: Optional[str] = None,
     ) -> None:
-        component = self._instantiate(package, twin, is_persistent)
-        twin.runtime.add_task(component, input_dtype, output_dtype, is_persistent)
+        self._check_engine(engine)
+        with self._unbound_on_failure(twin):
+            component = self._instantiate(package, twin, is_persistent, engine)
+            twin.runtime.add_task(component, input_dtype, output_dtype, is_persistent)
 
     async def _verb_add_investigator(
         self,
@@ -457,12 +477,15 @@ class DTSession(PluginSession):
         input_dtype: DataType,
         output_dtype: DataType,
         *args,
+        engine: Optional[str] = None,
         **kwargs,
     ) -> None:
-        component = self._instantiate(package, twin)
-        twin.runtime.add_investigator(
-            component, input_dtype, output_dtype, *args, **kwargs
-        )
+        self._check_engine(engine)
+        with self._unbound_on_failure(twin):
+            component = self._instantiate(package, twin, engine=engine)
+            twin.runtime.add_investigator(
+                component, input_dtype, output_dtype, *args, **kwargs
+            )
 
     async def _verb_add_agent(
         self,
@@ -471,10 +494,15 @@ class DTSession(PluginSession):
         input_dtype: DataType,
         output_dtype: DataType,
         *args,
+        engine: Optional[str] = None,
         **kwargs,
     ) -> None:
-        component = self._instantiate(package, twin)
-        twin.runtime.add_agent(component, input_dtype, output_dtype, *args, **kwargs)
+        self._check_engine(engine)
+        with self._unbound_on_failure(twin):
+            component = self._instantiate(package, twin, engine=engine)
+            twin.runtime.add_agent(
+                component, input_dtype, output_dtype, *args, **kwargs
+            )
 
     async def _verb_add_input(
         self,
@@ -522,9 +550,13 @@ class DTSession(PluginSession):
         package: Package,
         input_dtype: DataType,
         output_dtypes: tuple[DataType, ...],
+        *,
+        engine: Optional[str] = None,
     ) -> None:
-        component = self._instantiate(package, twin)
-        twin.runtime.add_data_split_task(component, input_dtype, output_dtypes)
+        self._check_engine(engine)
+        with self._unbound_on_failure(twin):
+            component = self._instantiate(package, twin, engine=engine)
+            twin.runtime.add_data_split_task(component, input_dtype, output_dtypes)
 
     async def _verb_start(self, twin: TwinInstance) -> None:
         # a running twin is left running: an idempotent retry, not an error
@@ -564,6 +596,74 @@ class DTSession(PluginSession):
 
         return (self.config.get("engines") or {}).get(name) or {}
 
+    def engine_names(self) -> list[str]:
+        """Every engine this session builds: `'inference'` first, then the
+        configured ones in config order."""
+
+        return [ROLE_INFERENCE] + [
+            name
+            for name in (self.config.get("engines") or {})
+            if name != ROLE_INFERENCE and self.configured(name)
+        ]
+
+    def _usable(self, name: str) -> None:
+        """Can a component be placed on engine `name` right now?
+
+        The one check behind every way a task gets an engine label --
+        `engine=` on a verb, a task's own `backend=` label, a learner's
+        learning label.  Explicit placement never aliases: a name that is
+        neither `'inference'` nor configured is refused, and so is an
+        engine whose endpoint was lost.  asyncflow itself only checks that
+        a backend was attached, which a built-then-lost engine still is.
+
+        Raises:
+            ValueError: unknown or unconfigured engine.
+            RuntimeError: the engine's endpoint was lost, or it was never
+                built.
+        """
+
+        if name != ROLE_INFERENCE and not self.configured(name):
+            raise ValueError(
+                f"engine {name!r} is not configured for session {self.sid}"
+                f" (configured: {', '.join(self.engine_names())})"
+            )
+
+        if self._is_lost(name):
+            raise RuntimeError(
+                f"engine {name!r} endpoint was lost ({self._engine_endpoint(name)})"
+            )
+
+        if name not in self._backends:
+            raise RuntimeError(f"engine {name!r} is not built")
+
+    @contextlib.contextmanager
+    def _unbound_on_failure(self, twin: TwinInstance):
+        """Keep a component verb's engine binding only if the whole add
+        succeeded: a component the runtime refused (a duplicate mapping, a
+        stopped graph) never ran, so a later loss of its engine must not
+        fail the twin."""
+
+        before = set(twin.engines)
+        try:
+            yield
+        except BaseException:
+            twin.engines = before
+            raise
+
+    def _is_lost(self, name: str) -> bool:
+        """Did ORBIT declare engine `name`'s endpoint lost (R8)?"""
+
+        return self._engine_endpoint(name) in self._lost
+
+    def _check_engine(self, engine: Optional[str]) -> None:
+        """`engine=` on a verb: a non-empty name, usable now."""
+
+        if engine is None:
+            return
+        if not isinstance(engine, str) or not engine:
+            raise ValueError(f"engine must be a name, got {engine!r}")
+        self._usable(engine)
+
     def configured(self, name: str) -> bool:
         """Is role `name` configured for this session?
 
@@ -591,9 +691,11 @@ class DTSession(PluginSession):
         """The role that unlabeled tasks run on.
 
         Precedence: the session config's `default_engine`, then
-        `DT_DEFAULT_ENGINE`, then `'inference'`.  An unconfigured role
-        aliases `'inference'`, as it does everywhere else.  The plugin
-        refuses a name that is not a role at `register_session`.
+        `DT_DEFAULT_ENGINE`, then `'inference'`.  An unconfigured name
+        aliases `'inference'`, as it does everywhere else.  At
+        `register_session` the plugin accepts a reserved role or an engine
+        the session configures for the config value, and a reserved role
+        only for `DT_DEFAULT_ENGINE`.
         """
 
         name = self.config.get("default_engine") or default_engine_setting()
@@ -624,11 +726,12 @@ class DTSession(PluginSession):
         # dead engine stays cached here, so without this a twin created
         # *after* the loss would bind it, reach `ready`, and stall in
         # silence -- the very failure mode R8 detection exists to remove.
-        endpoint = self._engine_endpoint(name)
-        if endpoint in self._lost:
+        # (`_init_twin` skips a lost extra engine a new twin does not need;
+        # the root and the default engine still come through here.)
+        if self._is_lost(name):
             raise RuntimeError(
-                f"engine {name!r} endpoint was lost ({endpoint});"
-                f" recreate the session"
+                f"engine {name!r} endpoint was lost"
+                f" ({self._engine_endpoint(name)}); recreate the session"
             )
 
         # per-role lock: a 150 s 'learning' backend init must not serialize
@@ -686,7 +789,8 @@ class DTSession(PluginSession):
             # own it, so it must not outlive its own construction
             await self._shutdown_engine(flow)
             raise RuntimeError(
-                f"session {self.sid} closed while role {name!r} was building")
+                f"session {self.sid} closed while role {name!r} was building"
+            )
 
         self._backends[name] = backend
         if name == ROLE_INFERENCE:
@@ -704,8 +808,7 @@ class DTSession(PluginSession):
         try:
             await asyncio.wait_for(flow.shutdown(), ENGINE_SHUTDOWN_TIMEOUT)
         except Exception as exc:
-            log.warning("[dt] session %s: engine shutdown: %s",
-                        self.sid, exc)
+            log.warning("[dt] session %s: engine shutdown: %s", self.sid, exc)
 
         # after the shutdown, which ends the last tasks, and asyncflow does
         # not stop telemetry itself: the checkpoint file is written here
@@ -714,18 +817,18 @@ class DTSession(PluginSession):
             try:
                 await asyncio.wait_for(telemetry.stop(), TELEMETRY_STOP_TIMEOUT)
             except Exception as exc:
-                log.warning("[dt] session %s: telemetry stop: %s",
-                            self.sid, exc)
+                log.warning("[dt] session %s: telemetry stop: %s", self.sid, exc)
 
     async def _create_backend(self, name: str):
-        cfg  = self._engine_config(name)
+        cfg = self._engine_config(name)
         pool = cfg.get("pool")
 
         log.info(
             "[dt] session %s building %r backend on %s",
             self.sid,
             name,
-            f"pool {pool!r}" if pool
+            f"pool {pool!r}"
+            if pool
             else f"endpoint {cfg.get('endpoint_name') or '<auto>'}",
         )
 
@@ -734,7 +837,7 @@ class DTSession(PluginSession):
             endpoint_name=cfg.get("endpoint_name"),
             backends=cfg.get("backends") or DEFAULT_BACKENDS,
             batch_window=0,  # per-call latency beats batching for inference
-            name=name,       # the asyncflow routing label: task backend=<role>
+            name=name,  # the asyncflow routing label: task backend=<role>
         )
 
         params = inspect.signature(OrbitExecutionBackend.__init__).parameters
@@ -745,8 +848,7 @@ class DTSession(PluginSession):
         # session (`engine` caches, `_lost` forbids rebuilds).  Guarded so
         # a rhapsody without the parameter keeps working.
         if "participant_name" in params:
-            kwargs["participant_name"] = (
-                f"rhapsody.{self.sid.split('.')[-1]}.{name}")
+            kwargs["participant_name"] = f"rhapsody.{self.sid.split('.')[-1]}.{name}"
 
         if pool:
             # A dispatcher-managed pool: the task dispatcher runs on the
@@ -767,7 +869,8 @@ class DTSession(PluginSession):
             if "pool" not in params:
                 raise RuntimeError(
                     f"engine {name!r} names pool {pool!r}, but the installed"
-                    " rhapsody's OrbitExecutionBackend has no pool support")
+                    " rhapsody's OrbitExecutionBackend has no pool support"
+                )
             session_kwargs: dict = {"sid": self.sid}
             if self.config.get("pools"):
                 session_kwargs["pools"] = self.config["pools"]
@@ -784,9 +887,9 @@ class DTSession(PluginSession):
         # none).  A pool-backed role records its pool instead -- no lost
         # endpoint ever matches it, which is exactly the R8 opt-out.
         self._endpoints[name] = (
-            f"pool:{pool}" if pool
-            else getattr(backend, "_endpoint_name", None)
-            or cfg.get("endpoint_name")
+            f"pool:{pool}"
+            if pool
+            else getattr(backend, "_endpoint_name", None) or cfg.get("endpoint_name")
         )
 
         return backend
@@ -798,9 +901,14 @@ class DTSession(PluginSession):
         components bind their engine at construction, so a stranded twin
         cannot be healed -- but a silent stall on a days-long twin is not
         acceptable either, so it becomes a `failed` state with a reason in
-        `twin_list`.  Recovery is the client's, and it is the *session*
-        that has to go: its engines are shared and one of them is dead.
-        Close the session (`unregister_session`) and build it again.
+        `twin_list`.  Only twins bound to the lost engine fail.  Every
+        twin is bound to the default engine, so losing the default fails
+        them all.  After losing the default or `'inference'` (the root
+        the other engines attach to) no new twin can start, and the
+        session has to go: `unregister_session` and build it again.
+        Losing another engine fails only the twins placed there; new
+        twins that do not use it still start, and placing a component on
+        it is refused.
 
         The loss is also remembered, because the broker announces it only
         once -- see `engine`.
@@ -822,8 +930,15 @@ class DTSession(PluginSession):
             return ()
 
         self._lost.update(gone.values())
-        log.warning("[dt] session %s lost endpoint(s) %s -- it must be"
-                    " recreated", self.sid, ", ".join(sorted(gone.values())))
+        fatal = {ROLE_INFERENCE, self.default_engine()} & set(gone)
+        log.warning(
+            "[dt] session %s lost endpoint(s) %s -- %s",
+            self.sid,
+            ", ".join(sorted(gone.values())),
+            "it must be recreated"
+            if fatal
+            else "twins placed there fail, the session stays usable",
+        )
 
         failed = []
         for twin in self.twins.values():
@@ -882,19 +997,26 @@ class DTSession(PluginSession):
         `'inference'`, and an observer can say so).
         """
 
+        endpoints = {
+            ROLE_INFERENCE: self._engine_endpoint(ROLE_INFERENCE),
+            ROLE_LEARNING: (
+                self._engine_endpoint(ROLE_LEARNING)
+                if self.configured(ROLE_LEARNING)
+                else None
+            ),
+        }
+        # further, named engines after the two roles (the dashboard draws
+        # lanes for the two roles only)
+        for name in self.engine_names():
+            endpoints.setdefault(name, self._engine_endpoint(name))
+
         return {
             "sid": self.sid,
             "active": self.is_active,
             "age": round(time.time() - self.created, 3),
             "engines": sorted(self._backends),
             "default_engine": self.default_engine(),
-            "endpoints": {
-                ROLE_INFERENCE: self._engine_endpoint(ROLE_INFERENCE),
-                ROLE_LEARNING: (
-                    self._engine_endpoint(ROLE_LEARNING)
-                    if self.configured(ROLE_LEARNING) else None
-                ),
-            },
+            "endpoints": endpoints,
             "twins": [twin.summary() for twin in self.twins.values()],
         }
 
@@ -918,13 +1040,18 @@ class DTSession(PluginSession):
             twin.engines = {self.default_engine()}
 
             async with asyncio.timeout(TWIN_INIT_TIMEOUT):
-                # A configured 'learning' backend is built here as well,
-                # and concurrently: a learner twin must not pay a
-                # two-minute backend init inside `add_investigator`, which
-                # is a short verb like every other one.
-                names = [ROLE_INFERENCE]
-                if self.configured(ROLE_LEARNING):
-                    names.append(ROLE_LEARNING)
+                # Every configured engine is built here, concurrently: a
+                # learner or a placed component must not pay a two-minute
+                # backend init inside a short `add_*` verb.  A lost engine
+                # is skipped only if it is neither the root nor the
+                # default: those go through `engine()`, which raises, so a
+                # twin never reaches `ready` on a dead default engine.
+                default = self.default_engine()
+                names = [
+                    name
+                    for name in self.engine_names()
+                    if name in (ROLE_INFERENCE, default) or not self._is_lost(name)
+                ]
 
                 flow, *_ = await asyncio.gather(*map(self.engine, names))
 
@@ -947,8 +1074,7 @@ class DTSession(PluginSession):
                 # twin's tasks under its id, a string under that name
                 scope = twin.config.get("workflow_scope")
                 if scope:
-                    runtime.workflow_id = (twin.twin_id if scope is True
-                                           else str(scope))
+                    runtime.workflow_id = twin.twin_id if scope is True else str(scope)
 
                 twin.ready(runtime, stream)
 
@@ -983,16 +1109,32 @@ class DTSession(PluginSession):
         return twin
 
     def _instantiate(
-        self, package: Any, twin: TwinInstance, is_persistent: bool = False
+        self,
+        package: Any,
+        twin: TwinInstance,
+        is_persistent: bool = False,
+        engine: Optional[str] = None,
     ) -> Any:
-        """Build a component from a shipped class, injecting the engine(s).
+        """Build a component from a shipped class, placing its tasks.
 
-        Role injection lives here: a `StreamingLearnerInvestigator`
-        additionally receives the `'learning'` backend name as
-        `learn_backend`, so its learner tasks carry that label and run on
-        the learning hardware while its inference stays on the default role.
-        The class *is* the marker -- there is no user-facing role selector
-        in v1.
+        Placement lives here.  While the component is built, every task it
+        registers (`function_task`, `executable_task`, `prompt_task`)
+        carries `backend=<engine>` unless it names its own label; a label
+        it names itself is checked (`_usable`) -- that is how an agent
+        places the investigators it builds on different sites.  Tasks
+        registered later, outside construction, run on the default engine
+        unless they carry a label.
+
+        A `StreamingLearnerInvestigator` additionally receives the
+        `'learning'` backend name as `learn_backend`, so its learner tasks
+        (registered at submit time, past this wrapper) carry that label;
+        without a `'learning'` engine, a component placed on another engine
+        than the default gets that engine instead.
+
+        The engines a component's tasks use are bound to the twin (R8)
+        only once the component was built, so a failed build binds
+        nothing.  Invariant: no `await` between the verb's engine check and
+        that binding, so an endpoint loss cannot interleave.
 
         Also the home of the persistent-component guard: a persistent
         `main_loop` runs inline on the host loop, so any `function_task`
@@ -1010,28 +1152,55 @@ class DTSession(PluginSession):
 
         flow = twin.runtime.flow
         extra = {}
+        bound = {engine} if engine is not None else set()
 
         if _is_learner(package.cls):
-            # no 'learning' backend configured: the label is omitted and
-            # the learner's tasks ride the default backend
-            has_learning = ROLE_LEARNING in self._backends
-            extra["learn_backend"] = ROLE_LEARNING if has_learning else None
-            if has_learning:
-                twin.engines.add(ROLE_LEARNING)
+            # 'learning' if configured; else the placed engine, unless that
+            # is the default (then no label: one backend, the local case);
+            # else no label and the learner's tasks ride the default
+            if self.configured(ROLE_LEARNING):
+                self._usable(ROLE_LEARNING)
+                learn_backend = ROLE_LEARNING
+            elif engine is not None and engine != self.default_engine():
+                learn_backend = engine
+            else:
+                learn_backend = None
+            extra["learn_backend"] = learn_backend
+            if learn_backend is not None:
+                bound.add(learn_backend)
 
         registered = 0
-        original = flow.function_task
+        decorators = [
+            name
+            for name in ("function_task", "executable_task", "prompt_task")
+            if hasattr(flow, name)
+        ]
+        originals = {name: getattr(flow, name) for name in decorators}
 
-        def counting(*args, **kwargs):
-            nonlocal registered
-            registered += 1
-            return original(*args, **kwargs)
+        def placing(original):
+            def decorate(*args, **kwargs):
+                nonlocal registered
+                registered += 1
+                label = kwargs.get("backend")
+                if label is None:
+                    if engine is not None:
+                        kwargs["backend"] = engine
+                else:
+                    self._usable(label)
+                    bound.add(label)
+                return original(*args, **kwargs)
 
-        flow.function_task = counting
+            return decorate
+
+        for name in decorators:
+            setattr(flow, name, placing(originals[name]))
         try:
             component = package.instantiate(flow, **extra)
         finally:
-            flow.function_task = original
+            for name in decorators:
+                setattr(flow, name, originals[name])
+
+        twin.engines |= bound
 
         if is_persistent and registered:
             log.warning(

@@ -164,9 +164,7 @@ class DTClient(PluginClient):
                     f"twin {twin_id} failed to initialize: {twin['last_error']}"
                 )
             if time.time() > deadline:
-                raise TimeoutError(
-                    f"twin {twin_id} still {state} after {timeout}s"
-                )
+                raise TimeoutError(f"twin {twin_id} still {state} after {timeout}s")
 
             time.sleep(POLL_INTERVAL)
 
@@ -204,9 +202,17 @@ class DTClient(PluginClient):
         input_dtype: DataType,
         output_dtype: DataType,
         is_persistent: bool = False,
+        *,
+        engine: Optional[str] = None,
     ) -> str:
         return self._verb(
-            twin_id, "add_task", package, input_dtype, output_dtype, is_persistent
+            twin_id,
+            "add_task",
+            package,
+            input_dtype,
+            output_dtype,
+            is_persistent,
+            **_placed(engine),
         )["state"]
 
     def add_investigator(
@@ -216,6 +222,7 @@ class DTClient(PluginClient):
         input_dtype: DataType,
         output_dtype: DataType,
         *args: Any,
+        engine: Optional[str] = None,
         **kwargs: Any,
     ) -> str:
         return self._verb(
@@ -225,6 +232,7 @@ class DTClient(PluginClient):
             input_dtype,
             output_dtype,
             *args,
+            **_placed(engine),
             **kwargs,
         )["state"]
 
@@ -235,10 +243,18 @@ class DTClient(PluginClient):
         input_dtype: DataType,
         output_dtype: DataType,
         *args: Any,
+        engine: Optional[str] = None,
         **kwargs: Any,
     ) -> str:
         return self._verb(
-            twin_id, "add_agent", package, input_dtype, output_dtype, *args, **kwargs
+            twin_id,
+            "add_agent",
+            package,
+            input_dtype,
+            output_dtype,
+            *args,
+            **_placed(engine),
+            **kwargs,
         )["state"]
 
     def add_input(
@@ -283,13 +299,16 @@ class DTClient(PluginClient):
         """
 
         if type(barrier) is not Barrier:
-            raise TypeError("only a plain Barrier can be sent to the service,"
-                            f" got {type(barrier).__name__}")
+            raise TypeError(
+                "only a plain Barrier can be sent to the service,"
+                f" got {type(barrier).__name__}"
+            )
 
         dtypes = [(dtype, hard) for dtype, hard in barrier.dtypes.items()]
 
-        return self._verb(twin_id, "add_barrier", barrier.name,
-                          barrier.is_hard_barrier, dtypes)["state"]
+        return self._verb(
+            twin_id, "add_barrier", barrier.name, barrier.is_hard_barrier, dtypes
+        )["state"]
 
     def add_data_split_task(
         self,
@@ -297,6 +316,8 @@ class DTClient(PluginClient):
         package: Package,
         input_dtype: DataType,
         output_dtypes: tuple[DataType, ...],
+        *,
+        engine: Optional[str] = None,
     ) -> str:
         """Register a split task: one input event, one output per dtype.
 
@@ -304,8 +325,14 @@ class DTClient(PluginClient):
         `output_dtypes`; a `None` entry emits nothing on that dtype.
         """
 
-        return self._verb(twin_id, "add_data_split_task", package,
-                          input_dtype, tuple(output_dtypes))["state"]
+        return self._verb(
+            twin_id,
+            "add_data_split_task",
+            package,
+            input_dtype,
+            tuple(output_dtypes),
+            **_placed(engine),
+        )["state"]
 
     def start(self, twin_id: str) -> str:
         """Start a twin.  Starting a running twin is a no-op."""
@@ -349,8 +376,9 @@ class DTClient(PluginClient):
 
         payload = {
             "verb": verb,
-            "payload": encode_checked({"args": args, "kwargs": kwargs},
-                                      f"{verb} payload"),
+            "payload": encode_checked(
+                {"args": args, "kwargs": kwargs}, f"{verb} payload"
+            ),
             "client": version_stamp(),
         }
 
@@ -362,3 +390,16 @@ class DTClient(PluginClient):
         self._raise(resp, context)
 
         return resp.json()
+
+
+def _placed(engine: Optional[str]) -> dict:
+    """`engine=` for a component verb, sent only when set: the payload of a
+    call without it is unchanged.
+
+    `engine` names one of the session's configured engines (`'inference'`,
+    `'learning'`, or a named site from the session's `engines` config); the
+    component's tasks run there.  The service consumes it, so a component's
+    `main_loop` cannot take a keyword argument of that name.
+    """
+
+    return {} if engine is None else {"engine": engine}

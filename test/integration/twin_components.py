@@ -65,6 +65,35 @@ class OffsetModel(ModelInvestigator):
         runtime.publish_new_model({"offset": self.offset})
 
 
+class SiteModel(ModelInvestigator):
+    """Answers with the endpoint its task ran on, for placement tests.
+
+    `site` labels the task itself (`backend=`), the way a component that
+    builds others places them; without it the task takes whatever engine
+    the verb's `engine=` placed the component on.
+    """
+
+    def __init__(self, flow, output, site=None):
+        super().__init__(flow)
+        self.output = output
+        label = {} if site is None else {"backend": site}
+
+        @flow.function_task(**label)
+        async def where(in_data: TypedData):
+            import os
+
+            return os.environ.get("DT_TEST_ENDPOINT_TAG", "?")
+
+        self.where = where
+
+    async def main_loop(self, runtime):
+        async def infer(in_data: TypedData, **kwargs):
+            return TypedData(self.output, await self.where(in_data))
+
+        runtime.set_inference_task(infer)
+        runtime.publish_new_model({})
+
+
 class SlowModel(ModelInvestigator):
     """Inference that never finishes in test time -- for the teardown
     path of a `twin_close` with a call in flight."""
@@ -153,7 +182,8 @@ class JoinSink(UtilityTask):
 
     async def main_loop(self, runtime, in_data):
         await runtime.stream.publish(
-            ECHO_DTYPE, sum(item.data for item in in_data.data))
+            ECHO_DTYPE, sum(item.data for item in in_data.data)
+        )
 
 
 class CrashingTask(UtilityTask):

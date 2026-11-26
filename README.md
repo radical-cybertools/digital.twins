@@ -21,7 +21,9 @@ Main set of features implemented:
 
 1. `pip install .[test,service,learn]` (in a venv that had the package
    under its old name, `pip uninstall digitaltwin` first: both would
-   register the `dt` plugin)
+   register the `dt` plugin).  Client and service move to the new name
+   together: a renamed client talking to an old service is refused with
+   `client did not report its digitaltwin version`
 2. `pytest` (or `tox` for all supported interpreters)
 
 The `learn` extra currently needs ROSE from **PR #98** (commit
@@ -204,10 +206,11 @@ the twin's input stream both feeds the learner and is served by the
 inference task, and each window of samples retrains the model the
 inference task runs with.
 
-That class is the only thing that labels tasks for an engine -- there is
-no `engine=` argument.  The service recognises it by subclass check and
-hands it two role backends: its learner tasks carry the `'learning'`
-label, and its inference stays on the default role.
+The service recognises that class by subclass check and hands it two
+role backends: its learner tasks carry the `'learning'` label, and its
+inference stays on the default role.  Other components can be placed on a
+named engine with `engine=` (see "Components on several sites" in
+`docs/service.md`).
 
 ```python
 dt = rt.get_plugin('broker', 'dt', config={'engines': {
