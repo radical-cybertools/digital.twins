@@ -3,8 +3,8 @@ import os
 import sys
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import SplitTask, TypedData
-from digitaltwin.runtime import RuntimeAPI
+from radical.doppelganger.components import SplitTask, TypedData
+from radical.doppelganger.runtime import RuntimeAPI
 
 from dtypes import *
 import random

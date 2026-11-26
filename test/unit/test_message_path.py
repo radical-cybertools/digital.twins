@@ -14,7 +14,7 @@ import asyncio
 
 import pytest
 
-from digitaltwin import (
+from radical.doppelganger import (
     NULL_DTYPE,
     TRUTHY,
     DTRuntime,
@@ -115,7 +115,7 @@ async def test_default_infers_every_input(stream_clients, no_task_leaks):
 
 
 def test_streaming_learner_skips_unconsumed():
-    learn = pytest.importorskip("digitaltwin.learn", exc_type=ImportError)
+    learn = pytest.importorskip("radical.doppelganger.learn", exc_type=ImportError)
     assert learn.StreamingLearnerInvestigator.infer_without_consumer is False
 
 

@@ -1,6 +1,6 @@
 import logging
 
-from digitaltwin.components import UtilityTask
+from radical.doppelganger.components import UtilityTask
 
 logger = logging.getLogger(__name__)
 

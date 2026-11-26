@@ -1,4 +1,4 @@
-from digitaltwin.components import DataType, SharedSubtaskLabel
+from radical.doppelganger.components import DataType, SharedSubtaskLabel
 
 SENSOR_DTYPE = DataType("sensor")
 INFERENCE_DTYPE = DataType("inference-from-mymodel")

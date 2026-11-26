@@ -100,7 +100,7 @@ def _child_env(**extra: str) -> dict:
     """Environment for a broker / endpoint child process.
 
     `src` goes first on PYTHONPATH so the children run the working tree,
-    not whatever `digitaltwin` happens to be installed.  Anything in
+    not whatever `radical.doppelganger` happens to be installed.  Anything in
     `extra` wins -- that is how the M3 children get their own broker URL
     and `DT_STREAM_BACKEND`.
     """

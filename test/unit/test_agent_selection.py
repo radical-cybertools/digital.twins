@@ -7,7 +7,7 @@ has no tuples.  Both spellings must select.
 
 import pytest
 
-from digitaltwin import (
+from radical.doppelganger import (
     DataType,
     DTRuntime,
     ModelInvestigator,

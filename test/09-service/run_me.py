@@ -15,8 +15,8 @@ import time
 
 from radical.orbit import EndpointRuntime
 
-from digitaltwin.components import NULL_DTYPE, TRUTHY
-from digitaltwin.service import register_user_modules
+from radical.doppelganger.components import NULL_DTYPE, TRUTHY
+from radical.doppelganger.service import register_user_modules
 
 from dtypes import INFERENCE_DTYPE, SENSOR_DTYPE
 from sensor import MySensor

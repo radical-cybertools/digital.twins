@@ -2,8 +2,8 @@ import asyncio
 
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import ModelInvestigator, TypedData, SciAgent
-from digitaltwin.runtime import RuntimeAPI
+from radical.doppelganger.components import ModelInvestigator, TypedData, SciAgent
+from radical.doppelganger.runtime import RuntimeAPI
 
 from model import MyModel
 

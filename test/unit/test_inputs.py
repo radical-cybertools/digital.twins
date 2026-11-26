@@ -5,7 +5,7 @@ import asyncio
 import pytest
 import zmq
 
-from digitaltwin import (
+from radical.doppelganger import (
     CODEC_CLOUDPICKLE,
     CODEC_JSON,
     CODEC_RAW,
@@ -16,7 +16,7 @@ from digitaltwin import (
     PubSubConfig,
     UtilityTask,
 )
-from digitaltwin.streaming import decode_payload, encode_payload
+from radical.doppelganger.streaming import decode_payload, encode_payload
 
 SENSOR = DataType("sensor")
 CHANNEL = "sensors/temperature"

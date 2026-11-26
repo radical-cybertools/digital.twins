@@ -6,8 +6,8 @@ import time
 
 import numpy as np
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import UtilityTask
-from digitaltwin.streaming import connect_stream_client
+from radical.doppelganger.components import UtilityTask
+from radical.doppelganger.streaming import connect_stream_client
 from dtypes import *
 
 from tensorflow.keras.datasets import mnist
