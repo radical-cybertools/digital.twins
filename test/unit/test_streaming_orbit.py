@@ -15,6 +15,7 @@ import threading
 
 from concurrent.futures import ThreadPoolExecutor
 
+import cloudpickle
 import pytest
 
 pytest.importorskip("radical.orbit")
@@ -104,17 +105,24 @@ class LoopbackRuntime:
         self._broker.drop(self)
 
     # -- eventing
+    # like ORBIT's runtime: the wire subscription is counted per pattern --
+    # subscribed with its first callback, withdrawn with its last -- so
+    # several consumers of one runtime (a session's twins) share it
     def register_callback(self, endpoint_id=None, plugin_name=None, topic=None,
                           callback=None, with_meta=False):
-        self.callbacks.setdefault((plugin_name, topic), []).append(callback)
-        self._broker.subscriptions.append((self, plugin_name, topic))
+        callbacks = self.callbacks.setdefault((plugin_name, topic), [])
+        callbacks.append(callback)
+        if len(callbacks) == 1:
+            self._broker.subscriptions.append((self, plugin_name, topic))
 
     def unregister_callback(self, endpoint_id=None, plugin_name=None,
                             topic=None, callback=None):
         key = (plugin_name, topic)
-        self.callbacks[key] = [
-            cb for cb in self.callbacks.get(key, []) if cb is not callback
-        ]
+        keep = [cb for cb in self.callbacks.get(key, []) if cb != callback]
+        if keep:
+            self.callbacks[key] = keep
+            return
+        self.callbacks.pop(key, None)
         entry = (self, plugin_name, topic)
         if entry in self._broker.subscriptions:
             self._broker.subscriptions.remove(entry)
@@ -454,6 +462,51 @@ async def test_an_injected_runtime_is_not_stopped(loopback, no_task_leaks):
     assert not runtime.stopped
     # but its subscriptions are gone -- they were the backend's
     assert loopback.subscriptions == []
+
+
+async def test_twins_share_one_participant(loopback, no_task_leaks):
+    """A session's twins ride on one participant: each gets its own
+    traffic only, and one twin's close leaves the others' subscriptions
+    -- including a channel both of them bind -- in place."""
+
+    shared = loopback.runtime("dt_stream.session")
+    shared.start()
+
+    a = OrbitPubSubBackend(runtime=shared)
+    b = OrbitPubSubBackend(runtime=shared)
+    await a.connect(timeout=5)
+    await b.connect(timeout=5)
+    client_a, client_b = PubSubClient(a, "twin-a"), PubSubClient(b, "twin-b")
+
+    got_a, got_b = asyncio.Queue(), asyncio.Queue()
+    await client_a.subscribe_to_dtype(SENSOR, got_a)
+    await client_b.subscribe_to_dtype(SENSOR, got_b)
+    # an external channel both twins bind
+    chan_a, chan_b = asyncio.Queue(), asyncio.Queue()
+    await a.subscribe("ch/wind", chan_a.put)
+    await b.subscribe("ch/wind", chan_b.put)
+    assert loopback.topics().count("ch/wind") == 1
+
+    await client_a.publish(SENSOR, "from a")
+    await client_b.publish(SENSOR, "from b")
+    assert (await drain(got_a)).data == "from a"
+    assert (await drain(got_b)).data == "from b"
+    await asyncio.sleep(0.1)
+    assert got_a.empty() and got_b.empty()
+
+    await a.close()
+    assert not shared.stopped
+
+    shared.send_notification(STREAM_PLUGIN, "ch/wind",
+                             {PAYLOAD_KEY: cloudpickle.dumps("gust")})
+    assert await drain(chan_b) == "gust"
+    assert chan_a.empty()
+    await client_b.publish(SENSOR, "still b")
+    assert (await drain(got_b)).data == "still b"
+
+    await b.close()
+    assert loopback.subscriptions == []
+    shared.stop()
 
 
 async def test_a_runtime_which_cannot_register_is_not_left_behind(

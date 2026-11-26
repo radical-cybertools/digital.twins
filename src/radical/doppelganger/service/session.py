@@ -315,6 +315,11 @@ class DTSession(PluginSession):
         # endpoints this session's engines ran on and that ORBIT declared
         # lost; nothing here is ever cleared (see `endpoints_lost`)
         self._lost: set[str] = set()
+        # the ORBIT stream participant every twin of this session rides on
+        # (opened by the first twin, stopped at close); `None` on the ZMQ
+        # data plane or with `shared_stream: false` (one per twin)
+        self._stream_participant: Any = None
+        self._stream_participant_lock = asyncio.Lock()
 
     # -- twin lifecycle -----------------------------------------------------
 
@@ -1029,7 +1034,36 @@ class DTSession(PluginSession):
         self._flow = None
         self._backends.clear()
 
+        participant, self._stream_participant = self._stream_participant, None
+        if participant is not None:
+            try:
+                await self._plugin.close_stream_participant(participant)
+            except Exception as exc:
+                log.warning("[dt] session %s: stream participant stop: %s",
+                            self.sid, exc)
+
         return await super().close()
+
+    async def _shared_stream_participant(self, timeout: float):
+        """The session's stream participant, opened on first use.
+
+        One per session: with one per twin, every twin is a connection, a
+        registration and three threads on the broker's side, which at 128
+        twins kept one registration waiting past its 30 s timeout (DT paper
+        round 8b).  `shared_stream: false` in the session config restores
+        one participant per twin.
+        """
+
+        if self.config.get("shared_stream", True) is False:
+            return None
+        opener = getattr(self._plugin, "open_stream_participant", None)
+        if opener is None:
+            return None
+
+        async with self._stream_participant_lock:
+            if self._stream_participant is None:
+                self._stream_participant = await opener(self.sid, timeout)
+            return self._stream_participant
 
     def summary(self) -> dict:
         """This session's entry in the `admin/sessions` listing.
@@ -1082,7 +1116,8 @@ class DTSession(PluginSession):
             # looks at `twin.engines`
             twin.engines = {self.default_engine()}
 
-            async with asyncio.timeout(TWIN_INIT_TIMEOUT):
+            deadline = asyncio.timeout(TWIN_INIT_TIMEOUT)
+            async with deadline:
                 # Every configured engine is built here, concurrently: a
                 # learner or a placed component must not pay a two-minute
                 # backend init inside a short `add_*` verb.  A lost engine
@@ -1100,9 +1135,17 @@ class DTSession(PluginSession):
 
                 # the plugin owns the transport choice (zmq / orbit); the
                 # twin only ever sees a connected, namespaced client
-                stream = await self._plugin.connect_stream(
-                    twin.twin_id, STREAM_CONNECT_TIMEOUT
+                participant = await self._shared_stream_participant(
+                    STREAM_CONNECT_TIMEOUT
                 )
+                if participant is None:
+                    stream = await self._plugin.connect_stream(
+                        twin.twin_id, STREAM_CONNECT_TIMEOUT
+                    )
+                else:
+                    stream = await self._plugin.connect_stream(
+                        twin.twin_id, STREAM_CONNECT_TIMEOUT, runtime=participant
+                    )
 
                 # an endpoint lost while this awaited has failed the twin
                 # already (R8).  `ready` would hand the state over to a
@@ -1126,8 +1169,14 @@ class DTSession(PluginSession):
         except asyncio.CancelledError:
             twin.fail("twin initialization was cancelled")
             raise
-        except TimeoutError:
-            twin.fail(f"twin initialization exceeded {TWIN_INIT_TIMEOUT}s")
+        except TimeoutError as exc:
+            # only the twin-wide deadline is "initialization exceeded"; a
+            # step's own timeout (the stream connect's 30 s) keeps its
+            # message, which says which step and why
+            if deadline.expired():
+                twin.fail(f"twin initialization exceeded {TWIN_INIT_TIMEOUT}s")
+            else:
+                twin.fail(exc)
         except BaseException as exc:
             twin.fail(exc)
 

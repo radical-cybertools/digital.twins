@@ -1520,6 +1520,97 @@ async def test_a_twin_is_bound_only_to_the_default_role():
     await session.close()
 
 
+async def test_a_step_timeout_keeps_its_own_message():
+    """A step that times out on its own (the stream connect) fails the
+    twin with its message, not with the twin-wide 300 s deadline's."""
+
+    session = DTSession("s1", _dual(inference="ep1"))
+    _slow_build(session, 0)
+
+    class _Plugin:
+        async def connect_stream(self, twin_id, timeout):
+            raise TimeoutError(f"stream participant did not register within {timeout}s")
+
+    session._plugin = _Plugin()
+    twin = session.twins["t1"] = TwinInstance("t1")
+    await session._init_twin(twin)
+
+    assert twin.state == "failed"
+    assert "did not register" in twin.last_error
+    assert "initialization exceeded" not in twin.last_error
+    await session.close()
+
+
+async def test_the_twin_deadline_says_initialization_exceeded(monkeypatch):
+    import radical.doppelganger.service.session as sess
+
+    monkeypatch.setattr(sess, "TWIN_INIT_TIMEOUT", 0.05)
+    session = DTSession("s1", _dual(inference="ep1"))
+    _slow_build(session, 0)
+
+    class _Plugin:
+        async def connect_stream(self, twin_id, timeout):
+            await asyncio.sleep(1.0)
+
+    session._plugin = _Plugin()
+    twin = session.twins["t1"] = TwinInstance("t1")
+    await session._init_twin(twin)
+
+    assert twin.state == "failed"
+    assert "initialization exceeded" in twin.last_error
+    await session.close()
+
+
+class _SharingPlugin:
+    """Records the stream participants a session opens and closes."""
+
+    def __init__(self):
+        self.opened, self.closed, self.connects = [], [], []
+
+    async def open_stream_participant(self, sid, timeout):
+        participant = object()
+        self.opened.append(participant)
+        return participant
+
+    async def close_stream_participant(self, participant):
+        self.closed.append(participant)
+
+    async def connect_stream(self, twin_id, timeout, runtime=None):
+        self.connects.append((twin_id, runtime))
+        return _FakeStream()
+
+
+async def test_twins_of_a_session_share_one_stream_participant():
+    session = DTSession("s1", _dual(inference="ep1"))
+    _slow_build(session, 0)
+    plugin = session._plugin = _SharingPlugin()
+
+    for tid in ("t1", "t2", "t3"):
+        twin = session.twins[tid] = TwinInstance(tid)
+        await session._init_twin(twin)
+        assert twin.state != "failed", twin.last_error
+
+    assert len(plugin.opened) == 1
+    assert {runtime for _, runtime in plugin.connects} == {plugin.opened[0]}
+
+    await session.close()
+    assert plugin.closed == plugin.opened
+
+
+async def test_shared_stream_false_opens_one_participant_per_twin():
+    session = DTSession("s1", {**_dual(inference="ep1"), "shared_stream": False})
+    _slow_build(session, 0)
+    plugin = session._plugin = _SharingPlugin()
+
+    twin = session.twins["t1"] = TwinInstance("t1")
+    await session._init_twin(twin)
+
+    assert plugin.opened == []
+    assert plugin.connects == [("t1", None)]
+    await session.close()
+    assert plugin.closed == []
+
+
 def test_the_first_failure_of_a_twin_is_kept():
     twin = TwinInstance("t1")
 
