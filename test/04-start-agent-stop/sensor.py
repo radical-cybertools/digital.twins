@@ -9,13 +9,13 @@ It publishes JSON on a shared channel and knows nothing about twins.
 
 import asyncio
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import UtilityTask
-from digitaltwin.runtime import RuntimeAPI
-from digitaltwin.streaming import PubSubClient, PubSubConfig
+from radical.doppelganger.components import UtilityTask
+from radical.doppelganger.runtime import RuntimeAPI
+from radical.doppelganger.streaming import PubSubClient, PubSubConfig
 from dtypes import *
 import random
 
-from digitaltwin.streaming import ChannelPublisher
+from radical.doppelganger.streaming import ChannelPublisher
 
 from dtypes import SENSOR_CHANNEL
 

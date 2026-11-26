@@ -10,12 +10,12 @@ import asyncio
 
 import pytest
 
-from digitaltwin.components import (
+from radical.doppelganger.components import (
     ModelInvestigator,
     SciAgent,
     SharedSubtaskLabel,
 )
-from digitaltwin.runtime import RuntimeAPI, _AnnotatedComponent
+from radical.doppelganger.runtime import RuntimeAPI, _AnnotatedComponent
 
 
 def make_api():

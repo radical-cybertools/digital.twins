@@ -19,7 +19,11 @@ Main set of features implemented:
 
 ## Running the unit tests:
 
-1. `pip install .[test,service,learn]`
+1. `pip install .[test,service,learn]` (in a venv that had the package
+   under its old name, `pip uninstall digitaltwin` first: both would
+   register the `dt` plugin).  Client and service move to the new name
+   together: a renamed client talking to an old service is refused with
+   `client did not report its digitaltwin version`
 2. `pytest` (or `tox` for all supported interpreters)
 
 The `learn` extra currently needs ROSE from **PR #98** (commit
@@ -56,7 +60,7 @@ a timer, and `07-barrier` off several.
 
 Every side resolves the broker addresses the same way: `DT_STREAM_PUB_ADDR`
 and `DT_STREAM_SUB_ADDR`, defaulting to `tcp://127.0.0.1:5000` and `:5001`
-(see `digitaltwin.config`).  Set them in every terminal to move the broker.
+(see `radical.doppelganger.config`).  Set them in every terminal to move the broker.
 
 **Binding policy**: the broker binds to loopback by default, and it must
 stay that way unless you know what you are doing -- twin-internal payloads
@@ -90,7 +94,7 @@ An external subscriber joins the same way -- as an ORBIT participant, so
 it needs the broker URL and the token, and no addresses at all:
 
 ```python
-from digitaltwin.streaming import connect_stream_client
+from radical.doppelganger.streaming import connect_stream_client
 
 stream = await connect_stream_client(twin_id, backend='orbit')
 await stream.subscribe_to_dtype(ECHO, queue)
@@ -118,7 +122,7 @@ choice costs: about a millisecond per stream hop on loopback.
 
 ## Running it as a service (the `dt` ORBIT plugin)
 
-`digitaltwin.service` exposes the framework as a long-running ORBIT
+`radical.doppelganger.service` exposes the framework as a long-running ORBIT
 plugin: one session per client, many independent twins per session, and
 twins that keep running while their client is away.  Installing the
 package registers the plugin through the `radical.orbit.plugins` entry
@@ -142,8 +146,8 @@ The client:
 
 ```python
 from radical.orbit import EndpointRuntime
-from digitaltwin.components import NULL_DTYPE, TRUTHY
-from digitaltwin.service import register_user_modules
+from radical.doppelganger.components import NULL_DTYPE, TRUTHY
+from radical.doppelganger.service import register_user_modules
 
 import my_components                       # not installed on the service
 register_user_modules([my_components])
@@ -177,7 +181,7 @@ lifecycle, API, session config, external inputs and reading results.
 
 Three contract notes:
 
-- The client and the service must run **the same `digitaltwin` version**
+- The client and the service must run **the same `radical.doppelganger` version**
   (and compatible Python / cloudpickle): shipped component classes
   pickle the framework by reference.  Every call carries those versions
   and the service rejects skew with a clear error rather than failing
@@ -196,7 +200,7 @@ Three contract notes:
 
 ### Ex-situ learning: the second engine
 
-A `StreamingLearnerInvestigator` (`digitaltwin.learn`, needs the `learn`
+A `StreamingLearnerInvestigator` (`radical.doppelganger.learn`, needs the `learn`
 extra) embeds a ROSE `StreamingActiveLearner` in a model investigator:
 the twin's input stream both feeds the learner and is served by the
 inference task, and each window of samples retrains the model the
@@ -258,7 +262,7 @@ reads.  A component that opens its own `workflow_scope()` keeps its own id.
 
 ### Watching it run: the dashboard
 
-`src/digitaltwin/service/ui/` holds a dependency-free canvas dashboard
+`src/radical/doppelganger/service/ui/` holds a dependency-free canvas dashboard
 (one JS file, no build step) that draws the service as role lanes: the
 **client** with a sub-lane per session, the **sensors** below it, the
 **broker** with one card per twin -- short uuid, colour-coded state,
@@ -280,7 +284,7 @@ Three ways to open it, in increasing order of what they need:
 
 ```sh
 # 1 - offline: replay the recording bundled in the repo, no stack at all
-xdg-open src/digitaltwin/service/ui/index.html
+xdg-open src/radical/doppelganger/service/ui/index.html
 
 # 2 - live, served by the broker itself (the only way live works -- see below)
 xdg-open https://<broker>/broker/dt/ui

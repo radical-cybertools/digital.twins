@@ -9,8 +9,8 @@ service without the `learn` extra still hosts every M1 twin.
 
 import os
 
-from digitaltwin.components import DataType, TypedData
-from digitaltwin.learn import StreamingLearnerInvestigator
+from radical.doppelganger.components import DataType, TypedData
+from radical.doppelganger.learn import StreamingLearnerInvestigator
 
 SENSOR_DTYPE = DataType("sensor")
 INFERENCE_DTYPE = DataType("inference")

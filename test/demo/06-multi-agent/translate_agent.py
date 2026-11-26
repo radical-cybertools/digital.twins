@@ -3,8 +3,8 @@ import datetime
 
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import TypedData, SciAgent
-from digitaltwin.runtime import RuntimeAPI
+from radical.doppelganger.components import TypedData, SciAgent
+from radical.doppelganger.runtime import RuntimeAPI
 
 from translate.translate_investigator import TrInvestigator
 

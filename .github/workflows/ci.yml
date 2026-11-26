@@ -23,9 +23,9 @@ jobs:
 
       # The radical dependencies must not come from naive PyPI resolution:
       # PyPI's rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit`
-      # -- the backend `digitaltwin.service` imports -- which was the
+      # -- the backend `radical.doppelganger.service` imports -- which was the
       # collection-blocking ModuleNotFoundError this workflow documented.
-      # Pre-installed pinned, so resolving digitaltwin's requirements
+      # Pre-installed pinned, so resolving radical.doppelganger's requirements
       # keeps them.  asyncflow 0.5.1 carries the non-main-thread fix;
       # orbit is floored, not pinned, since 0.7.0 (dispatcher dialect).
       - name: Install pinned radical dependencies
@@ -37,7 +37,7 @@ jobs:
       # src/ layout: pytest tests the *installed* package, never the
       # working tree.  Always install before testing -- a stale install
       # will silently pass against old code.
-      - name: Install digitaltwin (test + service extras)
+      - name: Install radical.doppelganger (test + service extras)
         run: pip install ".[test,service,learn]" pytest-timeout
 
       # --continue-on-collection-errors: one broken test module (see the
@@ -63,9 +63,9 @@ jobs:
 
       # The radical dependencies must not come from naive PyPI resolution:
       # PyPI's rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit`
-      # -- the backend `digitaltwin.service` imports -- which was the
+      # -- the backend `radical.doppelganger.service` imports -- which was the
       # collection-blocking ModuleNotFoundError this workflow documented.
-      # Pre-installed pinned, so resolving digitaltwin's requirements
+      # Pre-installed pinned, so resolving radical.doppelganger's requirements
       # keeps them.  asyncflow 0.5.1 carries the non-main-thread fix;
       # orbit is floored, not pinned, since 0.7.0 (dispatcher dialect).
       - name: Install pinned radical dependencies
@@ -77,7 +77,7 @@ jobs:
       # src/ layout: pytest tests the *installed* package, never the
       # working tree.  Always install before testing -- a stale install
       # will silently pass against old code.
-      - name: Install digitaltwin (test + service extras)
+      - name: Install radical.doppelganger (test + service extras)
         run: pip install ".[test,service,learn]" pytest-timeout
 
       # The ORBIT broker needs a self-signed TLS cert/key and a shared
@@ -114,9 +114,9 @@ jobs:
 
       # The radical dependencies must not come from naive PyPI resolution:
       # PyPI's rhapsody-py 0.4.0 lacks `rhapsody.backends.execution.orbit`
-      # -- the backend `digitaltwin.service` imports -- which was the
+      # -- the backend `radical.doppelganger.service` imports -- which was the
       # collection-blocking ModuleNotFoundError this workflow documented.
-      # Pre-installed pinned, so resolving digitaltwin's requirements
+      # Pre-installed pinned, so resolving radical.doppelganger's requirements
       # keeps them.  asyncflow 0.5.1 carries the non-main-thread fix;
       # orbit is floored, not pinned, since 0.7.0 (dispatcher dialect).
       - name: Install pinned radical dependencies
@@ -128,7 +128,7 @@ jobs:
       # src/ layout: pytest tests the *installed* package, never the
       # working tree.  Always install before testing -- a stale install
       # will silently pass against old code.
-      - name: Install digitaltwin (test + service extras)
+      - name: Install radical.doppelganger (test + service extras)
         run: pip install ".[test,service,learn]" pytest-timeout
 
       # --continue-on-collection-errors: one broken test module (see the

@@ -19,9 +19,9 @@ import pytest
 
 from radical.orbit import EndpointRuntime
 
-from digitaltwin.components import NULL_DTYPE, TRUTHY, DataType, JoinDataType, TypedData
-from digitaltwin.service import register_user_modules
-from digitaltwin.streaming import ChannelPublisher, PubSubConfig, connect_stream_client
+from radical.doppelganger.components import NULL_DTYPE, TRUTHY, DataType, JoinDataType, TypedData
+from radical.doppelganger.service import register_user_modules
+from radical.doppelganger.streaming import ChannelPublisher, PubSubConfig, connect_stream_client
 
 import twin_components
 

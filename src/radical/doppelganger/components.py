@@ -1,4 +1,4 @@
-# src/digitaltwin/components.py
+# src/radical/doppelganger/components.py
 """Core data structures and component base classes for the digital-twin system.
 
 This module defines lightweight dataclasses, helper utility classes, and

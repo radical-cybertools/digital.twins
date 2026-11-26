@@ -70,7 +70,7 @@ def _dt_version() -> str:
     # once per process: every call is stamped and checked, and a metadata
     # lookup scans sys.path each time
     try:
-        return metadata.version("digitaltwin")
+        return metadata.version("radical.doppelganger")
     except metadata.PackageNotFoundError:  # running from a source tree
         return "unknown"
 
@@ -78,7 +78,7 @@ def _dt_version() -> str:
 def version_stamp() -> dict:
     """The identity a pickle was produced with.
 
-    `digitaltwin` is in here because a shipped component class pickles
+    `radical.doppelganger` is in here because a shipped component class pickles
     its framework base classes, dtypes and `Package` *by reference*: the
     two sides have to be looking at the same code, not merely at
     compatible pickle machinery.
@@ -87,7 +87,7 @@ def version_stamp() -> dict:
     return {
         "python": "%d.%d" % sys.version_info[:2],
         "cloudpickle": cloudpickle.__version__,
-        "digitaltwin": _dt_version(),
+        "radical.doppelganger": _dt_version(),
     }
 
 
@@ -96,9 +96,11 @@ def _minor(version: str) -> tuple:
 
 
 # How closely each version has to line up.  Python and cloudpickle break
-# pickle compatibility at minor-version granularity; `digitaltwin` is
+# pickle compatibility at minor-version granularity; `radical.doppelganger` is
 # resolved by reference, so any difference at all is a different service.
-_COMPARE = {"python": _minor, "cloudpickle": _minor, "digitaltwin": str}
+_DT_KEY = "radical.doppelganger"
+_PRE_RENAME_KEY = "digitaltwin"
+_COMPARE = {"python": _minor, "cloudpickle": _minor, _DT_KEY: str}
 
 
 def check_versions(stamp: dict) -> None:
@@ -109,6 +111,15 @@ def check_versions(stamp: dict) -> None:
     """
 
     theirs = stamp or {}
+
+    # the package was called `digitaltwin` before it was released; name
+    # that rather than report a missing field
+    if _PRE_RENAME_KEY in theirs and _DT_KEY not in theirs:
+        raise ValueError(
+            f"client runs the pre-rename package `digitaltwin`"
+            f" {theirs[_PRE_RENAME_KEY]}, service runs {_DT_KEY}"
+            f" {_dt_version()} -- install the same {_DT_KEY} on both sides"
+        )
 
     for key, mine in version_stamp().items():
         yours = theirs.get(key)

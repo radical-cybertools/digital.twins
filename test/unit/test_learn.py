@@ -17,7 +17,7 @@ pytest.importorskip("rose")
 from radical.asyncflow import WorkflowEngine  # noqa: E402
 from rhapsody.backends import ConcurrentExecutionBackend  # noqa: E402
 
-from digitaltwin import (  # noqa: E402
+from radical.doppelganger import (  # noqa: E402
     TRUTHY,
     DTRuntime,
     DataType,
@@ -25,7 +25,7 @@ from digitaltwin import (  # noqa: E402
     TypedData,
     UtilityTask,
 )
-from digitaltwin.learn import (  # noqa: E402
+from radical.doppelganger.learn import (  # noqa: E402
     METRIC_HISTORY,
     StreamingLearnerInvestigator,
     _number,

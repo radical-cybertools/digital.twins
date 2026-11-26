@@ -12,10 +12,10 @@ import random
 import string
 import time
 
-from digitaltwin import SplitTask
+from radical.doppelganger import SplitTask
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import ModelInvestigator, SciAgent, TypedData
-from digitaltwin.runtime import RuntimeAPI
+from radical.doppelganger.components import ModelInvestigator, SciAgent, TypedData
+from radical.doppelganger.runtime import RuntimeAPI
 
 from dtypes import (
     FLIP_AGENT_IN,

@@ -10,9 +10,9 @@ from rose.metrics import MEAN_SQUARED_ERROR_MSE
 
 from concurrent.futures import ProcessPoolExecutor
 
-from digitaltwin.components import *
-from digitaltwin.runtime import DTRuntime, RuntimeAPI
-from digitaltwin.streaming import PubSubClient, connect_stream_client
+from radical.doppelganger.components import *
+from radical.doppelganger.runtime import DTRuntime, RuntimeAPI
+from radical.doppelganger.streaming import PubSubClient, connect_stream_client
 
 from radical.asyncflow.logging import init_default_logger
 

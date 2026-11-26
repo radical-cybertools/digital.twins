@@ -28,9 +28,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from bench_insitu import report  # noqa: E402
 
-from digitaltwin import DataType, ZMQ_BrokerProcess  # noqa: E402
-from digitaltwin.config import BACKEND_ORBIT, BACKEND_ZMQ  # noqa: E402
-from digitaltwin.streaming import connect_stream_client  # noqa: E402
+from radical.doppelganger import DataType, ZMQ_BrokerProcess  # noqa: E402
+from radical.doppelganger.config import BACKEND_ORBIT, BACKEND_ZMQ  # noqa: E402
+from radical.doppelganger.streaming import connect_stream_client  # noqa: E402
 
 SAMPLE = DataType("sample")
 
