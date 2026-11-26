@@ -12,14 +12,14 @@ HPC resources, built on
 
 **Documentation: <https://radicaldoppelganger.readthedocs.io>**, sources
 in [`docs/`](docs/).  Start with
-[Your first twin](docs/build/first-twin.md).  Doppelganger v1 is a
+[Your first twin](docs/tutorial/first-twin.md).  Doppelganger v1 is a
 research prototype; read
 [Status and limits](docs/overview/status-and-limits.md) first.
 
 ## Quick start
 
 ```sh
-pip install "radical.doppelganger[learn]"      # pre-release: see docs/build/install.md
+pip install "radical.doppelganger[learn]"      # pre-release: see docs/tutorial/install.md
 git clone https://github.com/radical-cybertools/digital.twins
 cd digital.twins/examples/surrogate
 python run_local.py
@@ -43,7 +43,7 @@ and exits once the surrogate it serves is accurate.
 ## Tests
 
 ```sh
-pip install ".[test,service,learn]"     # pre-release pins: docs/build/install.md
+pip install ".[test,service,learn]"     # pre-release pins: docs/tutorial/install.md
 pytest test/unit                        # starts its own stream broker, no setup
 pytest test/integration                 # starts an ORBIT broker and two endpoints
 ```

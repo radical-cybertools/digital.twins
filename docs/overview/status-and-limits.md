@@ -25,7 +25,7 @@ the one place that lists what v1 does not do; other pages link here.
   same Python minor and the same cloudpickle minor.**  Shipped classes
   pickle the framework by reference.  Every call carries these versions
   and the service refuses a mismatch with an error naming both sides.
-  Install every host from the same pins (see [Install](../build/install.md)).
+  Install every host from the same pins (see [Install](../tutorial/install.md)).
 - **Not on PyPI yet.**  The first releases of this package and of
   radical.orbit follow this documentation; rhapsody, radical.asyncflow and
   ROSE follow after.  Until then the install uses pinned git commits.

@@ -25,7 +25,7 @@ The same twin code runs in two places:
 
 | You want to | Read |
 |---|---|
-| build a twin and wrap your own surrogate model | [Install](build/install.md), then [Your first twin](build/first-twin.md) and the rest of *Build a twin* |
+| build a twin and wrap your own surrogate model | [Install](tutorial/install.md), then [Your first twin](tutorial/first-twin.md) and the rest of *Build a twin* |
 | drive a running service from your code | [Service guide](use/service.md) |
 | understand how the layers fit together | [The stack](overview/stack-map.md) |
 | see what v1 does and does not do | [Status and limits](overview/status-and-limits.md) |
@@ -48,4 +48,4 @@ answer = await runtime.get_inference(TypedData(READING, 1.5), PREDICTION)
 ```
 
 The full, runnable version is `examples/surrogate/`, and
-[Your first twin](build/first-twin.md) walks through it.
+[Your first twin](tutorial/first-twin.md) walks through it.

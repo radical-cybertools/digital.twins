@@ -2,7 +2,7 @@
 
 This guide covers the client side of the `dt` ORBIT plugin: how a twin is
 built, fed, observed and closed through `DTClient`.  Bringing up a broker and
-endpoints is in [Run the twin on the service](../build/service.md); the
+endpoints is in [Run the twin on the service](../tutorial/service.md); the
 dashboard, endpoint loss and the data-plane trust boundary have pages of
 their own ([dashboard](dashboard.md), [endpoint loss](../develop/design/endpoint-loss.md),
 [trust boundary](../develop/design/data-plane-trust.md)).
