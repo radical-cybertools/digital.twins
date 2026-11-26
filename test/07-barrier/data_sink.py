@@ -2,7 +2,7 @@ import asyncio
 import time
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import UtilityTask, TypedData
+from radical.doppelganger.components import UtilityTask, TypedData
 
 import logging
 

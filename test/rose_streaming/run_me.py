@@ -22,9 +22,9 @@ from rhapsody.backends import ConcurrentExecutionBackend
 from rose.al.streaming_learner import StreamingActiveLearner
 from rose.metrics import MEAN_SQUARED_ERROR_MSE
 
-from digitaltwin.components import *
-from digitaltwin.runtime import DTRuntime, RuntimeAPI
-from digitaltwin.streaming import connect_stream_client
+from radical.doppelganger.components import *
+from radical.doppelganger.runtime import DTRuntime, RuntimeAPI
+from radical.doppelganger.streaming import connect_stream_client
 
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from digitaltwin.components import TRUTHY, Barrier
+from radical.doppelganger.components import TRUTHY, Barrier
 
 # appended, so this directory's conftest wins
 API_TEST = Path(__file__).resolve().parent.parent / "api_test"
@@ -44,7 +44,7 @@ from components import (  # noqa: E402
     InvestigatorTest,
     SplitTest,
 )
-from digitaltwin.service import register_user_modules  # noqa: E402
+from radical.doppelganger.service import register_user_modules  # noqa: E402
 
 import components  # noqa: E402
 import dtypes  # noqa: E402

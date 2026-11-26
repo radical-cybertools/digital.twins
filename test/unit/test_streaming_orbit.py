@@ -20,8 +20,8 @@ import pytest
 
 pytest.importorskip("radical.orbit")
 
-from digitaltwin import DataType, PubSubClient  # noqa: E402
-from digitaltwin.streaming_orbit import (  # noqa: E402
+from radical.doppelganger import DataType, PubSubClient  # noqa: E402
+from radical.doppelganger.streaming_orbit import (  # noqa: E402
     FRAME_OVERHEAD,
     INBOX_SIZE,
     PAYLOAD_KEY,
@@ -161,7 +161,7 @@ async def orbit_backends(loopback, monkeypatch):
     """
 
     monkeypatch.setattr(
-        "digitaltwin.streaming_orbit.EndpointRuntime",
+        "radical.doppelganger.streaming_orbit.EndpointRuntime",
         lambda broker_url=None, name=None, **kw: loopback.runtime(name),
     )
 
@@ -522,7 +522,7 @@ async def test_a_runtime_which_cannot_register_is_not_left_behind(
         made.append(runtime)
         return runtime
 
-    monkeypatch.setattr("digitaltwin.streaming_orbit.EndpointRuntime", build)
+    monkeypatch.setattr("radical.doppelganger.streaming_orbit.EndpointRuntime", build)
 
     backend = OrbitPubSubBackend()
 
@@ -592,7 +592,7 @@ def test_a_none_connect_timeout_reaches_orbit_as_a_finite_deadline(
             return True
 
     monkeypatch.setattr(
-        "digitaltwin.streaming_orbit.EndpointRuntime", _Recording)
+        "radical.doppelganger.streaming_orbit.EndpointRuntime", _Recording)
 
     backend = OrbitPubSubBackend()
     backend._start_runtime(None)

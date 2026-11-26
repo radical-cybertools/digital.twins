@@ -1,5 +1,9 @@
 # DT-as-a-Service (DTaaS) — v1 implementation plan
 
+> Historical.  Written against the package `digitaltwin`, since renamed
+> `radical.doppelganger` (`src/radical/doppelganger/`); names and paths
+> below are as they were.
+
 Status: five independent Fable review rounds (2026-08-14/15), all
 findings folded in; compute-placement decision benchmarked; API model
 settled: short synchronous verbs + async `twin_create` (rhapsody

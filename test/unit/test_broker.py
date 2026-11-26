@@ -2,8 +2,8 @@
 
 import asyncio
 
-from digitaltwin import DataType, ZMQ_BrokerProcess, connect_stream_client
-from digitaltwin.config import DEFAULT_BIND_HOST
+from radical.doppelganger import DataType, ZMQ_BrokerProcess, connect_stream_client
+from radical.doppelganger.config import DEFAULT_BIND_HOST
 
 PING = DataType("ping")
 

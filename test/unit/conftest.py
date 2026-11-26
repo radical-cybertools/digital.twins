@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from digitaltwin import ZMQ_BrokerProcess, connect_stream_client
+from radical.doppelganger import ZMQ_BrokerProcess, connect_stream_client
 
 
 @pytest.fixture

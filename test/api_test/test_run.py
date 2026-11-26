@@ -3,11 +3,11 @@ import json
 import os
 import time
 
-from digitaltwin import NULL_DTYPE
+from radical.doppelganger import NULL_DTYPE
 
-from digitaltwin.runtime import DTRuntime
-from digitaltwin.streaming import connect_stream_client
-from digitaltwin.components import TRUTHY
+from radical.doppelganger.runtime import DTRuntime
+from radical.doppelganger.streaming import connect_stream_client
+from radical.doppelganger.components import TRUTHY
 
 from dtypes import *
 from sensors import (
@@ -25,7 +25,7 @@ from sensors import (
 )
 from monitor import MonitorTask
 from components import UPDATE_EVERY, AgentTest, FlipAgent, InvestigatorTest, SplitTest
-from digitaltwin.components import Barrier
+from radical.doppelganger.components import Barrier
 
 
 import logging

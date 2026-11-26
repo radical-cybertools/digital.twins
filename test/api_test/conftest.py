@@ -41,10 +41,10 @@
 import asyncio
 import contextlib
 
-from digitaltwin import PubSubBackend, PubSubConfig, connect_stream_client
+from radical.doppelganger import PubSubBackend, PubSubConfig, connect_stream_client
 import pytest
 
-from digitaltwin.streaming import ZMQ_BrokerProcess
+from radical.doppelganger.streaming import ZMQ_BrokerProcess
 from sensors import input_sensor
 
 NAMESPACE = "api_test"

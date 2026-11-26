@@ -4,13 +4,13 @@ import sys
 import time
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import DataType, UtilityTask
+from radical.doppelganger.components import DataType, UtilityTask
 
 import random
 
 import logging
 
-from digitaltwin.streaming import PubSubClient
+from radical.doppelganger.streaming import PubSubClient
 
 logger = logging.getLogger(__name__)
 

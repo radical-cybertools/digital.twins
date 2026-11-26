@@ -3,8 +3,8 @@ import logging
 import time
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import ModelInvestigator, TypedData
-from digitaltwin.runtime import RuntimeAPI
+from radical.doppelganger.components import ModelInvestigator, TypedData
+from radical.doppelganger.runtime import RuntimeAPI
 
 from dtypes import *
 
