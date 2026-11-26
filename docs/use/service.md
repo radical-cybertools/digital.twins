@@ -1,9 +1,11 @@
 # Digital twins as a service: user guide
 
 This guide covers the client side of the `dt` ORBIT plugin: how a twin is
-built, fed, observed and closed through `DTClient`.  Deployment (broker,
-endpoints), the dashboard, endpoint loss (R8) and the data-plane trust
-boundary (R7) are in the [README](../README.md#running-it-as-a-service-the-dt-orbit-plugin).
+built, fed, observed and closed through `DTClient`.  Bringing up a broker and
+endpoints is in [Run the twin on the service](../build/service.md); the
+dashboard, endpoint loss and the data-plane trust boundary have pages of
+their own ([dashboard](dashboard.md), [endpoint loss](../develop/design/endpoint-loss.md),
+[trust boundary](../develop/design/data-plane-trust.md)).
 `test/09-service/` is a complete worked example.
 
 ## Concepts
@@ -62,7 +64,7 @@ dt = rt.get_plugin('broker', 'dt', sid=old_sid)             # reattach
 | `register_user_modules([mod, ...])` | Ship modules that are not installed on the service (call once, before `package`). |
 | `create_twin(twin_id=None, config=None, wait=True, timeout=300)` | Create a twin and return its id. |
 | `wait_ready(twin, timeout=300)` | Wait until a twin created with `wait=False` is `ready`. |
-| `add_task(twin, pkg, input_dtype, output_dtype, is_persistent=False)` | Add a utility task.  Persistent tasks run inline on the service loop (see the README contract notes). |
+| `add_task(twin, pkg, input_dtype, output_dtype, is_persistent=False)` | Add a utility task.  Persistent tasks run inline on the service loop (see [Status and limits](../overview/status-and-limits.md#persistent-components)). |
 | `add_investigator(twin, pkg, input_dtype, output_dtype, ...)` | Add a model investigator.  Further arguments go to its `main_loop`. |
 | `add_agent(twin, pkg, input_dtype, output_dtype, ...)` | Add a science agent.  Further arguments go to its `main_loop`. |
 | `add_input(twin, dtype, channel, codec='json')` | Bind an external channel to an input dtype (see below). |
@@ -199,7 +201,7 @@ The ZMQ addresses of the service's stream broker are in the admin listing:
 `dt.admin_sessions()['stream_broker']['addresses']`.  They are loopback
 addresses, valid on the service host only, and stay empty until the first
 twin connects.  Clients on other hosts need the ORBIT data plane, which is
-also what production deployments use (see the README).
+also what production deployments use (see [Choosing a data plane](data-plane.md)).
 
 ## Getting results out
 
@@ -260,4 +262,4 @@ shuts down its engines, and `dt.close()` does the same, so do not call
 keeps its engines on the service.  Close single twins with `twin_close`.
 
 After an endpoint loss, call `dt.unregister_session()` and create a new
-session (see the README section on R8).
+session (see [When an endpoint disappears](../develop/design/endpoint-loss.md)).

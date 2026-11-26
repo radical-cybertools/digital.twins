@@ -140,3 +140,22 @@ jobs:
         run: >-
           pytest test/api_test -rs --continue-on-collection-errors
           --timeout=120 --timeout-method=thread
+
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # --strict turns broken links, missing snippet files and unknown
+      # nav entries into failures; the examples themselves run in `unit`
+      # and `integration`
+      - name: Build the documentation site
+        run: |
+          pip install -r docs/requirements.txt
+          mkdocs build --strict
