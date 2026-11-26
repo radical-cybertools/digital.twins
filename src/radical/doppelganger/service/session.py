@@ -12,6 +12,7 @@ disturbs its siblings or the engines.
 import asyncio
 import inspect
 import contextlib
+import json
 import logging
 import os
 import time
@@ -27,7 +28,7 @@ from rhapsody.backends.execution.orbit import OrbitExecutionBackend  # type: ign
 from ..components import Barrier, DataType, JoinDataType, TypedData
 from ..runtime import DTRuntime, RuntimeState
 from ..streaming import CODEC_JSON, PubSubClient
-from .wire import Package, check_versions, decode, encode
+from .wire import FRAME_CAP, Package, check_versions, decode, encode
 
 log = logging.getLogger("radical.orbit")
 
@@ -78,6 +79,10 @@ DEFAULT_BACKENDS = ["concurrent"]
 
 # bounded waits.  This runs for days on a shared event loop: nothing here
 # may block it and nothing may hang.
+# the encoded size one `twin_list` page stops at: half the frame cap leaves
+# room for the envelope and for a peer tuned to a smaller cap
+TWIN_LIST_PAGE_BYTES = FRAME_CAP // 2
+
 TWIN_INIT_TIMEOUT = 300.0  # engine (<=150s) + stream connect + slack
 STREAM_CONNECT_TIMEOUT = 30.0
 TWIN_STOP_TIMEOUT = 10.0
@@ -341,12 +346,50 @@ class DTSession(PluginSession):
 
         return self._twin_state(twin)
 
-    async def twin_list(self) -> dict:
-        """The only observation mechanism in v1: every twin, every state."""
+    async def twin_list(self, offset: int = 0, limit: Optional[int] = None) -> dict:
+        """The only observation mechanism in v1: every twin, every state.
+
+        One page of twins in creation order, from `offset`, at most `limit`
+        of them.  A page also stops when its encoded summaries reach
+        `TWIN_LIST_PAGE_BYTES`, so a response always fits one ORBIT frame
+        however many twins the session holds; `next` is the offset of the
+        following page, `None` after the last.  Without `offset` / `limit`
+        a small session comes back whole, as before.
+        """
 
         self._check_active()
 
-        return {"sid": self.sid, "twins": [t.summary() for t in self.twins.values()]}
+        twins = list(self.twins.values())
+        page: list[dict] = []
+        size = 0
+        for twin in twins[offset:]:
+            if limit is not None and len(page) >= limit:
+                break
+            entry = twin.summary()
+            entry_size = len(json.dumps(entry, default=str))
+            if page and size + entry_size > TWIN_LIST_PAGE_BYTES:
+                break
+            page.append(entry)
+            size += entry_size
+
+        end = offset + len(page)
+        return {
+            "sid": self.sid,
+            "twins": page,
+            "total": len(twins),
+            "next": end if end < len(twins) else None,
+        }
+
+    async def twin_state(self, twin_id: str) -> dict:
+        """One twin's `twin_list` entry, without listing the others."""
+
+        self._check_active()
+
+        twin = self.twins.get(twin_id)
+        if twin is None:
+            raise HTTPException(status_code=404, detail=f"unknown twin: {twin_id}")
+
+        return twin.summary()
 
     async def twin_close(self, twin_id: str) -> dict:
         """Stop and forget a twin.  Idempotent: closing an unknown (already

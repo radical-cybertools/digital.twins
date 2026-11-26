@@ -26,6 +26,7 @@ from radical.doppelganger.components import (  # noqa: E402
     UtilityTask,
 )
 from radical.doppelganger.runtime import DTRuntime  # noqa: E402
+from radical.doppelganger.service.client import DTClient  # noqa: E402
 from radical.doppelganger.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
 from radical.doppelganger.service.session import (  # noqa: E402
     ENV_DEFAULT_ENGINE,
@@ -160,6 +161,119 @@ def test_twin_close_is_idempotent_for_unknown_twins(client):
 
     assert resp.status_code == 200
     assert resp.json()["state"] == "closed"
+
+
+def _session_with_twins(plugin, client, n, monkeypatch):
+    """A session holding `n` registered twins, initialization skipped."""
+
+    from radical.doppelganger.service.session import TwinInstance
+
+    sid = client.post("/dt/register_session", json={}).json()["sid"]
+    session = plugin._sessions[sid]
+    for k in range(n):
+        session.twins[f"t{k:04d}"] = TwinInstance(f"t{k:04d}")
+    return sid, session
+
+
+def test_one_twin_has_its_own_route(plugin, client, monkeypatch):
+    sid, _ = _session_with_twins(plugin, client, 3, monkeypatch)
+
+    resp = client.get(f"/dt/twin/{sid}/t0001")
+    assert resp.status_code == 200
+    assert resp.json()["twin_id"] == "t0001"
+
+    resp = client.get(f"/dt/twin/{sid}/nope")
+    assert resp.status_code == 404
+    assert "unknown twin" in resp.text
+
+
+def test_twin_list_pages_by_offset_and_limit(plugin, client, monkeypatch):
+    sid, _ = _session_with_twins(plugin, client, 5, monkeypatch)
+
+    whole = client.get(f"/dt/twin_list/{sid}").json()
+    assert [t["twin_id"] for t in whole["twins"]] == [f"t{k:04d}" for k in range(5)]
+    assert whole["total"] == 5 and whole["next"] is None
+
+    page = client.get(f"/dt/twin_list/{sid}", params={"offset": 1, "limit": 2}).json()
+    assert [t["twin_id"] for t in page["twins"]] == ["t0001", "t0002"]
+    assert page["next"] == 3
+
+    last = client.get(f"/dt/twin_list/{sid}", params={"offset": 4, "limit": 2}).json()
+    assert [t["twin_id"] for t in last["twins"]] == ["t0004"] and last["next"] is None
+
+    assert client.get(f"/dt/twin_list/{sid}", params={"offset": -1}).status_code == 400
+
+
+def test_a_twin_list_page_stops_at_its_byte_budget(plugin, client, monkeypatch):
+    import json
+
+    import radical.doppelganger.service.session as sess
+
+    sid, session = _session_with_twins(plugin, client, 10, monkeypatch)
+    one = len(json.dumps(session.twins["t0000"].summary(), default=str))
+    monkeypatch.setattr(sess, "TWIN_LIST_PAGE_BYTES", 3 * one + one // 2)
+
+    page = client.get(f"/dt/twin_list/{sid}").json()
+    assert len(page["twins"]) == 3
+    assert page["next"] == 3 and page["total"] == 10
+
+
+def test_admin_sessions_counts_twins_past_its_budget(plugin, client, monkeypatch):
+    import radical.doppelganger.service.plugin as plug
+
+    sid, _ = _session_with_twins(plugin, client, 4, monkeypatch)
+    entry = lambda: next(  # noqa: E731
+        s for s in client.get("/dt/admin/sessions").json()["sessions"] if s["sid"] == sid
+    )
+
+    assert len(entry()["twins"]) == 4
+
+    monkeypatch.setattr(plug, "ADMIN_SESSIONS_BYTES", 10)
+    counted = entry()
+    assert counted["twins"] == []
+    assert counted["twins_total"] == 4
+    assert sum(counted["twin_states"].values()) == 4
+
+
+class _PagedHTTP:
+    """A transport that answers DTClient's GETs from a TestClient."""
+
+    def __init__(self, test_client):
+        self.client = test_client
+        self.urls: list[str] = []
+
+    def get(self, url, params=None, **kw):
+        self.urls.append(url)
+        return self.client.get("/dt/" + url.split("/dt/", 1)[-1], params=params)
+
+
+def _dt_client(test_client, sid):
+    dt = object.__new__(DTClient)
+    dt._http = _PagedHTTP(test_client)
+    dt._sid = sid
+    dt._url = lambda path: f"http://x/dt/{path}"
+    dt._endpoint_id, dt._plugin_name = "broker", "dt"
+    return dt
+
+
+def test_the_client_fetches_every_page_and_one_twin_alone(plugin, client, monkeypatch):
+    import json
+
+    import radical.doppelganger.service.session as sess
+
+    sid, session = _session_with_twins(plugin, client, 7, monkeypatch)
+    one = len(json.dumps(session.twins["t0000"].summary(), default=str))
+    monkeypatch.setattr(sess, "TWIN_LIST_PAGE_BYTES", 2 * one + one // 2)
+
+    dt = _dt_client(client, sid)
+    assert [t["twin_id"] for t in dt.twin_list()] == [f"t{k:04d}" for k in range(7)]
+    assert len(dt._http.urls) == 4  # pages of 2, 2, 2, 1
+
+    dt._http.urls.clear()
+    assert dt.twin("t0005")["twin_id"] == "t0005"
+    assert dt._http.urls == [f"http://x/dt/twin/{sid}/t0005"]
+    with pytest.raises(RuntimeError, match="unknown twin"):
+        dt.twin("nope")
 
 
 def test_unknown_session_is_404(client):
