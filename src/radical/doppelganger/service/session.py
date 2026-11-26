@@ -12,6 +12,7 @@ disturbs its siblings or the engines.
 import asyncio
 import inspect
 import contextlib
+import json
 import logging
 import os
 import time
@@ -27,7 +28,7 @@ from rhapsody.backends.execution.orbit import OrbitExecutionBackend  # type: ign
 from ..components import Barrier, DataType, JoinDataType, TypedData
 from ..runtime import DTRuntime, RuntimeState
 from ..streaming import CODEC_JSON, PubSubClient
-from .wire import Package, check_versions, decode, encode
+from .wire import FRAME_CAP, Package, check_versions, decode, encode
 
 log = logging.getLogger("radical.orbit")
 
@@ -78,6 +79,10 @@ DEFAULT_BACKENDS = ["concurrent"]
 
 # bounded waits.  This runs for days on a shared event loop: nothing here
 # may block it and nothing may hang.
+# the encoded size one `twin_list` page stops at: half the frame cap leaves
+# room for the envelope and for a peer tuned to a smaller cap
+TWIN_LIST_PAGE_BYTES = FRAME_CAP // 2
+
 TWIN_INIT_TIMEOUT = 300.0  # engine (<=150s) + stream connect + slack
 STREAM_CONNECT_TIMEOUT = 30.0
 TWIN_STOP_TIMEOUT = 10.0
@@ -310,6 +315,11 @@ class DTSession(PluginSession):
         # endpoints this session's engines ran on and that ORBIT declared
         # lost; nothing here is ever cleared (see `endpoints_lost`)
         self._lost: set[str] = set()
+        # the ORBIT stream participant every twin of this session rides on
+        # (opened by the first twin, stopped at close); `None` on the ZMQ
+        # data plane or with `shared_stream: false` (one per twin)
+        self._stream_participant: Any = None
+        self._stream_participant_lock = asyncio.Lock()
 
     # -- twin lifecycle -----------------------------------------------------
 
@@ -336,12 +346,50 @@ class DTSession(PluginSession):
 
         return self._twin_state(twin)
 
-    async def twin_list(self) -> dict:
-        """The only observation mechanism in v1: every twin, every state."""
+    async def twin_list(self, offset: int = 0, limit: Optional[int] = None) -> dict:
+        """The only observation mechanism in v1: every twin, every state.
+
+        One page of twins in creation order, from `offset`, at most `limit`
+        of them.  A page also stops when its encoded summaries reach
+        `TWIN_LIST_PAGE_BYTES`, so a response always fits one ORBIT frame
+        however many twins the session holds; `next` is the offset of the
+        following page, `None` after the last.  Without `offset` / `limit`
+        a small session comes back whole, as before.
+        """
 
         self._check_active()
 
-        return {"sid": self.sid, "twins": [t.summary() for t in self.twins.values()]}
+        twins = list(self.twins.values())
+        page: list[dict] = []
+        size = 0
+        for twin in twins[offset:]:
+            if limit is not None and len(page) >= limit:
+                break
+            entry = twin.summary()
+            entry_size = len(json.dumps(entry, default=str))
+            if page and size + entry_size > TWIN_LIST_PAGE_BYTES:
+                break
+            page.append(entry)
+            size += entry_size
+
+        end = offset + len(page)
+        return {
+            "sid": self.sid,
+            "twins": page,
+            "total": len(twins),
+            "next": end if end < len(twins) else None,
+        }
+
+    async def twin_state(self, twin_id: str) -> dict:
+        """One twin's `twin_list` entry, without listing the others."""
+
+        self._check_active()
+
+        twin = self.twins.get(twin_id)
+        if twin is None:
+            raise HTTPException(status_code=404, detail=f"unknown twin: {twin_id}")
+
+        return twin.summary()
 
     async def twin_close(self, twin_id: str) -> dict:
         """Stop and forget a twin.  Idempotent: closing an unknown (already
@@ -986,7 +1034,36 @@ class DTSession(PluginSession):
         self._flow = None
         self._backends.clear()
 
+        participant, self._stream_participant = self._stream_participant, None
+        if participant is not None:
+            try:
+                await self._plugin.close_stream_participant(participant)
+            except Exception as exc:
+                log.warning("[dt] session %s: stream participant stop: %s",
+                            self.sid, exc)
+
         return await super().close()
+
+    async def _shared_stream_participant(self, timeout: float):
+        """The session's stream participant, opened on first use.
+
+        One per session: with one per twin, every twin is a connection, a
+        registration and three threads on the broker's side, which at 128
+        twins kept one registration waiting past its 30 s timeout (DT paper
+        round 8b).  `shared_stream: false` in the session config restores
+        one participant per twin.
+        """
+
+        if self.config.get("shared_stream", True) is False:
+            return None
+        opener = getattr(self._plugin, "open_stream_participant", None)
+        if opener is None:
+            return None
+
+        async with self._stream_participant_lock:
+            if self._stream_participant is None:
+                self._stream_participant = await opener(self.sid, timeout)
+            return self._stream_participant
 
     def summary(self) -> dict:
         """This session's entry in the `admin/sessions` listing.
@@ -1039,7 +1116,8 @@ class DTSession(PluginSession):
             # looks at `twin.engines`
             twin.engines = {self.default_engine()}
 
-            async with asyncio.timeout(TWIN_INIT_TIMEOUT):
+            deadline = asyncio.timeout(TWIN_INIT_TIMEOUT)
+            async with deadline:
                 # Every configured engine is built here, concurrently: a
                 # learner or a placed component must not pay a two-minute
                 # backend init inside a short `add_*` verb.  A lost engine
@@ -1057,9 +1135,17 @@ class DTSession(PluginSession):
 
                 # the plugin owns the transport choice (zmq / orbit); the
                 # twin only ever sees a connected, namespaced client
-                stream = await self._plugin.connect_stream(
-                    twin.twin_id, STREAM_CONNECT_TIMEOUT
+                participant = await self._shared_stream_participant(
+                    STREAM_CONNECT_TIMEOUT
                 )
+                if participant is None:
+                    stream = await self._plugin.connect_stream(
+                        twin.twin_id, STREAM_CONNECT_TIMEOUT
+                    )
+                else:
+                    stream = await self._plugin.connect_stream(
+                        twin.twin_id, STREAM_CONNECT_TIMEOUT, runtime=participant
+                    )
 
                 # an endpoint lost while this awaited has failed the twin
                 # already (R8).  `ready` would hand the state over to a
@@ -1083,8 +1169,14 @@ class DTSession(PluginSession):
         except asyncio.CancelledError:
             twin.fail("twin initialization was cancelled")
             raise
-        except TimeoutError:
-            twin.fail(f"twin initialization exceeded {TWIN_INIT_TIMEOUT}s")
+        except TimeoutError as exc:
+            # only the twin-wide deadline is "initialization exceeded"; a
+            # step's own timeout (the stream connect's 30 s) keeps its
+            # message, which says which step and why
+            if deadline.expired():
+                twin.fail(f"twin initialization exceeded {TWIN_INIT_TIMEOUT}s")
+            else:
+                twin.fail(exc)
         except BaseException as exc:
             twin.fail(exc)
 
