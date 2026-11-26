@@ -49,14 +49,3 @@ with the last state pill the service reported and a `closed` mark, then
 fades: a run that ends by closing its twins would otherwise erase the
 evidence a second later.  A lingering card yields its grid slot to a live
 twin if the lane runs out of room.
-
-One thing the picture makes obvious once it is drawn: **the runtime never
-publishes a component's answer**.  An inference result goes to the next
-component on that dtype over an in-process queue, and is dropped if
-nothing is registered there.  For anything outside the service to see a
-result, a component has to publish it (`EchoSink` in the demos does
-exactly that, which is why the sensors lane shows a twin's results as
-well as its readings), and the client then subscribes to the twin's
-stream with the `PubSubConfig` the twin reports.  A client's own
-`get_inference` is the other path, and the only one that answers the
-caller directly.

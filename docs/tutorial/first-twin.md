@@ -64,7 +64,9 @@ they consume and produce.
 ```
 
 Registered on `TRUTHY`, a component runs once when the twin starts.
-This one loops forever and publishes readings into the twin's stream.
+This one loops forever and publishes readings into the twin's stream,
+which works because `run_local.py` registers it with
+`is_persistent=True` (see [Concepts › Persistent components](concepts.md#persistent-components)).
 
 ## Putting it together
 

@@ -45,8 +45,8 @@ Set it in each terminal:
 export RADICAL_ORBIT_BROKER_URL=https://localhost:8000
 ```
 
-or write it once to `~/.radical/orbit/broker.url`.  The broker needs it
-too: with `DT_STREAM_BACKEND=orbit` the `dt` plugin connects back to the
+ORBIT reads the URL only from this variable or a command-line flag; there
+is no file for it.  The broker needs it too: with `DT_STREAM_BACKEND=orbit` the `dt` plugin connects back to the
 broker for the twins' streams, and a twin fails to initialize with
 `Broker URL required` without it.
 
@@ -121,7 +121,9 @@ DT_INFERENCE_ENDPOINT=local_ep DT_LEARNING_ENDPOINT=learn_ep python run_service.
 ```
 
 The learner's training, active-learning and criterion tasks now run on
-`learn_ep`, and inference stays on `local_ep`.  On a real deployment
+`learn_ep`, and inference stays on `local_ep`.  Set both variables for a
+split: without `DT_INFERENCE_ENDPOINT`, ORBIT picks any rhapsody endpoint
+for inference, possibly `learn_ep`.  On a real deployment
 `learn_ep` is an endpoint on an HPC allocation.
 
 ## A remote broker and HPC

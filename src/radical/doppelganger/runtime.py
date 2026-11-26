@@ -112,7 +112,7 @@ def hook_engine(flow: Any, owner: Optional["DTRuntime"] = None) -> None:
 
     In-package coupling to one asyncflow internal, deliberately: the
     alternative is a uid the service cannot know, and every honest
-    alternative was tried first (see docs/develop/design/dashboard.md).
+    alternative was tried first.
     """
 
     inner = getattr(flow, "_register_component", None)
