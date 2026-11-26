@@ -63,6 +63,8 @@ def served_rmse(dt, twin) -> float:
     errors = []
     for x in PROBES:
         answer = dt.get_inference(twin, TypedData(READING, x), PREDICTION)
+        if answer.data is None:             # a failed twin answers nothing
+            return math.inf
         errors.append((answer.data - physics.simulate(x, noise=0.0)) ** 2)
 
     return math.sqrt(sum(errors) / len(errors))
@@ -72,12 +74,13 @@ def served_rmse(dt, twin) -> float:
 def main(timeout: float) -> int:
     runtime = EndpointRuntime()
     runtime.start(wait=True)
-
-    dt = runtime.get_plugin(os.environ.get("DT_SERVICE_HOST", "broker"), "dt",
-                            config=session_config())
-    print(f"session {dt.sid}")
+    dt = None
 
     try:
+        dt = runtime.get_plugin(os.environ.get("DT_SERVICE_HOST", "broker"),
+                                "dt", config=session_config())
+        print(f"session {dt.sid}")
+
         twin = dt.create_twin()           # returns once the twin is ready
 
         dt.add_task(twin, dt.package(sensor.Sensor), TRUTHY, READING,
@@ -102,7 +105,8 @@ def main(timeout: float) -> int:
 
     finally:
         # sessions outlive their client; end this one explicitly
-        dt.unregister_session()
+        if dt is not None:
+            dt.unregister_session()
         runtime.stop()
 # --8<-- [end:main]
 

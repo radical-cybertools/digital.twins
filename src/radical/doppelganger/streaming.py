@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 # is a deployment decision, not ours: plain instruments and scripts speak
 # `json`, `raw` hands bytes through untouched, and `cloudpickle` is only
 # for producers inside the same trust domain (it executes what it decodes,
-# see the binding policy in the README).
+# see docs/overview/status-and-limits.md, "Trust").
 CODEC_JSON = "json"
 CODEC_RAW = "raw"
 CODEC_CLOUDPICKLE = "cloudpickle"
@@ -878,7 +878,7 @@ class PubSubConfig:
     the `zmq` backend that means the broker was bound to a non-loopback
     address on a private, firewalled network -- the default loopback bind
     is deliberately not reachable from another host (see the binding
-    policy in the README).
+    policy in docs/overview/status-and-limits.md, "Trust").
 
     `kind` names the backend which has to open the endpoint; a backend
     declares its own (`PubSubBackend.kind`).  It stays a plain string so a

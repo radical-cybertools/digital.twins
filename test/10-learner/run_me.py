@@ -10,7 +10,7 @@ window's model
 beats the criterion it is published, and the very next prediction uses
 it -- which is what the before/after inference below shows.
 
-See README.md for the services this needs.
+See README.md here for the services this needs.
 """
 
 import json

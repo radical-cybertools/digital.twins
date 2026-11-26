@@ -112,7 +112,7 @@ def hook_engine(flow: Any, owner: Optional["DTRuntime"] = None) -> None:
 
     In-package coupling to one asyncflow internal, deliberately: the
     alternative is a uid the service cannot know, and every honest
-    alternative was tried first (see the README).
+    alternative was tried first (see docs/develop/design/dashboard.md).
     """
 
     inner = getattr(flow, "_register_component", None)
@@ -1189,7 +1189,7 @@ class DTRuntime:
         `codec` decodes the payloads: `json` for the plain scripts and
         instruments which are the normal producers, `raw` for bytes, and
         `cloudpickle` only for producers inside the same trust domain
-        (see the binding policy in the README).
+        (see docs/overview/status-and-limits.md, "Trust").
 
         Internal producers keep their own path: a persistent component
         publishes through `RuntimeAPI.stream`.

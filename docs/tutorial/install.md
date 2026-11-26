@@ -5,6 +5,11 @@ project.
 
 ## From a release
 
+!!! warning "Not yet available"
+    The first releases are in preparation.  Until they are out, use
+    [the pre-release install](#until-the-stack-is-released) below; the
+    commands in this section will not work yet.
+
 ```sh
 python3 -m venv ve && . ve/bin/activate
 pip install "radical.doppelganger[learn]"            # build and run twins locally

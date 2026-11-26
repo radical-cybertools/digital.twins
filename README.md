@@ -19,8 +19,8 @@ research prototype; read
 ## Quick start
 
 ```sh
-pip install "radical.doppelganger[learn]"      # pre-release: see docs/tutorial/install.md
-git clone https://github.com/radical-cybertools/digital.twins
+# pre-release: install the pinned stack from docs/tutorial/install.md, then
+git clone -b devel https://github.com/radical-cybertools/digital.twins
 cd digital.twins/examples/surrogate
 python run_local.py
 ```

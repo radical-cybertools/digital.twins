@@ -65,6 +65,12 @@ class Surrogate(StreamingLearnerInvestigator):
         @self.learner.training_task(as_executable=False)
         async def training(window, previous=None, *args):
             xs = [float(x) for x in window]
+
+            # a partial window (flushed after max_wait) can be too small
+            # for the fit: keep the previous model
+            if len(xs) <= DEGREE:
+                return previous if isinstance(previous, dict) else {"coeffs": []}
+
             ys = [simulate(x) for x in xs]          # the expensive part
             coeffs = np.polyfit(xs, ys, DEGREE)
 

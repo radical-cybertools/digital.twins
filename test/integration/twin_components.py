@@ -43,7 +43,8 @@ class OffsetModel(ModelInvestigator):
     Note the split: the *task* returns a plain value and the component
     wraps it in `TypedData`.  Task arguments keep full cloudpickle
     fidelity, but return values only survive the ORBIT rhapsody plugin
-    when they are JSON-safe (or `bytes`) -- see README.
+    when they are JSON-safe (or `bytes`) -- see
+    docs/overview/status-and-limits.md, "Sizes".
     """
 
     def __init__(self, flow, offset: int = 100):

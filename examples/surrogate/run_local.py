@@ -39,6 +39,8 @@ async def served_rmse(runtime) -> float:
     errors = []
     for x in PROBES:
         answer = await runtime.get_inference(TypedData(READING, x), PREDICTION)
+        if answer.data is None:             # a failed twin answers nothing
+            return math.inf
         errors.append((answer.data - simulate(x, noise=0.0)) ** 2)
 
     return math.sqrt(sum(errors) / len(errors))
@@ -82,9 +84,11 @@ async def main(timeout: float) -> int:
             if error < 2 * PUBLISH_RMSE:
                 print("surrogate is accurate: done")
                 return 0
+            if runtime.last_error:
+                break
 
-        print(f"no accurate surrogate after {timeout:.0f} s"
-              f" (state {runtime.state}, error {runtime.last_error})")
+        print(f"no accurate surrogate (state {runtime.state},"
+              f" error {runtime.last_error})")
         return 1
 
     finally:

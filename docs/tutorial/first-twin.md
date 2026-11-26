@@ -7,7 +7,7 @@ service, no HPC, no configuration.
 ## Run it
 
 ```sh
-git clone https://github.com/radical-cybertools/digital.twins
+git clone -b devel https://github.com/radical-cybertools/digital.twins
 cd digital.twins/examples/surrogate
 python run_local.py
 ```
