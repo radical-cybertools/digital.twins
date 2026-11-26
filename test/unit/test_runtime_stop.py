@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from digitaltwin import (
+from radical.doppelganger import (
     NULL_DTYPE,
     TRUTHY,
     Barrier,
@@ -13,7 +13,7 @@ from digitaltwin import (
     RuntimeState,
     UtilityTask,
 )
-from digitaltwin.runtime import STOP_TIMEOUT
+from radical.doppelganger.runtime import STOP_TIMEOUT
 
 TICK = DataType("tick")
 

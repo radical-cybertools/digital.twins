@@ -17,7 +17,7 @@ pytest.importorskip("radical.orbit")
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from digitaltwin.components import (  # noqa: E402
+from radical.doppelganger.components import (  # noqa: E402
     TRUTHY,
     Barrier,
     DataType,
@@ -25,14 +25,14 @@ from digitaltwin.components import (  # noqa: E402
     SplitTask,
     UtilityTask,
 )
-from digitaltwin.runtime import DTRuntime  # noqa: E402
-from digitaltwin.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
-from digitaltwin.service.session import (  # noqa: E402
+from radical.doppelganger.runtime import DTRuntime  # noqa: E402
+from radical.doppelganger.service.plugin import UI_ASSETS, PluginDT  # noqa: E402
+from radical.doppelganger.service.session import (  # noqa: E402
     ENV_DEFAULT_ENGINE,
     DTSession,
     TwinInstance,
 )
-from digitaltwin.service.wire import (  # noqa: E402
+from radical.doppelganger.service.wire import (  # noqa: E402
     MAX_PAYLOAD,
     Package,
     check_versions,
@@ -226,14 +226,14 @@ def test_version_stamp_matches_itself():
     ("python", "2.7"),
     ("cloudpickle", "0.1"),
     # by-reference pickling of component classes: any difference counts
-    ("digitaltwin", version_stamp()["digitaltwin"] + ".dev1"),
+    ("radical.doppelganger", version_stamp()["radical.doppelganger"] + ".dev1"),
 ])
 def test_version_skew_is_rejected(key, value):
     with pytest.raises(ValueError, match=f"{key} version skew"):
         check_versions({**version_stamp(), key: value})
 
 
-@pytest.mark.parametrize("missing", ["python", "cloudpickle", "digitaltwin"])
+@pytest.mark.parametrize("missing", ["python", "cloudpickle", "radical.doppelganger"])
 def test_a_missing_version_is_rejected(missing):
     stamp = {k: v for k, v in version_stamp().items() if k != missing}
 
@@ -241,8 +241,8 @@ def test_a_missing_version_is_rejected(missing):
         check_versions(stamp)
 
 
-def test_the_stamp_pins_digitaltwin_too():
-    assert "digitaltwin" in version_stamp()
+def test_the_stamp_pins_doppelganger_too():
+    assert "radical.doppelganger" in version_stamp()
 
 
 def test_package_instantiates_with_the_injected_engine():
@@ -303,7 +303,7 @@ class _FakeEngineFactory:
 @pytest.fixture(autouse=True)
 def _fake_engine(monkeypatch):
     monkeypatch.setattr(
-        "digitaltwin.service.session.WorkflowEngine", _FakeEngineFactory)
+        "radical.doppelganger.service.session.WorkflowEngine", _FakeEngineFactory)
 
 
 class _Persistent(UtilityTask):
@@ -502,7 +502,7 @@ async def test_a_learner_gets_the_learning_label():
     """Role injection, by subclass check -- there is no user-facing
     role selector in v1."""
 
-    learn = pytest.importorskip("digitaltwin.learn")
+    learn = pytest.importorskip("radical.doppelganger.learn")
 
     class _Learner(learn.StreamingLearnerInvestigator):
         def __init__(self, flow, learn_backend=None):
@@ -651,7 +651,7 @@ async def test_stream_broker_starts_on_loopback_once(plugin):
 async def test_supervisor_respawns_on_the_same_addresses(plugin, monkeypatch):
     """A silently dead stream broker would stall every twin's stream."""
 
-    monkeypatch.setattr("digitaltwin.service.plugin.BROKER_WATCH_INTERVAL", 0.1)
+    monkeypatch.setattr("radical.doppelganger.service.plugin.BROKER_WATCH_INTERVAL", 0.1)
 
     try:
         addrs = await plugin.stream_addresses()
@@ -869,7 +869,7 @@ async def test_a_pool_backed_role_targets_the_dispatcher(monkeypatch):
     dispatcher session per DT session (keyed by the DT sid), the
     session-level pool configs declared with it."""
 
-    import digitaltwin.service.session as session_mod
+    import radical.doppelganger.service.session as session_mod
 
     session = DTSession("s1")
     session.config = {
@@ -893,7 +893,7 @@ async def test_a_pool_backed_role_targets_the_dispatcher(monkeypatch):
 
 
 async def test_a_pool_needs_a_pool_capable_backend(monkeypatch):
-    import digitaltwin.service.session as session_mod
+    import radical.doppelganger.service.session as session_mod
 
     session = DTSession("s1")
     session.config = {"engines": {"learning": {"pool": "exsitu"}}}
@@ -1081,7 +1081,7 @@ def test_add_barrier_sends_the_spec_not_the_barrier():
     """A client-built barrier travels as name, hardness and per-dtype
     flags; the asyncio primitives it holds stay behind."""
 
-    from digitaltwin.service.client import DTClient
+    from radical.doppelganger.service.client import DTClient
 
     sent = []
     client = DTClient.__new__(DTClient)
@@ -1134,7 +1134,7 @@ async def test_add_data_split_task_verb_registers_the_split():
 
 
 def test_add_barrier_refuses_a_subclass():
-    from digitaltwin.service.client import DTClient
+    from radical.doppelganger.service.client import DTClient
 
     class Custom(Barrier):
         pass

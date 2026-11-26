@@ -110,7 +110,7 @@ Instruments are not twin components.  They publish to a named channel, and
 any number of twins bind that channel with `add_input`:
 
 ```python
-from digitaltwin.streaming import ChannelPublisher, PubSubConfig
+from radical.doppelganger.streaming import ChannelPublisher, PubSubConfig
 
 dt.add_input(twin, SENSOR, 'lab/probe-3')
 
@@ -158,7 +158,7 @@ and publishes nothing by itself.  There are two ways to see results:
 
 ```python
 import asyncio
-from digitaltwin.streaming import connect_stream_client
+from radical.doppelganger.streaming import connect_stream_client
 
 pub_addr, sub_addr = dt.admin_sessions()['stream_broker']['addresses']
 client = await connect_stream_client(twin, pub_addr, sub_addr)

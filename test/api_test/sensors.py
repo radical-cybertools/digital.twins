@@ -18,8 +18,8 @@ import random
 import time
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import UtilityTask
-from digitaltwin.streaming import ChannelPublisher
+from radical.doppelganger.components import UtilityTask
+from radical.doppelganger.streaming import ChannelPublisher
 
 from dtypes import (
     FAST4_SENSOR_DTYPE,

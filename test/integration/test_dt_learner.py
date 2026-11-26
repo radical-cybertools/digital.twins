@@ -13,9 +13,9 @@ import uuid
 
 import pytest
 
-from digitaltwin.components import TRUTHY, TypedData
+from radical.doppelganger.components import TRUTHY, TypedData
 
-from digitaltwin.service import register_user_modules
+from radical.doppelganger.service import register_user_modules
 
 import learner_components
 import twin_components

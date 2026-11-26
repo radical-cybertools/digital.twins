@@ -4,9 +4,9 @@ from radical.asyncflow import WorkflowEngine
 from rhapsody.backends import ConcurrentExecutionBackend
 from concurrent.futures import ProcessPoolExecutor
 
-from digitaltwin.components import *
-from digitaltwin.runtime import DTRuntime
-from digitaltwin.streaming import connect_stream_client
+from radical.doppelganger.components import *
+from radical.doppelganger.runtime import DTRuntime
+from radical.doppelganger.streaming import connect_stream_client
 
 from radical.asyncflow.logging import init_default_logger
 

@@ -4,7 +4,7 @@ Shipped to the service by value along with the components -- the service
 has no copy of this directory.
 """
 
-from digitaltwin.components import DataType
+from radical.doppelganger.components import DataType
 
 SENSOR_DTYPE = DataType("sensor")
 INFERENCE_DTYPE = DataType("inference")

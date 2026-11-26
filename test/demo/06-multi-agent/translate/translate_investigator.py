@@ -2,8 +2,8 @@ import asyncio
 import datetime
 from radical.asyncflow import WorkflowEngine
 from rose import Learner
-from digitaltwin.components import ModelInvestigator, TypedData
-from digitaltwin.runtime import RuntimeAPI
+from radical.doppelganger.components import ModelInvestigator, TypedData
+from radical.doppelganger.runtime import RuntimeAPI
 from dtypes import *
 
 import logging

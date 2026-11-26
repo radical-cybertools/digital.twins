@@ -6,7 +6,7 @@ it must stay importable on its own -- no test imports, no fixtures.
 
 import asyncio
 
-from digitaltwin.components import (
+from radical.doppelganger.components import (
     DataType,
     ModelInvestigator,
     SplitTask,

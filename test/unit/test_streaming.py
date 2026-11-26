@@ -6,7 +6,7 @@ import pickle
 
 import pytest
 
-from digitaltwin import DataType, PubSubClient, PubSubConfig
+from radical.doppelganger import DataType, PubSubClient, PubSubConfig
 
 SENSOR = DataType("sensor")
 
@@ -184,7 +184,7 @@ async def test_stream_config_connect_is_bounded_and_leaves_nothing(no_task_leaks
 
 
 async def test_close_releases_task_sockets_and_context(broker, no_task_leaks):
-    from digitaltwin import connect_stream_client
+    from radical.doppelganger import connect_stream_client
 
     twin = await connect_stream_client("twin-a", *broker.get_connection_str())
     backend = twin._backend

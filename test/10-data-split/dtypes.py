@@ -1,4 +1,4 @@
-from digitaltwin.components import DataType, JoinDataType
+from radical.doppelganger.components import DataType, JoinDataType
 
 NUMBER_SENSOR_DTYPE = DataType("number")
 

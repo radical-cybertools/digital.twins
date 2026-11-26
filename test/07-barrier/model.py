@@ -4,14 +4,14 @@ import sys
 from typing import cast
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.components import (
+from radical.doppelganger.components import (
     DataType,
     ModelInvestigator,
     TypedData,
     WindowDataType,
     WindowedTypeData,
 )
-from digitaltwin.runtime import RuntimeAPI
+from radical.doppelganger.runtime import RuntimeAPI
 
 import random
 

@@ -4,8 +4,8 @@ import sys
 import time
 
 from radical.asyncflow import WorkflowEngine
-from digitaltwin.streaming import ZMQ_PS_Client, PubSubClient
-from digitaltwin.components import UtilityTask
+from radical.doppelganger.streaming import ZMQ_PS_Client, PubSubClient
+from radical.doppelganger.components import UtilityTask
 from dtypes import *
 import random
 

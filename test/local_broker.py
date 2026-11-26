@@ -5,8 +5,8 @@ Addresses come from configuration (`DT_STREAM_PUB_ADDR` /
 demos use, so both terminals agree without any literal in the code.
 """
 
-from digitaltwin.config import stream_addresses
-from digitaltwin.streaming import ZMQ_Broker
+from radical.doppelganger.config import stream_addresses
+from radical.doppelganger.streaming import ZMQ_Broker
 
 if __name__ == "__main__":
     broker = ZMQ_Broker(*stream_addresses())

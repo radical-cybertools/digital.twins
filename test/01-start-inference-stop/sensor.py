@@ -12,7 +12,7 @@ binding the same channel would receive the same messages.
 import asyncio
 import time
 
-from digitaltwin.streaming import ChannelPublisher
+from radical.doppelganger.streaming import ChannelPublisher
 
 
 from dtypes import SENSOR_CHANNEL

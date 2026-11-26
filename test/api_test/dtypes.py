@@ -1,4 +1,4 @@
-from digitaltwin.components import DataType, JoinDataType
+from radical.doppelganger.components import DataType, JoinDataType
 
 # one dtype per persistent sensor in sensors.py
 PERSIST_SENSOR_DTYPE = DataType("persist_sensor")
