@@ -321,7 +321,8 @@ class StreamingLearnerInvestigator(ModelInvestigator):
         }
 
     async def _feed(self, in_data: TypedData) -> None:
-        """`ON_INPUT`: everything the twin sees also feeds the learner."""
+        """`ON_INPUT`: every observation the twin routes here also feeds the
+        learner; queries (`get_inference`) do not."""
 
         await self.learner.feed(in_data.data)
 
