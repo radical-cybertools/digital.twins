@@ -39,7 +39,7 @@ async def served_rmse(runtime) -> float:
     errors = []
     for x in PROBES:
         answer = await runtime.get_inference(TypedData(READING, x), PREDICTION)
-        if answer.data is None:             # no component serves the pair
+        if answer.data is None:             # the component answered nothing
             return math.inf
         errors.append((answer.data - simulate(x, noise=0.0)) ** 2)
 
@@ -61,7 +61,8 @@ async def main(timeout: float) -> int:
     flow = await WorkflowEngine.create(backend=backend)
 
     # 3. the twin: a runtime with its own stream namespace
-    stream = await connect_stream_client("surrogate", *broker.get_connection_str())
+    stream = await connect_stream_client("surrogate", *broker.get_connection_str(),
+                                         backend="zmq")
     runtime = DTRuntime(flow, stream)
 
     try:

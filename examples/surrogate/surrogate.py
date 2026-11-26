@@ -67,8 +67,8 @@ class Surrogate(StreamingLearnerInvestigator):
             xs = [float(x) for x in window]
 
             # a partial window (flushed after max_wait) can be too small
-            # for the fit: keep the previous model
-            if len(xs) <= DEGREE:
+            # for a stable fit: keep the previous model
+            if len(xs) < 4 * (DEGREE + 1):
                 return previous if isinstance(previous, dict) else {"coeffs": []}
 
             ys = [simulate(x) for x in xs]          # the expensive part

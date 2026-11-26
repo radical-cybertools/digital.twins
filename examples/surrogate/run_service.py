@@ -63,7 +63,7 @@ def served_rmse(dt, twin) -> float:
     errors = []
     for x in PROBES:
         answer = dt.get_inference(twin, TypedData(READING, x), PREDICTION)
-        if answer.data is None:             # no component serves the pair
+        if answer.data is None:             # the component answered nothing
             return math.inf
         errors.append((answer.data - physics.simulate(x, noise=0.0)) ** 2)
 
